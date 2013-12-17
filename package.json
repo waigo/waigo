@@ -1,0 +1,69 @@
+{
+  "name": "waigo",
+  "description": "Node MVC framework for rapid application development",
+  "version": "0.1.0",
+  "author": {
+    "name": "Ramesh Nair",
+    "email": "ram@hiddentao.com"
+  },
+  "dependencies": {
+    "express": "~3.3.4",
+    "jade": "~0.34.0",
+    "mongoose": "~3.6.14",
+    "underscore.string": "~2.3.3",
+    "lodash": "~2.3.0",
+    "connect-mongo": "~0.4.0",
+    "winston": "~0.7.2",
+    "winston-mongodb": "~0.4.3",
+    "q": "~0.9.7",
+    "nodemailer": "~0.5.15",
+    "mongoskin": "~0.6.1"
+  },
+  "devDependencies": {
+    "chai": "~1.8.1",
+    "grunt": "~0.4.1",
+    "grunt-concurrent": "~0.3.0",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-develop": "~0.2.2",
+    "grunt-mocha-test": "~0.8.1",
+    "load-grunt-tasks": "~0.2.0",
+    "matchdep": "~0.3.0",
+    "mocha": "~1.14.0",
+    "request": "~2.27.0",
+    "sinon": "~1.7.3",
+    "sinon-chai": "~2.4.0",
+    "time-grunt": "~0.1.1",
+    "grunt-contrib-jshint": "~0.7.1",
+    "grunt-express-server": "~0.4.5",
+    "grunt-shell": "~0.6.0",
+    "coffee-script": "~1.6.3"
+  },
+  "keywords": [
+    "express",
+    "framework",
+    "web",
+    "rest",
+    "restful",
+    "router",
+    "app",
+    "api",
+    "mvc"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/waigo/waigo.git"
+  },
+  "main": "index",
+  "scripts": {
+    "prepublish": "npm prune",
+    "test": "grunt test"
+  },
+  "engines": {
+    "node": "*"
+  },
+  "readmeFilename": "README.md",
+  "bugs": {
+    "url": "https://github.com/waigo/waigo/issues"
+  }
+}
