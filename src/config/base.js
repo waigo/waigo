@@ -22,7 +22,7 @@ exports.baseURL = 'http://localhost:' + exports.port;
  * @type {Object}
  */
 exports.db = {
-  mongoskin: {
+  mongoose: {
     host: '127.0.0.1',
     port: '27017',
     db: 'waigo'
@@ -46,10 +46,25 @@ exports.logging = {
 
 
 /**
- * Session secret key.
+ * Session config.
+ *
+ * We don't provide a default 'secret' so as to encourage developers to provide a custom one for their app.
+ *
  * @type {String}
  */
-//exports.sessionSecret = ;
+exports.session = {
+  secret: null,  // This should be provided by apps
+  store: {
+    type: 'mongo',
+    config: {
+      url: 'mongodb://127.0.0.1:27017/sessions'
+    }
+  },
+  cookie: {
+    validForDays: 7,
+    path: '/'
+  }
+};
 
 
 /**
@@ -65,11 +80,6 @@ exports.staticFolder = __dirname + '/../public';
  */
 exports.uploadLimitMb = 10;
 
-/**
- * No. of days a user session stays valid for.
- * @type {Number}
- */
-exports.sessionValidDays = 7;
 
 /**
  * Name of access control model.
@@ -83,6 +93,5 @@ exports.accessControlModel = 'Account';
  * @type {Object}
  */
 exports.errorHandlerConfig = {
-  dumpExceptions: false,
   showStack: false
 };

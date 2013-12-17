@@ -30,7 +30,7 @@ exports.create = function(appConfig, winstonConfig) {
         transport = new winston.transports.MongoDB(mongoConfig);
 
         transport.on('error', function(err) {
-          console.log('Winston failed to log message through MongoDB', err);
+          console.log('Winston failed to log message to MongoDB', err);
         });
     }
 

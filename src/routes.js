@@ -2,7 +2,6 @@ var _ = require('lodash'),
   express = require('express'),
   mongoose = require('mongoose'),
   Q = require('q'),
-  moment = require('moment'),
   winston = require('winston'),
   waigo = GLOBAL.waigo;
 
@@ -69,49 +68,15 @@ app._setupDatabase = function() {
 
 
 /**
- * Setup Express configuration.
- *
- * @return {Promise}
- * @private
- */
-app._setupExpress = function() {
-  return Q.fcall(function() {
-    app.use(express.limit(app.config.uploadLimitMb + 'mb'));
-
-    // sessions
-    var sessionConfig = app.config.session;
-    if (!sessionConfig.secret) {
-      app.logger.warn('No session secret specified in app config. Using default null value.');
-    }
-    app.use(express.cookieParser());
-    app.use(express.session({
-      secret: sessionConfig.secret,
-      store: waigo.load('support.session.store.' + sessionConfig.store.type).create(sessionConfig.store.config),
-      cookie: {
-        expires: moment().add('days', sessionConfig.cookie.validForDays).toDate(),
-        path: sessionConfig.cookie.path
-      }
-    }));
-
-    app.use(express.static(app.config.staticFolder));
-    app.use(app.router);
-    app.use(waigo.load('support.errors').buildMiddleware(app.config.errorHandlerConfig));
-  });
-};
-
-
-
-
-/**
- * Setup routes and their handlers.
+ * Setup routes.
  *
  * @return {Promise}
  * @private
  */
 app._setupRoutes = function() {
   return Q.fcall(function() {
-    // TODO
-//    throw new Error('Not yet implemented!');
+    var dbType = _.keys(app.config.db).pop();
+    app.db = waigo.load('support.db.' + dbType).create(app.config.db[dbType]);
   });
 };
 
@@ -131,9 +96,6 @@ app.start = function() {
     .then(app._loadConfig)
     .then(app._setupLogging)
     .then(app._setupDatabase)
-    .then(app._setupExpress)
-    .then(app._setupRoutes)
-  ;
 };
 
 

@@ -4,11 +4,6 @@ var _ = require('lodash'),
 
 // if Waigo global object hasn't yet been setup then do so
 if (!GLOBAL.waigo) {
-  // handle all uncaught exceptions from here on in
-  process.on('uncaughtException', function(err) {
-    console.log('Uncaught exception', err, err.stack);
-  });
-
   var _log = function(msg) {
     console.log('[waigo] ' + msg);
   };
