@@ -7,8 +7,10 @@
 // Since we're running within Waigo itself we can't use require('waigo')
 waigo = require('../index');
 
+waigo.showLoaderLog(true);
 
 waigo.load('server').start()
   .done(function() {
-    console.log('Server started!');
+    console.log('Waigo documentation site has started. Please visit http://localhost:3000/ to see it in action!');
   });
+

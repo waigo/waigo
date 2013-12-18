@@ -63,23 +63,33 @@ if (!GLOBAL.waigo) {
    * only the Waigo lib folder will be checked, meaning that the overriden version under the app folder tree won't be
    * loaded.
    *
+   * @param [options] {Object} additional options.
+   * @param [options.failIfNotInAppTree] {Boolean} if true then an exception will be thrown if the module cannot be found
+   * within the app folder tree. Default is false.
+   *
    * @return {*} contents of loaded module
    *
    * @throws Error if there was an error loading the module.
    */
-  waigo.load = function(moduleName) {
+  waigo.load = function(moduleName, options) {
+    options = _.extend({
+      appMustExist: false
+    }, options);
+
     var relativePath = path.join.apply(path, moduleName.split('.'));
-    relativePath[relativePath.length - 1] += '.js';
+    relativePath[relativePath.length - 1];
 
     if (0 !== moduleName.toLowerCase().indexOf('lib:')) {
       var appFolderPath = path.join.apply(path, [appFolder].concat(relativePath));
 
-      if (fs.existsSync(appFolderPath)) {
+      if (fs.existsSync(appFolderPath + '.js')) {
         var mod = require(appFolderPath);
         if (loaderLogging) {
           _log('Loaded module "' + moduleName + '" from APP (' + appFolderPath + ')');
         }
         return mod;
+      } else if (options.failIfNotInAppTree) {
+        throw new Error('Unable to find module in app folder tree: ' + moduleName);
       }
     }
 
@@ -89,6 +99,7 @@ if (!GLOBAL.waigo) {
     if (loaderLogging) {
       _log('Loaded module "' + moduleName + '" from LIB (' + libFolderPath + ')');
     }
+
     return mod;
   };
 }

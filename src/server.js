@@ -82,7 +82,7 @@ app._setupMiddleware = function() {
     // sessions
     var sessionConfig = app.config.session;
     if (!sessionConfig.secret) {
-      app.logger.warn('No session secret specified in app config. Using default null value.');
+      throw new Error('Please specify a session secret in the app config file.');
     }
     app.use(express.cookieParser());
     app.use(express.session({
@@ -95,6 +95,7 @@ app._setupMiddleware = function() {
     }));
 
     app.use(express.static(path.join(waigo.getAppFolder(), app.config.staticFolder)));
+    app.use(waigo.load('support.outputFormats').buildMiddleware(app.config.outputFormats));
     app.use(app.router);
     app.use(waigo.load('support.errors').buildMiddleware(app.config.errorHandlerConfig));
   });
@@ -129,11 +130,44 @@ app._setupViews = function() {
  */
 app._setupRoutes = function() {
   return Q.fcall(function() {
-    // TODO
-//    throw new Error('Not yet implemented!');
+    app.routes = waigo.load('routes');
+    app.controllers = [];
+
+    _.each(app.routes, function(route) {
+      // load the module
+      route = _.extend({
+        controller: 'controllers.main',
+        paths: {
+          '/': {
+            httpMethod: 'get',
+            method: 'index'
+          }
+        },
+        viewFolder: ''
+      }, route);
+
+      // instantiate the controller
+      var controller = new (waigo.load(route.controller).Controller)(app, route.viewFolder);
+      controller.map(route.paths);
+      app.controllers.push(controller);
+    });
   });
 };
 
+
+
+/**
+ * Start server.
+ *
+ * @return {Promise}
+ * @private
+ */
+app._startServer = function() {
+  return Q.fcall(function() {
+    app.listen(app.config.port);
+    app.logger.info('Server listening on port ' + app.config.port);
+  });
+};
 
 
 
@@ -150,9 +184,10 @@ app.start = function() {
     .then(app._loadConfig)
     .then(app._setupLogging)
     .then(app._setupDatabase)
-    .then(app._setupMiddleware)
     .then(app._setupViews)
+    .then(app._setupMiddleware)
     .then(app._setupRoutes)
+    .then(app._startServer)
   ;
 };
 

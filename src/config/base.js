@@ -85,6 +85,21 @@ exports.views = {
 
 
 /**
+ * Output formats.
+ * @type {Object}
+ */
+exports.outputFormats = {
+  /** Enabled output formats. Requesting a format not present in this list will result in an error. */
+  enabled: ['html', 'json'],
+  /** Use this URL query parameter to determine output format. */
+  paramName: 'format',
+  /** Default format, in case URl query parameter which determines output format isn't provided. */
+  default: 'html'
+};
+
+
+
+/**
  * Static resources (relative to app root folder).
  * @type {String}
  */
