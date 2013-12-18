@@ -1,4 +1,5 @@
 var _ = require('lodash'),
+  path = require('path'),
   express = require('express'),
   mongoose = require('mongoose'),
   Q = require('q'),
@@ -69,12 +70,12 @@ app._setupDatabase = function() {
 
 
 /**
- * Setup Express configuration.
+ * Setup Express middlewar.
  *
  * @return {Promise}
  * @private
  */
-app._setupExpress = function() {
+app._setupMiddleware = function() {
   return Q.fcall(function() {
     app.use(express.limit(app.config.uploadLimitMb + 'mb'));
 
@@ -93,9 +94,27 @@ app._setupExpress = function() {
       }
     }));
 
-    app.use(express.static(app.config.staticFolder));
+    app.use(express.static(path.join(waigo.getAppFolder(), app.config.staticFolder)));
     app.use(app.router);
     app.use(waigo.load('support.errors').buildMiddleware(app.config.errorHandlerConfig));
+  });
+};
+
+
+
+/**
+ * Setup views and view rendering.
+ *
+ * @return {Promise}
+ * @private
+ */
+app._setupViews = function() {
+  return Q.fcall(function() {
+    var viewConfig = app.config.views;
+
+    app.set('views', path.join(waigo.getAppFolder(), viewConfig.folder));
+    app.set('view engine', viewConfig.engine);
+    app.set('view options', viewConfig.options);
   });
 };
 
@@ -131,7 +150,8 @@ app.start = function() {
     .then(app._loadConfig)
     .then(app._setupLogging)
     .then(app._setupDatabase)
-    .then(app._setupExpress)
+    .then(app._setupMiddleware)
+    .then(app._setupViews)
     .then(app._setupRoutes)
   ;
 };

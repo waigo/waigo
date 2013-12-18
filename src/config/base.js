@@ -68,10 +68,27 @@ exports.session = {
 
 
 /**
- * Static resources.
+ * View rendering configuration
+ * @type {Object}
+ */
+exports.views = {
+  /** Base folder for all views, relative to app root folder */
+  folder: 'views',
+  /** Default view rendering engine. */
+  engine: 'jade',
+  /** Additional view rendering options passed to Express. */
+  options: {
+    layout: false
+  }
+};
+
+
+
+/**
+ * Static resources (relative to app root folder).
  * @type {String}
  */
-exports.staticFolder = __dirname + '/../public';
+exports.staticFolder = '../public';
 
 
 /**

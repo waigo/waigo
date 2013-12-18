@@ -8,25 +8,46 @@ if (!GLOBAL.waigo) {
     console.log('[waigo] ' + msg);
   };
 
-  var waigo = GLOBAL.waigo = {
-    processFolder : process.cwd()
+
+  var waigo = GLOBAL.waigo = {};
+
+
+  var processScript = process.argv[1],
+    libFolder = path.join(__dirname, 'src'),
+    appFolder = path.join(path.dirname(processScript), 'src'),
+    loaderLogging = false;
+
+
+  /**
+   * Get absolute path to folder containing application files.
+   * @return {string}
+   */
+  waigo.getAppFolder = function() {
+    return appFolder;
   };
 
-  var pathToCustomConfig = path.join(waigo.processFolder, 'waigo.js'),
-    pathToDefaultConfig = path.join(__dirname, 'waigo.js');
 
-  // load config: default first, then overridden by custom config
-  var config = require(pathToDefaultConfig);
-  if (fs.existsSync(pathToCustomConfig)) {
-    _log('Loading custom config: ' + pathToCustomConfig);
-    _.extend(config, require(pathToCustomConfig));
-  }
+  /**
+   * Set absolute path to folder containing application files.
+   * @param absolutePath {string} absolute path to folder.
+   */
+  waigo.setAppFolder = function(absolutePath) {
+    _log('Set app folder to: ' + absolutePath);
+    appFolder = absolutePath;
+  };
 
-  // fully resolve app src folder
-  waigo.appFolder = path.join(waigo.processFolder, config.src);
 
-  // fully resolve waigo lib folder
-  waigo.libFolder = path.join(__dirname, 'src');
+
+  /**
+   * Toggle waigo loader logging.
+   * @param toggle {Boolean} true to enable, false to disable.
+   */
+  waigo.showLoaderLog = function(toggle) {
+    _log('Loader logging toggle: ' + toggle);
+    loaderLogging = toggle;
+  };
+
+
 
 
   /**
@@ -51,22 +72,22 @@ if (!GLOBAL.waigo) {
     relativePath[relativePath.length - 1] += '.js';
 
     if (0 !== moduleName.toLowerCase().indexOf('lib:')) {
-      var appFolderPath = path.join.apply(path, [waigo.appFolder].concat(relativePath));
+      var appFolderPath = path.join.apply(path, [appFolder].concat(relativePath));
 
       if (fs.existsSync(appFolderPath)) {
         var mod = require(appFolderPath);
-        if (config.logLoader) {
-          _log('Loaded app module: ' + moduleName);
+        if (loaderLogging) {
+          _log('Loaded module "' + moduleName + '" from APP (' + appFolderPath + ')');
         }
         return mod;
       }
     }
 
-    var libFolderPath = path.join.apply(path, [waigo.libFolder].concat(relativePath));
+    var libFolderPath = path.join.apply(path, [libFolder].concat(relativePath));
 
     var mod =require(libFolderPath);
-    if (config.logLoader) {
-      _log('Loaded lib module: ' + moduleName);
+    if (loaderLogging) {
+      _log('Loaded module "' + moduleName + '" from LIB (' + libFolderPath + ')');
     }
     return mod;
   };
