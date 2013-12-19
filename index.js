@@ -83,10 +83,10 @@ if (!GLOBAL.waigo) {
       var appFolderPath = path.join.apply(path, [appFolder].concat(relativePath));
 
       if (fs.existsSync(appFolderPath + '.js')) {
-        var mod = require(appFolderPath);
         if (loaderLogging) {
-          _log('Loaded module "' + moduleName + '" from APP (' + appFolderPath + ')');
+          _log('Loading module "' + moduleName + '" from APP (' + appFolderPath + ')');
         }
+        var mod = require(appFolderPath);
         return mod;
       } else if (options.failIfNotInAppTree) {
         throw new Error('Unable to find module in app folder tree: ' + moduleName);
@@ -95,10 +95,10 @@ if (!GLOBAL.waigo) {
 
     var libFolderPath = path.join.apply(path, [libFolder].concat(relativePath));
 
-    var mod =require(libFolderPath);
     if (loaderLogging) {
-      _log('Loaded module "' + moduleName + '" from LIB (' + libFolderPath + ')');
+      _log('Loading module "' + moduleName + '" from LIB (' + libFolderPath + ')');
     }
+    var mod =require(libFolderPath);
 
     return mod;
   };

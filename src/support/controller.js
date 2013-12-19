@@ -99,16 +99,15 @@ Controller.prototype._buildHandler = function(fn) {
   var self = this;
 
   return function(req, res, next) {
-    /**
-     * @param {Object} req the HTTP req object.
-     * @param {Function} send method to send a response.
-     * @param {Function} render method to render a response.
-     * @param {Function} redirect method to send a redirect.
-     */
+    var context = {
+      res: res,
+      next: next
+    };
+
     var customRes = {
-      send: _.bind(self._send, self, next, res),
-      render: _.bind(self._render, self, next, res),
-      redirect: _.bind(self._redirect, self, next, res)
+      send: _.bind(self._send, self, context),
+      render: _.bind(self._render, self, context),
+      redirect: _.bind(self._redirect, self, context)
     };
 
     fn.call(self, req, customRes, next);
@@ -120,36 +119,21 @@ Controller.prototype._buildHandler = function(fn) {
 
 /**
  * Send response to client.
- *
- * @param next
- * @param res
- * @param data
- * @param headers
- * @param status
  */
-Controller.prototype._send = function(next, res, data, headers, status) {
+Controller.prototype._send = function(context, data, headers, status) {
   data = data || '';
   headers = headers || {};
   status = status || 200;
 
-  res.send(data, headers, status);
+  context.res.send(data, headers, status);
 };
 
 
 
 /**
  * Render response and send to client.
- *
- * @param next
- * @param res
- * @param view
- * @param locals
- * @param headers
- * @param status
  */
-Controller.prototype._render = function(next, res, view, locals, headers, status) {
-  var self = this;
-
+Controller.prototype._render = function(context, viewTemplate, locals, headers, status) {
   // convert locals to view objects
   locals = locals || {};
   var viewObjects = {};
@@ -172,9 +156,18 @@ Controller.prototype._render = function(next, res, view, locals, headers, status
       done();
     }
   }, function (err) {
-    if (err) return next(err);
+    if (err) return context.next(err);
 
-    res.outputFormatter.render(view, viewObjects, headers, status, res, next);
+    _.extend(context, {
+      headers: headers,
+      status: status
+    });
+
+    try {
+      context.res.outputFormatter.render(context, viewTemplate, viewObjects);
+    } catch (err) {
+      context.next(err);
+    }
   });
 };
 
@@ -182,16 +175,20 @@ Controller.prototype._render = function(next, res, view, locals, headers, status
 
 /**
  * Redirect client.
- *
- * @param next
- * @param res
- * @param path
- * @param status
  */
-Controller.prototype._redirect = function(next, res, path, status) {
+Controller.prototype._redirect = function(context, path, status) {
   path = path || '';
 
-  res.outputFormatter.redirect(path, status, res, next);
+  _.extend(context, {
+    headers: {},
+    status: status
+  });
+
+  try {
+    context.res.outputFormatter.redirect(context, path);
+  } catch (err) {
+    context.next(err);
+  }
 };
 
 

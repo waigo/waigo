@@ -10,7 +10,8 @@ exports.session = {
   store: {
     type: 'mongo',
     config: {
-      url: 'mongodb://127.0.0.1:27017/sessions'
+      useAppMongooseDbConn: true,
+      collection: 'sessions'
     }
   },
   cookie: {
@@ -18,3 +19,19 @@ exports.session = {
     path: '/'
   }
 };
+
+
+exports.errorHandlerConfig = {
+  showStack: true
+};
+
+exports.logging = {
+  winston: {
+    console: {
+      level: 'info',
+      colorize: true,
+      timestamp: true
+    }
+  }
+};
+

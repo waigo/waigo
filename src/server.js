@@ -87,7 +87,7 @@ app._setupMiddleware = function() {
     app.use(express.cookieParser());
     app.use(express.session({
       secret: sessionConfig.secret,
-      store: waigo.load('support.session.store.' + sessionConfig.store.type).create(sessionConfig.store.config),
+      store: waigo.load('support.session.store.' + sessionConfig.store.type).create(app, sessionConfig.store.config),
       cookie: {
         expires: moment().add('days', sessionConfig.cookie.validForDays).toDate(),
         path: sessionConfig.cookie.path

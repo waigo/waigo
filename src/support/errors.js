@@ -20,7 +20,7 @@ var _toViewObject = function(error, cb) {
   if (_.isFunction(error.toViewObject)) {
     return error.toViewObject(cb);
   } else {
-    cb(null, error.toString);
+    cb(null, error.toString());
   }
 };
 
@@ -143,14 +143,12 @@ exports.buildMiddleware = function(config) {
     });
 
     // quit if no request params
-    if (!req.params) return next(err);
+    if (!req.query) return next(err);
 
     // setup rendering params
     var statusCode = err.statusCode || 500;
 
-    Q.fcall(function() {
-      return Q.nfcall(_toViewObject, err);
-    })
+    Q.nfcall(_toViewObject, err)
       .then(function gotViewObject(viewObj) {
         var viewParams = {
           error: viewObj
@@ -163,7 +161,11 @@ exports.buildMiddleware = function(config) {
         return viewParams;
       })
       .then(function sendToClient(viewParams) {
-        res.send(viewParams, statusCode);
+        res.json(statusCode, viewParams);
+      })
+      .catch(function (err) {
+        // log the error
+        req.app.logger.error(err);
       })
       .done();
   }

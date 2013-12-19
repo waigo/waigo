@@ -24,8 +24,8 @@ exports.create = function(appConfig, winstonConfig) {
       case 'mongo':
         var mongoConfig = winstonConfig[transportType];
 
-        mongoConfig.host = appConfig.mongo.host;
-        mongoConfig.db = appConfig.mongo.db;
+        mongoConfig.host = appConfig.db.mongoose.host;
+        mongoConfig.db = appConfig.db.mongoose.db;
 
         transport = new winston.transports.MongoDB(mongoConfig);
 

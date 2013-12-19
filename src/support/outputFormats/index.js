@@ -19,7 +19,7 @@ exports.buildMiddleware = function(config) {
   });
 
   return function(req, res, next) {
-    var requestedFormat = req.params[config.paramName].toLowerCase() || config.default;
+    var requestedFormat = (req.query[config.paramName] || config.default).toLowerCase();
 
     // check format is valid
     if (requestedFormat && !availableFormats[requestedFormat]) {
@@ -28,6 +28,8 @@ exports.buildMiddleware = function(config) {
 
     // if all ok then attach the output format to the response object
     res.outputFormatter = availableFormats[requestedFormat];
+
+    next();
   };
 };
 
