@@ -2,11 +2,11 @@ var _ = require('lodash'),
   waigo = GLOBAL.waigo;
 
 /**
- * Build output formats middlewar.
+ * Build output formats middleware.
  * @param config {Object} output format config.
  * @return {Function} Express middleware.
  */
-exports.buildMiddleware = function(config) {
+module.exports = function(config) {
   config = _.extend({
     enabled: ['html', 'json'],
     paramName: 'format',
@@ -18,8 +18,8 @@ exports.buildMiddleware = function(config) {
     availableFormats[format] = waigo.load('support.outputFormats.' + format);
   });
 
-  return function(req, res, next) {
-    var requestedFormat = (req.query[config.paramName] || config.default).toLowerCase();
+  return function*(next) {
+    var requestedFormat = (this.req.query[config.paramName] || config.default).toLowerCase();
 
     // check format is valid
     if (requestedFormat && !availableFormats[requestedFormat]) {
@@ -29,7 +29,7 @@ exports.buildMiddleware = function(config) {
     // if all ok then attach the output format to the response object
     res.outputFormatter = availableFormats[requestedFormat];
 
-    next();
+    yield next;
   };
 };
 

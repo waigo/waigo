@@ -1,7 +1,7 @@
 var _ = require('lodash'),
+  koa = require('koa'),
   path = require('path'),
   Promise = require('bluebird'),
-  express = require('express'),
   mongoose = require('mongoose'),
   moment = require('moment'),
   winston = require('winston'),
@@ -9,7 +9,7 @@ var _ = require('lodash'),
 
 
 /** Create the Express app object. */
-var app = express();
+var app = koa();
 
 
 
@@ -30,12 +30,12 @@ app._loadConfig = function() {
 
 
 /**
- * Setup logging.
+ * Setup logger.
  *
  * @return {Promise}
  * @private
  */
-app._setupLogging = function() {
+app._setupLogger = function() {
   return Promise.try(function() {
     var appLoggerType = _.keys(app.config.logging).pop();
     app.logger = waigo.load('support.logging.' + appLoggerType).create(app.config, app.config.logging[appLoggerType]);
@@ -74,27 +74,32 @@ app._setupDatabase = function() {
  */
 app._setupMiddleware = function() {
   return Promise.try(function() {
-    app.use(express.limit(app.config.uploadLimitMb + 'mb'));
+    app.use(require('koa-response-time')());
 
-    // sessions
-    var sessionConfig = app.config.session;
-    if (!sessionConfig.secret) {
-      throw new Error('Please specify a session secret in the app config file.');
-    }
-    app.use(express.cookieParser());
-    app.use(express.session({
-      secret: sessionConfig.secret,
-      store: waigo.load('support.session.store.' + sessionConfig.store.type).create(app, sessionConfig.store.config),
-      cookie: {
-        expires: moment().add('days', sessionConfig.cookie.validForDays).toDate(),
-        path: sessionConfig.cookie.path
-      }
+    app.use(waigo.load('support.middleware.rawBodySizeLimit')({
+      limitMb: app.config.uploadLimitMb
     }));
 
-    app.use(express.static(path.join(waigo.getAppFolder(), app.config.staticFolder)));
-    app.use(waigo.load('support.outputFormats').buildMiddleware(app.config.outputFormats));
-    app.use(app.router);
-    app.use(waigo.load('support.errors').buildMiddleware(app.config.errorHandlerConfig));
+//    // sessions
+//    var sessionConfig = app.config.session;
+//    if (!sessionConfig.secret) {
+//      throw new Error('Please specify a session secret in the app config file.');
+//    }
+//    app.use(express.cookieParser());
+//    app.use(express.session({
+//      secret: sessionConfig.secret,
+//      store: waigo.load('support.session.store.' + sessionConfig.store.type).create(app, sessionConfig.store.config),
+//      cookie: {
+//        expires: moment().add('days', sessionConfig.cookie.validForDays).toDate(),
+//        path: sessionConfig.cookie.path
+//      }
+//    }));
+
+    app.use(require('koa-static')(path.join(waigo.getAppFolder(), app.config.staticFolder)))
+
+    app.use(waigo.load('support.middleware.outputFormats')(app.config.outputFormats));
+//    app.use(app.router);
+//    app.use(waigo.load('support.errors').buildMiddleware(app.config.errorHandlerConfig));
   });
 };
 
@@ -174,19 +179,17 @@ app._startServer = function() {
  *
  * All application should call into this starting point.
  *
- * @param cb {Function} callback.
- *
  * @return {Promise}
  */
-app.start = suspend(function*(cb) {
+app.start = Promise.coroutine(function*() {
   yield app._loadConfig();
-  yield app._setupLogging();
-  yield app._setupDatabase();
-  yield app._setupViews();
-  yield app._setupMiddleware();
-  yield app._setupRoutes();
-  yield app._startServer();
-};
+  yield app._setupLogger();
+//  yield app._setupDatabase();
+//  yield app._setupViews();
+//  yield app._setupMiddleware();
+//  yield app._setupRoutes();
+//  yield app._startServer();
+});
 
 
 
