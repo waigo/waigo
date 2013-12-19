@@ -1,8 +1,8 @@
 var _ = require('lodash'),
   path = require('path'),
+  Promise = require('bluebird'),
   express = require('express'),
   mongoose = require('mongoose'),
-  Promise = require('bluebird'),
   moment = require('moment'),
   winston = require('winston'),
   waigo = GLOBAL.waigo;
@@ -178,17 +178,14 @@ app._startServer = function() {
  *
  * @return {Promise}
  */
-app.start = function(cb) {
-  return Promise.resolve(true)
-    .then(app._loadConfig)
-    .then(app._setupLogging)
-    .then(app._setupDatabase)
-    .then(app._setupViews)
-    .then(app._setupMiddleware)
-    .then(app._setupRoutes)
-    .then(app._startServer)
-    .nodeify(cb)
-  ;
+app.start = suspend(function*(cb) {
+  yield app._loadConfig();
+  yield app._setupLogging();
+  yield app._setupDatabase();
+  yield app._setupViews();
+  yield app._setupMiddleware();
+  yield app._setupRoutes();
+  yield app._startServer();
 };
 
 
