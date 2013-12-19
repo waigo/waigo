@@ -3,8 +3,7 @@
  */
 
 var _ = require('lodash'),
-  async = require('async'),
-  Q = require('q'),
+  Promise = require('bluebird'),
   util = require('util');
 
 
@@ -12,15 +11,14 @@ var _ = require('lodash'),
  * Convert given error to view object.
  *
  * @param error {Error} error object.
- * @param cb {Function} callback.
  *
  * @private
  */
-var _toViewObject = function(error, cb) {
+var _toViewObject = function(error) {
   if (_.isFunction(error.toViewObject)) {
-    return error.toViewObject(cb);
+    return error.toViewObject();
   } else {
-    cb(null, error.toString());
+    return Promise.resolve(error.toString());
   }
 };
 
@@ -44,15 +42,17 @@ var BaseError = exports.BaseError = function(msg, statusCode) {
 };
 util.inherits(BaseError, Error);
 /**
- * Get view object representation of this error.
+ * Get renderable representation of this error.
  *
  * @param cb {Function} callback
+ *
+ * @return {Promise}
  */
 BaseError.prototype.toViewObject = function(cb) {
-  cb(null, {
+  return Promise.resolve({
     type: this.name,
     message: this.message
-  });
+  }).nodeify(cb);
 };
 
 
@@ -71,34 +71,24 @@ var MultipleError = exports.MultipleError = function(errors) {
 util.inherits(MultipleError, BaseError);
 
 
+/**
+ * @see BaseError#toViewObject
+ */
 MultipleError.prototype.toViewObject = function(cb) {
   var self = this;
 
-  var processedErrors = {};
-
-  // convert all child errors to view objects
-  async.forEach(_.keys(self.errors), function (key, cbForEach) {
-    var error = self.errors[key];
-
-    if (_.isFunction(error.toViewObject)) {
-      error.toViewObject(function gotViewObject(err, viewObject) {
-        if (err) return cbForEach(err);
-
-        processedErrors[key] = viewObject;
-
-        cbForEach();
-      });
-    } else {
-      processedErrors[key] = error.toString();
-
-      cbForEach();
-    }
-  }, function (err) {
-    cb(err, {
-      type: self.name,
-      errors: processedErrors
-    });
-  });
+  return Promise.props(
+      _.mapValues(self.errors, function(err) {
+        return _toViewObject(err);
+      })
+    )
+    .then(function gotViewObjects(viewObjects) {
+      return {
+        type: self.name,
+        errors: viewObjects
+      };
+    })
+    .nodeify(cb);
 };
 
 
@@ -110,7 +100,7 @@ MultipleError.prototype.toViewObject = function(cb) {
  *
  * @param errors {Object} key-value map of errors.
  */
-var FormValidationErrors = exports.FormValidationError = function() {
+var FormValidationErrors = exports.FormValidationErrors = function() {
   FormValidationErrors.super_.apply(this, _.toArray(arguments));
   this.name = 'FormValidationError';
   this.statusCode = 400;
@@ -148,7 +138,7 @@ exports.buildMiddleware = function(config) {
     // setup rendering params
     var statusCode = err.statusCode || 500;
 
-    Q.nfcall(_toViewObject, err)
+    _toViewObject(err)
       .then(function gotViewObject(viewObj) {
         var viewParams = {
           error: viewObj
@@ -164,7 +154,6 @@ exports.buildMiddleware = function(config) {
         res.json(statusCode, viewParams);
       })
       .catch(function (err) {
-        // log the error
         req.app.logger.error(err);
       })
       .done();

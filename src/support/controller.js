@@ -3,7 +3,7 @@
  */
 
 var _ = require('lodash'),
-  async = require('async'),
+  Promise = require('bluebird'),
   waigo = GLOBAL.waigo;
 
 
@@ -134,41 +134,31 @@ Controller.prototype._send = function(context, data, headers, status) {
  * Render response and send to client.
  */
 Controller.prototype._render = function(context, viewTemplate, locals, headers, status) {
-  // convert locals to view objects
-  locals = locals || {};
-  var viewObjects = {};
-
-  async.forEach(_.keys(locals), function(key, done) {
-    var obj = locals[key],
-      objMethod = obj['toViewObject'];
-
-    if (_.isFunction(objMethod)) {
-      objMethod.call(obj, function (err, viewObject) {
-        if (err) return done(err);
-
-        viewObjects[key] = viewObject;
-
-        done();
-      });
-    } else {
-      viewObjects[key] = locals[key];
-
-      done();
-    }
-  }, function (err) {
-    if (err) return context.next(err);
-
-    _.extend(context, {
-      headers: headers,
-      status: status
-    });
-
-    try {
-      context.res.outputFormatter.render(context, viewTemplate, viewObjects);
-    } catch (err) {
-      context.next(err);
-    }
+  _.extend(context, {
+    headers: headers,
+    status: status
   });
+  locals = locals || {};
+
+  Promise.props(
+    _.mapValues(locals, function(obj) {
+      var objMethod = (obj || {}).toViewObject;
+
+      if (_.isFunction(objMethod)) {
+        return objMethod.call(obj);
+      } else {
+        return obj;
+      }
+    })
+  )
+    .then(function gotViewObjects(viewObjects) {
+      context.res.outputFormatter.render(context, viewTemplate, viewObjects);
+    })
+    .catch(function (err) {
+      context.next(err);
+    })
+    .done()
+  ;
 };
 
 
@@ -194,7 +184,7 @@ Controller.prototype._redirect = function(context, path, status) {
 
 
 
-module.exports.Controller = Controller;
+module.exports = Controller;
 
 
 

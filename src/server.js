@@ -2,18 +2,15 @@ var _ = require('lodash'),
   path = require('path'),
   express = require('express'),
   mongoose = require('mongoose'),
-  Q = require('q'),
+  Promise = require('bluebird'),
   moment = require('moment'),
   winston = require('winston'),
   waigo = GLOBAL.waigo;
 
 
-/** Long stack traces. */
-Q.longStackSupport = true;
-
-
 /** Create the Express app object. */
 var app = express();
+
 
 
 
@@ -24,7 +21,7 @@ var app = express();
  * @private
  */
 app._loadConfig = function() {
-  return Q.fcall(function() {
+  return Promise.try(function() {
     app.config = waigo.load('config.index');
   });
 };
@@ -39,7 +36,7 @@ app._loadConfig = function() {
  * @private
  */
 app._setupLogging = function() {
-  return Q.fcall(function() {
+  return Promise.try(function() {
     var appLoggerType = _.keys(app.config.logging).pop();
     app.logger = waigo.load('support.logging.' + appLoggerType).create(app.config, app.config.logging[appLoggerType]);
 
@@ -59,7 +56,7 @@ app._setupLogging = function() {
  * @private
  */
 app._setupDatabase = function() {
-  return Q.fcall(function() {
+  return Promise.try(function() {
     var dbType = _.keys(app.config.db).pop();
     app.db = waigo.load('support.db.' + dbType).create(app.config.db[dbType]);
   });
@@ -76,7 +73,7 @@ app._setupDatabase = function() {
  * @private
  */
 app._setupMiddleware = function() {
-  return Q.fcall(function() {
+  return Promise.try(function() {
     app.use(express.limit(app.config.uploadLimitMb + 'mb'));
 
     // sessions
@@ -110,7 +107,7 @@ app._setupMiddleware = function() {
  * @private
  */
 app._setupViews = function() {
-  return Q.fcall(function() {
+  return Promise.try(function() {
     var viewConfig = app.config.views;
 
     app.set('views', path.join(waigo.getAppFolder(), viewConfig.folder));
@@ -129,7 +126,7 @@ app._setupViews = function() {
  * @private
  */
 app._setupRoutes = function() {
-  return Q.fcall(function() {
+  return Promise.try(function() {
     app.routes = waigo.load('routes');
     app.controllers = [];
 
@@ -163,7 +160,7 @@ app._setupRoutes = function() {
  * @private
  */
 app._startServer = function() {
-  return Q.fcall(function() {
+  return Promise.try(function() {
     app.listen(app.config.port);
     app.logger.info('Server listening on port ' + app.config.port);
   });
@@ -177,10 +174,12 @@ app._startServer = function() {
  *
  * All application should call into this starting point.
  *
- * @return {Promise} resolves once startup is complete.
+ * @param cb {Function} callback.
+ *
+ * @return {Promise}
  */
-app.start = function() {
-  return Q()
+app.start = function(cb) {
+  return Promise.resolve(true)
     .then(app._loadConfig)
     .then(app._setupLogging)
     .then(app._setupDatabase)
@@ -188,6 +187,7 @@ app.start = function() {
     .then(app._setupMiddleware)
     .then(app._setupRoutes)
     .then(app._startServer)
+    .nodeify(cb)
   ;
 };
 

@@ -1,5 +1,5 @@
 var waigo = GLOBAL.waigo,
-  Controller = waigo.load('support.controller').Controller,
+  Controller = waigo.load('support.controller'),
   util = require('util');
 
 
@@ -17,7 +17,9 @@ util.inherits(IndexController, Controller);
  * Default path handler.
  */
 IndexController.prototype.index = function(req, res) {
-  res.render('index');
+  res.render('index', {
+    text: 'Hello World!'
+  });
 };
 
 
