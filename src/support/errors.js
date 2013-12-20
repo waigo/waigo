@@ -18,7 +18,9 @@ _toViewObject = exports.toViewObject = function(error) {
   if (_.isFunction(error.toViewObject)) {
     return error.toViewObject();
   } else {
-    return Promise.resolve(error.toString());
+    return Promise.resolve({
+      msg: error.toString()
+    });
   }
 };
 
