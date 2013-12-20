@@ -76,7 +76,9 @@ exports.viewFormats = {
   /** List of enabled formats along with options to pass to each formatter. */
   formats: {
     html: {
+      /** Folder relative to application folder, in which to look for view templates. */
       folder: 'views',
+      /** Default view template filename extension when not explicitly provided. */
       ext: 'jade'
     },
     json: {}

@@ -42,8 +42,5 @@ exports.create = function(appConfig, winstonConfig) {
     transports: winstonTransports
   });
 
-  // the first logger will handle exceptions
-  logger.handleExceptions(winstonTransports[0]);
-
   return logger;
 };

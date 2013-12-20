@@ -41,12 +41,12 @@ app._setupLogger = function() {
     var appLoggerType = _.keys(app.config.logging).pop();
     app.logger = waigo.load('support.logging.' + appLoggerType).create(app.config, app.config.logging[appLoggerType]);
 
-    app.on('error', function(err, ctx){
-      app.logger.error('Server error', err);
-    });
-
     process.on('uncaughtException', function(err) {
       app.logger.error('Uncaught exception', err);
+    });
+
+    app.on('error', function(err, ctx){
+      app.logger.error('Server error', err);
     });
   });
 };
@@ -99,7 +99,7 @@ app._setupMiddleware = function() {
 //    }));
 
     app.use(require('koa-static')(path.join(waigo.getAppFolder(), app.config.staticFolder)));
-    app.use(waigo.load('support.middleware.outputFormats')(app.config.viewFormats));
+    app.use(waigo.load('support.middleware.viewFormats')(app.config.viewFormats));
   });
 };
 
@@ -115,25 +115,12 @@ app._setupMiddleware = function() {
 app._setupRoutes = function() {
   return Promise.try(function() {
     app.routes = waigo.load('routes');
-    app.controllers = [];
-
-    _.each(app.routes, function(route) {
-      // load the module
-      route = _.extend({
-        controller: 'controllers.main',
-        paths: {
-          '/': {
-            httpMethod: 'get',
-            method: 'index'
-          }
-        },
-        viewFolder: ''
-      }, route);
-
-      // instantiate the controller
-      var controller = new (waigo.load(route.controller))(app, route.viewFolder);
-      controller.map(route.paths);
-      app.controllers.push(controller);
+    app.controllers = waigo.load('support.routeMapper').map(app.routes);
+    // apply all mappings
+    _.each(app.controllers, function(mappings) {
+      _.each(mappings, function(mapping) {
+        app.use(mapping);
+      });
     });
   });
 };
@@ -168,7 +155,7 @@ app.start = Promise.coroutine(function*() {
   yield app._setupLogger();
   yield app._setupDatabase();
   yield app._setupMiddleware();
-//  yield app._setupRoutes();
+  yield app._setupRoutes();
   yield app._startServer();
 });
 

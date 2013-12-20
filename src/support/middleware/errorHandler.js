@@ -21,7 +21,7 @@ var _render = function* _render(context, config, err) {
       context.body.stack = err.stack.split("\n");
     }
     if (context.app.logger) {
-      context.app.logger.error(err.message, context.body);
+      context.app.logger.error(err.message, err);
     }
   } catch (err) {
     context.app.emit('error', err);
