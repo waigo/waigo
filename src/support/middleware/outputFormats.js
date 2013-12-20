@@ -1,6 +1,8 @@
 var _ = require('lodash'),
   waigo = GLOBAL.waigo;
 
+var BaseError = waigo.load('support.errors').BaseError;
+
 /**
  * Build output formats middleware.
  * @param config {Object} output format config.
@@ -18,16 +20,17 @@ module.exports = function(config) {
     availableFormats[format] = waigo.load('support.outputFormats.' + format);
   });
 
-  return function*(next) {
-    var requestedFormat = (this.req.query[config.paramName] || config.default).toLowerCase();
+  return function* outputFormat(next) {
+    var requestedFormat = (this.query[config.paramName] || config.default).toLowerCase();
 
     // check format is valid
     if (requestedFormat && !availableFormats[requestedFormat]) {
-      return next(new Error('Invalid output format requested: ' + requestedFormat));
+      throw new BaseError('Invalid output format requested: ' + requestedFormat, 400);
     }
 
-    // if all ok then attach the output format to the response object
-    res.outputFormatter = availableFormats[requestedFormat];
+    // if all ok then attach renderer
+//    this.render =
+    this.res.outputFormatter = availableFormats[requestedFormat];
 
     yield next;
   };

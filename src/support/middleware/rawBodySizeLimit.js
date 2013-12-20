@@ -11,7 +11,7 @@ var getRawBody = require('raw-body');
  * @param config.limitMb {Number} size limit in MB.
  */
 module.exports = function(config) {
-  return function*(next) {
+  return function* rawBodySizeLimit(next) {
     yield getRawBody(this.req, {
       length: this.length,
       limit: config.limitMb + 'mb',

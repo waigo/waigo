@@ -4,6 +4,7 @@
 
 var _ = require('lodash'),
   Promise = require('bluebird'),
+  route = require('koa-route'),
   waigo = GLOBAL.waigo;
 
 
@@ -79,7 +80,8 @@ Controller.prototype._setupRoutes = function() {
 
     var setupArgs = [urlPath];
     setupArgs.push(self._buildHandler(fn));
-    self.app[httpMethod].apply(self.app, setupArgs);
+
+    self.app.use(route[httpMethod].apply(route, setupArgs));
   });
 };
 
@@ -98,14 +100,13 @@ Controller.prototype._setupRoutes = function() {
 Controller.prototype._buildHandler = function(fn) {
   var self = this;
 
-  return function(req, res, next) {
+  return *function(next) {
     var context = {
       res: res,
       next: next
     };
 
     var customRes = {
-      send: _.bind(self._send, self, context),
       render: _.bind(self._render, self, context),
       redirect: _.bind(self._redirect, self, context)
     };
@@ -114,19 +115,6 @@ Controller.prototype._buildHandler = function(fn) {
   };
 };
 
-
-
-
-/**
- * Send response to client.
- */
-Controller.prototype._send = function(context, data, headers, status) {
-  data = data || '';
-  headers = headers || {};
-  status = status || 200;
-
-  context.res.send(data, headers, status);
-};
 
 
 

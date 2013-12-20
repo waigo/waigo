@@ -4,6 +4,7 @@ var _ = require('lodash'),
   Promise = require('bluebird'),
   mongoose = require('mongoose'),
   moment = require('moment'),
+  views = require('co-views'),
   winston = require('winston'),
   waigo = GLOBAL.waigo;
 
@@ -40,8 +41,12 @@ app._setupLogger = function() {
     var appLoggerType = _.keys(app.config.logging).pop();
     app.logger = waigo.load('support.logging.' + appLoggerType).create(app.config, app.config.logging[appLoggerType]);
 
+    app.on('error', function(err, ctx){
+      app.logger.error('Server error', err);
+    });
+
     process.on('uncaughtException', function(err) {
-      app.logger.log('Uncaught exception', err, err.stack);
+      app.logger.error('Uncaught exception', err);
     });
   });
 };
@@ -75,10 +80,8 @@ app._setupDatabase = function() {
 app._setupMiddleware = function() {
   return Promise.try(function() {
     app.use(require('koa-response-time')());
-
-    app.use(waigo.load('support.middleware.rawBodySizeLimit')({
-      limitMb: app.config.uploadLimitMb
-    }));
+    app.use(waigo.load('support.middleware.errorHandler')(app.config.errorHandlerConfig));
+    app.use(waigo.load('support.middleware.rawBodySizeLimit')({ limitMb: app.config.uploadLimitMb }));
 
 //    // sessions
 //    var sessionConfig = app.config.session;
@@ -95,29 +98,8 @@ app._setupMiddleware = function() {
 //      }
 //    }));
 
-    app.use(require('koa-static')(path.join(waigo.getAppFolder(), app.config.staticFolder)))
-
-    app.use(waigo.load('support.middleware.outputFormats')(app.config.outputFormats));
-//    app.use(app.router);
-//    app.use(waigo.load('support.errors').buildMiddleware(app.config.errorHandlerConfig));
-  });
-};
-
-
-
-/**
- * Setup views and view rendering.
- *
- * @return {Promise}
- * @private
- */
-app._setupViews = function() {
-  return Promise.try(function() {
-    var viewConfig = app.config.views;
-
-    app.set('views', path.join(waigo.getAppFolder(), viewConfig.folder));
-    app.set('view engine', viewConfig.engine);
-    app.set('view options', viewConfig.options);
+    app.use(require('koa-static')(path.join(waigo.getAppFolder(), app.config.staticFolder)));
+    app.use(waigo.load('support.middleware.outputFormats')(app.config.viewFormats));
   });
 };
 
@@ -149,7 +131,7 @@ app._setupRoutes = function() {
       }, route);
 
       // instantiate the controller
-      var controller = new (waigo.load(route.controller).Controller)(app, route.viewFolder);
+      var controller = new (waigo.load(route.controller))(app, route.viewFolder);
       controller.map(route.paths);
       app.controllers.push(controller);
     });
@@ -184,11 +166,10 @@ app._startServer = function() {
 app.start = Promise.coroutine(function*() {
   yield app._loadConfig();
   yield app._setupLogger();
-//  yield app._setupDatabase();
-//  yield app._setupViews();
-//  yield app._setupMiddleware();
+  yield app._setupDatabase();
+  yield app._setupMiddleware();
 //  yield app._setupRoutes();
-//  yield app._startServer();
+  yield app._startServer();
 });
 
 
