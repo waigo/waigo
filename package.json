@@ -11,7 +11,6 @@
     "mongoose": "~3.6.14",
     "underscore.string": "~2.3.3",
     "lodash": "~2.4.1",
-    "connect-mongo": "~0.4.0",
     "winston": "~0.7.2",
     "winston-mongodb": "~0.4.3",
     "nodemailer": "~0.5.15",
@@ -22,7 +21,8 @@
     "koa-response-time": "~1.0.0",
     "raw-body": "~1.1.2",
     "co-views": "~0.1.0",
-    "koa-route": "~1.0.2"
+    "koa-route": "~1.0.2",
+    "koa-session": "~1.1.0"
   },
   "devDependencies": {
     "chai": "~1.8.1",

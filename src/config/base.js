@@ -53,7 +53,8 @@ exports.logging = {
  * @type {String}
  */
 exports.session = {
-  secret: null,  // This should be provided by apps
+  // keys: ['key1', 'key2'] - this should set by apps
+  name: 'waigo',
   store: {
     type: 'mongo',
     config: {

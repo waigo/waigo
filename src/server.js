@@ -4,6 +4,7 @@ var _ = require('lodash'),
   Promise = require('bluebird'),
   mongoose = require('mongoose'),
   moment = require('moment'),
+  session = require('koa-session-store'),
   views = require('co-views'),
   winston = require('winston'),
   waigo = GLOBAL.waigo;
@@ -72,7 +73,7 @@ app._setupDatabase = function() {
 
 
 /**
- * Setup Express middlewar.
+ * Setup Express middleware.
  *
  * @return {Promise}
  * @private
@@ -83,20 +84,20 @@ app._setupMiddleware = function() {
     app.use(waigo.load('support.middleware.errorHandler')(app.config.errorHandlerConfig));
     app.use(waigo.load('support.middleware.rawBodySizeLimit')({ limitMb: app.config.uploadLimitMb }));
 
-//    // sessions
-//    var sessionConfig = app.config.session;
-//    if (!sessionConfig.secret) {
-//      throw new Error('Please specify a session secret in the app config file.');
-//    }
-//    app.use(express.cookieParser());
-//    app.use(express.session({
-//      secret: sessionConfig.secret,
-//      store: waigo.load('support.session.store.' + sessionConfig.store.type).create(app, sessionConfig.store.config),
-//      cookie: {
-//        expires: moment().add('days', sessionConfig.cookie.validForDays).toDate(),
-//        path: sessionConfig.cookie.path
-//      }
-//    }));
+    // sessions
+    var sessionConfig = app.config.session;
+    if (!sessionConfig.keys) {
+      throw new Error('Please specify cookie signing keys (session.keys) in the config file.');
+    }
+    app.keys = sessionConfig.keys;
+    app.use(session({
+      name: sessionConfig.name,
+      store: waigo.load('support.session.store.' + sessionConfig.store.type).create(app, sessionConfig.store.config),
+      cookie: {
+        expires: moment().add('days', sessionConfig.cookie.validForDays).toDate(),
+        path: sessionConfig.cookie.path
+      }
+    }));
 
     app.use(require('koa-static')(path.join(waigo.getAppFolder(), app.config.staticFolder)));
     app.use(waigo.load('support.middleware.viewFormats')(app.config.viewFormats));

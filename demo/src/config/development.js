@@ -1,12 +1,6 @@
-/**
- * Session config.
- *
- * We don't provide a default 'secret' so as to encourage developers to provide a custom one for their app.
- *
- * @type {String}
- */
 exports.session = {
-  secret: '7b5f7cff7eb41b73c9d0e8c33b01db0b',  // This should be provided by apps
+  name: 'waigo-demo',
+  keys: ['7b5f7cff7eb41b73c9d0e8c33b01db0b'],
   store: {
     type: 'mongo',
     config: {

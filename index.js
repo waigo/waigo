@@ -76,18 +76,22 @@ if (!GLOBAL.waigo) {
       appMustExist: false
     }, options);
 
+    var wantLibOnly = (0 === moduleName.toLowerCase().indexOf('lib:'));
+    if (wantLibOnly) {
+      moduleName = moduleName.substr(4);  // remove 'lib:' prefix
+    }
+
     var relativePath = path.join.apply(path, moduleName.split('.'));
     relativePath[relativePath.length - 1];
 
-    if (0 !== moduleName.toLowerCase().indexOf('lib:')) {
+    if (!wantLibOnly) {
       var appFolderPath = path.join.apply(path, [appFolder].concat(relativePath));
 
       if (fs.existsSync(appFolderPath + '.js')) {
         if (loaderLogging) {
           _log('Loading module "' + moduleName + '" from APP (' + appFolderPath + ')');
         }
-        var mod = require(appFolderPath);
-        return mod;
+        return require(appFolderPath);
       } else if (options.failIfNotInAppTree) {
         throw new Error('Unable to find module in app folder tree: ' + moduleName);
       }
@@ -98,9 +102,7 @@ if (!GLOBAL.waigo) {
     if (loaderLogging) {
       _log('Loading module "' + moduleName + '" from LIB (' + libFolderPath + ')');
     }
-    var mod =require(libFolderPath);
-
-    return mod;
+    return require(libFolderPath);
   };
 }
 

@@ -1,6 +1,4 @@
-var express = require('express'),
-  MongoStore = require('connect-mongo')(express);
-
+// TODO: work with koa-session-store
 
 /**
  * Create a new session store.
