@@ -42,11 +42,11 @@ app._setupLogger = function() {
     app.logger = waigo.load('support.logging.' + appLoggerType).create(app.config, app.config.logging[appLoggerType]);
 
     process.on('uncaughtException', function(err) {
-      app.logger.error('Uncaught exception', err);
+      app.logger.error('Uncaught exception', err.stack);
     });
 
     app.on('error', function(err, ctx){
-      app.logger.error('Server error', err);
+      app.logger.error(err);
     });
   });
 };
