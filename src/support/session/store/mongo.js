@@ -1,4 +1,5 @@
-// TODO: work with koa-session-store
+var Promise = require('bluebird');
+var mongoStore = require('koa-session-mongo');
 
 /**
  * Create a new session store.
@@ -6,12 +7,12 @@
  * @param storeConfig {Object} config.
  * @return {Object}
  */
-exports.create = function(app, storeConfig) {
+exports.create = Promise.coroutine(function*(app, storeConfig) {
   // re-use the app mongoose db connection?
   if (storeConfig.useAppMongooseDbConn) {
     app.logger.info('Session store will use app Mongoose db connection');
-    storeConfig.mongoose_connection = app.db;
+    storeConfig.mongoose = app.db;
   }
 
-  return new MongoStore(storeConfig);
-};
+  return yield Promise.coroutine(mongoStore.create)(storeConfig);
+});

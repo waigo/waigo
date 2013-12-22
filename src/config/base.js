@@ -58,7 +58,7 @@ exports.session = {
   store: {
     type: 'mongo',
     config: {
-      url: 'mongodb://127.0.0.1:27017/sessions',
+      url: 'mongodb://127.0.0.1:27017/waigo',
       collection: 'sessions'
     }
   },
