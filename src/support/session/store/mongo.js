@@ -7,12 +7,12 @@ var mongoStore = require('koa-session-mongo');
  * @param storeConfig {Object} config.
  * @return {Object}
  */
-exports.create = Promise.coroutine(function*(app, storeConfig) {
+exports.create = function(app, storeConfig) {
   // re-use the app mongoose db connection?
   if (storeConfig.useAppMongooseDbConn) {
     app.logger.info('Session store will use app Mongoose db connection');
     storeConfig.mongoose = app.db;
   }
 
-  return yield Promise.coroutine(mongoStore.create)(storeConfig);
-});
+  return mongoStore.create(storeConfig);
+};

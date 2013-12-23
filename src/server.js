@@ -79,7 +79,7 @@ app._setupDatabase = function() {
  * @private
  */
 app._setupMiddleware = function() {
-  return Promise.spawn(function*() {
+  return Promise.try(function() {
     app.use(require('koa-response-time')());
     app.use(waigo.load('support.middleware.errorHandler')(app.config.errorHandlerConfig));
     app.use(waigo.load('support.middleware.rawBodySizeLimit')({ limitMb: app.config.uploadLimitMb }));
@@ -92,7 +92,7 @@ app._setupMiddleware = function() {
     app.keys = sessionConfig.keys;
     app.use(session({
       name: sessionConfig.name,
-      store: yield waigo.load('support.session.store.' + sessionConfig.store.type).create(app, sessionConfig.store.config),
+      store: waigo.load('support.session.store.' + sessionConfig.store.type).create(app, sessionConfig.store.config),
       cookie: {
         expires: moment().add('days', sessionConfig.cookie.validForDays).toDate(),
         path: sessionConfig.cookie.path

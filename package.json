@@ -22,7 +22,7 @@
     "raw-body": "~1.1.2",
     "co-views": "~0.1.0",
     "koa-route": "~1.0.2",
-    "koa-session-mongo": "~0.1.0",
+    "koa-session-mongo": "~0.1.1",
     "koa-session-store": "~0.1.0"
   },
   "devDependencies": {
