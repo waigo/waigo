@@ -69,6 +69,10 @@ For the above example, Waigo will process the request in the following order:
   - Load `controllers/user.js` and pass request to its `load` method
   - Load `controllers/main.js` and pass request to its `index` method
 
+For POST and PUT requests and the like you may wish to enable the [`bodyParser`] and [`csrf`] middleware layers. There
+are many readily [available middleware]() layers for Waigo.
+
+
 */
 
 
