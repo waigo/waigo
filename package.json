@@ -21,9 +21,9 @@
     "koa-response-time": "~1.0.0",
     "raw-body": "~1.1.2",
     "co-views": "~0.1.0",
-    "koa-route": "~1.0.2",
     "koa-session-mongo": "~0.1.1",
-    "koa-session-store": "~0.1.0"
+    "koa-session-store": "~0.1.0",
+    "koa-trie-router": "~1.0.1"
   },
   "devDependencies": {
     "chai": "~1.8.1",
@@ -43,7 +43,8 @@
     "grunt-contrib-jshint": "~0.7.1",
     "grunt-express-server": "~0.4.5",
     "grunt-shell": "~0.6.0",
-    "coffee-script": "~1.6.3"
+    "coffee-script": "~1.6.3",
+    "underscore.string": "~2.3.3"
   },
   "keywords": [
     "express",

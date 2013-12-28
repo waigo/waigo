@@ -10,10 +10,12 @@ var _ = require('lodash'),
   waigo = GLOBAL.waigo;
 
 
+_.str = require('underscore.string');
+
+
 /** Create the Express app object. */
 var app = koa();
-
-
+require('koa-trie-router')(app);
 
 
 /**
@@ -101,6 +103,7 @@ app._setupMiddleware = function() {
 
     app.use(require('koa-static')(path.join(waigo.getAppFolder(), app.config.staticFolder)));
     app.use(waigo.load('support.middleware.viewFormats')(app.config.viewFormats));
+    app.use(app.router);
   });
 };
 
@@ -115,14 +118,12 @@ app._setupMiddleware = function() {
  */
 app._setupRoutes = function() {
   return Promise.try(function() {
+//    app.route('/')
+//      .get(function* (next) {
+//      this.body = 'homepage'
+//    });
     app.routes = waigo.load('routes');
-    app.controllers = waigo.load('support.routeMapper').map(app.routes);
-    // apply all mappings
-    _.each(app.controllers, function(mappings) {
-      _.each(mappings, function(mapping) {
-        app.use(mapping);
-      });
-    });
+    waigo.load('support.routeMapper').map(app, app.routes);
   });
 };
 

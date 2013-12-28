@@ -35,13 +35,14 @@ _toViewObject = exports.toViewObject = function(error) {
  * @param status {Number} HTTP return status code to set.
  */
 var BaseError = exports.BaseError = function(msg, status) {
-  this.name = 'BaseError';
-  this.message = msg || 'An error occurred';
-  this.status = status || 500;
-
+  this.message = msg || this.message;
+  this.status = status || this.status;
   BaseError.super_.call(this, this.message);
   BaseError.super_.captureStackTrace(this, arguments.callee);
 };
+BaseError.prototype.name = 'BaseError';
+BaseError.prototype.message = 'An error occurred';
+BaseError.prototype.status = 500;
 util.inherits(BaseError, Error);
 /**
  * Get renderable representation of this error.
@@ -53,6 +54,22 @@ BaseError.prototype.toViewObject = function() {
     type: this.name,
     message: this.message
   });
+};
+/**
+ * Create a subclass of this error type.
+ *
+ * @param subTypeErrorName {String} name of this new error type.
+ *
+ * @return {Function} the subtype class.
+ */
+BaseError.createSubtype = function(subTypeErrorName) {
+  var error = function(msg, status) {
+    this.name = subTypeErrorName;
+    BaseError.call(this, msg, status);
+    Error.captureStackTrace(this, arguments.callee);
+  };
+  util.inherits(error, BaseError);
+  return error;
 };
 
 
@@ -105,6 +122,10 @@ var FormValidationErrors = exports.FormValidationErrors = function() {
   this.status = this.status || 400;
 };
 util.inherits(FormValidationErrors, MultipleError);
+
+
+
+
 
 
 
