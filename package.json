@@ -23,7 +23,8 @@
     "co-views": "~0.1.0",
     "koa-session-mongo": "~0.1.1",
     "koa-session-store": "~0.1.0",
-    "koa-trie-router": "~1.0.1"
+    "koa-trie-router": "~1.0.1",
+    "debug": "~0.7.4"
   },
   "devDependencies": {
     "chai": "~1.8.1",
@@ -66,8 +67,8 @@
     "prepublish": "npm prune",
     "test": "grunt test"
   },
-  "engines" : { 
-    "node" : ">=0.11.2" 
+  "engines": {
+    "node": ">=0.11.2"
   },
   "readmeFilename": "README.md",
   "bugs": {

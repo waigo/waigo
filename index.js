@@ -1,21 +1,18 @@
 var _ = require('lodash'),
+  debug = require('debug')('waigo-loader'),
   path = require('path'),
   fs = require('fs');
 
-// if Waigo global object hasn't yet been setup then do so
-if (!GLOBAL.waigo) {
-  var _log = function(msg) {
-    console.log('[waigo] ' + msg);
-  };
+var waigo = null;
 
-
-  var waigo = GLOBAL.waigo = {};
+// Node.js caches loaded modules - so we know this code will only get executed once.
+if (!waigo) {
+  waigo = {};
 
 
   var processScript = process.argv[1],
     libFolder = path.join(__dirname, 'src'),
-    appFolder = path.join(path.dirname(processScript), 'src'),
-    loaderLogging = false;
+    appFolder = path.join(path.dirname(processScript), 'src');
 
 
   /**
@@ -32,21 +29,9 @@ if (!GLOBAL.waigo) {
    * @param absolutePath {string} absolute path to folder.
    */
   waigo.setAppFolder = function(absolutePath) {
-    _log('Set app folder to: ' + absolutePath);
+    debug('Set app folder to: ' + absolutePath);
     appFolder = absolutePath;
   };
-
-
-
-  /**
-   * Toggle waigo loader logging.
-   * @param toggle {Boolean} true to enable, false to disable.
-   */
-  waigo.showLoaderLog = function(toggle) {
-    _log('Loader logging toggle: ' + toggle);
-    loaderLogging = toggle;
-  };
-
 
 
 
@@ -59,7 +44,7 @@ if (!GLOBAL.waigo) {
    *
    * Thus we allow the app to completely override any of Waigo's built-in modules.
    *
-   * @param moduleName {string} module name in format: path.subpath.subpath2.moduleName. If prefixed with "lib:" then
+   * @param moduleName {string} module name in format: path/subpath/subsubpath/moduleName. If prefixed with "lib:" then
    * only the Waigo lib folder will be checked, meaning that the overriden version under the app folder tree won't be
    * loaded.
    *
@@ -81,16 +66,14 @@ if (!GLOBAL.waigo) {
       moduleName = moduleName.substr(4);  // remove 'lib:' prefix
     }
 
-    var relativePath = path.join.apply(path, moduleName.split('.'));
+    var relativePath = path.join.apply(path, moduleName.split('/'));
     relativePath[relativePath.length - 1];
 
     if (!wantLibOnly) {
       var appFolderPath = path.join.apply(path, [appFolder].concat(relativePath));
 
       if (fs.existsSync(appFolderPath + '.js')) {
-        if (loaderLogging) {
-          _log('Loading module "' + moduleName + '" from APP (' + appFolderPath + ')');
-        }
+        debug('Loading module "' + moduleName + '" from APP (' + appFolderPath + ')');
         return require(appFolderPath);
       } else if (options.failIfNotInAppTree) {
         throw new Error('Unable to find module in app folder tree: ' + moduleName);
@@ -99,12 +82,10 @@ if (!GLOBAL.waigo) {
 
     var libFolderPath = path.join.apply(path, [libFolder].concat(relativePath));
 
-    if (loaderLogging) {
-      _log('Loading module "' + moduleName + '" from LIB (' + libFolderPath + ')');
-    }
+    debug('Loading module "' + moduleName + '" from LIB (' + libFolderPath + ')');
     return require(libFolderPath);
   };
 }
 
 
-module.exports = GLOBAL.waigo;
+module.exports = waigo;

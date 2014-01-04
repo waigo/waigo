@@ -92,25 +92,13 @@ exports.viewFormats = {
 
 
 
+
+
 /**
  * Static resources (relative to app root folder).
  * @type {String}
  */
 exports.staticFolder = '../public';
-
-
-/**
- * Single-file upload size limit (MB).
- * @type {Number}
- */
-exports.uploadLimitMb = 10;
-
-
-/**
- * Name of access control model.
- * @type {String}
- */
-exports.accessControlModel = 'Account';
 
 
 /**

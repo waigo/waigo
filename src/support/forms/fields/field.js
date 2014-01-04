@@ -4,7 +4,7 @@ Base class for fields.
 
 var _ = require('lodash'),
   Promise = require('bluebird'),
-  waigo = GLOBAL.waigo;
+  waigo = require('../../../../');
 
 
 /**
@@ -23,7 +23,7 @@ var Field = function(name, config) {
 
   self._validators = [];
   _.each(self.config.validators, function(v) {
-    self.addValidator(waigo.load('support.validators.forms.fields.' + v));
+    self.addValidator(waigo.load('support/validators/forms/fields/' + v));
   });
 };
 

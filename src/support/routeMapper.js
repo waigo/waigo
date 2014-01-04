@@ -6,7 +6,7 @@ var _ = require('lodash'),
   Promise = require('bluebird'),
   route = require('koa-trie-router'),
   util = require('util'),
-  waigo = GLOBAL.waigo;
+  waigo = require('../../');
 
 
 var BaseError = waigo.load('support/errors').BaseError;
@@ -72,7 +72,7 @@ exports.map = function(app, routes) {
 
         // load controller if not already done so
         if (!_controllers[controllerName]) {
-          _controllers[controllerName] = waigo.load('controllers.' + controllerName);
+          _controllers[controllerName] = waigo.load('controllers/' + controllerName);
         }
 
         if (!_.isFunction(_controllers[controllerName][methodName])) {
@@ -83,7 +83,7 @@ exports.map = function(app, routes) {
       }
       // else it's a middleware reference
       else {
-        return waigo.load('support.middleware.' + ref)();
+        return waigo.load('support/middleware/' + ref)();
       }
     });
 

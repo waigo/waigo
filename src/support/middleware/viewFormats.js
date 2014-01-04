@@ -1,9 +1,9 @@
 var _ = require('lodash'),
   Promise = require('bluebird'),
   views = require('co-views'),
-  waigo = GLOBAL.waigo;
+  waigo = require('../../../');
 
-var BaseError = waigo.load('support.errors').BaseError;
+var BaseError = waigo.load('support/errors').BaseError;
 
 /**
  * Build view formats middleware.
@@ -13,7 +13,7 @@ var BaseError = waigo.load('support.errors').BaseError;
 module.exports = function(config) {
   var enabledFormats = {};
   _.each(_.keys(config.formats), function (format) {
-    enabledFormats[format] = waigo.load('support.viewFormats.' + format).create(config.formats[format]);
+    enabledFormats[format] = waigo.load('support/viewFormats/' + format).create(config.formats[format]);
   });
 
   return function* setViewFormat(next) {

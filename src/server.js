@@ -7,7 +7,7 @@ var _ = require('lodash'),
   session = require('koa-session-store'),
   views = require('co-views'),
   winston = require('winston'),
-  waigo = GLOBAL.waigo;
+  waigo = require('../');
 
 
 _.str = require('underscore.string');
@@ -26,7 +26,7 @@ require('koa-trie-router')(app);
  */
 app._loadConfig = function() {
   return Promise.try(function() {
-    app.config = waigo.load('config.index');
+    app.config = waigo.load('config/index');
   });
 };
 
@@ -42,7 +42,7 @@ app._loadConfig = function() {
 app._setupLogger = function() {
   return Promise.try(function() {
     var appLoggerType = _.keys(app.config.logging).pop();
-    app.logger = waigo.load('support.logging.' + appLoggerType).create(app.config, app.config.logging[appLoggerType]);
+    app.logger = waigo.load('support/logging/' + appLoggerType).create(app.config, app.config.logging[appLoggerType]);
 
     process.on('uncaughtException', function(err) {
       app.logger.error('Uncaught exception', err.stack);
@@ -65,8 +65,10 @@ app._setupLogger = function() {
  */
 app._setupDatabase = function() {
   return Promise.try(function() {
-    var dbType = _.keys(app.config.db).pop();
-    app.db = waigo.load('support.db.' + dbType).create(app.config.db[dbType]);
+    if (app.config.db) {
+      var dbType = _.keys(app.config.db).pop();
+      app.db = waigo.load('support/db/' + dbType).create(app.config.db[dbType]);
+    }
   });
 };
 
@@ -83,26 +85,27 @@ app._setupDatabase = function() {
 app._setupMiddleware = function() {
   return Promise.try(function() {
     app.use(require('koa-response-time')());
-    app.use(waigo.load('support.middleware.errorHandler')(app.config.errorHandlerConfig));
-    app.use(waigo.load('support.middleware.rawBodySizeLimit')({ limitMb: app.config.uploadLimitMb }));
+    app.use(waigo.load('support/middleware/errorHandler')(app.config.errorHandlerConfig));
 
     // sessions
     var sessionConfig = app.config.session;
-    if (!sessionConfig.keys) {
-      throw new Error('Please specify cookie signing keys (session.keys) in the config file.');
-    }
-    app.keys = sessionConfig.keys;
-    app.use(session({
-      name: sessionConfig.name,
-      store: waigo.load('support.session.store.' + sessionConfig.store.type).create(app, sessionConfig.store.config),
-      cookie: {
-        expires: moment().add('days', sessionConfig.cookie.validForDays).toDate(),
-        path: sessionConfig.cookie.path
+    if (sessionConfig) {
+      if (!sessionConfig.keys) {
+        throw new Error('Please specify cookie signing keys (session.keys) in the config file.');
       }
-    }));
+      app.keys = sessionConfig.keys;
+      app.use(session({
+        name: sessionConfig.name,
+        store: waigo.load('support/session/store/' + sessionConfig.store.type).create(app, sessionConfig.store.config),
+        cookie: {
+          expires: moment().add('days', sessionConfig.cookie.validForDays).toDate(),
+          path: sessionConfig.cookie.path
+        }
+      }));
+    }
 
     app.use(require('koa-static')(path.join(waigo.getAppFolder(), app.config.staticFolder)));
-    app.use(waigo.load('support.middleware.viewFormats')(app.config.viewFormats));
+    app.use(waigo.load('support/middleware/viewFormats')(app.config.viewFormats));
     app.use(app.router);
   });
 };
@@ -119,7 +122,7 @@ app._setupMiddleware = function() {
 app._setupRoutes = function() {
   return Promise.try(function() {
     app.routes = waigo.load('routes');
-    waigo.load('support.routeMapper').map(app, app.routes);
+    waigo.load('support/routeMapper').map(app, app.routes);
   });
 };
 

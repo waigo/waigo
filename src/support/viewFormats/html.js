@@ -2,7 +2,7 @@ var _ = require('lodash'),
   path = require('path'),
   Promise = require('bluebird'),
   views = require('co-views'),
-  waigo = GLOBAL.waigo;
+  waigo = require('../../../');
 
 
 /**

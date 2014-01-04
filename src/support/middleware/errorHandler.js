@@ -1,7 +1,7 @@
 var _ = require('lodash'),
   Promise = require('bluebird'),
-  waigo = GLOBAL.waigo,
-  errors = waigo.load('support.errors');
+  waigo = require('../../../'),
+  errors = waigo.load('support/errors');
 
 
 /**

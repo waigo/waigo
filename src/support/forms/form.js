@@ -1,5 +1,5 @@
 var _ = require('lodash'),
-  waigo = GLOBAL.waigo,
+  waigo = require('../../../'),
   Promise = require('bluebird'),
   errorTypes = waigo.require('support.errors'),
   Field = waigo.require('support.forms.field');

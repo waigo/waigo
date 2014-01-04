@@ -1,6 +1,6 @@
-var waigo = GLOBAL.waigo;
+var waigo = require('../../');
 
-var libMainController = waigo.load('lib:controllers.main');
+var libMainController = waigo.load('lib:controllers/main');
 
 exports.index = function*(next) {
   this.session.value = Math.random() * 50;

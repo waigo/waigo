@@ -2,10 +2,10 @@
  * Return the config for current environment/mode and user
  */
 var _ = require('lodash'),
-  waigo = GLOBAL.waigo;
+  waigo = require('../../');
 
 
-var config = waigo.load('config.base');
+var config = waigo.load('config/base');
 
 
 _.extend(config, {
@@ -15,11 +15,11 @@ _.extend(config, {
 
 
 try {
-  _.extend(config, waigo.load('config.' + config.mode));
+  _.extend(config, waigo.load('config/' + config.mode));
 } catch (e) {}
 
 try {
-  _.extend(config, waigo.load('config.' + config.mode + '.' + config.user));
+  _.extend(config, waigo.load('config/' + config.mode + '.' + config.user));
 } catch (e) {}
 
 

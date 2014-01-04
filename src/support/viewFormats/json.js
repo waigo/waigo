@@ -1,9 +1,9 @@
 var _ = require('lodash'),
   path = require('path'),
   Promise = require('bluebird'),
-  waigo = GLOBAL.waigo;
+  waigo = require('../../../');
 
-var BaseError = waigo.load('support.errors').BaseError;
+var BaseError = waigo.load('support/errors').BaseError;
 
 
 /**
