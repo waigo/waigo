@@ -118,10 +118,6 @@ app._setupMiddleware = function() {
  */
 app._setupRoutes = function() {
   return Promise.try(function() {
-//    app.route('/')
-//      .get(function* (next) {
-//      this.body = 'homepage'
-//    });
     app.routes = waigo.load('routes');
     waigo.load('support.routeMapper').map(app, app.routes);
   });

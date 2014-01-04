@@ -1,4 +1,6 @@
-Node.js MVC framework for rapid application development...
+Node.js MVC framework for rapid application development built on [koa](http://koajs.com)
+
+UNDER DEVELOPMENT
 
 ## License
 

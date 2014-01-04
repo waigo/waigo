@@ -83,7 +83,7 @@ exports.map = function(app, routes) {
       }
       // else it's a middleware reference
       else {
-        return waigo.load('support.middleware.' + ref).buildMiddleware();
+        return waigo.load('support.middleware.' + ref)();
       }
     });
 

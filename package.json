@@ -1,6 +1,6 @@
 {
   "name": "waigo",
-  "description": "Node MVC framework for rapid application development",
+  "description": "Rapid MVC framework built on Koa - UNDER DEVELOPMENT",
   "version": "0.1.0",
   "author": {
     "name": "Ramesh Nair",
@@ -66,8 +66,8 @@
     "prepublish": "npm prune",
     "test": "grunt test"
   },
-  "engines": {
-    "node": "*"
+  "engines" : { 
+    "node" : ">=0.11.2" 
   },
   "readmeFilename": "README.md",
   "bugs": {
