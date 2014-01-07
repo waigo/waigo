@@ -106,7 +106,6 @@ app._setupMiddleware = function() {
 
     app.use(require('koa-static')(path.join(waigo.getAppFolder(), app.config.staticFolder)));
     app.use(waigo.load('support/middleware/viewFormats')(app.config.viewFormats));
-    app.use(app.router);
   });
 };
 
@@ -114,7 +113,7 @@ app._setupMiddleware = function() {
 
 
 /**
- * Setup routes and their handlers.
+ * Setup routes and router middleware.
  *
  * @return {Promise}
  * @private
@@ -123,6 +122,7 @@ app._setupRoutes = function() {
   return Promise.try(function() {
     app.routes = waigo.load('routes');
     waigo.load('support/routeMapper').map(app, app.routes);
+    app.use(app.router);
   });
 };
 

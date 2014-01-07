@@ -1,6 +1,5 @@
 var _ = require('lodash'),
   path = require('path'),
-  Promise = require('bluebird'),
   views = require('co-views'),
   waigo = require('../../../');
 
@@ -10,11 +9,13 @@ var _ = require('lodash'),
  * @param config {Object} configuration for this view format.
  */
 exports.create = function(config) {
-  var _render = views(path.join(waigo.getAppFolder(), config.folder), { ext: config.ext });
+  var _render = views(path.join(waigo.getAppFolder(), config.folder), { 
+    ext: config.ext 
+  });
 
   return {
     render: function*(view, locals) {
-      this.body = yield _render(view, locals || {});
+      this.body = yield _render(view, _.extend({}, locals, this.app.locals));
       this.type = 'html';
     }
   };

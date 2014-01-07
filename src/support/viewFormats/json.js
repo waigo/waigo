@@ -1,6 +1,5 @@
 var _ = require('lodash'),
   path = require('path'),
-  Promise = require('bluebird'),
   waigo = require('../../../');
 
 var BaseError = waigo.load('support/errors').BaseError;
@@ -12,7 +11,7 @@ var BaseError = waigo.load('support/errors').BaseError;
  */
 exports.create = function(config) {
   return {
-    render: Promise.method(function(view, locals) {
+    render: function*(view, locals) {
       locals = locals || {};
 
       if (!_.isPlainObject(locals)) {
@@ -21,7 +20,7 @@ exports.create = function(config) {
 
       this.body = locals;
       this.type = 'json';
-    })
+    }
   };
 };
 
