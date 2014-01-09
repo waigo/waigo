@@ -62,7 +62,7 @@ BaseError.prototype.toViewObject = function() {
  *
  * @return {Function} the subtype class.
  */
-BaseError.createSubtype = function(subTypeErrorName) {
+BaseError.createSubType = function(subTypeErrorName) {
   var error = function(msg, status) {
     this.name = subTypeErrorName;
     BaseError.call(this, msg, status);

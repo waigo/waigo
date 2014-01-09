@@ -26,6 +26,7 @@ module.exports = function(config) {
 
     // if all ok then attach renderer
     this.render = enabledFormats[requestedFormat].render;
+    this.request.viewFormat =requestedFormat; // so that we middleware further down the chain can use
 
     yield next;
   };
