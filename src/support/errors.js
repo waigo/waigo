@@ -52,7 +52,7 @@ util.inherits(BaseError, Error);
 BaseError.prototype.toViewObject = function() {
   return Promise.resolve({
     type: this.name,
-    message: this.message
+    msg: this.message
   });
 };
 /**

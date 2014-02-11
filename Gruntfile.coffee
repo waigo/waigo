@@ -27,17 +27,25 @@ module.exports = (grunt) ->
         files: [
           "<%= config.src %>/{,*/}{,*/}{,*/}{,*/}*.js"
         ]
-      tasks: ["express"]
-      options:
-        livereload: true
-        nospawn: true # Without this option specified express won't be reloaded
+        tasks: ["express"]
+        options:
+          livereload: true
+          nospawn: true # Without this option specified express won't be reloaded
+      test:
+        files: [
+          "<%= config.src %>/{,*/}{,*/}{,*/}{,*/}*.js"
+          "<%= config.test %>/{,*/}{,*/}{,*/}{,*/}*.js"
+        ]
+        tasks: ["mochaTest"]
+
 
     mochaTest:
       test:
         options:
+          ui: 'exports'
           reporter: 'spec'
           require: 'coffee-script'
-        src: ['<%= config.test %>/{,*/}{,*/}{,*/}{,*/}*.coffee']
+        src: ['<%= config.test %>/{,*/}{,*/}{,*/}{,*/}*.test.js']
 
 
   grunt.registerTask "dev", [
@@ -45,12 +53,15 @@ module.exports = (grunt) ->
     "watch:dev"
   ]
 
+  grunt.registerTask "dev-test", [ 
+    "mochaTest" 
+    "watch:test"
+  ]
+
   grunt.registerTask "build", [
     "jshint"
     "mochaTest"
+    "docs"
   ]
 
-  grunt.registerTask "test", [
-    'mochaTest'
-  ]
-
+  
