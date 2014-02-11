@@ -1,5 +1,6 @@
 var _ = require('lodash'),
   debug = require('debug')('waigo-loader'),
+  findup = require('findup-sync'),
   path = require('path'),
   Promise = require('bluebird'),
   fs = require('fs'),
@@ -13,8 +14,11 @@ var _ = require('lodash'),
 var processScript = process.argv[1],
   waigoFolder = path.join(__dirname, 'src'),
   appFolder = path.join(path.dirname(processScript), 'src'),
-  _modules = null,
   waigo = {};
+
+
+/** Internal module loading configuration. Do not access or manipulate this yourself. This is exposed purely for testing purposes. */  
+waigo.__modules = null;
 
 
 
@@ -25,22 +29,22 @@ var processScript = process.argv[1],
  */
 var _walk = function(folder) {
   return new Promise(function(resolve, reject) {
-    var files = new Map();
+    var files = {};
 
     var walker = walk(folder, {
       followSymlinks: false
     });
 
     walker.on('file', function(file, stat) {
-      var extName = path.extName(file);
+      var extName = path.extname(file);
       if ('.js' !== extName) return;
 
       // /x/y/z/abc.js -> /x/y/z/abc
       var dirname = path.dirname(file),
-        baseName = path.baseName(file, extName),
+        baseName = path.basename(file, extName),
         moduleName = path.join(path.relative(folder, dirname), baseName);
 
-      files.set(moduleName, path.join(dirname, baseName));
+      files[moduleName] = path.join(dirname, baseName);
     });  
 
     walker.on('end', function() {
@@ -66,7 +70,7 @@ waigo.getAppFolder = function() {
  * Initialise Waigo.
  *
  * This loads available plugins and ensures that there are no instances of any given module being provided by two or 
- * more plugins. For more information on how Waigo decides where to load files from see the `load()` method docs.
+ * more plugins. For more information on how Waigo decides where to load modules from see the `load()` method docs.
  * 
  * If `options.plugins` is provided then those named plugins get loaded. If not then the remaining options are used to 
  * first work out which plugins to load and then those plugins get loaded. By default the plugin names to load are 
@@ -76,13 +80,13 @@ waigo.getAppFolder = function() {
  * @param [options.appFolder] {String} absolute path to folder containing app files. Overrides the default calculated folder.
  * @param [options.plugins] {Object} plugin loading configuration.
  * @param [options.plugins.names] {Array} plugins to load. If omitted then other options are used to load plugins.
- * @param [options.plugins.glob] {String} Naming convention for plugins as regex. Default is `waigo-*`.
+ * @param [options.plugins.glob] {Array} Regexes specifying plugin naming conventions. Default is `waigo-*`.
  * @param [options.plugins.configFile] {String} JSON config file containing names of plugins to load. Default is `package.json`.
  * @param [options.plugins.configFileKey] {String} Name of key in JSON config file which contains names of plugins.
  */
 waigo.init = function*(options) {
-  if (_modules) {
-    throw new Error('Waigo already initialised');
+  if (waigo.__modules) {
+    throw new Error('Waigo already inititialised');
   }
 
   options = options || {};
@@ -95,9 +99,13 @@ waigo.init = function*(options) {
     debug('Getting plugin names...');
     
     // based on code from https://github.com/sindresorhus/load-grunt-tasks/blob/master/load-grunt-tasks.js
-    var pattern = arrayify(options.plugins.pattern || ['waigo-*']);
+    var pattern = options.plugins.pattern || ['waigo-*'];
     var config = options.plugins.config || findup('package.json');
-    var scope = arrayify(options.plugins.scope || ['dependencies', 'devDependencies', 'peerDependencies']);
+    var scope = options.plugins.scope || ['dependencies', 'devDependencies', 'peerDependencies'];
+    
+    if (!_.isArray(scope)) {
+      scope = [scope];
+    }
 
     var names = scope.reduce(function (result, prop) {
       return result.concat(Object.keys(config[prop] || {}));
@@ -109,39 +117,34 @@ waigo.init = function*(options) {
   debug('Plugins to load: ' + options.plugins.names.join(', '));
 
   // scan all folder trees and build up the available modules...
-  _modules = new Map();
+  waigo.__modules = {};
 
   var sourcePaths = {
     waigo: waigoFolder,
     app: appFolder
   };
 
-  options.plugins.name.forEach( function(name) {
+  _.each(options.plugins.names, function(name) {
     sourcePaths[name] = path.join( require.resolve(name), 'src' );
   });
 
   var scanOrder = ['waigo'].concat(options.plugins.names, 'app');
 
-  for (var sourceName of scanOrder) {
-    var moduleMap = yield _walk(sourcePaths[sourceName]);
+  for (var i = 0; i < scanOrder.length; ++i) {
+    var sourceName = scanOrder[i],
+      moduleMap = yield _walk(sourcePaths[sourceName]);
 
-    for (var item of moduleMap) {
-      var moduleName = item[0],
-        modulePath = item[1];
-
-      var conf = _modules.get(moduleName) || { 
+    _.each(moduleMap, function(modulePath, moduleName) {
+      waigo.__modules[moduleName] = waigo.__modules[moduleName] || { 
         sources: {} 
       };
-      conf.sources[sourceName] = modulePath;
-      _modules.set(moduleName, conf);
-    }
+      waigo.__modules[moduleName].sources[sourceName] = modulePath;
+    });
   }
 
   // now go through the list of available modules and ensure that there are no ambiguities
-  for (var item of _modules) {
-    var moduleName = item[0], 
-      moduleConfig = item[1],
-      sourceNames = Object.keys(moduleConfig.sources);
+  _.each(waigo.__modules, function(moduleConfig, moduleName) {
+    var sourceNames = Object.keys(moduleConfig.sources);
 
     // if there is an app implementation then that's the one to use
     if (sourceNames.app) {
@@ -154,7 +157,7 @@ waigo.init = function*(options) {
     // else
     else {
       // get plugin source names
-      var pluginSources = sourceNames.filter(function(srcName) {
+      var pluginSources = _.filter(sourceNames, function(srcName) {
         return 'waigo' !== srcName;
       });
 
@@ -167,7 +170,9 @@ waigo.init = function*(options) {
         moduleConfig._load = pluginSources[0];
       }
     }
-  }
+
+    debug('Module "' + moduleName + '" will be loaded from source "' + moduleConfig._load + '"');
+  });
 };
 
 
@@ -207,8 +212,8 @@ waigo.init = function*(options) {
  * @throws Error if there was an error loading the module.
  */
 waigo.load = function(moduleName) {
-  if (!_modules) {
-    throw new Error('Please call init() first');
+  if (!waigo.__modules) {
+    throw new Error('Please initialise Waigo first');
   }
 
   // get source to load from
@@ -222,7 +227,7 @@ waigo.load = function(moduleName) {
   }
 
   debug('Loading module "' + sanitizedModuleName + '" from source "' + sourceName + '"');
-  return require(_modules[sanitizedModuleName].sources[source]);
+  return require(waigo.__modules[sanitizedModuleName].sources[source]);
 };
 
 

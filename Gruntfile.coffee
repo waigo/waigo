@@ -53,9 +53,8 @@ module.exports = (grunt) ->
     "watch:dev"
   ]
 
-  grunt.registerTask "dev-test", [ 
+  grunt.registerTask "test", [ 
     "mochaTest" 
-    "watch:test"
   ]
 
   grunt.registerTask "build", [
