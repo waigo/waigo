@@ -120,7 +120,7 @@ waigo.init = function*(options) {
   };
 
   _.each(options.plugins.names, function(name) {
-    sourcePaths[name] = path.join( require.resolve(name), 'src' );
+    sourcePaths[name] = path.join( path.dirname(require.resolve(name)), 'src' );
   });
 
   var scanOrder = ['waigo'].concat(options.plugins.names, 'app');
@@ -142,7 +142,7 @@ waigo.init = function*(options) {
     var sourceNames = Object.keys(moduleConfig.sources);
 
     // if there is an app implementation then that's the one to use
-    if (sourceNames.app) {
+    if (moduleConfig.sources.app) {
       moduleConfig._load = 'app';
     } 
     // if there is only one source then use that one
@@ -158,7 +158,7 @@ waigo.init = function*(options) {
 
       // if more than one plugin then we have a problem
       if (1 < pluginSources.length) {
-        throw new Error('Module "' + name + '" has more than plugin implementation to choose from: ' + pluginSources.join(', '));
+        throw new Error('Module "' + moduleName + '" has more than one plugin implementation to choose from: ' + pluginSources.join(', '));
       } 
       // else the one available plugin is the source
       else {

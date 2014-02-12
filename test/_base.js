@@ -12,6 +12,12 @@ var _ = require('lodash'),
   rimraf = require('rimraf');
 
 fs = Promise.promisifyAll(fs);
+fs.existsAsync = Promise.promisify(function(file, cb) {
+  fs.exists(file, function(exists) {
+    cb(null, exists);
+  });
+});
+
 rimrafAsync = Promise.promisify(rimraf);
 chai.use(require('sinon-chai'));
 
@@ -121,10 +127,10 @@ testUtils.createPluginModules = function(name, modules) {
       if (!exists) {
         return fs.mkdirAsync(pluginFolderPath)
           .then(function() {
-            return fs.writeFileAsync(path.join(pluginFolderPath, 'package.json'), '{ "name": "' + name + '", "version": "0.0.1" }');
-          })
-          .then(function() {
-            return fs.writeFileAsync(path.join(pluginFolderPath, 'index.js'), 'module.exports = {}');
+            return Promise.all([
+              fs.writeFileAsync(path.join(pluginFolderPath, 'package.json'), '{ "name": "' + name + '", "version": "0.0.1" }'),
+              fs.writeFileAsync(path.join(pluginFolderPath, 'index.js'), 'module.exports = {}')
+            ]);
           });
       }
     })
@@ -133,13 +139,16 @@ testUtils.createPluginModules = function(name, modules) {
     })
     .then(function createPluginSrcFolder(exists) {
       if (!exists) {
-        return fs.mkdirAsync(srcFolderPath);
+        return fs.mkdirAsync(srcFolderPath)
+          .then(function() {
+            return fs.writeFileAsync(path.join(srcFolderPath, 'README'), 'This file ensures that node-findit works');
+          });
       }
     })
     .then(function createModules() {
       modules = modules || [];
 
-      var moduleContent = _.each(modules, function(moduleName) {
+      var moduleContent = _.map(modules, function(moduleName) {
         return 'module.exports="' + moduleName + '";';
       });
 
@@ -166,7 +175,7 @@ testUtils.createModules = function(srcFolder, modules) {
   return Promise.all(
     _.map(modules, function(moduleContent, moduleName) {
       var fileName = path.join(srcFolder, moduleName) + '.js',
-        folderPath = dirname(fileName);
+        folderPath = path.dirname(fileName);
 
       return fs.mkdirAsync(folderPath)
         .then(function createModuleFile() {
