@@ -85,7 +85,7 @@ waigo.getAppFolder = function() {
  */
 waigo.init = function*(options) {
   if (waigo.__modules) {
-    throw new Error('Waigo already inititialised');
+    debug('Waigo already initialised. Re-initialising...');
   }
 
   options = options || {};

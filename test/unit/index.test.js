@@ -1,14 +1,14 @@
 var _ = require('lodash'),
   path = require('path'),
-  Promise = require('bluebird'),
-  waigo = require('../../index');
+  Promise = require('bluebird');
 
 var testBase = require('../_base'),
   assert = testBase.assert,
   expect = testBase.expect,
   should = testBase.should,
   testUtils = testBase.utils,
-  test = testUtils.createTest(module);
+  test = testUtils.createTest(module),
+  waigo = testBase.waigo;
 
 
 waigo.initAsync = Promise.coroutine(waigo.init);
@@ -62,20 +62,9 @@ test['init()'] = {
   afterEach: function(done) {
     testUtils.deleteTestFolders().nodeify(done);
   },
-  'can only be called once': function(done) {
+  'can only be called more than once': function(done) {
     waigo.initAsync()
-      .then(function secondTime() {
-        return new Promise(function(resolve, reject) {
-          waigo.initAsync()
-            .then(function oops() {
-              throw new Error('Should not be here');
-            })
-            .catch(function(err) {
-              err.toString().should.eql('Error: Waigo already inititialised');            
-              resolve();
-            });
-        });
-      })
+      .then(waigo.initAsync)
       .nodeify(done);
   },
   'set app folder': function(done) {

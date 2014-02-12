@@ -225,6 +225,7 @@ module.exports = {
   assert: chai.assert,
   expect: chai.expect,
   should: chai.should(),
-  utils: testUtils
+  utils: testUtils,
+  waigo: require('../index')
 };
 
