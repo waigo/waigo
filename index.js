@@ -111,7 +111,7 @@ waigo.init = function*(options) {
       return result.concat(Object.keys(config[prop] || {}));
     }, []);
 
-    options.plugins.names = globule.match(pattern, names);
+    options.plugins.names = _.uniq(globule.match(pattern, names));
   }
   
   debug('Plugins to load: ' + options.plugins.names.join(', '));

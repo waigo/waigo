@@ -17,8 +17,10 @@ chai.use(require('sinon-chai'));
 
 
 var testUtils = {},
-  dataFolder = path.join(__dirname, 'data'),
-  pluginsFolder = path.join(dataFolder, 'plugins');
+  testDataFolder = path.join(__dirname, 'data');
+
+testUtils.appFolder = path.join(testDataFolder, 'app');
+testUtils.pluginsFolder = path.join(testDataFolder, 'plugins');
 
 
 
@@ -31,11 +33,10 @@ testUtils.createTest = function(testModule) {
   var test = {
     mocker: null,
     beforeEach: function() {
-      test.mocker = sinon.sandbox.create();      
+      test.mocker = sinon.sandbox.create();  
     },
-    afterEach: function(done) {
+    afterEach: function() {
       test.mocker.restore();
-      testUtils.deletePlugins().nodeify(done);
     }
   };
   testModule.exports[require('path').basename(testModule.filename)] = test;
@@ -46,8 +47,54 @@ testUtils.createTest = function(testModule) {
 
 
 
+
 /**
- * Create a dummy test plugin
+ * Create test folders.
+ *
+ * @return {Promise}
+ */
+testUtils.createTestFolders = function() {
+  /*
+  node-findit fails to finish for empty directories, so we create dummy files to prevent this
+  https://github.com/substack/node-findit/pull/26
+   */
+
+  return Promise.all([
+    fs.mkdirAsync(testUtils.pluginsFolder)
+      .then(function() {
+        return fs.writeFileAsync(path.join(testUtils.pluginsFolder, 'dummy'), 'hello');
+      }),
+    fs.mkdirAsync(testUtils.appFolder)
+      .then(function() {
+        return fs.writeFileAsync(path.join(testUtils.appFolder, 'dummy'), 'hello');
+      }),
+  ]);
+};
+
+
+
+
+/**
+ * Delete test folders.
+ *
+ * @return {Promise}
+ */
+testUtils.deleteTestFolders = function() {
+  return Promise.all([
+    rimrafAsync(testUtils.pluginsFolder),
+    rimrafAsync(testUtils.appFolder)
+  ]);
+};
+
+
+
+
+
+
+/**
+ * Create a dummy test plugin.
+ *
+ * The `testUtils.pluginsFolder` is expected to already exist.
  *
  * The content of each created module will be a string containing the plugin name.
  *
@@ -57,39 +104,24 @@ testUtils.createTest = function(testModule) {
  * @return {Promise}
  */
 testUtils.createPlugin = function(name, modules) {
-  return Promise(function(resolve, reject) {
-    fs.statAsync(pluginsFolder)
-      .then(function pluginsFolderExists() {
-        resolve();
-      })
-      .catch(function pluginsFolderDoesntExist(err) {
-        resolve(fs.mkdirAsync(pluginsFolder));
+  var pluginFolderPath = path.join(testUtils.pluginsFolder, name),
+    srcFolderPath = path.join(pluginFolderPath, 'src');
+
+  return rimrafAsync(pluginFolderPath)
+    .then(function createNewPluginFolder() {
+      return fs.mkdirAsync(pluginFolderPath);
+    })
+    .then(function createPluginSrcFolder() {
+      return fs.mkdirAsync(srcFolderPath);
+    })
+    .then(function createModules() {
+      modules = modules || [];
+
+      var moduleContent = _.each(modules, function(moduleName) {
+        return 'module.exports="' + moduleName + '"';
       });
-  })
-    .then(function removeExistingPluginFolder() {
-      var pluginFolderPath = path.join(pluginsFolder, name),
-        srcFolderPath = path.join(pluginFolderPath, 'src');
 
-      return rimrafAsync(pluginFolderPath)
-        .then(function createNewPluginFolder() {
-          return fs.mkdirAsync(pluginFolderPath);
-        })
-        .then(function createPluginSrcFolder() {
-          return fs.mkdirAsync(srcFolderPath);
-        })
-        .then(function createModules() {
-          return Promise.all(
-            _.map(modules, function(moduleName) {
-              var fileName = path.join(srcFolderPath, moduleName) + '.js',
-                folderPath = dirname(fileName);
-
-              return fs.mkdirAsync(folderPath)
-                .then(function createModuleFile() {
-                  return fs.writeFileAsync(fileName, 'module.exports="' + moduleName + '"');
-                });
-            })
-          );
-        });
+      return testUtils.createModules(srcFolderPath, _.zipObject(modules, moduleContent));
     });
 };
 
@@ -97,13 +129,30 @@ testUtils.createPlugin = function(name, modules) {
 
 
 /**
- * Delete all dummy test plugins.
+ * Create modules.
+ *
+ * @param srcFolder {String} folder in which to create the module. Expected to exist.
+ * @param modules {Object} CommonJS modules to create within the plugin. The key is the module name and the value is the 
+ * module content.
  *
  * @return {Promise}
  */
-testUtils.deletePlugins = function() {
-  return rimrafAsync(pluginsFolder);
+testUtils.createModules = function(srcFolder, modules) {
+  modules = modules || {};
+
+  return Promise.all(
+    _.map(modules, function(moduleContent, moduleName) {
+      var fileName = path.join(srcFolder, moduleName) + '.js',
+        folderPath = dirname(fileName);
+
+      return fs.mkdirAsync(folderPath)
+        .then(function createModuleFile() {
+          return fs.writeFileAsync(fileName, moduleContent);
+        });
+    })
+  );
 };
+
 
 
 
