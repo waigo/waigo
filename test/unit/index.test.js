@@ -1,4 +1,5 @@
-var path = require('path'),
+var _ = require('lodash'),
+  path = require('path'),
   Promise = require('bluebird'),
   waigo = require('../../index');
 
@@ -18,7 +19,7 @@ test['app folder'] = {
     waigo.__modules = null;
   },
   'get': function() {
-    expectedAppFolder = path.join(path.dirname(process.argv[1]), 'src');
+    expectedAppFolder = path.join(process.cwd(), 'src');
     waigo.getAppFolder().should.eql(expectedAppFolder);
   }
 };
@@ -33,9 +34,9 @@ test['init()'] = {
       .then(testUtils.createTestFolders)
       .then(function createPlugins() {
         return Promise.all([
-          testUtils.createPlugin('waigo-plugin-1'),
-          testUtils.createPlugin('waigo-plugin-2'),
-          testUtils.createPlugin('another-plugin')
+          testUtils.createPluginModules('waigo-plugin-1_TESTPLUGIN'),
+          testUtils.createPluginModules('waigo-plugin-2_TESTPLUGIN'),
+          testUtils.createPluginModules('another-plugin_TESTPLUGIN')
         ]);
       })
       .nodeify(done);
@@ -70,20 +71,82 @@ test['init()'] = {
       })
       .nodeify(done);
   },
-  // 'default plugins': function() {
-  //   waigo.initAsync({
-  //     config: {
-  //       dependencies: ['waigo-plugin-1', 'merry-go-round'],
-  //       devDependencies: ['merry-go-round-2', 'waigo-plugin-2', 'waigo-plugin-2'],  // deliberate duplicate
-  //       peerDependencies: ['bla-bla', 'another-plugin'],
-  //     }
-  //   })
-  //     .then(function checkLoadedPlugins() {
-  //       waigo.__modules.should.eql
-  //     })
-  //     .nodeify(done);
-  // }
+  'get plugin names': {
+    beforeEach: function() {
+      this.options = {
+        plugins: {
+          config: {
+            dependencies: {
+              'waigo-plugin-1_TESTPLUGIN': '0.0.1',
+            },
+            devDependencies: {
+              'waigo-plugin-2_TESTPLUGIN': '0.0.1',
+              'waigo-plugin-2_TESTPLUGIN': '0.0.1'  // deliberately testing duplicates
+            },
+            peerDependencies: {
+              'another-plugin_TESTPLUGIN': '0.0.1'
+            }
+          }
+        }
+      };
+    },
+    'default options': function(done) {
+      var options = {};
+
+      waigo.initAsync(options)
+        .then(function checkLoadedPlugins() {
+          options.plugins.names.should.eql([]);
+        })
+        .nodeify(done);
+    },
+    'custom config': function(done) {
+      var options = this.options;
+
+      waigo.initAsync(options)
+        .then(function checkLoadedPlugins() {
+          options.plugins.names.should.eql(['waigo-plugin-1_TESTPLUGIN', 'waigo-plugin-2_TESTPLUGIN']);
+        })
+        .nodeify(done);
+    },
+    'custom globbing pattern': function(done) {
+      var options = this.options;
+      options.plugins.glob = ['*another*'];
+
+      waigo.initAsync(options)
+        .then(function checkLoadedPlugins() {
+          options.plugins.names.should.eql(['another-plugin_TESTPLUGIN']);
+        })
+        .nodeify(done);
+    },
+    'custom scope': function(done) {
+      var options = this.options;
+      options.plugins.configKey = ['peerDependencies'];
+
+      waigo.initAsync(options)
+        .then(function checkLoadedPlugins() {
+          options.plugins.names.should.eql([]);
+        })
+        .nodeify(done);
+    },
+    'directly specified': function(done) {
+      var options = {
+        plugins: {
+          names: ['another-plugin_TESTPLUGIN']
+        }
+      }
+
+      waigo.initAsync(options)
+        .then(function checkLoadedPlugins() {
+          options.plugins.names.should.eql(['another-plugin_TESTPLUGIN']);
+        })
+        .nodeify(done);      
+    }
+  },
+  'module path resolution': {
+
+  }
 };
+
 
 
 

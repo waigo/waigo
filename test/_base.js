@@ -20,7 +20,9 @@ var testUtils = {},
   testDataFolder = path.join(__dirname, 'data');
 
 testUtils.appFolder = path.join(testDataFolder, 'app');
-testUtils.pluginsFolder = path.join(testDataFolder, 'plugins');
+testUtils.pluginsFolder = path.join(process.cwd(), 'node_modules');
+
+
 
 
 
@@ -58,17 +60,10 @@ testUtils.createTestFolders = function() {
   node-findit fails to finish for empty directories, so we create dummy files to prevent this
   https://github.com/substack/node-findit/pull/26
    */
-
-  return Promise.all([
-    fs.mkdirAsync(testUtils.pluginsFolder)
-      .then(function() {
-        return fs.writeFileAsync(path.join(testUtils.pluginsFolder, 'dummy'), 'hello');
-      }),
-    fs.mkdirAsync(testUtils.appFolder)
-      .then(function() {
-        return fs.writeFileAsync(path.join(testUtils.appFolder, 'dummy'), 'hello');
-      }),
-  ]);
+  return fs.mkdirAsync(testUtils.appFolder)
+    .then(function() {
+      return fs.writeFileAsync(path.join(testUtils.appFolder, 'README'), 'This file ensures that node-findit works');
+    });
 };
 
 
@@ -80,10 +75,22 @@ testUtils.createTestFolders = function() {
  * @return {Promise}
  */
 testUtils.deleteTestFolders = function() {
-  return Promise.all([
-    rimrafAsync(testUtils.pluginsFolder),
-    rimrafAsync(testUtils.appFolder)
-  ]);
+  return rimrafAsync(testUtils.appFolder)
+    .then(function() {
+
+      return fs.readdirAsync(testUtils.pluginsFolder)
+        .then(function deletePlugins(files) {
+          var plugins = _.filter(files, function(file) {
+            return file.endsWith('_TESTPLUGIN');
+          });
+
+          return Promise.all(
+            _.map(plugins, function(plugin) {
+              return rimrafAsync(path.join(testUtils.pluginsFolder, plugin));
+            })
+          );
+        });
+    });
 };
 
 
@@ -92,38 +99,54 @@ testUtils.deleteTestFolders = function() {
 
 
 /**
- * Create a dummy test plugin.
- *
- * The `testUtils.pluginsFolder` is expected to already exist.
+ * Create modules within given test plugin.
  *
  * The content of each created module will be a string containing the plugin name.
  *
- * @param name {String} name of plugin to create.
- * @param modules {Array} CommonJS modules to create within the plugin.
+ * @param name {String} name of plugin to create. Should be suffixed with '_TESTPLUGIN';
+ * @param [modules] {Array} CommonJS modules to create within the plugin.
  *
  * @return {Promise}
  */
-testUtils.createPlugin = function(name, modules) {
+testUtils.createPluginModules = function(name, modules) {
+  if (!name.endsWith('_TESTPLUGIN')) {
+    throw new Error('Test plugin name has incorrect suffix');
+  }
+
   var pluginFolderPath = path.join(testUtils.pluginsFolder, name),
     srcFolderPath = path.join(pluginFolderPath, 'src');
 
-  return rimrafAsync(pluginFolderPath)
-    .then(function createNewPluginFolder() {
-      return fs.mkdirAsync(pluginFolderPath);
+  return fs.existsAsync(pluginFolderPath)
+    .then(function createPluginFolder(exists) {
+      if (!exists) {
+        return fs.mkdirAsync(pluginFolderPath)
+          .then(function() {
+            return fs.writeFileAsync(path.join(pluginFolderPath, 'package.json'), '{ "name": "' + name + '", "version": "0.0.1" }');
+          })
+          .then(function() {
+            return fs.writeFileAsync(path.join(pluginFolderPath, 'index.js'), 'module.exports = {}');
+          });
+      }
     })
-    .then(function createPluginSrcFolder() {
-      return fs.mkdirAsync(srcFolderPath);
+    .then(function checkIfSrcFolderExists() {
+      return fs.existsAsync(srcFolderPath);
+    })
+    .then(function createPluginSrcFolder(exists) {
+      if (!exists) {
+        return fs.mkdirAsync(srcFolderPath);
+      }
     })
     .then(function createModules() {
       modules = modules || [];
 
       var moduleContent = _.each(modules, function(moduleName) {
-        return 'module.exports="' + moduleName + '"';
+        return 'module.exports="' + moduleName + '";';
       });
 
       return testUtils.createModules(srcFolderPath, _.zipObject(modules, moduleContent));
     });
 };
+
 
 
 

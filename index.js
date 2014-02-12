@@ -11,9 +11,8 @@ var _ = require('lodash'),
 
 
 
-var processScript = process.argv[1],
-  waigoFolder = path.join(__dirname, 'src'),
-  appFolder = path.join(path.dirname(processScript), 'src'),
+var waigoFolder = path.join(__dirname, 'src'),
+  appFolder = path.join(process.cwd(), 'src'),
   waigo = {};
 
 
@@ -81,8 +80,8 @@ waigo.getAppFolder = function() {
  * @param [options.plugins] {Object} plugin loading configuration.
  * @param [options.plugins.names] {Array} plugins to load. If omitted then other options are used to load plugins.
  * @param [options.plugins.glob] {Array} Regexes specifying plugin naming conventions. Default is `waigo-*`.
- * @param [options.plugins.configFile] {String} JSON config file containing names of plugins to load. Default is `package.json`.
- * @param [options.plugins.configFileKey] {String} Name of key in JSON config file which contains names of plugins.
+ * @param [options.plugins.config] {String} JSON config containing names of plugins to load. Default is to load `package.json`.
+ * @param [options.plugins.configKey] {Array} Names of keys in JSON config whose values contain names of plugins.
  */
 waigo.init = function*(options) {
   if (waigo.__modules) {
@@ -99,13 +98,9 @@ waigo.init = function*(options) {
     debug('Getting plugin names...');
     
     // based on code from https://github.com/sindresorhus/load-grunt-tasks/blob/master/load-grunt-tasks.js
-    var pattern = options.plugins.pattern || ['waigo-*'];
+    var pattern = options.plugins.glob || ['waigo-*'];
     var config = options.plugins.config || findup('package.json');
-    var scope = options.plugins.scope || ['dependencies', 'devDependencies', 'peerDependencies'];
-    
-    if (!_.isArray(scope)) {
-      scope = [scope];
-    }
+    var scope = options.plugins.configKey || ['dependencies', 'devDependencies', 'peerDependencies'];
 
     var names = scope.reduce(function (result, prop) {
       return result.concat(Object.keys(config[prop] || {}));

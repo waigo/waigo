@@ -69,7 +69,7 @@
   "main": "index",
   "scripts": {
     "prepublish": "npm prune",
-    "test": "grunt test"
+    "test": "node --harmony `which grunt` test"
   },
   "engines": {
     "node": ">=0.11.2"
