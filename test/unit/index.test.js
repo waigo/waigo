@@ -31,6 +31,7 @@ test['init()'] = {
     waigo.__modules = null;
 
     this.options = {
+      appFolder: testUtils.appFolder,
       plugins: {
         config: {
           dependencies: {
@@ -154,9 +155,7 @@ test['init()'] = {
     'app overrides default': function(done) {
       var options = this.options;
 
-      testUtils.createModules(testUtils.appFolder, {
-        'support/errors': 'haha'
-      })
+      testUtils.createAppModules(['support/errors'])
         .then(function() {
           return waigo.initAsync(options)
             .then(function checkLoadedPlugins() {
@@ -168,9 +167,7 @@ test['init()'] = {
     'app version only': function(done) {
       var options = this.options;
 
-      testUtils.createModules(testUtils.appFolder, {
-        'support/blabla': 'haha'
-      })
+      testUtils.createAppModules(['support/blabla'])
         .then(function() {
           return waigo.initAsync(options)
             .then(function checkLoadedPlugins() {
@@ -218,7 +215,7 @@ test['init()'] = {
       Promise.all([
         testUtils.createPluginModules('waigo-plugin-1_TESTPLUGIN', ['support/errors']),
         testUtils.createPluginModules('waigo-plugin-2_TESTPLUGIN', ['support/errors']),
-        testUtils.createModules(testUtils.appFolder, {'support/errors': 'bla'})
+        testUtils.createAppModules(['support/errors']),
       ])
         .then(function() {
           return waigo.initAsync(options)
@@ -245,6 +242,35 @@ test['load()'] = {
     } catch (err) {
       err.toString().should.eql('Error: Please initialise Waigo first');
       done();
+    }
+  },
+  'once inititialised': {
+    beforeEach: function(done) {
+      testUtils.deleteTestFolders()
+        .then(testUtils.createTestFolders)
+        .then(function createTestModules() {
+          return Promise.all([
+            testUtils.createPluginModules('waigo-plugin-1_TESTPLUGIN', ['support/errors']),
+            testUtils.createPluginModules('waigo-plugin-2_TESTPLUGIN', ['support/onlyme', 'support/errors']),
+            testUtils.createPluginModules('another-plugin_TESTPLUGIN', ['support/appoverride']),
+            testUtils.createAppModules(['support/errors', 'support/appoverride']),
+          ])
+        })
+        .then(function() {
+          return waigo.initAsync({
+            appFolder: testUtils.appFolder,
+            plugins: {
+              names: ['waigo-plugin-1_TESTPLUGIN', 'waigo-plugin-2_TESTPLUGIN', 'another-plugin_TESTPLUGIN']
+            }
+          });
+        })
+        .nodeify(done);
+    },
+    afterEach: function(done) {
+      testUtils.deleteTestFolders().nodeify(done);
+    },
+    'load default': function() {
+
     }
   }
 }

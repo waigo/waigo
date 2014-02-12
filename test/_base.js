@@ -83,13 +83,11 @@ testUtils.createTestFolders = function() {
 testUtils.deleteTestFolders = function() {
   return rimrafAsync(testUtils.appFolder)
     .then(function() {
-
       return fs.readdirAsync(testUtils.pluginsFolder)
         .then(function deletePlugins(files) {
           var plugins = _.filter(files, function(file) {
             return file.endsWith('_TESTPLUGIN');
           });
-
           return Promise.all(
             _.map(plugins, function(plugin) {
               return rimrafAsync(path.join(testUtils.pluginsFolder, plugin));
@@ -159,6 +157,27 @@ testUtils.createPluginModules = function(name, modules) {
 
 
 
+/**
+ * Create modules in the app folder tree.
+ *
+ * @param [modules] {Array} CommonJS modules to create within the app.
+ *
+ * @return {Promise}
+ */
+testUtils.createAppModules = function(modules) {
+  modules = modules || [];
+
+  var moduleContent = _.map(modules, function(moduleName) {
+    return 'module.exports="app";';
+  });
+
+  return testUtils.createModules(testUtils.appFolder, _.zipObject(modules, moduleContent));
+};
+
+
+
+
+
 
 /**
  * Create modules.
@@ -172,17 +191,30 @@ testUtils.createPluginModules = function(name, modules) {
 testUtils.createModules = function(srcFolder, modules) {
   modules = modules || {};
 
-  return Promise.all(
-    _.map(modules, function(moduleContent, moduleName) {
-      var fileName = path.join(srcFolder, moduleName) + '.js',
-        folderPath = path.dirname(fileName);
+  var __createModule = function(moduleName, moduleContent) {
+    var fileName = path.join(srcFolder, moduleName) + '.js',
+      folderPath = path.dirname(fileName);    
 
-      return fs.mkdirAsync(folderPath)
-        .then(function createModuleFile() {
-          return fs.writeFileAsync(fileName, moduleContent);
-        });
-    })
-  );
+    return fs.existsAsync(folderPath)
+      .then(function createFolderIfNecessary(exists) {
+        if (!exists) {
+          return fs.mkdirAsync(folderPath);
+        }
+      })
+      .then(function createModuleFile() {
+        return fs.writeFileAsync(fileName, moduleContent);
+      });
+  };
+
+  // sequentially create each module - this avoids conflicting async calls to mkdir() for the same folder
+  var promise = Promise.resolve(1);
+  _.each(modules, function(moduleContent, moduleName) {
+    promise = promise.then(function() {
+      return __createModule(moduleName, modules[moduleName]);
+    });
+  });
+  
+  return promise;
 };
 
 
