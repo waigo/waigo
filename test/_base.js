@@ -147,7 +147,7 @@ testUtils.createPluginModules = function(name, modules) {
       modules = modules || [];
 
       var moduleContent = _.map(modules, function(moduleName) {
-        return 'module.exports="' + moduleName + '";';
+        return 'module.exports="' + name + '";';
       });
 
       return testUtils.createModules(srcFolderPath, _.zipObject(modules, moduleContent));

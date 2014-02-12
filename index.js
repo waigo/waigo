@@ -221,7 +221,16 @@ waigo.load = function(moduleName) {
     sanitizedModuleName = moduleName.substr(sepPos + 1);
   }
 
-  debug('Loading module "' + sanitizedModuleName + '" from source "' + sourceName + '"');
+  debug('Loading module "' + sanitizedModuleName + '" from source "' + source + '"');
+
+  if (!waigo.__modules[sanitizedModuleName]) {
+    throw new Error('Module not found: ' + sanitizedModuleName);
+  }
+
+  if (!waigo.__modules[sanitizedModuleName].sources[source]) {
+    throw new Error('Module source not found: ' + source);
+  }
+
   return require(waigo.__modules[sanitizedModuleName].sources[source]);
 };
 

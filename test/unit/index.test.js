@@ -270,8 +270,29 @@ test['load()'] = {
       testUtils.deleteTestFolders().nodeify(done);
     },
     'load default': function() {
-
-    }
+      waigo.load('support/errors').should.eql('app');
+    },
+    'load core version': function() {
+      waigo.load('waigo:support/errors').should.eql(require(__dirname + '/../../src/support/errors'));
+    },
+    'load plugin version': function() {
+      waigo.load('waigo-plugin-1_TESTPLUGIN:support/errors').should.eql('waigo-plugin-1_TESTPLUGIN');
+    },
+    'module not found': function() {
+      expect(function() {
+        waigo.load(':support/errors34');        
+      }).to.throw('Module not found: support/errors34');
+    },
+    'module source missing': function() {
+      expect(function() {
+        waigo.load(':support/errors');        
+      }).to.throw('Module source not found: ');
+    },
+    'module source not found': function() {
+      expect(function() {
+        waigo.load('random2:support/errors');        
+      }).to.throw('Module source not found: random2');
+    },
   }
 }
 
