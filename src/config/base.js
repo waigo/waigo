@@ -1,6 +1,9 @@
 /**
- * Base configuration
+ * # Base configuration
+ *
+ * This is the base configuration module which gets loaded first by the [configuration loader](index.js.html).
  */
+
 
 
 /**
@@ -18,7 +21,7 @@ exports.baseURL = 'http://localhost:' + exports.port;
 
 
 /**
- * Db connection
+ * Database connection.
  * @type {Object}
  */
 exports.db = {
@@ -36,57 +39,70 @@ exports.db = {
  */
 exports.logging = {
   winston: {
+    // log to mongo db
     mongo: {
+      // log level threshold
       level: 'error',
       collection: 'logs',
+      // whether to confirm writes to db log table
       safe: false
     }
   }
 };
 
 
+
+
 /**
- * Session config.
+ * Session configuration.
  *
- * We don't provide a default 'secret' so as to encourage developers to provide a custom one for their app.
+ * We don't provide default `keys` so as to encourage developers to provide a custom one for their app.
  *
- * @type {String}
+ * @type {Object}
  */
 exports.session = {
-  // keys: ['key1', 'key2'] - this should set by apps
+  // keys: ['key1', 'key2'] - these are used for signing cookies (using Keygrip) and should be provided by each app!
+
+  // session cookie name
   name: 'waigo',
+  // session storage
   store: {
+    // session store type
     type: 'mongo',
+    // session store config
     config: {
       url: 'mongodb://127.0.0.1:27017/waigo',
       collection: 'sessions'
     }
   },
+  // more cookie options
   cookie: {
+    // cookie expires in...
     validForDays: 7,
+    // cookie valid for url path...
     path: '/'
   }
 };
 
 
 /**
- * View formats.
+ * Server responses to client requests can be in the formats specified here.
  * @type {Object}
  */
 exports.viewFormats = {
-  /** List of enabled formats along with options to pass to each formatter. */
+  // List of enabled formats along with options to pass to each formatter. */
   formats: {
     html: {
-      /** Folder relative to application folder, in which to look for view templates. */
+      // Folder relative to application folder, in which to look for view templates. */
       folder: 'views',
-      /** Default view template filename extension when not explicitly provided. */
+      // Default view template filename extension when not explicitly provided. */
       ext: 'jade'
     },
     json: {}
   },
-  /** Use this URL query parameter to determine output format. */
+  // Use this URL query parameter to determine output format. */
   paramName: 'format',
-  /** Default format, in case URL query parameter which determines output format isn't provided. */
+  // Default format, in case URL query parameter which determines output format isn't provided. */
   default: 'html'
 };
 
@@ -102,9 +118,10 @@ exports.staticFolder = '../public';
 
 
 /**
- * Config for error handler.
+ * Config for request error handler.
  * @type {Object}
  */
 exports.errorHandlerConfig = {
+  // whether to show stack traces in error output.
   showStack: false
 };

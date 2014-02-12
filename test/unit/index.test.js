@@ -15,12 +15,18 @@ waigo.initAsync = Promise.coroutine(waigo.init);
 
 
 test['app folder'] = {
-  beforeEach: function() {
-    waigo.__modules = null;
-  },
   'get': function() {
     expectedAppFolder = path.join(process.cwd(), 'src');
     waigo.getAppFolder().should.eql(expectedAppFolder);
+  }
+};
+
+
+
+test['waigo folder'] = {
+  'get': function() {
+    expectedFolder = path.join(__dirname + '/../../', 'src');
+    waigo.getWaigoFolder().should.eql(expectedFolder);
   }
 };
 
@@ -62,7 +68,7 @@ test['init()'] = {
   afterEach: function(done) {
     testUtils.deleteTestFolders().nodeify(done);
   },
-  'can only be called more than once': function(done) {
+  'can be called more than once': function(done) {
     waigo.initAsync()
       .then(waigo.initAsync)
       .nodeify(done);
@@ -258,14 +264,23 @@ test['load()'] = {
     afterEach: function(done) {
       testUtils.deleteTestFolders().nodeify(done);
     },
-    'load default': function() {
+    'app overrides core': function() {
       waigo.load('support/errors').should.eql('app');
     },
     'load core version': function() {
       waigo.load('waigo:support/errors').should.eql(require(__dirname + '/../../src/support/errors'));
     },
+    'not in app - core fallback': function() {
+      waigo.load('routes').should.eql(require(__dirname + '/../../src/routes'));
+    },
     'load plugin version': function() {
       waigo.load('waigo-plugin-1_TESTPLUGIN:support/errors').should.eql('waigo-plugin-1_TESTPLUGIN');
+    },
+    'app overrides plugin': function() {
+      waigo.load('support/appoverride').should.eql('app');
+    },
+    'not in app - plugin fallback': function() {
+      waigo.load('support/onlyme').should.eql('waigo-plugin-2_TESTPLUGIN');
     },
     'module not found': function() {
       expect(function() {
@@ -273,9 +288,7 @@ test['load()'] = {
       }).to.throw('Module not found: support/errors34');
     },
     'module source missing': function() {
-      expect(function() {
-        waigo.load(':support/errors');        
-      }).to.throw('Module source not found: ');
+      waigo.load('support/errors').should.eql('app');
     },
     'module source not found': function() {
       expect(function() {

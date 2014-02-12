@@ -68,7 +68,7 @@ testUtils.createTestFolders = function() {
    */
   return fs.mkdirAsync(testUtils.appFolder)
     .then(function() {
-      return fs.writeFileAsync(path.join(testUtils.appFolder, 'README'), 'This file ensures that node-findit works');
+      return fs.writeFileAsync(path.join(testUtils.appFolder, 'README'), 'The presence of this file ensures that node-findit works');
     });
 };
 
@@ -108,7 +108,7 @@ testUtils.deleteTestFolders = function() {
  * The content of each created module will be a string containing the plugin name.
  *
  * @param name {String} name of plugin to create. Should be suffixed with '_TESTPLUGIN';
- * @param [modules] {Array} CommonJS modules to create within the plugin.
+ * @param [modules] {Array|Object} CommonJS modules to create within the plugin.
  *
  * @return {Promise}
  */
@@ -139,18 +139,12 @@ testUtils.createPluginModules = function(name, modules) {
       if (!exists) {
         return fs.mkdirAsync(srcFolderPath)
           .then(function() {
-            return fs.writeFileAsync(path.join(srcFolderPath, 'README'), 'This file ensures that node-findit works');
+            return fs.writeFileAsync(path.join(srcFolderPath, 'README'), 'The presence of this file ensures that node-findit works');
           });
       }
     })
     .then(function createModules() {
-      modules = modules || [];
-
-      var moduleContent = _.map(modules, function(moduleName) {
-        return 'module.exports="' + name + '";';
-      });
-
-      return testUtils.createModules(srcFolderPath, _.zipObject(modules, moduleContent));
+      return testUtils.createModules(srcFolderPath, modules, name);
     });
 };
 
@@ -160,18 +154,12 @@ testUtils.createPluginModules = function(name, modules) {
 /**
  * Create modules in the app folder tree.
  *
- * @param [modules] {Array} CommonJS modules to create within the app.
+ * @param [modules] {Array|Object} CommonJS modules to create within the app.
  *
  * @return {Promise}
  */
 testUtils.createAppModules = function(modules) {
-  modules = modules || [];
-
-  var moduleContent = _.map(modules, function(moduleName) {
-    return 'module.exports="app";';
-  });
-
-  return testUtils.createModules(testUtils.appFolder, _.zipObject(modules, moduleContent));
+  return testUtils.createModules(testUtils.appFolder, modules, 'app');
 };
 
 
@@ -183,37 +171,48 @@ testUtils.createAppModules = function(modules) {
  * Create modules.
  *
  * @param srcFolder {String} folder in which to create the module. Expected to exist.
- * @param modules {Object} CommonJS modules to create within the plugin. The key is the module name and the value is the 
- * module content.
+ * @param modules {Object|Array} CommonJS modules to create.
+ * @param defaultContent {String} the default content to use for a module if none provided.
  *
  * @return {Promise}
  */
-testUtils.createModules = function(srcFolder, modules) {
-  modules = modules || {};
+testUtils.createModules = function(srcFolder, modules, defaultContent) {
+  var promise = Promise.resolve();
 
-  var __createModule = function(moduleName, moduleContent) {
-    var fileName = path.join(srcFolder, moduleName) + '.js',
-      folderPath = path.dirname(fileName);    
-
-    return fs.existsAsync(folderPath)
-      .then(function createFolderIfNecessary(exists) {
-        if (!exists) {
-          return fs.mkdirAsync(folderPath);
-        }
-      })
-      .then(function createModuleFile() {
-        return fs.writeFileAsync(fileName, moduleContent);
+  if (modules) {
+    // if an array then generate default module content
+    if (_.isArray(modules)) {
+      var moduleContent = _.map(modules, function(moduleName) {
+        return 'module.exports="' + defaultContent + '";';
       });
-  };
 
-  // sequentially create each module - this avoids conflicting async calls to mkdir() for the same folder
-  var promise = Promise.resolve(1);
-  _.each(modules, function(moduleContent, moduleName) {
-    promise = promise.then(function() {
-      return __createModule(moduleName, modules[moduleName]);
+      modules = _.zipObject(modules, moduleContent);
+    }
+
+    var __createModule = function(moduleName, moduleContent) {
+      var fileName = path.join(srcFolder, moduleName) + '.js',
+        folderPath = path.dirname(fileName);    
+
+      return fs.existsAsync(folderPath)
+        .then(function createFolderIfNecessary(exists) {
+          if (!exists) {
+            return fs.mkdirAsync(folderPath);
+          }
+        })
+        .then(function createModuleFile() {
+          return fs.writeFileAsync(fileName, moduleContent);
+        });
+    };
+
+    // sequentially create each module - this avoids conflicting async calls to mkdir() for the same folder
+    _.each(modules, function(moduleContent, moduleName) {
+      promise = promise.then(function() {
+        return __createModule(moduleName, modules[moduleName]);
+      });
     });
-  });
-  
+
+  } // if modules set
+
   return promise;
 };
 

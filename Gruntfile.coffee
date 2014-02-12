@@ -5,6 +5,7 @@ module.exports = (grunt) ->
   config =
     src: 'src'
     test: 'test'
+    docs: 'docs'
 
   grunt.initConfig
     config: config
@@ -31,6 +32,11 @@ module.exports = (grunt) ->
         options:
           livereload: true
           nospawn: true # Without this option specified express won't be reloaded
+      docs:
+        files: [
+          "<%= config.src %>/{,*/}{,*/}{,*/}{,*/}*.js"
+        ]
+        tasks: ["docs"]
       test:
         files: [
           "<%= config.src %>/{,*/}{,*/}{,*/}{,*/}*.js"
@@ -47,6 +53,14 @@ module.exports = (grunt) ->
           require: 'coffee-script'
         src: ['<%= config.test %>/{,*/}{,*/}{,*/}{,*/}*.test.js']
 
+    shell:
+      options:
+        stdout: true
+        stderr: true
+        failOnError: true
+      doxx:
+        command: 'node_modules/.bin/doxx --source <%= config.src %> --target <%= config.docs %>'
+
 
   grunt.registerTask "dev", [
     "express:dev",
@@ -57,10 +71,15 @@ module.exports = (grunt) ->
     "mochaTest" 
   ]
 
+  grunt.registerTask "docs", [ 
+    "shell:doxx" 
+  ]
+
   grunt.registerTask "build", [
     "jshint"
     "mochaTest"
     "docs"
   ]
 
+  grunt.registerTask "default", ["build"]
   

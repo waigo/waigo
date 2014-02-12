@@ -49,7 +49,8 @@
     "grunt-shell": "~0.6.0",
     "coffee-script": "~1.6.3",
     "underscore.string": "~2.3.3",
-    "rimraf": "~2.2.6"
+    "rimraf": "~2.2.6",
+    "doxx": "~0.7.2"
   },
   "keywords": [
     "express",
@@ -69,7 +70,7 @@
   "main": "index",
   "scripts": {
     "prepublish": "npm prune",
-    "test": "node --harmony `which grunt` test"
+    "test": "NODE_ENVIRONMENT=test node --harmony `which grunt` test"
   },
   "engines": {
     "node": ">=0.11.2"

@@ -9,12 +9,21 @@ var _ = require('lodash'),
   winston = require('winston'),
   waigo = require('../');
 
-
 _.str = require('underscore.string');
 
+/** 
+ * # Server initialisation
+ *
+ * This module contains the main entry point for all Waigo applications. It is responsible for constructing the Koa app object 
+ * and initialising logging, database connections, sessions and the various middleware components amongst other things.
+ */
 
-/** Create the Express app object. */
-var app = koa();
+
+/** 
+ * The Koa application object.
+ * @type {Object}
+ */
+var app = module.exports = koa();
 require('koa-trie-router')(app);
 
 
@@ -22,9 +31,9 @@ require('koa-trie-router')(app);
  * Load in the application configuration.
  *
  * @return {Promise}
- * @private
+ * @protected
  */
-app._loadConfig = function() {
+app.loadConfig = function() {
   return Promise.try(function() {
     app.config = waigo.load('config/index');
   });
@@ -37,9 +46,9 @@ app._loadConfig = function() {
  * Setup logger.
  *
  * @return {Promise}
- * @private
+ * @protected
  */
-app._setupLogger = function() {
+app.setupLogger = function() {
   return Promise.try(function() {
     var appLoggerType = _.keys(app.config.logging).pop();
     app.logger = waigo.load('support/logging/' + appLoggerType).create(app.config, app.config.logging[appLoggerType]);
@@ -58,12 +67,12 @@ app._setupLogger = function() {
 
 
 /**
- * Setup db connection.
+ * Setup database connection.
  *
  * @return {Promise}
- * @private
+ * @protected
  */
-app._setupDatabase = function() {
+app.setupDatabase = function() {
   return Promise.try(function() {
     if (app.config.db) {
       var dbType = _.keys(app.config.db).pop();
@@ -77,12 +86,12 @@ app._setupDatabase = function() {
 
 
 /**
- * Setup Express middleware.
+ * Setup general request middleware that will apply to all incoming requests.
  *
  * @return {Promise}
- * @private
+ * @protected
  */
-app._setupMiddleware = function() {
+app.setupMiddleware = function() {
   return Promise.try(function() {
     app.use(require('koa-response-time')());
     app.use(waigo.load('support/middleware/errorHandler')(app.config.errorHandlerConfig));
@@ -116,9 +125,9 @@ app._setupMiddleware = function() {
  * Setup routes and router middleware.
  *
  * @return {Promise}
- * @private
+ * @protected
  */
-app._setupRoutes = function() {
+app.setupRoutes = function() {
   return Promise.try(function() {
     app.routes = waigo.load('routes');
     waigo.load('support/routeMapper').map(app, app.routes);
@@ -129,12 +138,12 @@ app._setupRoutes = function() {
 
 
 /**
- * Start server.
+ * Start the HTTP server.
  *
  * @return {Promise}
- * @private
+ * @protected
  */
-app._startServer = function() {
+app.startServer = function() {
   return Promise.try(function() {
     app.listen(app.config.port);
     app.logger.info('Server listening on port ' + app.config.port);
@@ -145,21 +154,21 @@ app._startServer = function() {
 
 
 /**
- * Start the node.js server.
+ * Start the Koa application.
  *
- * All application should call into this starting point.
+ * This is a convenience method for initialising the various application parts.
  *
  * @return {Promise}
+ * @public
  */
-app.start = Promise.coroutine(function*() {
-  yield app._loadConfig();
-  yield app._setupLogger();
-  yield app._setupDatabase();
-  yield app._setupMiddleware();
-  yield app._setupRoutes();
-  yield app._startServer();
-});
+app.start = function() {
+  return Promise.spawn(function() {
+    yield app.loadConfig();
+    yield app.setupLogger();
+    yield app.setupDatabase();
+    yield app.setupMiddleware();
+    yield app.setupRoutes();
+    yield app.startServer();
+  });
+};
 
-
-
-module.exports = app;

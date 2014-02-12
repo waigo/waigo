@@ -1,10 +1,9 @@
 /**
- * # Configuration for 'development' mode
+ * # Configuration for 'test' mode
  *
- * This file contains configuration which gets loaded when node is running in `development` mode. It overrides the 
+ * This file contains configuration which gets loaded when node is running in `test` mode. It overrides the 
  * [base configuration](base.js.html).
  */
-
 
 
 /**
@@ -15,9 +14,10 @@ exports.db = {
   mongoose: {
     host: '127.0.0.1',
     port: '27017',
-    db: 'waigo-dev'
+    db: 'waigo-test'
   }
 };
+
 
 
 /**
@@ -38,11 +38,11 @@ exports.logging = {
   winston: {
     // log to console
     console: {
-      // minimum level to log at
-      level: 'info',
+      level: 'debug',
       colorize: true,
       timestamp: true
     }
   }
 };
+
 

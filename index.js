@@ -22,6 +22,7 @@ waigo.__modules = null;
 
 
 
+
 /**
  * Walk given folder hierarchy and return all `.js` files.
  * @return {Promise}
@@ -53,9 +54,19 @@ var _walk = function(folder) {
 };
 
 
+/**
+ * Get absolute path to folder containing Waigo core modules.
+ * @return {string}
+ */
+waigo.getWaigoFolder = function() {
+  return waigoFolder;
+};
+
+
+
 
 /**
- * Get absolute path to folder containing application files.
+ * Get absolute path to folder containing application modules.
  * @return {string}
  */
 waigo.getAppFolder = function() {
@@ -213,7 +224,7 @@ waigo.load = function(moduleName) {
 
   // get source to load from
   var sanitizedModuleName = moduleName,
-    source = 'app';
+    source = null;
 
   var sepPos = moduleName.indexOf(':')
   if (-1 < sepPos) {
@@ -221,15 +232,20 @@ waigo.load = function(moduleName) {
     sanitizedModuleName = moduleName.substr(sepPos + 1);
   }
 
-  debug('Loading module "' + sanitizedModuleName + '" from source "' + source + '"');
-
   if (!waigo.__modules[sanitizedModuleName]) {
     throw new Error('Module not found: ' + sanitizedModuleName);
+  }
+
+  // if no source then use default
+  if (!source) {
+    source = waigo.__modules[sanitizedModuleName]._load;
   }
 
   if (!waigo.__modules[sanitizedModuleName].sources[source]) {
     throw new Error('Module source not found: ' + source);
   }
+
+  debug('Loading module "' + sanitizedModuleName + '" from source "' + source + '"');
 
   return require(waigo.__modules[sanitizedModuleName].sources[source]);
 };
