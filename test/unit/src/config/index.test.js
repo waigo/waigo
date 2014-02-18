@@ -9,8 +9,6 @@ var testBase = require('../../../_base'),
   test = testUtils.createTest(module),
   waigo = testBase.waigo;
 
-waigo.initAsync = Promise.coroutine(waigo.init);
-
 
 test['config loader'] = {
   beforeEach: function(done) {

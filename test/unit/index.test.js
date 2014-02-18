@@ -11,8 +11,6 @@ var testBase = require('../_base'),
   waigo = testBase.waigo;
 
 
-waigo.initAsync = Promise.coroutine(waigo.init);
-
 
 test['app folder'] = {
   'get': function() {

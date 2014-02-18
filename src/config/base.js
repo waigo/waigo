@@ -121,7 +121,7 @@ exports.staticFolder = '../public';
  * Config for request error handler.
  * @type {Object}
  */
-exports.errorHandlerConfig = {
+exports.errorHandler = {
   // whether to show stack traces in error output.
   showStack: false
 };

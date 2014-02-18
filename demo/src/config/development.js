@@ -1,7 +1,7 @@
 exports.session = null;
 
 
-exports.errorHandlerConfig = {
+exports.errorHandler = {
   showStack: true
 };
 

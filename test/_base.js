@@ -4,6 +4,7 @@
  */
 
 var _ = require('lodash'),
+  mkdirp = require('mkdirp'),
   sinon = require('sinon'),
   chai = require("chai"),
   fs = require('fs'),
@@ -19,6 +20,7 @@ fs.existsAsync = Promise.promisify(function(file, cb) {
 });
 
 rimrafAsync = Promise.promisify(rimraf);
+mkdirpAsync = Promise.promisify(mkdirp);
 chai.use(require('sinon-chai'));
 
 
@@ -66,7 +68,7 @@ testUtils.createTestFolders = function() {
   node-findit fails to finish for empty directories, so we create dummy files to prevent this
   https://github.com/substack/node-findit/pull/26
    */
-  return fs.mkdirAsync(testUtils.appFolder)
+  return mkdirpAsync(testUtils.appFolder)
     .then(function() {
       return fs.writeFileAsync(path.join(testUtils.appFolder, 'README'), 'The presence of this file ensures that node-findit works');
     });
@@ -120,28 +122,18 @@ testUtils.createPluginModules = function(name, modules) {
   var pluginFolderPath = path.join(testUtils.pluginsFolder, name),
     srcFolderPath = path.join(pluginFolderPath, 'src');
 
-  return fs.existsAsync(pluginFolderPath)
-    .then(function createPluginFolder(exists) {
-      if (!exists) {
-        return fs.mkdirAsync(pluginFolderPath)
-          .then(function() {
-            return Promise.all([
-              fs.writeFileAsync(path.join(pluginFolderPath, 'package.json'), '{ "name": "' + name + '", "version": "0.0.1" }'),
-              fs.writeFileAsync(path.join(pluginFolderPath, 'index.js'), 'module.exports = {}')
-            ]);
-          });
-      }
+  return mkdirpAsync(pluginFolderPath)
+    .then(function() {
+      return Promise.all([
+        fs.writeFileAsync(path.join(pluginFolderPath, 'package.json'), '{ "name": "' + name + '", "version": "0.0.1" }'),
+        fs.writeFileAsync(path.join(pluginFolderPath, 'index.js'), 'module.exports = {}')
+      ]);
     })
-    .then(function checkIfSrcFolderExists() {
-      return fs.existsAsync(srcFolderPath);
+    .then(function createPluginSrcFolder() {
+      return mkdirpAsync(srcFolderPath);
     })
     .then(function createPluginSrcFolder(exists) {
-      if (!exists) {
-        return fs.mkdirAsync(srcFolderPath)
-          .then(function() {
-            return fs.writeFileAsync(path.join(srcFolderPath, 'README'), 'The presence of this file ensures that node-findit works');
-          });
-      }
+      return fs.writeFileAsync(path.join(srcFolderPath, 'README'), 'The presence of this file ensures that node-findit works');
     })
     .then(function createModules() {
       return testUtils.createModules(srcFolderPath, modules, name);
@@ -193,12 +185,7 @@ testUtils.createModules = function(srcFolder, modules, defaultContent) {
       var fileName = path.join(srcFolder, moduleName) + '.js',
         folderPath = path.dirname(fileName);    
 
-      return fs.existsAsync(folderPath)
-        .then(function createFolderIfNecessary(exists) {
-          if (!exists) {
-            return fs.mkdirAsync(folderPath);
-          }
-        })
+      return mkdirpAsync(folderPath)
         .then(function createModuleFile() {
           return fs.writeFileAsync(fileName, moduleContent);
         });
@@ -217,7 +204,8 @@ testUtils.createModules = function(srcFolder, modules, defaultContent) {
 };
 
 
-
+waigo = require('../index')
+waigo.initAsync = Promise.coroutine(waigo.init);
 
 
 module.exports = {
@@ -225,6 +213,6 @@ module.exports = {
   expect: chai.expect,
   should: chai.should(),
   utils: testUtils,
-  waigo: require('../index')
+  waigo: waigo
 };
 
