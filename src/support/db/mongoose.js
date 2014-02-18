@@ -1,10 +1,20 @@
 mongoose = require('mongoose');
 
+/**
+ * # Mongoose database driver
+ *
+ * For creating MongoDB database connections.
+ */
+
+
 
 /**
- * Create a Mongoose db connection.
+ * Create a database connection.
  *
- * @param dbConfig {Object} configuration.
+ * @param {Object} dbConfig configuration
+ * @param {String} dbConfig.host server host
+ * @param {Integer} dbConfig.port server port
+ * @param {String} dbConfig.db database name
  *
  * @return {Object} db connection.
  */
