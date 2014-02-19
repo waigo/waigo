@@ -10,7 +10,8 @@ var _ = require('lodash'),
  */
 exports.create = function(config) {
   var _render = views(path.join(waigo.getAppFolder(), config.folder), { 
-    ext: config.ext 
+    ext: config.ext,
+    map: config.engine || null 
   });
 
   return {

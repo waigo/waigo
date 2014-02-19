@@ -11,19 +11,25 @@ var testBase = require('../../../_base'),
   waigo = testBase.waigo;
 
 
-test['connects to db'] = function() {
-  var mongoose = require('mongoose');
+test['mongoose'] = {
+  beforeEach: function(done) {
+    waigo.initAsync().nodeify(done);
+  },
 
-  var connectSpy = test.mocker.stub(mongoose, 'connect', function() {});
+  'connects to db': function() {
+    var mongoose = require('mongoose');
 
-  var conn = waigo.load('support/db/mongoose').create({
-    host: 'testhost',
-    port: 1000,
-    db: 'testdb'
-  });
+    var connectSpy = test.mocker.stub(mongoose, 'connect', function() {});
 
-  connectSpy.should.have.been.calledOnce;
-  connectSpy.should.have.been.calledWithExactly('mongodb://testhost:1000/testdb');
+    var conn = waigo.load('support/db/mongoose').create({
+      host: 'testhost',
+      port: 1000,
+      db: 'testdb'
+    });
 
-  conn.should.eql(mongoose.connection);
+    connectSpy.should.have.been.calledOnce;
+    connectSpy.should.have.been.calledWithExactly('mongodb://testhost:1000/testdb');
+
+    conn.should.eql(mongoose.connection);
+  }
 };
