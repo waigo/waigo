@@ -19,7 +19,7 @@ _toViewObject = exports.toViewObject = function(error) {
     return error.toViewObject();
   } else {
     return Promise.resolve({
-      msg: error.toString()
+      msg: error.message
     });
   }
 };
@@ -35,14 +35,12 @@ _toViewObject = exports.toViewObject = function(error) {
  * @param status {Number} HTTP return status code to set.
  */
 var BaseError = exports.BaseError = function(msg, status) {
-  this.message = msg || this.message;
-  this.status = status || this.status;
   BaseError.super_.call(this, this.message);
+  this.name = 'BaseError';
+  this.message = msg || 'An error occurred';
+  this.status = status || 500;
   BaseError.super_.captureStackTrace(this, arguments.callee);
 };
-BaseError.prototype.name = 'BaseError';
-BaseError.prototype.message = 'An error occurred';
-BaseError.prototype.status = 500;
 util.inherits(BaseError, Error);
 /**
  * Get renderable representation of this error.
@@ -59,13 +57,18 @@ BaseError.prototype.toViewObject = function() {
  * Create a subclass of this error type.
  *
  * @param subTypeErrorName {String} name of this new error type.
+ * @param options {Object} additional options.
+ * @param options.message {Object} default error message.
+ * @param options.status {Object} default error status.
  *
  * @return {Function} the subtype class.
  */
-BaseError.createSubType = function(subTypeErrorName) {
+BaseError.createSubType = function(subTypeErrorName, options) {
+  options = options || {};
+
   var error = function(msg, status) {
+    BaseError.call(this, msg || options.message, status || options.status);
     this.name = subTypeErrorName;
-    BaseError.call(this, msg, status);
     Error.captureStackTrace(this, arguments.callee);
   };
   util.inherits(error, BaseError);
@@ -76,16 +79,16 @@ BaseError.createSubType = function(subTypeErrorName) {
 
 
 /**
- * A group of errors.
+ * Multiple errors grouped together.
  *
- * @param errors {Object} key-value map of errors.
+ * @param errors {Object} key-value map of errors, where each value is itself an `Error` instance.
  * @param status {Number} HTTP return status code to set.
  */
 var MultipleError = exports.MultipleError = function(errors, status) {
-  MultipleError.super_.call(this, 'There were multiple errors');
+  MultipleError.super_.call(this, 'There were multiple errors', status);
   this.name = 'MultipleError';
-  this.status = status;
-  this.errors = errors;
+  this.errors = errors || {};
+  Error.captureStackTrace(this, arguments.callee);
 };
 util.inherits(MultipleError, BaseError);
 /**
@@ -106,22 +109,6 @@ MultipleError.prototype.toViewObject = function() {
       };
     });
 };
-
-
-
-/**
- * Form validation errors.
- *
- * This is a special instance of MultipleError.
- *
- * @param errors {Object} key-value map of errors.
- */
-var FormValidationErrors = exports.FormValidationErrors = function() {
-  FormValidationErrors.super_.apply(this, _.toArray(arguments));
-  this.name = 'FormValidationError';
-  this.status = this.status || 400;
-};
-util.inherits(FormValidationErrors, MultipleError);
 
 
 
