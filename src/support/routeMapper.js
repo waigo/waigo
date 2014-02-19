@@ -63,7 +63,7 @@ exports.map = function(app, routes) {
 
     // load all middleware
     mapping.resolvedMiddleware = _.map(middleware, function(ref) {
-      // if reference is of form 'moduleName.methodName' then its a controller reference
+      // if reference is of form 'moduleName.methodName' then it's a controller reference
       var dotPos = ref.indexOf('.');
       if (0 < dotPos) {
         var tokens = ref.split('.'),
