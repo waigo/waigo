@@ -27,6 +27,7 @@ test['html'] = {
         });
       })
       .then(function() {
+        waigo.__modules = {};
         return waigo.initAsync();
       })
       .then(function() {
