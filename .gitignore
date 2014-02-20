@@ -10,4 +10,4 @@ Vagrantfile
 .vagrant
 
 # build
-docs/*
+docs/api/*

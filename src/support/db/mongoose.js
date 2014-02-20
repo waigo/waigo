@@ -1,4 +1,4 @@
-mongoose = require('mongoose');
+var mongoose = require('mongoose');
 
 /**
  * # Mongoose database driver

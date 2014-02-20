@@ -5,7 +5,7 @@ module.exports = (grunt) ->
   config =
     src: 'src'
     test: 'test'
-    docs: 'docs'
+    api_docs: 'api'
 
   grunt.initConfig
     config: config
@@ -15,28 +15,15 @@ module.exports = (grunt) ->
         jshintrc: ".jshintrc"
 
       all: [
-        "<%= config.src %>/{,*/}{,*/}{,*/}{,*/}*.js"
+        "<%= config.src %>/{,*/}{,*/}{,*/}{,*/}{,*/}{,*/}*.js"
       ]
 
-    express:
-      dev:
-        options:
-          script: "<%= config.src %>/start-app.js"
-
     watch:
-      dev:
+      api_docs:
         files: [
           "<%= config.src %>/{,*/}{,*/}{,*/}{,*/}*.js"
         ]
-        tasks: ["express"]
-        options:
-          livereload: true
-          nospawn: true # Without this option specified express won't be reloaded
-      docs:
-        files: [
-          "<%= config.src %>/{,*/}{,*/}{,*/}{,*/}*.js"
-        ]
-        tasks: ["docs"]
+        tasks: ["api_docs"]
       test:
         files: [
           "<%= config.src %>/{,*/}{,*/}{,*/}{,*/}{,*/}{,*/}*.js"
@@ -58,21 +45,16 @@ module.exports = (grunt) ->
         stdout: true
         stderr: true
         failOnError: true
-      doxx:
-        command: 'node_modules/.bin/doxx --source <%= config.src %> --target <%= config.docs %>'
+      api_docs:
+        command: 'node_modules/.bin/doxx --source <%= config.src %> --target <%= config.api_docs %>'
 
-
-  grunt.registerTask "dev", [
-    "express:dev",
-    "watch:dev"
-  ]
 
   grunt.registerTask "test", [ 
     "mochaTest" 
   ]
 
   grunt.registerTask "docs", [ 
-    "shell:doxx" 
+    "shell:api_docs" 
   ]
 
   grunt.registerTask "build", [

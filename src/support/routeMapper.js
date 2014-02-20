@@ -51,7 +51,7 @@ var parseMethodUrl = function(str) {
  * @throws RouteError if there are any problems.
  */
 exports.map = function(app, routes) {
-  var _controllers = app.controllers = {},
+  var controllers = app.controllers = {},
     possibleMappings = [];
 
   _.each(routes, function(middleware, urlPath) {
@@ -71,15 +71,15 @@ exports.map = function(app, routes) {
           methodName = tokens[1];
 
         // load controller if not already done so
-        if (!_controllers[controllerName]) {
-          _controllers[controllerName] = waigo.load('controllers/' + controllerName);
+        if (!controllers[controllerName]) {
+          controllers[controllerName] = waigo.load('controllers/' + controllerName);
         }
 
-        if (!_.isFunction(_controllers[controllerName][methodName])) {
+        if (!_.isFunction(controllers[controllerName][methodName])) {
           throw new RouteError('Unable to find method "' + methodName + '" on controller "' + controllerName + '"');
         }
 
-        return _controllers[controllerName][methodName];
+        return controllers[controllerName][methodName];
       }
       // else it's a middleware reference
       else {

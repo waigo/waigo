@@ -16,7 +16,7 @@ module.exports = function(config) {
   var formatNames = Object.keys(config.formats);
   for (let i=0; i<formatNames.length; ++i) {
     let format = formatNames[i];
-    enabledFormats[format] = waigo.load('support/outputFormats/' + format).create(config.formats[format]);    
+    enabledFormats[format] = waigo.load('support/outputFormats/' + format).create(config.formats[format]);
   }
 
   return function* setoutputFormat(next) {

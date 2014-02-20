@@ -28,7 +28,9 @@ exports.create = function(winstonConfig) {
         });
     }
 
-    if (transport) winstonTransports.push(transport);
+    if (transport) {
+      winstonTransports.push(transport);
+    }
   });
 
   // setup logger

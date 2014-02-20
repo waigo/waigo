@@ -12,7 +12,7 @@ var _ = require('lodash'),
  * @return {*}
  * @private
  */
-var _render = function* _render(context, config, err) {
+var render = function*(context, config, err) {
   try {
     context.status = err.status || 500;
     context.body = yield errors.toViewObject(err);
@@ -47,7 +47,7 @@ module.exports = function(config) {
     try {
       yield next;
     } catch (err) {
-      yield _render(this, config, err);
+      yield render(this, config, err);
     }
   }
 };

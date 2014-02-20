@@ -14,7 +14,7 @@ var _ = require('lodash'),
  *
  * @return {Promise}
  */
-_toViewObject = exports.toViewObject = function(error) {
+var errorToViewObject = exports.toViewObject = function(error) {
   if (_.isFunction(error.toViewObject)) {
     return Promise.resolve(error.toViewObject());
   } else {
@@ -35,11 +35,11 @@ _toViewObject = exports.toViewObject = function(error) {
  * @param status {Number} HTTP return status code to set.
  */
 var BaseError = exports.BaseError = function(msg, status) {
-  BaseError.super_.call(this, this.message);
+  Error.call(this, this.message);
   this.name = 'BaseError';
   this.message = msg || 'An error occurred';
   this.status = status || 500;
-  BaseError.super_.captureStackTrace(this, arguments.callee);
+  Error.captureStackTrace(this, BaseError);
 };
 util.inherits(BaseError, Error);
 /**
@@ -66,13 +66,13 @@ BaseError.prototype.toViewObject = function() {
 BaseError.createSubType = function(subTypeErrorName, options) {
   options = options || {};
 
-  var error = function(msg, status) {
+  var newErrorClass = function(msg, status) {
     BaseError.call(this, msg || options.message, status || options.status);
     this.name = subTypeErrorName;
-    Error.captureStackTrace(this, arguments.callee);
+    Error.captureStackTrace(this, newErrorClass);
   };
-  util.inherits(error, BaseError);
-  return error;
+  util.inherits(newErrorClass, BaseError);
+  return newErrorClass;
 };
 
 
@@ -85,10 +85,10 @@ BaseError.createSubType = function(subTypeErrorName, options) {
  * @param status {Number} HTTP return status code to set.
  */
 var MultipleError = exports.MultipleError = function(errors, status) {
-  MultipleError.super_.call(this, 'There were multiple errors', status);
+  BaseError.call(this, 'There were multiple errors', status);
   this.name = 'MultipleError';
   this.errors = errors || {};
-  Error.captureStackTrace(this, arguments.callee);
+  Error.captureStackTrace(this, MultipleError);
 };
 util.inherits(MultipleError, BaseError);
 /**
@@ -99,7 +99,7 @@ MultipleError.prototype.toViewObject = function() {
 
   return Promise.props(
       _.mapValues(self.errors, function(err) {
-        return _toViewObject(err);
+        return errorToViewObject(err);
       })
     )
     .then(function gotViewObjects(viewObjects) {
