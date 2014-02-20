@@ -89,7 +89,7 @@ exports.session = {
  * Server responses to client requests can be in the formats specified here.
  * @type {Object}
  */
-exports.viewFormats = {
+exports.outputFormats = {
   // List of enabled formats along with options to pass to each formatter. */
   formats: {
     html: {

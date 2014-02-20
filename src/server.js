@@ -134,12 +134,12 @@ app.setupStaticResources = function*() {
 
 
 /**
- * Setup middleware for response view formats.
+ * Setup middleware for response output formats.
  *
  * @protected
  */
-app.setupViewFormats = function*() {
-  app.use(waigo.load('support/middleware/viewFormats')(app.config.viewFormats));
+app.setupOutputFormats = function*() {
+  app.use(waigo.load('support/middleware/outputFormats')(app.config.outputFormats));
 };
 
 
@@ -191,7 +191,7 @@ app.start = function() {
     yield* app.setupErrorHandler();
     yield* app.setupSessions();
     yield* app.setupStaticResources();
-    yield* app.setupViewFormats();
+    yield* app.setupOutputFormats();
 
     yield* app.setupRoutes();
     yield* app.startServer();    

@@ -19,7 +19,7 @@ test['json'] = {
   beforeEach: function(done) {
     waigo.initAsync()
       .then(function() {
-        json = waigo.load('support/viewFormats/json');
+        json = waigo.load('support/outputFormats/json');
       })
       .nodeify(done);
   },
@@ -45,7 +45,7 @@ test['json'] = {
           yield* render.call(ctx, 'test', 'bla');
         })(function(err) {
           try {
-            expect(err.toString()).to.eql('BaseError: Plain object required for JSON view format');
+            expect(err.toString()).to.eql('BaseError: Plain object required for JSON output format');
             resolve();
           } catch(err2) {
             reject(err2);

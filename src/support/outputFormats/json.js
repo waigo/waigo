@@ -6,8 +6,8 @@ var BaseError = waigo.load('support/errors').BaseError;
 
 
 /**
- * Create an instance of this view format.
- * @param config {Object} configuration for this view format.
+ * Create an instance of this output format.
+ * @param config {Object} configuration for this output format.
  */
 exports.create = function(config) {
   return {
@@ -15,7 +15,7 @@ exports.create = function(config) {
       locals = locals || {};
 
       if (!_.isPlainObject(locals)) {
-        throw new BaseError('Plain object required for JSON view format');
+        throw new BaseError('Plain object required for JSON output format');
       }
 
       this.body = locals;

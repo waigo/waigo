@@ -5,8 +5,8 @@ var _ = require('lodash'),
 
 
 /**
- * Create an instance of this view format.
- * @param config {Object} configuration for this view format.
+ * Create an instance of this output format.
+ * @param config {Object} configuration for this output format.
  */
 exports.create = function(config) {
   var _render = views(path.join(waigo.getAppFolder(), config.folder), { 

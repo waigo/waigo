@@ -30,7 +30,7 @@ test['html'] = {
         return waigo.initAsync();
       })
       .then(function() {
-        html = waigo.load('support/viewFormats/html')
+        html = waigo.load('support/outputFormats/html')
         config = { 
           folder: 'views', 
           ext: 'js',

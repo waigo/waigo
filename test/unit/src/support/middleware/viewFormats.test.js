@@ -12,24 +12,24 @@ var testBase = require('../../../../_base'),
   waigo = testBase.waigo;
 
 
-var viewFormats = null,
+var outputFormats = null,
   ctx = null;
 
 
-test['view formats middleware'] = {
+test['output formats middleware'] = {
   beforeEach: function(done) {
     testUtils.deleteTestFolders()
       .then(testUtils.createTestFolders)
       .then(function() {
         testUtils.createAppModules({
-          'support/viewFormats/html2': 'module.exports = { create: function() { return { render: function*() { yield 123; } }; } };'
+          'support/outputFormats/html2': 'module.exports = { create: function() { return { render: function*() { yield 123; } }; } };'
         });
       })
       .then(function() {
         return waigo.initAsync();
       })
       .then(function() {
-        viewFormats = waigo.load('support/middleware/viewFormats');
+        outputFormats = waigo.load('support/middleware/outputFormats');
         ctx = {
           query: {},
           request: {},
@@ -44,21 +44,21 @@ test['view formats middleware'] = {
 
   'invalid format in config': function() {
     expect(function() {
-      viewFormats({
+      outputFormats({
         formats: {
           html3: true          
         }
       });
-    }).to.throw('Module not found: support/viewFormats/html3');
+    }).to.throw('Module not found: support/outputFormats/html3');
   },
 
   'returns middleware': function() {
-    var fn = viewFormats(ctx);
+    var fn = outputFormats(ctx);
     expect(testUtils.isGeneratorFunction(fn)).to.be.true;
   },
 
   'uses default format when not specified': function(done) {
-    var fn = viewFormats({
+    var fn = outputFormats({
       paramName: 'format',
       default: 'json',
       formats: {
@@ -71,13 +71,13 @@ test['view formats middleware'] = {
     })
       .then(function() {
         expect(testUtils.isGeneratorFunction(ctx.render)).to.be.true;
-        expect(ctx.request.viewFormat).to.eql('json');
+        expect(ctx.request.outputFormat).to.eql('json');
       })
       .nodeify(done);
   },
 
   'invalid format in request': function(done) {
-    var fn = viewFormats({
+    var fn = outputFormats({
       paramName: 'format',
       default: 'json',
       formats: {
@@ -96,7 +96,7 @@ test['view formats middleware'] = {
         })
         .catch(function(err){
           try {
-            expect(err.message).to.eql('Invalid view format requested: html');
+            expect(err.message).to.eql('Invalid output format requested: html');
             expect(err.status).to.eql(400);
             resolve();
           } catch (err) {
@@ -110,7 +110,7 @@ test['view formats middleware'] = {
 
 
   'custom format': function(done) {
-    var fn = viewFormats({
+    var fn = outputFormats({
       paramName: 'format',
       default: 'json',
       formats: {
@@ -126,7 +126,7 @@ test['view formats middleware'] = {
     })
       .then(function() {
         expect(testUtils.isGeneratorFunction(ctx.render)).to.be.true;
-        expect(ctx.request.viewFormat).to.eql('html2');
+        expect(ctx.request.outputFormat).to.eql('html2');
       })
       .then(function() {
         Promise.promisify(co(ctx.render))()

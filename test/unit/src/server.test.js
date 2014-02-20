@@ -384,12 +384,12 @@ test['app'] = {
           .nodeify(done);
       }
     },
-    'view formats': {
+    'output formats': {
       beforeEach: function(done) {
         var self = this;
 
       testUtils.createAppModules({
-        'support/middleware/viewFormats': 'module.exports = function() { return Array.prototype.slice.call(arguments); }; '
+        'support/middleware/outputFormats': 'module.exports = function() { return Array.prototype.slice.call(arguments); }; '
       })
         .then(function() {
           return self.resetWaigo();
@@ -403,9 +403,9 @@ test['app'] = {
         var app = this.app,
           appUseSpy = test.mocker.stub(app, 'use');
 
-        app.config.viewFormats = { hello: 'world' };
+        app.config.outputFormats = { hello: 'world' };
 
-        Promise.spawn(app.setupViewFormats)
+        Promise.spawn(app.setupOutputFormats)
           .then(function() {
             appUseSpy.should.have.been.calledOnce;
 
@@ -532,7 +532,7 @@ test['app'] = {
         'setupErrorHandler',
         'setupSessions',
         'setupStaticResources',
-        'setupViewFormats',
+        'setupOutputFormats',
         'setupRoutes',
         'startServer'
       ];
