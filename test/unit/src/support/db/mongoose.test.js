@@ -2,7 +2,7 @@ var moment = require('moment'),
   path = require('path'),
   Promise = require('bluebird');
 
-var testBase = require('../../../_base'),
+var testBase = require('../../../../_base'),
   assert = testBase.assert,
   expect = testBase.expect,
   should = testBase.should,

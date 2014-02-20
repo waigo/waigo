@@ -6,12 +6,11 @@ var _ = require('lodash'),
 /**
  * Create a winston logger.
  *
- * @param appConfig {Object} general app configuration.
  * @param winstonConfig {Object} winston loggin configuration.
  *
  * @return {Object} winston logger.
  */
-exports.create = function(appConfig, winstonConfig) {
+exports.create = function(winstonConfig) {
   var winstonTransports = [];
 
   _.each(_.keys(winstonConfig), function(transportType) {
@@ -22,12 +21,7 @@ exports.create = function(appConfig, winstonConfig) {
         transport = new winston.transports.Console(winstonConfig[transportType]);
         break;
       case 'mongo':
-        var mongoConfig = winstonConfig[transportType];
-
-        mongoConfig.host = appConfig.db.mongoose.host;
-        mongoConfig.db = appConfig.db.mongoose.db;
-
-        transport = new winston.transports.MongoDB(mongoConfig);
+        transport = new winston.transports.MongoDB(winstonConfig[transportType]);
 
         transport.on('error', function(err) {
           console.log('Winston failed to log message to MongoDB', err);

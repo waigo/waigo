@@ -1,4 +1,3 @@
-var Promise = require('bluebird');
 var mongoStore = require('koa-session-mongo');
 
 /**

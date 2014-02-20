@@ -12,11 +12,11 @@ var _ = require('lodash'),
  *
  * @param error {Error} error object.
  *
- * @private
+ * @return {Promise}
  */
 _toViewObject = exports.toViewObject = function(error) {
   if (_.isFunction(error.toViewObject)) {
-    return error.toViewObject();
+    return Promise.resolve(error.toViewObject());
   } else {
     return Promise.resolve({
       msg: error.message

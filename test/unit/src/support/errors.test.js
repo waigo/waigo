@@ -29,6 +29,33 @@ test['errors'] = {
       .nodeify(done);
   },
 
+  'error to view object': {
+    'calls toViewObject if available': function(done) {
+      var e = new errors.BaseError();
+
+      Promise.all([
+        e.toViewObject(),
+        errors.toViewObject(e)
+      ])
+        .spread(function(viewObjOrig, viewObj){
+          viewObjOrig.should.not.be.undefined;
+          viewObjOrig.should.eql(viewObj);
+        })
+        .nodeify(done);
+    },
+    'constructs view object otherwise': function(done) {
+      var e = new Error('test');
+
+      errors.toViewObject(e)
+        .then(function(viewObj){
+          viewObj.should.eql({
+            msg: 'test'
+          });
+        })
+        .nodeify(done);
+    }
+  },
+
   'BaseError': {
     'defaults': function() {
       var e = new errors.BaseError();

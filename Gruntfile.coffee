@@ -39,8 +39,8 @@ module.exports = (grunt) ->
         tasks: ["docs"]
       test:
         files: [
-          "<%= config.src %>/{,*/}{,*/}{,*/}{,*/}*.js"
-          "<%= config.test %>/{,*/}{,*/}{,*/}{,*/}*.js"
+          "<%= config.src %>/{,*/}{,*/}{,*/}{,*/}{,*/}{,*/}*.js"
+          "<%= config.test %>/{,*/}{,*/}{,*/}{,*/}{,*/}{,*/}*.js"
         ]
         tasks: ["mochaTest"]
 
@@ -51,7 +51,7 @@ module.exports = (grunt) ->
           ui: 'exports'
           reporter: 'spec'
           require: 'coffee-script'
-        src: ['<%= config.test %>/{,*/}{,*/}{,*/}{,*/}*.test.js']
+        src: ['<%= config.test %>/{,*/}{,*/}{,*/}{,*/}{,*/}{,*/}*.test.js']
 
     shell:
       options:
