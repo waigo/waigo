@@ -14,7 +14,6 @@ var testBase = require('../../_base'),
 test['app'] = {
   beforeEach: function(done) {
     this.resetWaigo = function() {
-      waigo.__modules = {};
       return waigo.initAsync({
         appFolder: testUtils.appFolder
       });

@@ -33,6 +33,17 @@ testUtils.pluginsFolder = path.join(process.cwd(), 'node_modules');
 
 
 
+/**
+ * Get whether given function is a generator function.
+ * @return {boolean} true if so; false otherwise
+ */
+testUtils.isGeneratorFunction = function(obj) {
+  return obj && obj.constructor && 'GeneratorFunction' == obj.constructor.name;
+};
+
+
+
+
 
 /**
  * Create a test object for the given module.
@@ -204,7 +215,7 @@ testUtils.createModules = function(srcFolder, modules, defaultContent) {
 };
 
 
-waigo = require('../index')
+waigo = require('../index');
 waigo.initAsync = Promise.coroutine(waigo.init);
 
 

@@ -12,15 +12,17 @@ var testBase = require('../../../../_base'),
   waigo = testBase.waigo;
 
 
-var errorHandler = null;
+var errors = null,
+  errorHandler = null;
 
 
-test['html'] = {
+test['error handler middleware'] = {
   beforeEach: function(done) {
     waigo.__modules = {};
     waigo.initAsync()
       .then(function() {
-        errorHandler = waigo.load('support/middleware/errorHandler')
+        errors = waigo.load('support/errors');
+        errorHandler = waigo.load('support/middleware/errorHandler');
       })
       .nodeify(done);
   },
@@ -28,10 +30,68 @@ test['html'] = {
   'returns middleware': function() {
     var fn = errorHandler();
 
-    fn.should.be.instanceof(Function);
-    var gen = fn();
-    gen.should.be.instanceOf(Object);
-  }
+    expect(testUtils.isGeneratorFunction(fn)).to.be.true;
+  },
 
+  'default handling': function(done) {
+    var fn = errorHandler();
+
+    var ctx = {
+      app: waigo.load('server')
+    };
+    ctx.app.logger = {
+      error: test.mocker.spy()
+    };
+
+    var e = new errors.BaseError('bla bla bla', 403);
+
+    var testFn = Promise.promisify(co(function*() {
+      yield* fn.call(ctx, function*() {
+        throw e;
+      });      
+    }));
+
+    testFn()
+      .then(function() {
+        ctx.status.should.eql(403);
+        ctx.body.should.eql({
+          type: 'BaseError',
+          msg: 'bla bla bla'
+        });
+        expect(ctx.body.stack).to.be.undefined;
+        ctx.type.should.eql('json');
+
+        ctx.app.logger.error.should.have.been.calledOnce;
+        ctx.app.logger.error.should.have.been.calledWithExactly('bla bla bla', e);
+      })
+      .nodeify(done);
+  },
+
+  'show stack': function(done) {
+    var fn = errorHandler({
+      showStack: true
+    });
+
+    var ctx = {
+      app: waigo.load('server')
+    };
+    ctx.app.logger = {
+      error: test.mocker.spy()
+    };
+
+    var e = new errors.BaseError('bla bla bla', 403);
+
+    var testFn = Promise.promisify(co(function*() {
+      yield* fn.call(ctx, function*() {
+        throw e;
+      });      
+    }));
+
+    testFn()
+      .then(function() {
+        expect(ctx.body.stack).to.not.be.undefined;
+      })
+      .nodeify(done);
+  }
 
 };

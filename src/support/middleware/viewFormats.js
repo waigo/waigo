@@ -1,5 +1,4 @@
 var _ = require('lodash'),
-  Promise = require('bluebird'),
   views = require('co-views'),
   waigo = require('../../../');
 

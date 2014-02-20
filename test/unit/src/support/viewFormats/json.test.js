@@ -17,7 +17,6 @@ var json = null;
 
 test['json'] = {
   beforeEach: function(done) {
-    waigo.__modules = {};
     waigo.initAsync()
       .then(function() {
         json = waigo.load('support/viewFormats/json');
