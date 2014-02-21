@@ -8,7 +8,7 @@ before_script:
   - "npm install"
 
 script:
-  - "NODE_ENVIRONMENT=test node --harmony `which grunt` build"
+  - "NODE_ENVIRONMENT=test node --harmony `which grunt`"
 
 notifications:
   email:
