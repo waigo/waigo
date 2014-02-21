@@ -15,8 +15,8 @@ Node.js web framework based on [koa](http://koajs.com), using ES6 features such 
 
 ## Documentation
 
-Available on [waigo.org](http://waigo.org).
+Available on [waigojs.com](http://waigojs.com).
 
 ## License
 
-BSD (see LICSENSE.md)
+MIT - see LICENSE.md
