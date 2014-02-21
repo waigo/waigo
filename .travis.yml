@@ -4,11 +4,11 @@ node_js:
   - "0.11"
 
 before_script:
-  - "npm install -g grunt"
+  - "npm install -g grunt-cli"
   - "npm install"
 
 script:
-  - "NODE_ENVIRONMENT=test node --harmony `which grunt`"
+  - "NODE_ENVIRONMENT=test node --harmony `which grunt` build"
 
 notifications:
   email:
