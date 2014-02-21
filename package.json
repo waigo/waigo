@@ -52,7 +52,8 @@
     "doxx": "~0.7.2",
     "mkdirp": "~0.3.5",
     "co": "~3.0.4",
-    "grunt-contrib-jshint": "~0.8.0"
+    "grunt-contrib-jshint": "~0.8.0",
+    "jshint": "git://github.com/hiddentao/jshint.git#85795c258c292ec88b4be4202df0d220ccd52756"
   },
   "keywords": [
     "express",

@@ -5,18 +5,18 @@ module.exports = (grunt) ->
   config =
     src: 'src'
     test: 'test'
-    api_docs: 'api'
+    api_docs: 'docs/api'
 
   grunt.initConfig
     config: config
 
-    jshint:
-      options:
-        jshintrc: ".jshintrc"
+    # jshint:
+    #   options:
+    #     jshintrc: ".jshintrc"
 
-      all: [
-        "<%= config.src %>/{,*/}{,*/}{,*/}{,*/}{,*/}{,*/}*.js"
-      ]
+    #   all: [
+    #     "<%= config.src %>/{,*/}{,*/}{,*/}{,*/}{,*/}{,*/}errorHandler.js"
+    #   ]
 
     watch:
       api_docs:
@@ -45,6 +45,14 @@ module.exports = (grunt) ->
         stdout: true
         stderr: true
         failOnError: true
+      jshint:
+        command: [
+          'node_modules/.bin/jshint --config .jshintrc'
+          '<%= config.src %>/routes.js'
+          '<%= config.src %>/**/*.js'
+          '<%= config.src %>/**/**/*.js' 
+          '<%= config.src %>/**/**/**/*.js' 
+        ].join(' ')
       api_docs:
         command: 'node_modules/.bin/doxx --source <%= config.src %> --target <%= config.api_docs %>'
 
@@ -55,6 +63,10 @@ module.exports = (grunt) ->
 
   grunt.registerTask "docs", [ 
     "shell:api_docs" 
+  ]
+
+  grunt.registerTask "jshint", [ 
+    "shell:jshint" 
   ]
 
   grunt.registerTask "build", [
