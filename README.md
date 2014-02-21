@@ -2,7 +2,7 @@
 
 [![Build Status](https://secure.travis-ci.org/hiddentao/waigo.png)](http://travis-ci.org/hiddentao/waigo) [![NPM module](https://badge.fury.io/js/waigo.png)](https://npmjs.org/package/waigo) [![Code quality](https://codeclimate.com/github/hiddentao/waigo.png)](https://codeclimate.com/github/hiddentao/waigo)
 
-Node.js web framework for based on [koa](http://koajs.com).
+Node.js web framework based on [koa](http://koajs.com), using ES6 features such as generators.
 
 ## Features
 

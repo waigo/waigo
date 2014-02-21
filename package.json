@@ -1,6 +1,6 @@
 {
   "name": "waigo",
-  "description": "Rapid MVC framework built on Koa - UNDER DEVELOPMENT",
+  "description": "Web framework based on koa, using ES6 features",
   "version": "0.1.0",
   "author": {
     "name": "Ramesh Nair",
