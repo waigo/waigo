@@ -2,7 +2,7 @@
 
 [![Build Status](https://secure.travis-ci.org/hiddentao/waigo.png)](http://travis-ci.org/hiddentao/waigo) [![NPM module](https://badge.fury.io/js/waigo.png)](https://npmjs.org/package/waigo) [![Code quality](https://codeclimate.com/github/hiddentao/waigo.png)](https://codeclimate.com/github/hiddentao/waigo)
 
-Next-gen web framework for Node.js based on [koa](http://koajs.com). Uses ES6 features such as generators.
+Next-gen MVC framework for Node.js based on [koa](http://koajs.com). Uses ES6 features such as generators.
 
 ## Features
 
