@@ -25,7 +25,7 @@ test['index template'] = function(done) {
     })
     .then(function check() {
       ctx.render.should.have.been.calledOnce;
-      ctx.render.should.have.been.calledWithExactly('index');
+      ctx.render.should.have.been.calledWithExactly('index', { title: 'Hello world!' });
     })
     .nodeify(done);
 };

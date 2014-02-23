@@ -33,7 +33,7 @@ module.exports = function() {
   var config = _.extend({}, waigo.load('config/base'));
 
   _.extend(config, {
-    mode: process.env.NODE_ENV,
+    mode: process.env.NODE_ENV || 'development',
     user: process.env.USER
   });
 

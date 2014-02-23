@@ -5,6 +5,8 @@ Waigo is a flexible MVC framework for building scalable and maintainable web app
 Based on [koa](http://koajs.com), it uses Javascript ES6 features to provide a cleaner mechanism for asynchronous programming, removing the 
 need for callbacks. It is architected such that any aspect of the core framework functionality can easily be extended or overridden.
 
+_Waigo (and koa underneath it) makes extensive use of [ES6 Generators](http://tobyho.com/2013/06/16/what-are-generators/). It is important you understand how they work if you wish to understand parts of this guide and/or wish to dig into the source code._
+
 # Getting started
 
 Before we go into further details about what Waigo does and what it offers let's get a simple website up and running.
@@ -22,7 +24,43 @@ $ npm install waigo
 
 ## "Hello world"
 
+In this example we will be using the [co](https://github.com/visionmedia/co) library to iterate through our generators. We need to install it:
 
+```shell
+$ npm install co
+```
+
+Create a new Javascript file (e.g. `app.js`) in your project folder with the following contents:
+
+```javascript
+var co = require('co'),
+  waigo = require('waigo');
+
+// Generator co-routine
+co(function*() {
+  // Initialise waigo module loading system
+  yield* waigo.init();
+  // Start the server
+  yield* waigo.load('server').start();
+})(function(err) {
+  console.log(err);  
+});
+```
+
+Let's create our homepage template:
+
+```shell
+$ mkdir -p src/views
+$ echo "{{title}}" > src/views/index.jade
+```
+
+Start the app:
+
+```shell
+$ node --harmony app.js
+```
+
+Visit [http://localhost:3000](http://localhost:3000) and you should see the text _Hello world!_.
 
 
 

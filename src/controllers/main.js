@@ -13,7 +13,9 @@
  * @param {Function} next middleware chain callback.
  */
 exports.index = function*(next) {
-  yield this.render('index');
+  yield this.render('index', {
+    title: 'Hello world!'
+  });
 };
 
 

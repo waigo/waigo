@@ -61,8 +61,8 @@ exports.logging = {
  * @type {Object}
  */
 exports.session = {
-  // keys: ['key1', 'key2'] - these are used for signing cookies (using Keygrip) and should be provided by each app!
-
+  // cookie signing keys - these are used for signing cookies (using Keygrip) and should be set for your app
+  // keys: ['use', 'your', 'own'],
   // session cookie name
   name: 'waigo',
   // session storage
@@ -93,7 +93,7 @@ exports.outputFormats = {
   // List of enabled formats along with options to pass to each formatter. */
   formats: {
     html: {
-      // Folder relative to application folder, in which to look for view templates. */
+      // Folder relative to application root folder, in which to look for view templates. */
       folder: 'views',
       // Default view template filename extension when not explicitly provided. */
       ext: 'jade'

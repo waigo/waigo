@@ -11,13 +11,15 @@
  * Database connection.
  * @type {Object}
  */
-exports.db = {
-  mongoose: {
-    host: '127.0.0.1',
-    port: '27017',
-    db: 'waigo-dev'
-  }
-};
+exports.db = null;
+
+
+/**
+ * Session configuration.
+ * @type {Object}
+ */
+exports.session = null;
+
 
 
 /**

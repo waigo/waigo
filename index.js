@@ -110,7 +110,7 @@ waigo.init = function*(options) {
     
     // based on code from https://github.com/sindresorhus/load-grunt-tasks/blob/master/load-grunt-tasks.js
     var pattern = options.plugins.glob || ['waigo-*'];
-    var config = options.plugins.config || findup('package.json');
+    var config = options.plugins.config || findup('package.json') || {};
     var scope = options.plugins.configKey || ['dependencies', 'devDependencies', 'peerDependencies'];
 
     var names = scope.reduce(function (result, prop) {
