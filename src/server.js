@@ -177,24 +177,21 @@ app.startServer = function*() {
  *
  * This is a convenience method for initialising the various parts of the app and setting up the general middleware chain.
  *
- * @return {Promise}
  * @public
  */
-app.start = function() {
-  return Promise.spawn(function*() {
-    yield* app.loadConfig();
-    yield* app.setupLogger();
-    yield* app.setupDatabase();
+app.start = function*() {
+  yield* app.loadConfig();
+  yield* app.setupLogger();
+  yield* app.setupDatabase();
 
-    // middleware chain for every incoming request
-    yield* app.setupResponseTime();
-    yield* app.setupErrorHandler();
-    yield* app.setupSessions();
-    yield* app.setupStaticResources();
-    yield* app.setupOutputFormats();
+  // middleware chain for every incoming request
+  yield* app.setupResponseTime();
+  yield* app.setupErrorHandler();
+  yield* app.setupSessions();
+  yield* app.setupStaticResources();
+  yield* app.setupOutputFormats();
 
-    yield* app.setupRoutes();
-    yield* app.startServer();    
-  });
+  yield* app.setupRoutes();
+  yield* app.startServer();    
 };
 

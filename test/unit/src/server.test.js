@@ -545,7 +545,7 @@ test['app'] = {
         })(method);
       });
 
-      app.start()
+      Promise.spawn(app.start)
         .then(function() {
           executed.should.eql(methods);
         })

@@ -1,10 +1,49 @@
 # What is Waigo?
 
-Waigo is a flexible MVC framework for Node.js, built using features available in Javascript ES6. Based on [koa](http://koajs.com) it tries to make your life easier and at the same time stays out of your way when not needed.
+Waigo is a flexible MVC framework for building scalable and maintainable web applications.
 
-The core driving philosophy behind Waigo is: **Do It The Way You Want (DITWYW)** - _"ditty"_
+Based on [koa](http://koajs.com), it uses Javascript ES6 features to provide a cleaner mechanism for asynchronous programming, removing the 
+need for callbacks. It is architected such that any aspect of the core framework functionality can easily be extended or overridden.
 
-## Extend and override
+# Getting started
+
+Before we go into further details about what Waigo does and what it offers let's get a simple website up and running.
+
+## Installation
+
+Waigo requires **Node.js v0.11.10 or above**. This along with the command-line `--harmony` flag will give us the ES6 features we need. An easy 
+way to manage multiples versions of Node.js is to use [NVM](https://github.com/creationix/nvm).
+
+Install from NPM:
+
+```shell
+$ npm install waigo
+```
+
+## "Hello world"
+
+
+
+
+
+
+
+# Extend and override
+
+The core driving philosophy behind Waigo is: **Do It The Way You Want ("ditty")**. 
+
+Waigo differs from most other frameworks in that it allows you to extend/override core functionality to your liking. At the heart of Waigo is 
+its module loading system.
+
+
+
+Waigo offers you tools and a structure for your web app but you can extend and/or override any aspect of the core functionality you are 
+dissatisifed with.
+
+Waigo offers plenty of functionality out of the box to help you but at the same times allows you to override aspects of its functionality to your liking.
+
+
+At its heart Waigo 
 
 Almost every bit of functionality within the Waigo core framework can be overridden. 
 
