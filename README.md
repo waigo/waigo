@@ -1,6 +1,6 @@
-[![Build Status](https://secure.travis-ci.org/hiddentao/waigo.png)](http://travis-ci.org/waigo/waigo) [![NPM module](https://badge.fury.io/js/waigo.png)](https://npmjs.org/package/waigo) [![Code quality](https://codeclimate.com/github/waigo/waigo.png)](https://codeclimate.com/github/waigo/waigo)
-
 # What is Waigo?
+
+[![Build Status](https://secure.travis-ci.org/waigo/waigo.png)](http://travis-ci.org/waigo/waigo) [![NPM module](https://badge.fury.io/js/waigo.png)](https://npmjs.org/package/waigo) [![Code quality](https://codeclimate.com/github/waigo/waigo.png)](https://codeclimate.com/github/waigo/waigo)
 
 Waigo is a flexible MVC framework for building scalable and maintainable web applications.
 
@@ -190,18 +190,6 @@ $ DEBUG=waigo-loader node --harmony app.js
 
               //- ul.nav.waigo-docs-sidenav
               //-   li
-              //-     a(href="#overview") Overview
-              //-     ul.nav
-              //-       li
-              //-         a(href="#loader") Module loader
-              //-   li
-              //-     a(href="#gettingStarted") Getting Started
-              //-     ul.nav
-              //-       li
-              //-         a(href="#installation") Installation
-              //-       li
-              //-         a(href="#helloWorld") Example: "Hello World"
-              //-   li
               //-     a(href="#configuration") Configuration files
               //-   li
               //-     a(href="#startup") Startup logic
@@ -218,5 +206,3 @@ $ DEBUG=waigo-loader node --harmony app.js
               //-         a(href="#outputFormats") Output formats
               //-   li
               //-     a(href="#models") Models
-              //-   li
-              //-     a(href="#customization") Customization
