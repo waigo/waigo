@@ -16,7 +16,10 @@ var waigoFolder = path.join(__dirname, 'src'),
   waigo = {};
 
 
-/** Internal module loading configuration. Do not access or manipulate this yourself. This is exposed purely for testing purposes. */  
+/** 
+ * Internal module loading configuration. Do not access or manipulate this yourself. This is exposed purely for testing purposes.
+ * @private
+ */
 waigo.__modules = null;
 
 
@@ -92,7 +95,7 @@ waigo.getAppFolder = function() {
  * @param [options.plugins.names] {Array} plugins to load. If omitted then other options are used to load plugins.
  * @param [options.plugins.glob] {Array} Regexes specifying plugin naming conventions. Default is `waigo-*`.
  * @param [options.plugins.config] {String} JSON config containing names of plugins to load. Default is to load `package.json`.
- * @param [options.plugins.configKey] {Array} Names of keys in JSON config whose values contain names of plugins.
+ * @param [options.plugins.configKey] {Array} Names of keys in JSON config whose values contain names of plugins. Default is `dependencies, devDependencies, peerDependencies`.
  */
 waigo.init = function*(options) {
   if (waigo.__modules) {
