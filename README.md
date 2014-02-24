@@ -4,10 +4,10 @@
 
 Waigo is a flexible MVC framework for building scalable and maintainable web applications.
 
-Based on [koa](http://koajs.com), it provides a cleaner mechanism for asynchronous programming, removing the 
-need for callbacks. Plus almost every aspect of the core framework can be easily extended or overridden.
+Based on [koa](http://koajs.com), it uses a clean mechanism for asynchronous programming, removing the 
+need for callbacks. Almost every aspect of the core framework can be easily extended or overridden.
 
-_Waigo (and koa underneath it) makes extensive use of [ES6 Generators](http://tobyho.com/2013/06/16/what-are-generators/). It is important that you understand how they work if you wish to dig into the source code._
+_Waigo (and koa underneath it) makes extensive use of [ES6 Generators](http://tobyho.com/2013/06/16/what-are-generators/). It is important that you understand how they work if you wish to understand the source code._
 
 # Getting started
 
@@ -178,6 +178,8 @@ To see a list of all available plugins visit [https://www.npmjs.org/browse/keywo
 
 # Configuration
 
+Configuration info is loaded into the Koa app object and is always accessible at `app.config`.
+
 The `src/config` folder holds configuration files loaded by Waigo during app startup. The `base` module file gets loaded first. Additional configuration modules then get loaded in the following order:
  
 1. `config/<node environment>`
@@ -191,9 +193,47 @@ looks for the following module files and loads them if present, in the following
 
 The base configuration object gets _extended_ with each subsequently loaded config module file. This means that in each subsequent file you only need to override the configuration properties that differ.
 
-# Middleware
+
+# Routing
+
+Routes are specified as a mapping in the `routes` module file in the following format:
+
+```javascript
+// in routes.js
+
+module.exports = {
+  'GET /' : 'main.index',
+  'PUT /newUser/:id': ['sanitizeValue', 'checkRequestBodySize', 'main.newUser'],
+  ...
+};
+```
+
+The key specifies the HTTP method (one of: `GET`, `POST`, `PUT`, `DEL`, `OPTIONS` and `HEAD`) and the route URL (relative to `app.config.baseURL`). Parameterized routing is supported thanks to [trie-router](https://github.com/koajs/trie-router).
+
+The value for each key specifies the middleware chain that will handle that route. If the middleware name has a period (`.`) within it it assumed to refer to a `controller.method`. Otherwise it is assumed to be the name of a [middleware](#middleware) module file.
+
+For the above example, Waigo will process the a `PUT` request made to `/newUser` in the following order:
+
+1. Load `support/middleware/sanitizeValue` and pass request to its exported method
+2. Load `support/middleware/checkRequestBodySize` and pass request to its exported method
+3. Load `controllers/main` and pass request to its `newUser` method
+
+## Middleware
 
 Waigo middleware works the same as Koa middleware. All middleware module files can be found under the `support/middleware` path. Additional middleware provided by your app and/or plugins should also sit under this path.
+
+A middleware module file is expected to `export` a function which, when called, returns a generator function to add to the Koa middleware layer. For example:
+
+```javascript
+// in file: support/middleware/example.js
+
+module.exports = function() {
+  return function*(next) {
+    // do nothing and pass through
+    yield next;
+  };
+};
+```
 
 By default the following middleware is applied to all incoming requests:
 
@@ -203,13 +243,81 @@ By default the following middleware is applied to all incoming requests:
 * `sessions` - create and retrieve the active client session
 * `staticResources` - handle requests made to static page resources, e.g. stylesheets, etc.
 
+
+# Controllers
+
+Controllers provide middleware as generator functions. The default controller (`controllers/main`) simply has:
+
+```javascript
+exports.index = function*(next) {
+  yield this.render('index', {
+    title: 'Hello world!'
+  });
+};
+```
+
+A controller must either call `this.render()` or pass control to the `next` middleware in the request chain.
+
+# Models
+
+At present Waigo does not provide a model layer in order to be as flexible as possible. Feel free to use an ORM, ODM, flat files or whatever type of model layer you want.
+
+The default configuration (`app.config.db`) does however create a Mongo database connection using [mongoose](http://mongoosejs.com/). This connection (once established) is available through `app.db`. All supported database connection types are stored in the path `support/db`.
+
+## Sessions
+
+Sessions are available inside middleware using `this.session`:
+
+```javascript
+// inside a controller
+
+exports.index = function*(next) {
+  yield this.render('index', {
+    name: this.session.userName
+  });
+};
+```
+
+Sessions are created and loaded by the `support/middleware/sessions` middleware, which internally uses [koa-session-store](https://github.com/hiddentao/koa-session-store).
+
+By default sessions are stored in a Mongo database (you can re-use the Mongoose database connection) and cookies are issued to clients to keep track of sessions. The session configuration (`app.config.session`) expects you to provide cookie signing keys for use by [Keygrip](https://github.com/jed/keygrip):
+
+```javascript
+exports.session = {
+  // cookie signing keys - these are used for signing cookies (using Keygrip) and should be set for your app
+  // keys: ['use', 'your', 'own'],
+  // session cookie name
+  name: 'waigo',
+  // session storage
+  store: {
+    // session store type
+    type: 'mongo',
+    // session store config
+    config: {
+      url: 'mongodb://127.0.0.1:27017/waigo',
+      collection: 'sessions'
+    }
+  },
+  // more cookie options
+  cookie: {
+    // cookie expires in...
+    validForDays: 7,
+    // cookie valid for url path...
+    path: '/'
+  }
+};
+```
+
+_Note: the default `development` mode configuration has sessions turned off to make it easier to get things running_
+
+
 # Views
 
 Views work the same as in other frameworks, with Jade as the default template language. But the view layer also supports the idea of different output formats.
 
 Having different output formats makes it easy to re-use your route handlers (i.e. controllers) for dfferent types of front-ends. For example, you may wish to build a single-page web app or a mobile app which interacts with your back-end in a similar fashion to your normal web interface. Being able to re-use your controllers to output JSON makes life a easier in such cases.
 
-The relevant section in the default configuration file looks like:
+The relevant configuration section (`app.config.outputFormats`) looks like:
 
 ```javascript
 exports.outputFormats = {
@@ -239,22 +347,24 @@ As you can see, HTML and JSON output formats are supported by default, with the 
 To add your own custom output format:
 
 1. Create a module file under `support/outputFormats/` with your format's name. 
-2. Add your format's name into the `outputFormats` configuration object along with any necessary configuration info.
+2. Add your format's name into the `app.config.outputFormats` configuration object along with any necessary configuration info.
 
-The associated middleware which sets up the output format for a request is located in `support/middleware/outputFormats`. It adds a `render()` method to the middleware context object. In the default controller this gets used as follows:
+The associated middleware which sets up the output format for a request is located in `support/middleware/outputFormats`. It adds a `render()` method to the middleware context object. You use this as as follows:
 
 ```javascript
-exports.index = function*(next) {
-  yield this.render('index', {
-    title: 'Hello world!'
+// in file: controllers/mycontroller.js
+
+exports.userProfile = function*(next) {
+  yield this.render('profile', {
+    id: this.params.userId
   });
 };
 ```
 
-If we were to call the URL mapped to this controller method and append the `format=json` query parameter then the output would be of JSON type. The default JSON output formatter simply outputs the attribute data passed to the template, i.e. the output for above would be:
+If we were to call the URL mapped to this controller method and append the `format=json` query parameter then the output would be of JSON type. The default JSON output formatter simply outputs the attribute data passed to the template, i.e. the output for above (assuming `this.params.userId` is 123) would be:
 
 ```javascript
-{ title: 'Hello world!' }
+{ id: 123 }
 ```
 
 # Logging
@@ -283,7 +393,7 @@ var FileSystemError = errors.BaseError.createSubType('MyNewError', {
 throw new FileSystemError('Error reading image file');
 ```
 
-_Note: Stack traces only get logged if the `showStack` configuration flag is turned on_
+_Note: Stack traces only get logged if the `app.config.errorHandler.showStack` flag is turned on_
 
 
 ## Debugging
@@ -305,14 +415,11 @@ $ DEBUG=waigo-loader node --harmony app.js
   ...
 ``` 
 
+# Contributing
 
+Suggestions, bug reports and pull requests are welcome. Please see [CONTRIBUTING.md](https://github.com/waigo/waigo/blob/master/LICENSE.md) for guidelines.
 
+# License
 
-              //-   li
-              //-     a(href="#middleware") Middleware
-              //-   li
-              //-     a(href="#routing") Routing
-              //-   li
-              //-     a(href="#controllers") Controllers
-              //-   li
-              //-     a(href="#models") Models
+MIT - see [LICENSE.md](https://github.com/waigo/waigo/blob/master/LICENSE.md)
+
