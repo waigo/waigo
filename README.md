@@ -294,7 +294,7 @@ By default sessions are stored in a Mongo database (you can re-use the Mongoose 
 ```javascript
 exports.session = {
   // cookie signing keys - these are used for signing cookies (using Keygrip) and should be set for your app
-  // keys: ['use', 'your', 'own'],
+  keys: ['use', 'your', 'own'],
   // session cookie name
   name: 'waigo',
   // session storage
