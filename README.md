@@ -48,6 +48,13 @@ Promise.spawn(function*() {
   });
 ```
 
+Let's disable database connections and sesssions for now:
+
+```bash
+$ mkdir -p src/config
+$ echo "exports.session = null; exports.db = null;" > src/config/development.js
+```
+
 Finally, we need a template:
 
 ```bash
@@ -132,7 +139,7 @@ Waigo works out which module files are available in the call to `waigo.init()`. 
 1. Subsequent calls to `waigo.load()` are fast _(since we already know what's available and where everything is)_.
 2. It can catch any [plugin conflicts](#plugins) at startup _(rather than later on, when your app is already running)_.
 
-_Note: This method takes an optional configuration parameter which tells it where to find the app's `src` folder and the names of plugins to load, etc. See [API docs](http://waigojs.com/api.html) for more info._
+_Note: This method takes an optional configuration parameter which tells it where to find the app's `src` folder and the names of plugins to load, etc. See [API docs](http://waigojs.com/api) for more info._
 
 ## Plugins
 
@@ -192,6 +199,8 @@ looks for the following module files and loads them if present, in the following
 2. `config/test.www-data`
 
 The base configuration object gets _extended_ with each subsequently loaded config module file. This means that in each subsequent file you only need to override the configuration properties that differ.
+
+The current mode is stored in `app.config.mode` and the user id in `app.config.user`.
 
 
 # Routing
@@ -308,8 +317,6 @@ exports.session = {
 };
 ```
 
-_Note: the default `development` mode configuration has sessions turned off to make it easier to get things running_
-
 
 # Views
 
@@ -369,7 +376,9 @@ If we were to call the URL mapped to this controller method and append the `form
 
 # Logging
 
-Waigo uses [winston]() for its logging. The default logging target (see `config/base`) is a Mongo database. For `development` mode it's the console. All uncaught exceptions and `error` events emitted on the koa app object get logged in this way.
+Waigo provides support for [winston](https://github.com/flatiron/winston) by default. The default Winston logging target (see `config/base`) is a Mongo database. For `development` mode it's set to the console. All uncaught exceptions and `error` events emitted on the koa app object get logged in this way.
+
+You may use any logging library you wish. The `app.config.logging` configuration object both specifies the name of a logger (to be loaded from the `support/logging` path) and configuration to pass to that logger.
 
 ## Error handling
 
@@ -403,7 +412,7 @@ Sometimes in order to fix a problem it's useful to know what's going on inside t
 Waigo makes use of the [debug](https://github.com/visionmedia/debug) utility internally in some parts. For instance, to debug the 
 [loading system](#extend-and-override) run your app with the `DEBUG` environment variable as follows:
 
-```shell
+```bash
 $ DEBUG=waigo-loader node --harmony app.js
   waigo-loader Getting plugin names... +0ms
   waigo-loader Plugins to load:  +15ms
