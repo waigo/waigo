@@ -417,7 +417,7 @@ $ DEBUG=waigo-loader node --harmony app.js
 
 # Contributing
 
-Suggestions, bug reports and pull requests are welcome. Please see [CONTRIBUTING.md](https://github.com/waigo/waigo/blob/master/LICENSE.md) for guidelines.
+Suggestions, bug reports and pull requests are welcome. Please see [CONTRIBUTING.md](https://github.com/waigo/waigo/blob/master/CONTRIBUTING.md) for guidelines.
 
 # License
 
