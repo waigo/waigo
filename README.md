@@ -139,7 +139,7 @@ Waigo works out which module files are available in the call to `waigo.init()`. 
 1. Subsequent calls to `waigo.load()` are fast _(since we already know what's available and where everything is)_.
 2. It can catch any [plugin conflicts](#plugins) at startup _(rather than later on, when your app is already running)_.
 
-_Note: This method takes an optional configuration parameter which tells it where to find the app's `src` folder and the names of plugins to load, etc. See [API docs](http://waigojs.com/api) for more info._
+_Note: This method takes an optional configuration parameter which tells it where to find your app's source folder and the names of plugins to load, etc. See [API docs](http://waigojs.com/api) for more info._
 
 ## Plugins
 
@@ -150,7 +150,7 @@ tree for available module files and register them internally.
 
 Let's say you have a plugin - `waigo-mongo` - which enables the use of MongoDB database connections. And let's say it provides the following module file: `support/db/mongo.js`.
 
-One `waigo.init()` has been called, if you then call `waigo.load('support/db/mongo')` the system will load the module file from the plugin module's `src` folder. If you were to now create `support/db/mongo.js` within your app's `src` folder then the app version would take precendence over the plugin version. 
+One `waigo.init()` has been called, if you then call `waigo.load('support/db/mongo')` the system will load the module file from the plugin module's `src` folder. If you were to now create `support/db/mongo.js` within your app's source folder tree then the app version would take precendence over the plugin version. 
 
 Strictly speaking, location precendence is as follows: **App > Plugins > Waigo framework**.
 
@@ -161,7 +161,7 @@ an error which looks like the following:
 Error: Module "support/db/mongo" has more than one plugin implementation to choose from: waigo-plugin1, waigo-plugin2, ...
 ```
 
-If you don't want to remove one of the offending plugins then pick which plugin's implementation you want to use by providing a version of the module file within your app's folder tree. For example, if you wanted Waigo to use the implementation provided by `waigo-plugin1` then you would do:
+If you don't want to remove one of the offending plugins then pick which plugin's implementation you want to use by providing a version of the module file within your app's source folder tree. For example, if you wanted Waigo to use the implementation provided by `waigo-plugin1` then you would do:
 
 ```javascript
 // in file: <your app folder>/src/support/db/mongo.js
@@ -271,7 +271,7 @@ A controller must either call `this.render()` or pass control to the `next` midd
 
 At present Waigo does not provide a model layer in order to be as flexible as possible. Feel free to use an ORM, ODM, flat files or whatever type of model layer you want.
 
-The default configuration (`app.config.db`) does however create a Mongo database connection using [mongoose](http://mongoosejs.com/). This connection (once established) is available through `app.db`. All supported database connection types are stored in the path `support/db`.
+The default configuration (`app.config.db`) does however create a Mongo database connection using [mongoose](http://mongoosejs.com/). This connection (once established) is available through `app.db`. All supported database connection types are available in the `support/db` module file path.
 
 ## Sessions
 
@@ -349,11 +349,11 @@ exports.outputFormats = {
 };
 ```
 
-As you can see, HTML and JSON output formats are supported by default, with the specific format chosen via a configurable URL query parameter. The actual implementations of each output format can be found in `support/outputFormats/*`. 
+As you can see, HTML and JSON output formats are supported by default, with the specific format chosen via a configurable URL query parameter. The actual implementations of each output format can be found in the `support/outputFormats` module file path. 
 
 To add your own custom output format:
 
-1. Create a module file under `support/outputFormats/` with your format's name. 
+1. Create a module file named after your format in the `support/outputFormats` module file path. 
 2. Add your format's name into the `app.config.outputFormats` configuration object along with any necessary configuration info.
 
 The associated middleware which sets up the output format for a request is located in `support/middleware/outputFormats`. It adds a `render()` method to the middleware context object. You use this as as follows:
