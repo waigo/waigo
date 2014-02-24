@@ -96,7 +96,11 @@ exports.outputFormats = {
       // Folder relative to application root folder, in which to look for view templates. */
       folder: 'views',
       // Default view template filename extension when not explicitly provided. */
-      ext: 'jade'
+      ext: 'jade',
+      // Map file extension to rendering engine
+      engine: {
+        'jade': 'jade'
+      }
     },
     json: {}
   },
