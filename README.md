@@ -4,8 +4,7 @@
 
 Waigo is a flexible MVC framework for building scalable and maintainable web applications.
 
-Based on [koa](http://koajs.com), it uses a clean mechanism for asynchronous programming, removing the 
-need for callbacks. Almost every aspect of the core framework can be easily extended or overridden.
+Based on [koa](http://koajs.com), it uses [generators](http://tobyho.com/2013/06/16/what-are-generators/) for asynchronous programming, removing the need for callbacks. Almost every aspect of the core framework can be easily extended or overridden.
 
 This documentation (along with API docs) is available at [waigojs.com](http://waigojs.com).
 
