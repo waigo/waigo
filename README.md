@@ -135,10 +135,10 @@ yield* waigo.init();
 
 Waigo works out which module files are available in the call to `waigo.init()`. It does this so that:
 
-1. Subsequent calls to `waigo.load()` are fast _(since we already know what's available and where everything is)_.
+1. Subsequent calls to `waigo.load()` are fast _(node's `require()` already caches loaded modules but having this extra optimisation doesn't hurt)_.
 2. It can catch any [plugin conflicts](#plugins) at startup _(rather than later on, when your app is already running)_.
 
-_Note: This method takes an optional configuration parameter which tells it where to find your app's source folder and the names of plugins to load, etc. See [API docs](http://waigojs.com/api) for more info._
+_Note: The `.init()` method scanning for `.js` files in the folder trees of the framework, plugins as well as your app. It is thus recommended that your app's folder tree only contain code that will run in node. Place your front-end scrips in a different folder._
 
 ## Plugins
 
