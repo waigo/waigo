@@ -38,7 +38,11 @@ module.exports = (grunt) ->
           ui: 'exports'
           reporter: 'spec'
           require: 'coffee-script'
-        src: ['<%= config.test %>/{,*/}{,*/}{,*/}{,*/}{,*/}{,*/}*.test.js']
+        src: [
+          '<%= config.test %>/unit/index.test.js'
+          '<%= config.test %>/unit/loader.test.js'
+          '<%= config.test %>/unit/src/{,*/}{,*/}{,*/}{,*/}{,*/}{,*/}*.test.js'
+        ]
 
     shell:
       options:
