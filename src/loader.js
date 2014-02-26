@@ -7,7 +7,12 @@ var _ = require('lodash'),
   globule = require('globule'),
   walk = require('findit');
 
-// Node.js caches loaded modules - so we know this code will only get executed once.
+/** 
+ * # The Loader
+ *
+ * This is the Waigo module loader and is responsible for loading in functionality from the core framework, plugins as well as 
+ * your application. Whenever you call `require('waigo')` it is this module which gets returned.
+ */
 
 
 
