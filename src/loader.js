@@ -10,8 +10,9 @@ var _ = require('lodash'),
 /** 
  * # The Loader
  *
- * This is the Waigo module loader and is responsible for loading in functionality from the core framework, plugins as well as 
- * your application. Whenever you call `require('waigo')` it is this module which gets returned.
+ * This is the Waigo module loader and is responsible for loading in 
+ * functionality from the core framework, plugins as well as your application. 
+ * Whenever you call `require('waigo')` it is this module which gets returned.
  */
 
 
