@@ -1,7 +1,7 @@
 {
   "name": "waigo",
   "description": "Next-gen MVC framework based on koa",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "author": {
     "name": "Ramesh Nair",
     "email": "ram@hiddentao.com"
@@ -21,8 +21,8 @@
     "koa-response-time": "~1.0.x",
     "raw-body": "~1.1.x",
     "co-views": "~0.2.x",
-    "koa-session-mongo": "~1.0.x",
-    "koa-session-store": "~1.0.x",
+    "koa-session-mongo": "~1.x.x",
+    "koa-session-store": "~1.x.x",
     "koa-trie-router": "~1.0.x",
     "debug": "~0.7.x",
     "markdown": "~0.5.x",
