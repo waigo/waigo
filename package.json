@@ -1,7 +1,7 @@
 {
   "name": "waigo",
   "description": "Next-gen MVC framework based on koa",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "author": {
     "name": "Ramesh Nair",
     "email": "ram@hiddentao.com"
