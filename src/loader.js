@@ -1,3 +1,4 @@
+// dependencies
 var _ = require('lodash'),
   debug = require('debug')('waigo-loader'),
   findup = require('findup-sync'),
@@ -7,19 +8,21 @@ var _ = require('lodash'),
   globule = require('globule'),
   walk = require('findit');
 
+
+// some stuff
+var waigoFolder = path.join(__dirname),
+  appFolder = path.join(process.cwd(), 'src'),
+  loader = {};
+
+
 /** 
  * # The Loader
  *
  * This is the Waigo module loader and is responsible for loading in 
- * functionality from the core framework, plugins as well as your application. 
+ * functionality from the core framework, plugins, and from your application. 
  * Whenever you call `require('waigo')` it is this module which gets returned.
  */
 
-
-
-var waigoFolder = path.join(__dirname),
-  appFolder = path.join(process.cwd(), 'src'),
-  loader = {};
 
 
 /** 
@@ -33,8 +36,10 @@ loader.__modules = null;
 
 
 /**
- * Walk given folder hierarchy and return all `.js` files.
+ * Walk given folder and its subfolders and return all `.js` files.
+ * 
  * @return {Promise}
+ * @private
  */
 var _walk = function(folder) {
   return new Promise(function(resolve, reject) {
@@ -63,8 +68,9 @@ var _walk = function(folder) {
 };
 
 
+
 /**
- * Get absolute path to folder containing Waigo core modules.
+ * Get absolute path to folder containing Waigo core framework.
  * @return {string}
  */
 loader.getWaigoFolder = function() {
@@ -75,7 +81,7 @@ loader.getWaigoFolder = function() {
 
 
 /**
- * Get absolute path to folder containing application modules.
+ * Get absolute path to folder containing application code.
  * @return {string}
  */
 loader.getAppFolder = function() {
@@ -86,22 +92,23 @@ loader.getAppFolder = function() {
 
 
 /**
- * Initialise loader.
+ * Initialise the loader.
  *
- * This loads available plugins and ensures that there are no instances of any given module being provided by two or 
- * more plugins. For more information on how Waigo decides where to load modules from see the `load()` method docs.
+ * This scans the folder trees of the core framework, plugins and your application to map out what's available 
+ * and to ensure that there are no instances of any given module file being provided by two or more plugins. 
+ * For more information on how Waigo decides where to load modules from see the `load()` method.
  * 
  * If `options.plugins` is provided then those named plugins get loaded. If not then the remaining options are used to 
- * first work out which plugins to load and then those plugins get loaded. By default the plugin names to load are 
+ * first work out which plugins to load and then those plugins get loaded. By default the plugins to load are 
  * filtered from the dependencies listed within the `package.json` file.
  *
- * @param [options] {Object} loading configuration.
- * @param [options.appFolder] {String} absolute path to folder containing app files. Overrides the default calculated folder.
- * @param [options.plugins] {Object} plugin loading configuration.
- * @param [options.plugins.names] {Array} plugins to load. If omitted then other options are used to load plugins.
- * @param [options.plugins.glob] {Array} Regexes specifying plugin naming conventions. Default is `waigo-*`.
- * @param [options.plugins.config] {String} JSON config containing names of plugins to load. Default is to load `package.json`.
- * @param [options.plugins.configKey] {Array} Names of keys in JSON config whose values contain names of plugins. Default is `dependencies, devDependencies, peerDependencies`.
+ * @param {Object} [options] Loading configuration.
+ * @param {String} [options.appFolder] Absolute path to folder containing app files. Overrides the default calculated folder.
+ * @param {Object} [options.plugins] Plugin loading configuration.
+ * @param {Array} [options.plugins.names] Plugins to load. If omitted then other options are used to load plugins.
+ * @param {Array} [options.plugins.glob] Regexes specifying plugin naming conventions. Default is `waigo-*`.
+ * @param {String} [options.plugins.config] JSON config containing names of plugins to load. Default is to load `package.json`.
+ * @param {Array} [options.plugins.configKey] Names of keys in JSON config whose values contain names of plugins. Default is `dependencies, devDependencies, peerDependencies`.
  */
 loader.init = function*(options) {
   if (loader.__modules) {
@@ -197,17 +204,17 @@ loader.init = function*(options) {
 
 
 /**
- * Load a Waigo module.
+ * Load a Waigo module file.
  *
- * Module names to load are specified in the form:  [module_name:]<module_path>
+ * Names to load are specified in the form:  [npm_module_name:]<module_file_path>
  *
- * If `module_name:` is not given then Waigo works out the which version of the module to load based on the 
- * following priority order:  app folder tree, plugins folder tree, core waigo framework folder tree
+ * If `npm_module_name:` is not given then Waigo works out the which version of the module file to load according to the 
+ * following priority order:  app > plugins > core framework
  *
- * Thus an app can completely override any of the framework's built-in files.
+ * Thus an app can completely override any of the framework's built-in module files.
  *
- * If a call to load the `support/errors` module is made Waigo checks the following paths in order until a 
- * file is found:
+ * For example, when a call to load the `support/errors` module is made Waigo 
+ * checks the following paths in order until a match is found:
  *
  * `<app folder>/support/errors.js`
  * `<waigo plugin 1>/src/support/errors.js`
@@ -216,11 +223,11 @@ loader.init = function*(options) {
  * `<waigo plugin N>/src/support/errors.js`
  * `<waigo module>/src/support/errors.js`
  *
- * If the caller wishes to load the version of the module provided by the `waigo-doc` plugin then the module name 
- * should be specified as `waigo-doc:support/errors`. If on the other hand they wish to load the version provided the 
+ * In the above example, if the caller wishes to explicitly load the version provided by the `waigo-doc` plugin then the parameter 
+ * should be `waigo-doc:support/errors`. If on the other hand they wish to load the version provided the 
  * core Waigo framework then `waigo:support/errors` should be used.
  *
- * @param moduleName {string} module name in supported format. See the docs for this function for more information.
+ * @param {string} moduleFileName Module file name in the supported format (see above).
  *
  * @return {Object} contents of loaded module.
  *
