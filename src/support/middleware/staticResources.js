@@ -22,12 +22,12 @@ var _ = require('lodash'),
  * @return {Function} middleware
  */
 module.exports = function(options) {
-  options = _.extend({
+  var moreOptions = _.extend({
     maxage: 0,
     hidden: false,
     index: 'index.html',
     defer: false
-  }, options);
+  }, options.options);
 
-  return require('koa-static')(path.join(waigo.getAppFolder(), options.folder), options);
+  return require('koa-static')(path.join(waigo.getAppFolder(), options.folder), moreOptions);
 };
