@@ -58,13 +58,9 @@ test['json'] = {
       var render = this.render, 
         ctx = this.ctx;
 
-      var theCall = Promise.promisify(co(function*() {
-        yield* render.call(ctx, 'test', {
+      testUtils.spawn(render, ctx, 'test', {
           hello: 'world'
-        });
-      }));
-
-      theCall()
+      })
         .then(function() {
           expect(ctx.body).to.eql({
             hello: 'world'

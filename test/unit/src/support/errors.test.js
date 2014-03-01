@@ -32,9 +32,7 @@ test['errors'] = {
   'Error.toViewObject': function(done) {
     var err = new Error('test');
 
-    Promise.spawn(function*() {
-      return yield* err.toViewObject();      
-    })
+    testUtils.spawn(err.toViewObject, err)
       .then(function(vo) {
         vo.should.eql({
           type: 'Error',
@@ -64,9 +62,7 @@ test['errors'] = {
     'view object': function(done) {
       var e = new errors.RuntimeError('my msg', 505);
 
-      Promise.spawn(function*() {
-        return yield* e.toViewObject();
-      })
+      testUtils.spawn(e.toViewObject, e)
         .then(function(viewObject) {
           viewObject.should.eql({
             type: 'RuntimeError',
@@ -108,11 +104,7 @@ test['errors'] = {
 
       var e = new errors.MultipleError('blah', 404, multiErrors);
 
-      var toViewObjectCoRoutine = Promise.coroutine(function*() {
-        return yield* e.toViewObject();
-      });
-
-      toViewObjectCoRoutine()
+      testUtils.spawn(e.toViewObject, e)
         .then(function(viewObject) {
           expect(viewObject).to.eql({
             type: 'MultipleError',
@@ -183,8 +175,8 @@ test['errors'] = {
       var eParent = new errors.RuntimeError('my msg', 505);
 
       Promise.all([
-        Promise.spawn(function*() { return yield* e.toViewObject(); }),
-        Promise.spawn(function*() { return yield* eParent.toViewObject(); })
+        testUtils.spawn(e.toViewObject, e),
+        testUtils.spawn(eParent.toViewObject, eParent),
       ])
         .spread(function(child, parent) {
           child.type.should.eql('RuntimeError2');
@@ -199,8 +191,8 @@ test['errors'] = {
       var eParent = new errors.MultipleError('my msg', 505);
 
       Promise.all([
-        Promise.spawn(function*() { return yield* e.toViewObject(); }),
-        Promise.spawn(function*() { return yield* eParent.toViewObject(); })
+        testUtils.spawn(e.toViewObject, e),
+        testUtils.spawn(eParent.toViewObject, eParent),
       ])
         .spread(function(child, parent) {
           child.type.should.eql('MultipleError2');

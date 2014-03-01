@@ -79,11 +79,11 @@ util.inherits(MultipleError, RuntimeError);
  * @return {Object} Plain object.
  */
 MultipleError.prototype.toViewObject = function*(ctx) {
-  var ret = yield* RuntimeError.prototype.toViewObject.call(this, ctx);
+  var ret = yield RuntimeError.prototype.toViewObject.call(this, ctx);
   ret.errors = {};
 
   for (var id in this.errors) {
-    ret.errors[id] = yield* this.errors[id].toViewObject(ctx);
+    ret.errors[id] = yield this.errors[id].toViewObject(ctx);
   }
 
   return ret;

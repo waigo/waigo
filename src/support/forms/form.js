@@ -1,14 +1,17 @@
+'use strict';
+
 var _ = require('lodash'),
   waigo = require('../../../'),
   Promise = require('bluebird'),
   Field = waigo.load('support/forms/field');
 
 
-var BaseError = waigo.load('support/errors').BaseError;
+var errors = waigo.load('support/errors'),
+  mixins = waigo.load('support/mixins');
 
 
 /** @type {Error} A form validation error. */
-var FormValidationError = exports.FormValidationError = BaseError.createSubType('FormValidationError');
+var FormValidationError = exports.FormValidationError = errors.defineSubType(errors.MultipleError, 'FormValidationError');
 
 
 
@@ -22,6 +25,7 @@ var FormValidationError = exports.FormValidationError = BaseError.createSubType(
 var Form = exports.Form = function(config) {
   this.config = config || {};
 };
+mixins.extend(Form, mixins.HasViewObject);
 
 
 
@@ -33,15 +37,15 @@ var Form = exports.Form = function(config) {
  * @return {Object} `String` -> `Field` mappings.
  */
 Form.prototype.getFields = function*() {
-  if (!this._fields) {
-    this._fields = {};
+  if (!this.fields) {
+    this.fields = {};
 
-    for (fieldName in this.config.fields) {
-      this._fields[fieldName] = Field.create(fieldName, this.config.fields[fieldName]);
+    for (let fieldName in this.config.fields) {
+      this.fields[fieldName] = Field.create(fieldName, this.config.fields[fieldName]);
     }
   }
 
-  return this._fields;
+  return this.fields;
 };
 
 
@@ -53,11 +57,11 @@ Form.prototype.getFields = function*() {
  * @param {Object} fieldContents Mapping from field name to field value.
  */
 Form.prototype.setContents = function*(formContents) {
-  var fields = yield this._getFields();
+  var fields = yield this.getFields();
 
   formContents = formContents || {};
 
-  for (fieldName in fields) {
+  for (let fieldName in fields) {
     yield fields[fieldName].setValue(formContents[fieldName]);
   }
 };
@@ -74,7 +78,7 @@ Form.prototype.validate = function*() {
   var fields = yield this.getFields(),
     errors = null;
 
-  for (fieldName in fields) {
+  for (let fieldName in fields) {
     try {
       yield fields[fieldName].validate();
     } catch (err) {
@@ -87,7 +91,7 @@ Form.prototype.validate = function*() {
   }
 
   if (errors) {
-    throw new FormValidationError(errors);
+    throw new FormValidationError('Form validation failed', 400, errors);
   }
 };
 
@@ -96,24 +100,21 @@ Form.prototype.validate = function*() {
 
 
 /**
- * Get render-able representation of this form.
- *
- * Output will include values for form fields.
- *
- * @return {Promise} resolves to JSON object
+ * Get renderable representation of this form.
+ * @see mixins
  */
 Form.prototype.toViewObject = function*() {
   var fields = yield this.getFields(),
     fieldViewObjects = {};
 
-  for (fieldName in fields) {
+  for (let fieldName in fields) {
     fieldViewObjects[fieldName] = yield fields[fieldName].validate();
   }
 
   return {
-    id: self.config.id,
-    submitLabel: self.config.submitLabel || 'Submit',
-    fields: fieldViewObjects    
+    id: this.config.id,
+    submitLabel: this.config.submitLabel || 'Submit',
+    fields: fieldViewObjects
   }
 };
 

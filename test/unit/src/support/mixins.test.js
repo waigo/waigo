@@ -54,7 +54,7 @@ test['mixins'] = {
 
   'Mixin: HasViewObject': {
     'toViewObject': function(done) {
-      Promise.spawn(function*() {
+      testUtils.spawn(function*() {
         try {
           yield* mixins.HasViewObject.toViewObject();
           throw new Error('should not be here');

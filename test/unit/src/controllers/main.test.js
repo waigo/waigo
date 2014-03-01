@@ -19,9 +19,7 @@ test['index template'] = function(done) {
     .then(function invokeControllerMethod() {
       var controller = waigo.load('controllers/main');
 
-      return Promise.spawn(function *() {
-        yield* controller.index.call(ctx);
-      });
+      return testUtils.spawn(controller.index, ctx);
     })
     .then(function check() {
       ctx.render.should.have.been.calledOnce;

@@ -4,6 +4,7 @@
  */
 
 var _ = require('lodash'),
+  co = require('co'),
   mkdirp = require('mkdirp'),
   sinon = require('sinon'),
   chai = require("chai"),
@@ -39,6 +40,21 @@ testUtils.pluginsFolder = path.join(process.cwd(), 'node_modules');
  */
 testUtils.isGeneratorFunction = function(obj) {
   return obj && obj.constructor && 'GeneratorFunction' == obj.constructor.name;
+};
+
+
+
+
+/**
+ * Spawn a Bluebird + co coroutine around given generator function.
+ * @return {Function} Function which returns a Promise.
+ */
+testUtils.spawn = function(generatorFunction, thisObject, arg1) {
+  var args = _.toArray(arguments).slice(2);
+  
+  return Promise.promisify(co(function*() {
+    return yield generatorFunction.apply(thisObject, args);
+  }))();
 };
 
 

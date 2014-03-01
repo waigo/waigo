@@ -61,13 +61,9 @@ test['html'] = {
       var render = this.render, 
         ctx = this.ctx;
 
-      var theCall = Promise.promisify(co(function*() {
-        yield* render.call(ctx, 'test');
-      }));
-
-      theCall()
+      testUtils.spawn(render, ctx, 'test_params')
         .then(function() {
-          expect(ctx.body).to.eql('<p>hello!</p>');                     
+          expect(ctx.body).to.eql('<p>hello !</p>');                     
           expect(ctx.type).to.eql('html');                     
         })
         .nodeify(done);
@@ -76,11 +72,7 @@ test['html'] = {
       var render = this.render, 
         ctx = this.ctx;
 
-      var theCall = Promise.promisify(co(function*() {
-        yield* render.call(ctx, 'test_params', { text: 'world' });
-      }));
-
-      theCall()
+      testUtils.spawn(render, ctx, 'test_params', { text: 'world' })
         .then(function() {
           expect(ctx.body).to.eql('<p>hello world!</p>');                     
           expect(ctx.type).to.eql('html');                     
@@ -91,17 +83,15 @@ test['html'] = {
       var render = this.render, 
         ctx = this.ctx;
 
-      var theCall = Promise.promisify(co(function*() {
+      testUtils.spawn(function*() {
         ctx.app = {
           locals: {
             text: 'sheep'
           }
         };
 
-        yield* render.call(ctx, 'test_params');
-      }));
-
-      theCall()
+        yield render.call(ctx, 'test_params');
+      })
         .then(function() {
           expect(ctx.body).to.eql('<p>hello sheep!</p>');                     
           expect(ctx.type).to.eql('html');                     

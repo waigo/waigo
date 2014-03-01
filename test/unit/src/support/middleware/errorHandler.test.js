@@ -45,13 +45,9 @@ test['error handler middleware'] = {
 
     var e = new errors.RuntimeError('bla bla bla', 403);
 
-    var testFn = Promise.promisify(co(function*() {
-      yield* fn.call(ctx, function*() {
-        throw e;
-      });      
-    }));
-
-    testFn()
+    testUtils.spawn(fn, ctx, function*(){ 
+      throw e;
+    })
       .then(function() {
         ctx.status.should.eql(403);
         ctx.body.should.eql({
@@ -81,13 +77,9 @@ test['error handler middleware'] = {
 
     var e = new errors.RuntimeError('bla bla bla', 403);
 
-    var testFn = Promise.promisify(co(function*() {
-      yield* fn.call(ctx, function*() {
-        throw e;
-      });      
-    }));
-
-    testFn()
+    testUtils.spawn(fn, ctx, function*(){ 
+      throw e;
+    })
       .then(function() {
         expect(ctx.body.stack).to.not.be.undefined;
       })

@@ -66,9 +66,7 @@ test['output formats middleware'] = {
       }
     });
 
-    Promise.spawn(function*() {
-      yield* fn.call(ctx, Promise.resolve(true));
-    })
+    testUtils.spawn(fn, ctx, function*(){})
       .then(function() {
         expect(testUtils.isGeneratorFunction(ctx.render)).to.be.true;
         expect(ctx.request.outputFormat).to.eql('json');
@@ -88,9 +86,7 @@ test['output formats middleware'] = {
     ctx.query.format = 'html';
 
     new Promise(function(resolve, reject) {
-      Promise.spawn(function*() {
-        yield* fn.call(ctx, true);
-      })
+      testUtils.spawn(fn, ctx, true)
         .then(function() {
           reject(new Error('should have failed'));
         })
@@ -121,15 +117,13 @@ test['output formats middleware'] = {
 
     ctx.query.format = 'html2';
 
-    Promise.spawn(function*() {
-      yield* fn.call(ctx, Promise.resolve(true));
-    })
+    testUtils.spawn(fn, ctx, function*() {})
       .then(function() {
         expect(testUtils.isGeneratorFunction(ctx.render)).to.be.true;
         expect(ctx.request.outputFormat).to.eql('html2');
       })
       .then(function() {
-        Promise.promisify(co(ctx.render))()
+        testUtils.spawn(ctx.render, ctx)
           .then(function(value) {
             expect(value).to.eql(123);
           });
