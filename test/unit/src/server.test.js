@@ -532,8 +532,8 @@ test['app'] = {
         'setupDatabase', 
         'setupResponseTime',
         'setupErrorHandler',
-        'setupSessions',
         'setupStaticResources',
+        'setupSessions',
         'setupOutputFormats',
         'setupRoutes',
         'startServer'

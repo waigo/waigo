@@ -200,8 +200,8 @@ app.start = function*() {
   // middleware chain for every incoming request
   yield* app.setupResponseTime();
   yield* app.setupErrorHandler();
-  yield* app.setupSessions();
   yield* app.setupStaticResources();
+  yield* app.setupSessions();
   yield* app.setupOutputFormats();
 
   yield* app.setupRoutes();
