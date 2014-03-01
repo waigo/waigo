@@ -23,7 +23,9 @@ test['static resources middleware'] = {
 
     var pathJoinSpy = test.mocker.spy(path, 'join');
 
-    var fn = m('static');
+    var fn = m({
+      folder: 'static'
+    });
 
     expect(testUtils.isGeneratorFunction(fn)).to.be.true;
 

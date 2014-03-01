@@ -136,8 +136,8 @@ app.setupSessions = function*() {
  * @protected
  */
 app.setupStaticResources = function*() {
-  debug('Setting up static resources: ' + app.config.staticFolder);
-  app.use(waigo.load('support/middleware/staticResources')(app.config.staticFolder));
+  debug('Setting up static resources');
+  app.use(waigo.load('support/middleware/staticResources')(app.config.staticResources));
 };
 
 

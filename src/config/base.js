@@ -115,10 +115,17 @@ exports.outputFormats = {
 
 
 /**
- * Static resources (relative to app root folder).
- * @type {String}
+ * Static resources.
+ * @type {Object}
  */
-exports.staticFolder = '../public';
+exports.staticResources = {
+  // relative to app folder
+  folder: '../public',  
+  // see support/middleware/staticResources for options
+  options: {}
+};
+
+
 
 
 /**

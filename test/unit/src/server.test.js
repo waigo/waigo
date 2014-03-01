@@ -256,7 +256,7 @@ test['app'] = {
         var self = this;
 
         testUtils.createAppModules({
-            'support/middleware/staticResources': 'module.exports = function(staticFolder) { return function*() { yield staticFolder; }; }; '
+            'support/middleware/staticResources': 'module.exports = function(options) { return function*() { yield options; }; }; '
           })
             .then(function() {
               return self.resetWaigo();
@@ -271,7 +271,12 @@ test['app'] = {
           appUseSpy = test.mocker.spy(app, 'use');
 
         app.config = {
-          staticFolder: 'blahblah'
+          staticResources: {
+            folder: 'blahblah',
+            options: {
+              hello: 'world'
+            }
+          }
         };
 
         Promise.spawn(app.setupStaticResources)
@@ -282,7 +287,12 @@ test['app'] = {
 
             var gen = fn();
             var value = gen.next().value;
-            expect(value).to.eql('blahblah');
+            expect(value).to.eql({
+              folder: 'blahblah',
+              options: {
+                hello: 'world'
+              }              
+            });
           })
           .nodeify(done);
       }

@@ -17,7 +17,7 @@
     "moment": "~2.4.x",
     "bluebird": "~0.11.x",
     "koa": "~0.5.x",
-    "koa-static": "~1.3.x",
+    "koa-static": "~1.4.x",
     "koa-response-time": "~1.0.x",
     "raw-body": "~1.1.x",
     "co-views": "~0.2.x",
