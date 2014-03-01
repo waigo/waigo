@@ -497,13 +497,15 @@ test['app'] = {
         info: test.mocker.stub()
       };
 
+      app.config.mode = 'blah';
+
       Promise.spawn(app.startServer)
         .then(function() {
           app.listen.should.have.been.calledOnce;
           app.listen.should.have.been.calledWithExactly(3000);
 
           app.logger.info.should.have.been.calledOnce;
-          app.logger.info.should.have.been.calledWithExactly('Server listening on port 3000 (baseURL: http://dummy:4334)');
+          app.logger.info.should.have.been.calledWithExactly('Server listening in blah mode on port 3000 (baseURL: http://dummy:4334)');
         })
         .nodeify(done);
     }
