@@ -483,7 +483,8 @@ test['app'] = {
           self.app = waigo.load('server');
 
           self.app.config = {
-            port: 3000
+            port: 3000,
+            baseURL: 'http://dummy:4334'
           };
         })
         .nodeify(done);      
@@ -502,7 +503,7 @@ test['app'] = {
           app.listen.should.have.been.calledWithExactly(3000);
 
           app.logger.info.should.have.been.calledOnce;
-          app.logger.info.should.have.been.calledWithExactly('Server listening on port 3000');
+          app.logger.info.should.have.been.calledWithExactly('Server listening on port 3000 (baseURL: http://dummy:4334)');
         })
         .nodeify(done);
     }

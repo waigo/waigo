@@ -166,7 +166,7 @@ app.setupRoutes = function*() {
  */
 app.startServer = function*() {
   app.listen(app.config.port);
-  app.logger.info('Server listening on port ' + app.config.port);
+  app.logger.info('Server listening on port ' + app.config.port + ' (baseURL: ' + app.config.baseURL + ')');
 };
 
 
