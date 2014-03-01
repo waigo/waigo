@@ -88,7 +88,6 @@ test['app'] = {
       Promise.spawn(self.app.setupLogger)
         .then(function() {
           self.app.logger.should.eql([ 
-            self.app.config,
             {'hello': 'world'}
           ]);
         })

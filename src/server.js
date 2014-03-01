@@ -1,4 +1,5 @@
 var _ = require('lodash'),
+  debug = require('debug')('waigo-server'),
   koa = require('koa'),
   path = require('path'),
   Promise = require('bluebird'),
@@ -30,6 +31,7 @@ require('koa-trie-router')(app);
  * @protected
  */
 app.loadConfig = function*() {
+  debug('Loading configuration');
   app.config = waigo.load('config/index')();
 };
 
@@ -44,7 +46,8 @@ app.loadConfig = function*() {
  */
 app.setupLogger = function*() {
   var appLoggerType = _.keys(app.config.logging).pop();
-  app.logger = waigo.load('support/logging/' + appLoggerType).create(app.config, app.config.logging[appLoggerType]);
+  debug('Setting up logger: ' + appLoggerType);
+  app.logger = waigo.load('support/logging/' + appLoggerType).create(app.config.logging[appLoggerType]);
 
   process.on('uncaughtException', function(err) {
     app.logger.error('Uncaught exception', err.stack);
@@ -66,6 +69,7 @@ app.setupLogger = function*() {
 app.setupDatabase = function*() {
   if (app.config.db) {
     var dbType = _.keys(app.config.db).pop();
+    debug('Setting up database connection : ' + dbType);
     app.db = waigo.load('support/db/' + dbType).create(app.config.db[dbType]);
   }
 };
@@ -78,6 +82,7 @@ app.setupDatabase = function*() {
  * @protected
  */
 app.setupResponseTime = function*() {
+  debug('Setting up X-Response-Time middleware');
   app.use(waigo.load('support/middleware/responseTime')());
 };
 
@@ -89,6 +94,7 @@ app.setupResponseTime = function*() {
  * @protected
  */
 app.setupErrorHandler = function*() {
+  debug('Setting up error handler middleware');
   app.use(waigo.load('support/middleware/errorHandler')(app.config.errorHandler));
 };
 
@@ -106,6 +112,9 @@ app.setupSessions = function*() {
     if (!sessionConfig.keys) {
       throw new Error('Please specify cookie signing keys (session.keys) in the config file.');
     }
+
+    debug('Setting up sessions');
+
     app.keys = sessionConfig.keys;
     app.use(waigo.load('support/middleware/sessions')({
       name: sessionConfig.name,
@@ -127,6 +136,7 @@ app.setupSessions = function*() {
  * @protected
  */
 app.setupStaticResources = function*() {
+  debug('Setting up static resources: ' + app.config.staticFolder);
   app.use(waigo.load('support/middleware/staticResources')(app.config.staticFolder));
 };
 
@@ -139,6 +149,7 @@ app.setupStaticResources = function*() {
  * @protected
  */
 app.setupOutputFormats = function*() {
+  debug('Setting up output formats');
   app.use(waigo.load('support/middleware/outputFormats')(app.config.outputFormats));
 };
 
@@ -152,6 +163,7 @@ app.setupOutputFormats = function*() {
  * @protected
  */
 app.setupRoutes = function*() {
+  debug('Setting up routes');
   app.routes = waigo.load('routes');
   waigo.load('support/routeMapper').map(app, app.routes);
   app.use(app.router);
@@ -165,6 +177,7 @@ app.setupRoutes = function*() {
  * @protected
  */
 app.startServer = function*() {
+  debug('Starting HTTP server');
   app.listen(app.config.port);
   app.logger.info('Server listening in ' + app.config.mode + ' mode on port ' + app.config.port + ' (baseURL: ' + app.config.baseURL + ')');
 };
