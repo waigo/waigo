@@ -9,8 +9,8 @@ var _ = require('lodash'),
   waigo = require('../../');
 
 
-var BaseError = waigo.load('support/errors').BaseError;
-var RouteError = exports.RouteError = BaseError.createSubType('RouteError');
+var errors = waigo.load('support/errors'),
+  RouteError = exports.RouteError = errors.defineSubType(errors.RuntimeError, 'RouteError');
 
 
 

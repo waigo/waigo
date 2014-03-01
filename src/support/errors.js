@@ -7,107 +7,109 @@ var _ = require('lodash'),
   util = require('util');
 
 
-/**
- * Convert given error to view object.
- *
- * @param error {Error} error object.
- *
- * @return {Promise}
- */
-var errorToViewObject = exports.toViewObject = function(error) {
-  if (_.isFunction(error.toViewObject)) {
-    return Promise.resolve(error.toViewObject());
-  } else {
-    return Promise.resolve({
-      msg: error.message
-    });
-  }
-};
+var waigo = require('../../'),
+  mixins = waigo.load('support/mixins');
+
+
+mixins.extend(Error, mixins.HasViewObject);
 
 
 
-
-
-/**
- * Base error class.
- *
- * @param msg {String} error message.
- * @param status {Number} HTTP return status code to set.
- */
-var BaseError = exports.BaseError = function(msg, status) {
-  Error.call(this, this.message);
-  this.name = 'BaseError';
-  this.message = msg || 'An error occurred';
-  this.status = status || 500;
-  Error.captureStackTrace(this, BaseError);
-};
-util.inherits(BaseError, Error);
 /**
  * Get renderable representation of this error.
  *
- * @return {Promise}
+ * You should use `BaseError`-derived error classes instead of one as they provide a number of useful features.
+ *
+ * @see mixins
+ * @return {Object} Plain object.
  */
-BaseError.prototype.toViewObject = function() {
-  return Promise.resolve({
-    type: this.name,
+Error.prototype.toViewObject = function*(ctx) {
+  return {
+    type: this.name || 'Error',
     msg: this.message
-  });
-};
-/**
- * Create a subclass of this error type.
- *
- * @param subTypeErrorName {String} name of this new error type.
- * @param options {Object} additional options.
- * @param options.message {Object} default error message.
- * @param options.status {Object} default error status.
- *
- * @return {Function} the subtype class.
- */
-BaseError.createSubType = function(subTypeErrorName, options) {
-  options = options || {};
-
-  var newErrorClass = function(msg, status) {
-    BaseError.call(this, msg || options.message, status || options.status);
-    this.name = subTypeErrorName;
-    Error.captureStackTrace(this, newErrorClass);
   };
-  util.inherits(newErrorClass, BaseError);
-  return newErrorClass;
 };
+
+
+
+/**
+ * Runtime error.
+ *
+ * This represents an error which occurred. Always better to use this rather than `Error` since other error classes derive from this.
+ *
+ * @param {String} msg Error message.
+ * @param {Number} status HTTP return status code to set.
+ */
+var RuntimeError = exports.RuntimeError = function(msg, status) {
+  Error.call(this);
+  this.name = 'RuntimeError';
+  this.message = msg || 'An error occurred';
+  this.status = status || 500;
+  Error.captureStackTrace(this, RuntimeError);
+};
+util.inherits(RuntimeError, Error);
+
+
+
 
 
 
 
 /**
- * Multiple errors grouped together.
+ * Multiple request errors grouped together.
  *
- * @param errors {Object} key-value map of errors, where each value is itself an `Error` instance.
- * @param status {Number} HTTP return status code to set.
+ * This error represents a group of related `Error` instances.
+ *
+ * @param {Object} errors Map of errors, where each value is itself a `Error` instance.
+ * @param {Number} status HTTP return status code to set.
  */
-var MultipleError = exports.MultipleError = function(errors, status) {
-  BaseError.call(this, 'There were multiple errors', status);
+var MultipleError = exports.MultipleError = function(msg, status, errors) {
+  RuntimeError.call(this, msg || 'Multiple errors occurred', status);
   this.name = 'MultipleError';
   this.errors = errors || {};
   Error.captureStackTrace(this, MultipleError);
 };
-util.inherits(MultipleError, BaseError);
-/**
- * @see BaseError#toViewObject
- */
-MultipleError.prototype.toViewObject = function() {
-  var self = this;
+util.inherits(MultipleError, RuntimeError);
 
-  return Promise.props(
-      _.mapValues(self.errors, function(err) {
-        return errorToViewObject(err);
-      })
-    )
-    .then(function gotViewObjects(viewObjects) {
-      return {
-        type: self.name,
-        errors: viewObjects
-      };
-    });
+
+/**
+ * Get renderable representation of this error.
+ *
+ * @see mixins
+ * @return {Object} Plain object.
+ */
+MultipleError.prototype.toViewObject = function*(ctx) {
+  var ret = yield* RuntimeError.prototype.toViewObject.call(this, ctx);
+  ret.errors = {};
+
+  for (var id in this.errors) {
+    ret.errors[id] = yield* this.errors[id].toViewObject(ctx);
+  }
+
+  return ret;
+};
+
+
+
+
+/**
+ * Create a subclass of given error class.
+ *
+ * This is a convenience method for quickly creating custom error classes which apply to a specific area of one's application.
+ *
+ * @param {Class} baseClass The base class (should be a subtype of `Error`) to inherit from.
+ * @param {String} newClassName Name of this new error class.
+ *
+ * @return {Function} The new error class.
+ */
+exports.defineSubType = function(baseClass, newClassName) {
+  var newErrorClass = function() {
+    (baseClass).apply(this, arguments);
+    this.name = newClassName;
+    Error.captureStackTrace(this, newErrorClass);
+  };
+  util.inherits(newErrorClass, (baseClass));
+  return newErrorClass;
 };
 
 

@@ -2,7 +2,7 @@ var _ = require('lodash'),
   path = require('path'),
   waigo = require('../../../');
 
-var BaseError = waigo.load('support/errors').BaseError;
+var errors = waigo.load('support/errors');
 
 
 /**
@@ -15,7 +15,7 @@ exports.create = function(config) {
       locals = locals || {};
 
       if (!_.isPlainObject(locals)) {
-        throw new BaseError('Plain object required for JSON output format');
+        throw new errors.RuntimeError('Plain object required for JSON output format');
       }
 
       this.body = locals;

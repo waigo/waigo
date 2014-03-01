@@ -43,7 +43,7 @@ test['error handler middleware'] = {
       error: test.mocker.spy()
     };
 
-    var e = new errors.BaseError('bla bla bla', 403);
+    var e = new errors.RuntimeError('bla bla bla', 403);
 
     var testFn = Promise.promisify(co(function*() {
       yield* fn.call(ctx, function*() {
@@ -55,7 +55,7 @@ test['error handler middleware'] = {
       .then(function() {
         ctx.status.should.eql(403);
         ctx.body.should.eql({
-          type: 'BaseError',
+          type: 'RuntimeError',
           msg: 'bla bla bla'
         });
         expect(ctx.body.stack).to.be.undefined;
@@ -79,7 +79,7 @@ test['error handler middleware'] = {
       error: test.mocker.spy()
     };
 
-    var e = new errors.BaseError('bla bla bla', 403);
+    var e = new errors.RuntimeError('bla bla bla', 403);
 
     var testFn = Promise.promisify(co(function*() {
       yield* fn.call(ctx, function*() {

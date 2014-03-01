@@ -3,7 +3,7 @@
 var views = require('co-views'),
   waigo = require('../../../');
 
-var BaseError = waigo.load('support/errors').BaseError;
+var errors = waigo.load('support/errors');
 
 /**
  * Build output formats middleware.
@@ -24,7 +24,7 @@ module.exports = function(config) {
 
     // check format is valid
     if (requestedFormat && !enabledFormats[requestedFormat]) {
-      throw new BaseError('Invalid output format requested: ' + requestedFormat, 400);
+      throw new errors.RuntimeError('Invalid output format requested: ' + requestedFormat, 400);
     }
 
     // if all ok then attach renderer

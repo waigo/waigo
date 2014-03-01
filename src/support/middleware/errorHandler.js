@@ -15,7 +15,7 @@ var _ = require('lodash'),
 var render = function*(context, config, err) {
   try {
     context.status = err.status || 500;
-    context.body = yield errors.toViewObject(err);
+    context.body = yield* err.toViewObject(context);
     context.type = 'json';
     if (config.showStack) {
       context.body.stack = err.stack.split("\n");

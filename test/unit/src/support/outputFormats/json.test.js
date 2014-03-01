@@ -45,7 +45,7 @@ test['json'] = {
           yield* render.call(ctx, 'test', 'bla');
         })(function(err) {
           try {
-            expect(err.toString()).to.eql('BaseError: Plain object required for JSON output format');
+            expect(err.message).to.eql('Plain object required for JSON output format');
             resolve();
           } catch(err2) {
             reject(err2);
