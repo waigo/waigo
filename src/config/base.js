@@ -120,7 +120,7 @@ exports.outputFormats = {
  */
 exports.staticResources = {
   // relative to app folder
-  folder: '../public',  
+  folder: '../public',
   // see support/middleware/staticResources for options
   options: {}
 };
