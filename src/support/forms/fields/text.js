@@ -14,7 +14,7 @@ var loader = require('../../../../loader'),
  */
 // TODO: unit test
 var TextField = function() {
-  TextField.super_.apply(this, _.toArray(arguments));
+  FormField.apply(this, _.toArray(arguments));
 };
 TextField.inheritsFrom(FormField);
 
