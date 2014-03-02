@@ -8,6 +8,8 @@ Based on [koa](http://koajs.com), it uses [generators](http://tobyho.com/2013/06
 
 This documentation (along with API docs) is available at [waigojs.com](http://waigojs.com).
 
+**Waigo is still in beta (pre-1.0) so expect things to break!**
+
 # Getting started
 
 ## Installation
