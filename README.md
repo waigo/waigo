@@ -385,22 +385,22 @@ You may use any logging library you wish. The `app.config.logging` configuration
 
 The `support/middleware/errorHandler` middleware is responsible for handling all errors which get thrown during the request handling process. Errors get logged through the default logger as well as getting sent back to the client which made the original request. 
 
-There are also a few built-in error classes inheriting from the base `Error` object. These can be found in `support/errors`. If you wish to create your own type of errors it is highly recommended that you sub-class `BaseError`. For example:
+It is highly recommended that your define and use your own error classes rather than use the built-in `Error` class. The `support/errors` module provides functionality to do this - your new error class will inherit from `RuntimeError` which in turn inherits from `Error`. `RuntimeError` allows one to set a HTTP status code along with the error message. This status code is used by the error handling middleware. For example:
 
 ```javascript
 var waigo = require('waigo'),
   errors = waigo.load('support/errors');
 
-var FileSystemError = errors.BaseError.createSubType('MyNewError', {
-  // default error message
-  message: 'Error accessing file system', 
-  // HTTP status code to set when this error is thrown
-  status: 500
-});
+// FileSystemError will inherit from errors.RuntimeError
+var FileSystemError = errors.define('FileSystemError');
+
+// FileReadError will inherit from FileSystemError
+var FileReadError = errors.define('FileReadError', FileSystemError);
 
 ...
 
-throw new FileSystemError('Error reading image file');
+throw new FileReadError('Error reading image file', 500);
+// resulting error will be instance of: FileReadError, FileSystemError and Error
 ```
 
 _Note: Stack traces only get logged if the `app.config.errorHandler.showStack` flag is turned on_

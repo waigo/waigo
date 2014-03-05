@@ -28,7 +28,7 @@ var errors = waigo.load('support/errors'),
 
 
 /** @type {Error} A form validation error. */
-var FormValidationError = exports.FormValidationError = errors.defineSubType(errors.MultipleError, 'FormValidationError');
+var FormValidationError = exports.FormValidationError = errors.define('FormValidationError', errors.MultipleError);
 
 
 

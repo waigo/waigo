@@ -27,10 +27,10 @@ var errors = waigo.load('support/errors'),
 
 
 /** @type {Error} A field validation error. */
-var FieldValidationError = exports.FieldValidationError = errors.defineSubType(errors.MultipleError, 'FieldValidationError');
+var FieldValidationError = exports.FieldValidationError = errors.define('FieldValidationError', errors.MultipleError);
 
 /** @type {Error} A field sanitization error. */
-var FieldSanitizationError = exports.FieldSanitizationError = errors.defineSubType(errors.RuntimeError, 'FieldSanitizationError');
+var FieldSanitizationError = exports.FieldSanitizationError = errors.define('FieldSanitizationError');
 
 
 

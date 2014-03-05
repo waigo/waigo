@@ -15,7 +15,7 @@ var Field = waigo.load('support/forms/fields/field').Field;
 var Text = exports.Field = function(form, config) {
   Field.apply(this, _.toArray(arguments));
 };
-TextField.inheritsFrom(Field);
+Text.inheritsFrom(Field);
 
 
 

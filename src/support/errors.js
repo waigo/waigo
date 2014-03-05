@@ -38,7 +38,7 @@ Error.prototype.toViewObject = function*(ctx) {
 /**
  * Runtime error.
  *
- * This represents an error which occurred. Always better to use this rather than `Error` since other error classes derive from this.
+ * This represents an error which occurred. Waigo prefers to use this rather than `Error` it is more informative.
  *
  * @param {String} msg Error message.
  * @param {Number} status HTTP return status code to set.
@@ -96,16 +96,18 @@ MultipleError.prototype.toViewObject = function*(ctx) {
 
 
 /**
- * Create a subclass of given error class.
+ * Define an Error.
  *
- * This is a convenience method for quickly creating custom error classes which apply to a specific area of one's application.
+ * This is a convenience method for quickly creating custom error classes.
  *
- * @param {Class} baseClass The base class (should be a subtype of `Error`) to inherit from.
- * @param {String} newClassName Name of this new error class.
+ * @param {String} newClassName Name of this new error type.
+ * @param {Class} [baseClass] Base class (should be a subtype of `Error`) to derivce this new error from. Default is `RuntimeError`.
  *
  * @return {Function} The new error class.
  */
-exports.defineSubType = function(baseClass, newClassName) {
+exports.define = function(newClassName, baseClass) {
+  baseClass = baseClass || RuntimeError;
+
   var newErrorClass = function() {
     (baseClass).apply(this, arguments);
     this.name = newClassName;

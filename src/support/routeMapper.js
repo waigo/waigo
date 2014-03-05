@@ -13,7 +13,7 @@ var _ = require('lodash'),
 
 
 var errors = waigo.load('support/errors'),
-  RouteError = exports.RouteError = errors.defineSubType(errors.RuntimeError, 'RouteError');
+  RouteError = exports.RouteError = errors.define('RouteError');
 
 
 
