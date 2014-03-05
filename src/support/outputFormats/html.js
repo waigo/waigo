@@ -1,3 +1,6 @@
+"use strict";
+
+
 var _ = require('lodash'),
   path = require('path'),
   views = require('co-views'),

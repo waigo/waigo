@@ -1,3 +1,6 @@
+"use strict";
+
+
 var _ = require('lodash'),
   debug = require('debug')('waigo-server'),
   koa = require('koa'),

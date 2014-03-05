@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 var views = require('co-views'),
   waigo = require('../../../');

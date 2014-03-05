@@ -23,7 +23,7 @@ test['mixins'] = {
       .nodeify(done);
   },
 
-  'extend class with mixins': function() {
+  'apply mixins to class': function() {
     var mixin1 = {
       a: function() {},
       b: true,
@@ -40,7 +40,7 @@ test['mixins'] = {
     var Class = function() {};
     Class.prototype.c = 1235;
 
-    mixins.extend(Class, mixin1, mixin2);
+    mixins.applyTo(Class, mixin1, mixin2);
 
     expect(Class.prototype.a).to.eql(mixin1.a);
     expect(Class.prototype.b).to.be.undefined;

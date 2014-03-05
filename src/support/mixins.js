@@ -1,3 +1,6 @@
+"use strict";
+
+
 var _ = require('lodash');
 
 
@@ -19,12 +22,12 @@ var HasViewObject = exports.HasViewObject = {
 
 
 /**
- * Extend given base class with mixins.
+ * Apply mixins to given base class.
  *
  * @param {Class} baseClass The base class to apply mixins to.
  * @param {Class} mixin The first mixin to apply (each argument following this is another mixin).
  */
-exports.extend = function(baseClass, mixin) {
+exports.applyTo = function(baseClass, mixin) {
   var mixins = _.toArray(arguments).slice(1);
 
   _.each(mixins, function(mixin) {

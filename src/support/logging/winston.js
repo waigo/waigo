@@ -1,3 +1,6 @@
+"use strict";
+
+
 var _ = require('lodash'),
   winston = require('winston'),
   winstonMongoDB = require('winston-mongodb');

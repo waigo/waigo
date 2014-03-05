@@ -1,3 +1,6 @@
+"use strict";
+
+
 var mongoStore = require('koa-session-mongo');
 
 /**

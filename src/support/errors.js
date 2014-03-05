@@ -1,3 +1,6 @@
+"use strict";
+
+
 /**
  * Exceptions and error handlers.
  */
@@ -11,7 +14,7 @@ var waigo = require('../../'),
   mixins = waigo.load('support/mixins');
 
 
-mixins.extend(Error, mixins.HasViewObject);
+mixins.applyTo(Error, mixins.HasViewObject);
 
 
 

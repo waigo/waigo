@@ -1,3 +1,6 @@
+"use strict";
+
+
 // dependencies
 var _ = require('lodash'),
   debug = require('debug')('waigo-loader'),

@@ -1,9 +1,9 @@
-var _ = require('lodash'),
-  async = require('async');
+"use strict";
 
-var loader = require('../../../../loader'),
-  errorTypes = loader.require('support/errors'),
-  FormField = loader.require('lib/forms/field');
+var waigo = require('../../../../');
+
+
+var Field = waigo.load('support/forms/fields/field').Field; 
 
 
 
@@ -12,32 +12,10 @@ var loader = require('../../../../loader'),
  *
  * @constructor
  */
-// TODO: unit test
-var TextField = function() {
-  FormField.apply(this, _.toArray(arguments));
+var Text = exports.Field = function(form, config) {
+  Field.apply(this, _.toArray(arguments));
 };
-TextField.inheritsFrom(FormField);
+TextField.inheritsFrom(Field);
 
 
 
-// -----------------------------------------------------
-// STATICS
-// -----------------------------------------------------
-
-/**
- * Text field validators.
- *
- * @see FormField.Validators
- */
-// TODO: unit test
-TextField.Validators = {
-
-};
-
-
-// -----------------------------------------------------
-// EXPORTS
-// -----------------------------------------------------
-
-
-module.exports = TextField;
