@@ -177,12 +177,13 @@ app.setupRoutes = function*() {
 /**
  * Start the HTTP server.
  *
+ * @return {Object} The result of the call to `app.listen()`.
  * @protected
  */
 app.startServer = function*() {
   debug('Starting HTTP server');
-  app.listen(app.config.port);
   app.logger.info('Server listening in ' + app.config.mode + ' mode on port ' + app.config.port + ' (baseURL: ' + app.config.baseURL + ')');
+  return app.listen(app.config.port);
 };
 
 
@@ -193,6 +194,7 @@ app.startServer = function*() {
  *
  * This is a convenience method for initialising the various parts of the app and setting up the general middleware chain.
  *
+ * @return {Object} The result of the call to `app.listen()`.
  * @public
  */
 app.start = function*() {
@@ -208,6 +210,6 @@ app.start = function*() {
   yield* app.setupOutputFormats();
 
   yield* app.setupRoutes();
-  yield* app.startServer();    
+  return yield* app.startServer();    
 };
 

@@ -23,10 +23,13 @@ var _ = require('lodash'),
  * 
  * @return {Function} middleware
  */
-module.exports = function(options) {
+var fn = module.exports = function(options) {
   return function*(next) {
-    this.request.body = yield bodyParser(this, options);
+    this.request.body = yield fn._bodyParser(this, options);
     yield next;
   };
 };
+
+
+fn._bodyParser = require('co-body');
 

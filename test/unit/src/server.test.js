@@ -501,7 +501,7 @@ test['app'] = {
     'use config port': function(done) {
       var app = this.app;
 
-      app.listen = test.mocker.stub();
+      app.listen = test.mocker.stub().returns('abc');
       app.logger = {
         info: test.mocker.stub()
       };
@@ -509,7 +509,9 @@ test['app'] = {
       app.config.mode = 'blah';
 
       Promise.spawn(app.startServer)
-        .then(function() {
+        .then(function(serverInfo) {
+          expect(serverInfo).to.eql('abc');
+
           app.listen.should.have.been.calledOnce;
           app.listen.should.have.been.calledWithExactly(3000);
 
@@ -553,12 +555,14 @@ test['app'] = {
         app[method] = (function(methodName) {
           return function*() {
             executed.push(methodName);
+            return methodName + ' called';
           }
         })(method);
       });
 
       Promise.spawn(app.start)
-        .then(function() {
+        .then(function(result) {
+          expect(result).to.eql('startServer called');
           executed.should.eql(methods);
         })
         .nodeify(done);

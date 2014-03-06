@@ -12,13 +12,26 @@ var testBase = require('../../../../_base'),
   waigo = testBase.waigo;
 
 
+var form = null,
+  errors = null;
+
+
 test['Form'] = {
   beforeEach: function(done) {
     waigo.__modules = {};
-    waigo.initAsync().nodeify(done);
+    waigo.initAsync()
+      .then(function() {
+        form = waigo.load('support/forms/form');
+        errors = waigo.load('support/errors');
+      })
+      .nodeify(done);
   },
 
-  'default': function() {
-    throw new Error('not yet done');
+  'FormValidationError': {
+    'extends MultipleError': function() {
+      var e = new form.FormValidationError();
+      e.should.be.instanceOf(errors.MultipleError);
+    }
   }
+
 };

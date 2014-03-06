@@ -12,13 +12,43 @@ var testBase = require('../../../../_base'),
   waigo = testBase.waigo;
 
 
+var bodyParser = null;
+
+
 test['body parser'] = {
   beforeEach: function(done) {
     waigo.__modules = {};
-    waigo.initAsync().nodeify(done);
+    waigo.initAsync()
+      .then(function() {
+        bodyParser = waigo.load('support/middleware/bodyParser');
+      })
+      .nodeify(done);
   },
 
-  'default': function() {
-    throw new Error('not yet done');
+  'uses co-body': function() {
+    expect(bodyParser._bodyParser).to.eql(require('co-body'));
+  },
+
+  'parses the body': function(done) {
+    var ctx = {
+      request: {}
+    };
+
+    bodyParser._bodyParser = test.mocker.stub().returns({
+      dummy: true
+    });
+
+    var next = function*() {
+      ctx.nextCalled = 1;
+    };
+
+    testUtils.spawn(bodyParser(), ctx, next)
+      .then(function() {
+        expect(ctx.request.body).to.eql({
+          dummy: true
+        });
+        expect(ctx.nextCalled).to.eql(1);
+      })
+      .nodeify(done);
   }
 };
