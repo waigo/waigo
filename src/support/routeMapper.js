@@ -67,7 +67,7 @@ exports.map = function(app, routes) {
     // load all middleware
     mapping.resolvedMiddleware = _.map(middleware, function(ref) {
       // if reference is of form 'moduleName.methodName' then it's a controller reference
-      var dotPos = ref.indexOf('.');
+      var dotPos = ('string' === typeof ref) && ref.indexOf('.');
       if (0 < dotPos) {
         var tokens = ref.split('.'),
           controllerName = tokens[0],
@@ -86,7 +86,16 @@ exports.map = function(app, routes) {
       }
       // else it's a middleware reference
       else {
-        return waigo.load('support/middleware/' + ref)();
+        let middlewareName = ref,
+          middlewareOptions = {};
+
+        // if reference is an object then it's a middleware reference with initialisation options
+        if (_.isPlainObject(ref)) {
+          middlewareName = ref.id;
+          middlewareOptions = ref;
+        }
+
+        return waigo.load('support/middleware/' + middlewareName)(middlewareOptions);
       }
     });
 

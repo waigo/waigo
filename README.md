@@ -220,13 +220,28 @@ module.exports = {
 
 The key specifies the HTTP method (one of: `GET`, `POST`, `PUT`, `DEL`, `OPTIONS` and `HEAD`) and the route URL (relative to `app.config.baseURL`). Parameterized routing is supported thanks to [trie-router](https://github.com/koajs/trie-router).
 
-The value for each key specifies the middleware chain that will handle that route. If the middleware name has a period (`.`) within it it assumed to refer to a `controller.method`. Otherwise it is assumed to be the name of a [middleware](#middleware) module file.
+The value for each key specifies the middleware chain that will handle that route. If the middleware name has a period (`.`) within it 
+then it assumed to refer to a `controller.method`. Otherwise it is assumed to be the name of a [middleware](#middleware) module file. 
 
 For the above example, Waigo will process the a `PUT` request made to `/newUser` in the following order:
 
 1. Load `support/middleware/sanitizeValue` and pass request to its exported method
 2. Load `support/middleware/checkRequestBodySize` and pass request to its exported method
 3. Load `controllers/main` and pass request to its `newUser` method
+
+If you wish to initialise a particular middleware with options then you can specify as an `Object`. For example:
+
+```javascript
+// in routes.js
+
+module.exports = {
+  'POST /signup' : [ { id: 'bodyParser', limit: '1kb' }, 'main.signup' ]
+  ...
+};
+```
+
+In the above configuration the `bodyParser` get initialized with the request body size limit of `1KB`.
+
 
 ## Middleware
 

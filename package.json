@@ -29,7 +29,8 @@
     "globule": "~0.2.x",
     "findup-sync": "~0.1.x",
     "findit": "~1.1.x",
-    "validator": "~3.4.x"
+    "validator": "~3.4.x",
+    "co-body": "0.0.1"
   },
   "devDependencies": {
     "chai": "~1.8.1",

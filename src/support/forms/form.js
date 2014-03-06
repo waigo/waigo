@@ -48,25 +48,27 @@ mixins.applyTo(Form, mixins.HasViewObject);
 
 
 
-/**
- * Get the fields of this form.
- *
- * Fields will be returned as `Field` instances.
- *
- * @return {Object} `String` -> `Field` mappings.
- */
-Form.prototype.getFields = function*() {
-  if (!this.fields) {
-    this.fields = {};
+Object.defineProperty(Form.prototype, 'fields', {
+  /**
+   * Get the fields of this form.
+   *
+   * Fields will be returned as `Field` instances.
+   *
+   * @return {Object} `String` -> `Field` mappings.
+   */
+  get: function() {
+    if (!this._fields) {
+      this._fields = {};
 
-    for (let fieldName in this.config.fields) {
-      let def = this.config.fields[fieldName];
-      this.fields[fieldName] = Field.new(this, def);
+      for (let fieldName in this.config.fields) {
+        let def = this.config.fields[fieldName];
+        this.fields[fieldName] = Field.new(this, def);
+      }
     }
-  }
 
-  return this.fields;
-};
+    return this._fields;
+  }
+});
 
 
 
@@ -77,7 +79,7 @@ Object.defineProperty(Form.prototype, 'state', {
    * @return {Object}
    */
   get: function() {
-    return this.internalState;
+    return this._state;
   },
   /**
    * Set the internal state of this form.
@@ -85,10 +87,10 @@ Object.defineProperty(Form.prototype, 'state', {
    * @param {Object} state The new internal state to set for this form.
    */
   set: function(state) {
-    this.internalState = state || {};
+    this._state = state || {};
 
     for (let fieldName in this.config.fields) {
-      this.internalState[fieldName] = this.internalState[fieldName] || {
+      this._state[fieldName] = this._state[fieldName] || {
         value: null
       };
     }
@@ -105,7 +107,7 @@ Object.defineProperty(Form.prototype, 'state', {
  * @param {Object} values Mapping from field name to field value.
  */
 Form.prototype.setValues = function*(values) {
-  var fields = yield this.getFields();
+  var fields = this.fields;
 
   values = values || {};
 
@@ -123,12 +125,14 @@ Form.prototype.setValues = function*(values) {
  * @throws FormValidationError If validation fails.
  */
 Form.prototype.validate = function*() {
-  var fields = yield this.getFields(),
+  var fields = this.fields,
     errors = null;
 
   for (let fieldName in fields) {
+    let filed = fields[fieldName];
+
     try {
-      yield fields[fieldName].validate();
+      yield field.validate();
     } catch (err) {
       if (!errors) {
         errors = {};
@@ -151,16 +155,15 @@ Form.prototype.validate = function*() {
  * Get renderable representation of this form.
  * @see mixins
  */
-Form.prototype.toViewObject = function*() {
-  var fields = yield this.getFields(),
+Form.prototype.toViewObject = function*(ctx) {
+  var fields = this.fields,
     fieldViewObjects = {};
 
   for (let fieldName in fields) {
-    fieldViewObjects[fieldName] = yield fields[fieldName].validate();
+    fieldViewObjects[fieldName] = yield fields[fieldName].toViewObject(ctx);
   }
 
   var ret = {
-    submitLabel: this.config.submitLabel || 'Submit',
     fields: fieldViewObjects
   }
 
