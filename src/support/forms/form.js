@@ -60,7 +60,8 @@ Form.prototype.getFields = function*() {
     this.fields = {};
 
     for (let fieldName in this.config.fields) {
-      this.fields[fieldName] = Field.new(this, this.config.fields[fieldName]);
+      let def = this.config.fields[fieldName];
+      this.fields[fieldName] = Field.new(this, def);
     }
   }
 

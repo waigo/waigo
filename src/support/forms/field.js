@@ -53,7 +53,10 @@ var Field = exports.Field = function(form, config) {
       options = def;
     }
 
-    return waigo.load('support/forms/sanitizers/' + id)(options);
+    return { 
+      id: id,
+      fn: waigo.load('support/forms/sanitizers/' + id)(options)
+    };
   });
 
   this.validators = _.map(config.validators || [], function(def) {
@@ -65,7 +68,10 @@ var Field = exports.Field = function(form, config) {
       options = def;
     }
 
-    return waigo.load('support/forms/validators/' + id)(options);
+    return { 
+      id: id,
+      fn: waigo.load('support/forms/validators/' + id)(options)
+    };
   });
 };
 mixins.applyTo(Field, mixins.HasViewObject);
@@ -109,10 +115,10 @@ Object.defineProperty(Field.prototype, 'internalValue', {
  */
 Field.prototype.setValue = function*(val) {
   for (let idx in this.sanitizers) {
-    let sanitizer = this.sanitizers[idx];
+    let sanitizerFn = this.sanitizers[idx].fn;
 
     try {
-      val = yield sanitizer(this.form, this, val);
+      val = yield sanitizerFn(this.form, this, val);
     } catch (e) {
       throw new FieldSanitizationError(e.message);
     }
@@ -135,15 +141,15 @@ Field.prototype.validate = function*() {
 
   for (let idx in this.validators) {
     let validator = this.validators[idx];
-    
+
     try {
-      yield validator(this.form, this, this._value);
+      yield validator.fn(this.form, this, this._value);
     } catch (err) {
       if (!errors) {
         errors = {};
       }
 
-      errors[fieldName] = err;
+      errors[validator.id] = err;
     }
   }
 

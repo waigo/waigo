@@ -44,7 +44,7 @@ module.exports = function(config) {
 
       // convert each local to a view object
       for (let idx in locals) {
-        let local = locals;
+        let local = locals[idx];
         if (local[viewObjectMethod]) {
           viewObjects[idx] = yield local[viewObjectMethod].call(local, ctx);
         } else {
