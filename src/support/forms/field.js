@@ -79,11 +79,11 @@ mixins.applyTo(Field, mixins.HasViewObject);
 
 
 
-Object.defineProperty(Field.prototype, '_value', {
+Object.defineProperty(Field.prototype, 'value', {
   /**
    * Get the current value of this field.
    *
-   * @return {Object}
+   * @return {Any}
    * @private
    */
   get: function() {
@@ -124,7 +124,7 @@ Field.prototype.setValue = function*(val) {
     }
   }
 
-  this._value = val;
+  this.value = val;
 };
 
 
@@ -143,7 +143,7 @@ Field.prototype.validate = function*() {
     let validator = this.validators[idx];
 
     try {
-      yield validator.fn(this.form, this, this._value);
+      yield validator.fn(this.form, this, this.value);
     } catch (err) {
       if (!errors) {
         errors = {};
@@ -172,7 +172,7 @@ Field.prototype.toViewObject = function*() {
     type: this.config.type,
     name: this.config.name,
     label: this.config.label,
-    value: this._value
+    value: this.value
   };
 
   if (this.config.defaultValue) {

@@ -62,7 +62,7 @@ Object.defineProperty(Form.prototype, 'fields', {
 
       for (let fieldName in this.config.fields) {
         let def = this.config.fields[fieldName];
-        this.fields[fieldName] = Field.new(this, def);
+        this._fields[fieldName] = Field.new(this, def);
       }
     }
 
@@ -129,7 +129,7 @@ Form.prototype.validate = function*() {
     errors = null;
 
   for (let fieldName in fields) {
-    let filed = fields[fieldName];
+    let field = fields[fieldName];
 
     try {
       yield field.validate();
