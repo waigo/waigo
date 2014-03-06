@@ -58,7 +58,7 @@ test['error handler middleware'] = {
         ctx.type.should.eql('json');
 
         ctx.app.logger.error.should.have.been.calledOnce;
-        ctx.app.logger.error.should.have.been.calledWithExactly('bla bla bla', e);
+        ctx.app.logger.error.should.have.been.calledWithExactly(e.stack);
       })
       .nodeify(done);
   },

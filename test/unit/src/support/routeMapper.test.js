@@ -36,7 +36,8 @@ test['route mapper'] = {
       .then(testUtils.createTestFolder)
       .then(function() {
         testUtils.createAppModules({
-          'support/middleware/test': 'var a = function*() {}; module.exports = function() { return a }; a.ref = a;'
+          'support/middleware/test': 'var a = function*() {}; module.exports = function() { return a }; a.ref = a;',
+          'support/middleware/test_options': 'module.exports = function(o) { return function*() { return o; } };'
         });
       })
       .then(waigo.initAsync)
@@ -138,6 +139,16 @@ test['route mapper'] = {
       expect(function() {
         mapper.map(app, {'HEAD /': 'main.index'});
       }).to.not.throw(Error);                  
+    },
+    'object reference': function() {
+      expect(function() {
+        mapper.map(app, {
+          'HEAD /': { 
+            id: 'main.index', 
+            dummy: true
+          } 
+        });
+      }).to.throw('Module not found: support/middleware/main.index');                  
     }
   },
   'middleware': {
@@ -149,6 +160,11 @@ test['route mapper'] = {
     'valid reference': function() {
       expect(function() {
         mapper.map(app, {'HEAD /': 'sessions'});
+      }).to.not.throw(Error);                  
+    },
+    'object reference': function() {
+      expect(function() {
+        mapper.map(app, {'HEAD /': { id: 'test_options', dummy: true }});
       }).to.not.throw(Error);                  
     }
   },
@@ -212,5 +228,45 @@ test['route mapper'] = {
 
     router.get.should.have.been.calledOnce;
     router.get.should.have.been.calledWithExactly(controllerMethod, middleware, controllerMethod);
+  },
+  'middleware with options': function(done) {
+    testUtils.spawn(function*() {
+      routes = {
+        'GET /': [ 
+          'test',
+          {
+            id: 'test_options',
+            option1: 1,
+            option2: 2
+          }
+        ]
+      };
+
+      mapper.map(app, routes);
+
+      expect(app.route.callCount).to.eql(1);
+      app.route.getCall(0).args[0].should.eql('/');
+
+      var middleware = waigo.load('support/middleware/test_options')({
+        id: 'test_options',
+        option1: 1,
+        option2: 2
+      });
+
+      router.get.should.have.been.calledOnce;
+
+      var getArgs = router.get.getCall(0).args;
+      
+      getArgs[0].should.eql(waigo.load('support/middleware/test')());
+
+      var ret = yield* getArgs[1]();
+
+      expect(ret).to.eql({
+        id: 'test_options',
+        option1: 1,
+        option2: 2        
+      });
+    })
+      .nodeify(done);
   }
 };

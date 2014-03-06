@@ -130,10 +130,10 @@ test['errors'] = {
   },
 
 
-  'define sub type': {
+  'define new error': {
     beforeEach: function() {
-      this.RuntimeError2 = errors.defineSubType(errors.RuntimeError, 'RuntimeError2');
-      this.MultipleError2 = errors.defineSubType(errors.MultipleError, 'MultipleError2');
+      this.RuntimeError2 = errors.define('RuntimeError2');
+      this.MultipleError2 = errors.define('MultipleError2', errors.MultipleError);
     },
 
     'defaults - RuntimeError': function() {

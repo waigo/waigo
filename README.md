@@ -229,7 +229,7 @@ For the above example, Waigo will process the a `PUT` request made to `/newUser`
 2. Load `support/middleware/checkRequestBodySize` and pass request to its exported method
 3. Load `controllers/main` and pass request to its `newUser` method
 
-If you wish to initialise a particular middleware with options then you can specify as an `Object`. For example:
+If you wish to initialise a particular middleware with options then you can specify it as an `Object`. For example:
 
 ```javascript
 // in routes.js

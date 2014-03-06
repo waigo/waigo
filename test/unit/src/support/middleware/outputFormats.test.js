@@ -129,6 +129,48 @@ test['output formats middleware'] = {
           });
       })
       .nodeify(done);
-  }
+  },
 
+
+  'converts locals to view objects if possible': function(done) {
+    var toViewObjectMethodName = Object.keys(waigo.load('support/mixins').HasViewObject).pop();        
+
+    var fn = outputFormats({
+      paramName: 'format',
+      default: 'json',
+      formats: {
+        json: true
+      }
+    });
+
+
+    var locals = {
+      dummy: true,
+      dummy2: {
+        blah: 123
+      }
+    };
+    locals.dummy2[toViewObjectMethodName] = function*() {
+      return {
+        val: 55
+      };
+    };
+
+    testUtils.spawn(fn, ctx, function*() {})
+      .then(function() {
+        expect(testUtils.isGeneratorFunction(ctx.render)).to.be.true;
+      })
+      .then(function() {
+        testUtils.spawn(ctx.render, ctx, locals)
+          .then(function(value) {
+            expect(value).to.eql({
+              dummy: true,
+              dummy2: {
+                val: 55
+              }
+            });
+          });
+      })
+      .nodeify(done);    
+  }
 };

@@ -39,9 +39,16 @@
  * - Load `support/middleware/acccessControl.js` and pass request to its exported method
  * - Load `controllers/user.js` and pass request to its `load` method
  * - Load `controllers/main.js` and pass request to its `index` method
+ *
+ * If you wish to initialise a particular middleware with options then you can specify it as an `Object`. For example:
+ *
+ * ```javascript
+ * module.exports = {
+ *   'POST /signup' : [ { id: 'bodyParser', limit: '1kb' }, 'main.signup' ]
+ * };
+ * ```
  * 
- * For routes which handle user-submitted data you may wish to enable the [`bodyParser`](support/bodyParser.js.html) and 
- * [`csrf`](support/csrf.js.html) middleware layers. Additional middleware layers can be found in NPM.
+ * In the above configuration the `bodyParser` get initialized with the request body size limit of `1KB`.
  */
 
 /**

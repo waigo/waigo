@@ -131,7 +131,7 @@ test['app'] = {
           handlerFunc.call(self.app, err);
 
           self.app.logger.error.should.have.been.calledOnce;
-          self.app.logger.error.should.have.been.calledWithExactly(err);
+          self.app.logger.error.should.have.been.calledWithExactly(err.stack);
         })
         .nodeify(done);      
     }
