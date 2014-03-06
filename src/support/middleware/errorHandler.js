@@ -4,7 +4,11 @@
 var _ = require('lodash'),
   Promise = require('bluebird'),
   waigo = require('../../../'),
-  errors = waigo.load('support/errors');
+  errors = waigo.load('support/errors'),
+  mixins = waigo.load('support/mixins');
+
+
+var viewObjectMethod = Object.keys(mixins.HasViewObject).pop();
 
 
 /**
@@ -18,13 +22,13 @@ var _ = require('lodash'),
 var render = function*(context, config, err) {
   try {
     context.status = err.status || 500;
-    context.body = yield* err.toViewObject(context);
+    context.body = yield* err[viewObjectMethod].call(err, context);
     context.type = 'json';
     if (config.showStack) {
       context.body.stack = err.stack.split("\n");
     }
     if (context.app.logger) {
-      context.app.logger.error(err.message, err);
+      context.app.logger.error(err.stack);
     }
   } catch (err) {
     context.app.emit('error', err);

@@ -7,7 +7,7 @@ var _ = require('lodash'),
 
 
 var errors = waigo.load('support/errors'),
-  Field = waigo.load('support/forms/fields/field'),
+  Field = waigo.load('support/forms/field').Field,
   mixins = waigo.load('support/mixins');
 
 
@@ -20,7 +20,7 @@ var errors = waigo.load('support/errors'),
  * set at any time, allowing for a single `Form` instance to be re-used for multiple clients (where each client is associated with an 
  * internal state).
  *
- * Although you can create and use `Form` objects directly it is better to use the `.new()` method as this internally keeps 
+ * Although you can create and use `Form` objects directly it is better to use the `Form.new()` static method as this internally keeps 
  * track of which forms have been initialised, making for easy instance re-use.
  */
 
@@ -90,8 +90,6 @@ Object.defineProperty(Form.prototype, 'state', {
       this._state[fieldName] = this._state[fieldName] || {
         value: null
       };
-
-      fields[fieldName].setInternalState(this._state[fieldName]);
     }    
   }
 });
@@ -160,7 +158,7 @@ Form.prototype.toViewObject = function*() {
     fieldViewObjects[fieldName] = yield fields[fieldName].validate();
   }
 
-  var ret {
+  var ret = {
     submitLabel: this.config.submitLabel || 'Submit',
     fields: fieldViewObjects
   }
@@ -192,19 +190,17 @@ var cache = {};
  * 
  * @return {Form}
  */
-exports.new = function(id, state) {
-  var def = waigo.load('forms/' + id);
-  def.id = id;
+Form.new = function(id, state) {
+  var form = cache[id];
 
-  var form = cache[def.name];
-
-  if (!form)
+  if (!form) {
+    let def = waigo.load('forms/' + id);
+    def.id = id;
     form = new Form(def);
-    cache[def.name] = form;
+    cache[id] = form;
   }
 
-  state = state || {};
-  form.setInternalState(state);
+  form.state = state || {};
 
   return form;
 };

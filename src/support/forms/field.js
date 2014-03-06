@@ -1,7 +1,7 @@
 "use strict";
 
 var _ = require('lodash'),
-  waigo = require('../../../../');
+  waigo = require('../../../');
 
 
 var errors = waigo.load('support/errors'),
@@ -18,7 +18,7 @@ var errors = waigo.load('support/errors'),
  * the form's internal state object, as this is where fields also store their data (rather than within the `Field` instance). 
  * This makes it easier to re-use form instances for multiple clients.
  *
- * The `.new()` static method makes it easy to initialise a field of any given type and is the recommended method for creating 
+ * The `Field.new()` static method makes it easy to initialise a field of any given type and is the recommended method for creating 
  * new field instances.
  */
 
@@ -42,8 +42,7 @@ var FieldSanitizationError = exports.FieldSanitizationError = errors.define('Fie
  */
 var Field = exports.Field = function(form, config) {
   this.form = form;
-
-  this.defaultValue = config.defaultValue || '';
+  this.config = config;
 
   this.sanitizers = _.map(config.sanitizers || [], function(def) {
     var id = def, 
@@ -54,7 +53,7 @@ var Field = exports.Field = function(form, config) {
       options = def;
     }
 
-    return waigo.load('support/sanitizers/' + id)(options);
+    return waigo.load('support/forms/sanitizers/' + id)(options);
   });
 
   this.validators = _.map(config.validators || [], function(def) {
@@ -66,15 +65,15 @@ var Field = exports.Field = function(form, config) {
       options = def;
     }
 
-    return waigo.load('support/validators/' + id)(options);
+    return waigo.load('support/forms/validators/' + id)(options);
   });
 };
-mixins.applyTo(Form, mixins.HasViewObject);
+mixins.applyTo(Field, mixins.HasViewObject);
 
 
 
 
-Object.defineProperty(Form.prototype, '_value', {
+Object.defineProperty(Field.prototype, 'internalValue', {
   /**
    * Get the current value of this field.
    *
@@ -109,15 +108,17 @@ Object.defineProperty(Form.prototype, '_value', {
  * @throws FieldSanitizationError If any errors occur.
  */
 Field.prototype.setValue = function*(val) {
-  for (let sanitizer in this.sanitizers) {
+  for (let idx in this.sanitizers) {
+    let sanitizer = this.sanitizers[idx];
+
     try {
-      val = yield sanitizer.process(val);      
+      val = yield sanitizer(this.form, this, val);
     } catch (e) {
       throw new FieldSanitizationError(e.message);
     }
   }
 
-  this._value = val;
+  this.internalValue = val;
 };
 
 
@@ -132,9 +133,11 @@ Field.prototype.setValue = function*(val) {
 Field.prototype.validate = function*() {
   var errors = null;
 
-  for (let validator in this.validators) {
+  for (let idx in this.validators) {
+    let validator = this.validators[idx];
+    
     try {
-      yield validator(this._value);
+      yield validator(this.form, this, this._value);
     } catch (err) {
       if (!errors) {
         errors = {};
@@ -145,7 +148,7 @@ Field.prototype.validate = function*() {
   }
 
   if (errors) {
-    throw new FieldValidationError('Form validation failed', 400, errors);
+    throw new FieldValidationError('Field validation failed', 400, errors);
   }
 };
 
@@ -159,11 +162,18 @@ Field.prototype.validate = function*() {
  * @see mixins
  */
 Field.prototype.toViewObject = function*() {
-  return {
+  var ret = {
     type: this.config.type,
     name: this.config.name,
-    value: this._value
+    label: this.config.label,
+    value: this.internalValue
+  };
+
+  if (this.config.defaultValue) {
+    ret.defaultvalue = this.config.defaultValue;
   }
+
+  return ret;
 };
 
 
@@ -179,7 +189,7 @@ Field.prototype.toViewObject = function*() {
  * 
  * @return {Field}
  */
-exports.new = function(form, def) {
+Field.new = function(form, def) {
   let type = def.type,
     FieldClass = waigo.load('support/forms/fields/' + type).Field;
 

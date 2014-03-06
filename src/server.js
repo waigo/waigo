@@ -57,7 +57,7 @@ app.setupLogger = function*() {
   });
 
   app.on('error', function(err, ctx){
-    app.logger.error(err);
+    app.logger.error(err.stack);
   });
 };
 
