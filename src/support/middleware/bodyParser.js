@@ -29,7 +29,6 @@ var fn = module.exports = function(options) {
     yield next;
   };
 };
-
-
+// we attach actual parser to the function to make unit testing easier
 fn._bodyParser = require('co-body');
 
