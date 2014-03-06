@@ -36,7 +36,7 @@ module.exports = function(config) {
       throw new errors.RuntimeError('Invalid output format requested: ' + requestedFormat, 400);
     }
 
-    this.request.outputFormat = requestedFormat; 
+    this.request.outputFormat = requestedFormat;
 
     // attach renderer
     this.render = function*(view, locals) {

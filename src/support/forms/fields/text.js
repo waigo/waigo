@@ -5,7 +5,7 @@ var _ = require('lodash'),
   waigo = require('../../../../');
 
 
-var Field = waigo.load('support/forms/field').Field; 
+var Field = waigo.load('support/forms/field').Field;
 
 
 

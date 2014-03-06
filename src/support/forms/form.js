@@ -77,7 +77,7 @@ Object.defineProperty(Form.prototype, 'state', {
    * @return {Object}
    */
   get: function() {
-    return this._state;
+    return this.internalState;
   },
   /**
    * Set the internal state of this form.
@@ -85,13 +85,13 @@ Object.defineProperty(Form.prototype, 'state', {
    * @param {Object} state The new internal state to set for this form.
    */
   set: function(state) {
-    this._state = state || {};
+    this.internalState = state || {};
 
     for (let fieldName in this.config.fields) {
-      this._state[fieldName] = this._state[fieldName] || {
+      this.internalState[fieldName] = this.internalState[fieldName] || {
         value: null
       };
-    }    
+    }
   }
 });
 

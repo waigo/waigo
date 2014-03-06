@@ -45,7 +45,7 @@ var Field = exports.Field = function(form, config) {
   this.config = config;
 
   this.sanitizers = _.map(config.sanitizers || [], function(def) {
-    var id = def, 
+    var id = def,
       options = {};
 
     if (_.isObject(def)) {
@@ -53,14 +53,14 @@ var Field = exports.Field = function(form, config) {
       options = def;
     }
 
-    return { 
+    return {
       id: id,
       fn: waigo.load('support/forms/sanitizers/' + id)(options)
     };
   });
 
   this.validators = _.map(config.validators || [], function(def) {
-    var id = def, 
+    var id = def,
       options = {};
 
     if (_.isObject(def)) {
@@ -68,7 +68,7 @@ var Field = exports.Field = function(form, config) {
       options = def;
     }
 
-    return { 
+    return {
       id: id,
       fn: waigo.load('support/forms/validators/' + id)(options)
     };
@@ -143,7 +143,7 @@ Field.prototype.validate = function*() {
     let validator = this.validators[idx];
 
     try {
-      yield validator.fn(this.form, this, this._value);
+      yield validator.fn(this.form, this, this.internalValue);
     } catch (err) {
       if (!errors) {
         errors = {};
