@@ -333,7 +333,6 @@ exports.session = {
 };
 ```
 
-
 # Views
 
 Views work the same as in other frameworks, with Jade as the default template language. But the view layer also supports the idea of different output formats.
@@ -387,8 +386,293 @@ exports.userProfile = function*(next) {
 If we were to call the URL mapped to this controller method and append the `format=json` query parameter then the output would be of JSON type. The default JSON output formatter simply outputs the attribute data passed to the template, i.e. the output for above (assuming `this.params.userId` is 123) would be:
 
 ```javascript
-{ id: 123 }
+{ 
+  id: 123 
+}
 ```
+
+## View objects
+
+We wish to send model data back to the user we may want to first modify it, e.g. format dates, remove parts of the data that the client does not need to see in the given context, etc. Waigo introduces the concept of _view objects_ to support such functionality.
+
+A view object is a plain Javascript object of key-value pairs with can be rendered to a view. The `render()` method provided by the output formats middleware (see above) checks your passed-in template attributes to see if view objects can be generated for them. An object can generate a view object representation of itself if it implements the `HasViewObject` mixin (see `support/mixins.js`). Applying this mixin to 
+a class requires you to implement a `toViewObject()` generator function for that class. This function takes a single argument - the context for the current request, allowing you to tailor the view object representation to output according to each individual request.
+
+For example, let's say we have a model instance which we holds data wish to send to the client:
+
+```javascript
+var waigo = require('waigo'),
+  mixins = waigo.load('support/mixins');
+
+var Model = function(name) {
+  this.name = name;
+  this.id = 234;
+};
+mixins.apply(Model, mixins.HasViewObject);
+
+Model.prototype.toViewObject = function*(ctx) {
+  customKey = ctx.req.header['x-custom-key'];
+
+  if ('test' === customKey) {
+    return {
+      name: this.name,
+      id: this.id
+    };
+  } else {
+    return {
+      name: this.name
+    }
+  }
+};
+```
+
+In our controller we can easily pass this to the output format renderer:
+
+```javascript
+// controllers/main.js
+
+exports.index = function*() {
+  this.render('index', {
+    person: new Model('John'),
+    stats: {
+      age: 31,
+      score: 10
+    }
+  });
+}
+```
+
+The output (if we requested the JSON output format) will look like:
+
+```javascript
+{
+  person: {
+    name: 'John'
+  },
+  age: {
+    age: 31,
+    score: 10
+  }
+}
+```
+
+Notice how the renderer didn't output the `id` attribute of our model instance. Also notice how the `stats` key-value pair was output 
+unmodified. If a given attribute does not implement the `HasViewObject` mixin then it gets output as it is, unchanged.
+
+If we now make the request with the `x-custom-key: test` header set then we would see:
+
+```javascript
+{
+  person: {
+    name: 'John',
+    id: 234
+  },
+  age: {
+    age: 31,
+    score: 10
+  }
+}
+```
+
+# Forms
+
+Forms are treated as first-class citizens in Waigo. Each form used in your site has a specific unique identifier and its configuration and input fields specification is specified in a file under the `forms/` path, the file name being the id of the form. 
+
+For example, here is how you might specify a sipmle signup form:
+
+```javascript
+// in file: forms/signup.js
+
+module.exports = {
+  fields: [
+    {
+      name: 'email',
+      type: 'text',
+      label: 'Email address'
+    },
+    {
+      name: 'password',
+      type: 'password',
+      label: 'Password'
+    },
+    {
+      name: 'confirm_password',
+      type: 'password',
+      label: 'Confirm password'
+    }
+  ]  
+};
+```
+
+The field `type` refers to the name of a module file under the `support/forms/fields/` path. So for the above form specification Waigo will expect the following paths to exist:
+
+* `support/forms/fields/text`
+* `support/forms/fields/password`
+
+All field type classes inherit from the base `Field` class (found in `support/forms/field`). 
+
+To create an instance of the above form you would do:
+
+```javascript
+var waigo = require('waigo'),
+  Form = waigo.load('support/forms/form').Form;
+
+var form = Form.new('signup');
+```
+
+Waigo will automaticall look under the `forms/` file path to see if a form specification for the given id exists. It so it will load in this specification (what you see above) and return a `Form` instance.
+
+## Form fields
+
+When a form gets constructed it constructs and holds references to `Field` instances (see `support/forms/field`) depending on its field specification. 
+
+A naive implementation would have each `Field` instance stores its current field value. The problem with this approach is that 
+if we have, say, a 1000 clients all using the same form we would need a 1000 instances of each field in the form in order to store the data for each client separately. 
+
+A better approach would be to store the data which differs from client to client in its own `Object` so that we can re-use `Field` instances across multiple `Form` instances. Waigo does this by storing all field values within a `state` property on the `Form` instance. The state can be get/set at any time and can also be passed in as a second parameter to the `Form` constructor:
+
+```javascript
+// save the form state
+var form = Form.new('signup');
+form.setValues( /* user input values */ );
+this.session.formState = form.state;
+
+...
+
+// restore the form (and field values) to previous state
+var form = Form.new('signup');
+form.state = this.session.formState;
+
+// we could also set the state during construction
+var form = Form.new('signup', this.session.formState);
+```
+
+Let's say we wish to create another "signup" form for another client. We would again call `Form.new()`:
+
+```javascript
+var form2 = Form.new('signup');
+```
+
+`Form.new()` will internally check the `Form` instance cache to see if a `signup` form has already been created. If so it passes that to the `Form` constructor which then copies the references to its `Field` instances and any other common data:
+
+```javascript
+form2.fields === form.fields;   // true
+form2.state === form.state;     // false 
+```
+
+## Sanitization
+
+When setting form field values Waigo first sanitizes them. Sanitization is specified on a per-field basis in the form configuration. Let's trim all user input to our signup form: 
+
+```javascript
+// in file: forms/signup.js
+
+module.exports = {
+  fields: [
+    {
+      name: 'email',
+      type: 'text',
+      label: 'Email address',
+      sanitizers: [ 'trim' ]
+    },
+    {
+      name: 'password',
+      type: 'password',
+      label: 'Password',
+      sanitizers: [ 'trim' ]
+    },
+    {
+      name: 'confirm_password',
+      type: 'password',
+      label: 'Confirm password',
+      sanitizers: [ 'trim' ]
+    }
+  ]  
+};
+```
+
+Each item in the `sanitizers` array refers to the name of a module file under the `support/forms/sanitizers/` path. So for the above form specification Waigo will expect the following path to exist:
+
+* `support/forms/sanitizers/trim`
+
+A sanitizer module exports a single function which should return a generator function (this performs the actual sanitization). For example, Waigo's built-in `trim` sanitizer looks like this:
+
+```javascript
+var validator = require('validator');
+
+module.exports = function() {
+  return function*(form, field, value) {
+    return validator.trim(value);
+  }
+};
+
+```
+
+The actual sanitization function gets passed a `Form` and `Field` reference corresponding to the actual form and field it is operating on. This makes it possible to build complex sanitizers which can query other fields and the form itself.
+
+If sanitization fails then a `FieldSanitizationError` error gets thrown for the field for which it failed.
+
+
+## Validation
+
+Once form field values have been set we can validate them by calling `Form.prototype.validate()`. Validation is specified on a per-field basis in the form configuration. Let's validate our signup form:
+
+```javascript
+// in file: forms/signup.js
+
+module.exports = {
+  fields: [
+    {
+      name: 'email',
+      type: 'text',
+      label: 'Email address',
+      sanitizers: [ 'trim' ],
+      validators: [ 'notEmpty', 'isEmailAddress' ]
+    },
+    {
+      name: 'password',
+      type: 'password',
+      label: 'Password',
+      sanitizers: [ 'trim' ],
+      validators: [ 'notEmpty', { id: 'isLength', min: 8 } ]
+    },
+    {
+      name: 'confirm_password',
+      type: 'password',
+      label: 'Confirm password',
+      sanitizers: [ 'trim' ],
+      validators: [ { id: 'matchesField', field: 'password' } ]
+    }
+  ]  
+};
+```
+
+Each item in the `validators` array refers to the name of a module file under the `support/forms/validators/` path. When a validator (or even sanitizer) is specified as an `Object` then its `id` attribute is assumed to be its module file name. The `Object` itself is assumed to be a set of options to pass to the module during initialisation.
+
+So for the above form specification Waigo will expect the following paths to exist:
+
+* `support/forms/validators/notEmpty`
+* `support/forms/validators/isLength`
+* `support/forms/validators/matchesField`
+
+A validator module exports a single function which should return a generator function (this performs the actual validation). For example, Waigo's built-in `isEmailAddress` validator looks like this:
+
+```javascript
+var validator = require('validator');
+
+module.exports = function() {
+  return function*(form, field, value) {
+    if (!validator.isEmail(value)) {
+      throw new Error('Must be an email address');
+    }
+  }
+};
+
+```
+
+The actual validation function gets passed a `Form` and `Field` reference corresponding to the actual form and field it is operating on. This makes it possible to build complex validators which can query other fields and the form itself.
+
+When `Form.prototype.validate()` is called `Field.prototype.validate()` gets called for each field belonging to the form. For each field every validator gets run and all validation errors are grouped together within a single `FieldValidationError` instance. In `Form.prototype.validate()` all field validation errors are grouped together within a single `FormValidationError` instance. In this way validaton error reporting is very comprehensive and makes it easy to show the end-user exactly what failed to validate and why.
 
 # Logging
 
@@ -396,11 +680,11 @@ Waigo provides support for [winston](https://github.com/flatiron/winston) by def
 
 You may use any logging library you wish. The `app.config.logging` configuration object both specifies the name of a logger (to be loaded from the `support/logging` path) and configuration to pass to that logger.
 
-## Error handling
+# Errors
 
 The `support/middleware/errorHandler` middleware is responsible for handling all errors which get thrown during the request handling process. Errors get logged through the default logger as well as getting sent back to the client which made the original request. 
 
-It is highly recommended that your define and use your own error classes rather than use the built-in `Error` class. The `support/errors` module provides functionality to do this - your new error class will inherit from `RuntimeError` which in turn inherits from `Error`. `RuntimeError` allows one to set a HTTP status code along with the error message. This status code is used by the error handling middleware. For example:
+It is highly recommended that your define and use your own error classes rather than use the built-in `Error` class. The `support/errors` module provides functionality to do this - your new error class will inherit from `RuntimeError` which in turn inherits from `Error`. `RuntimeError` allows you to set a HTTP status code along with the error message. This status code is used by the error handling middleware. For example:
 
 ```javascript
 var waigo = require('waigo'),
@@ -415,11 +699,20 @@ var FileReadError = errors.define('FileReadError', FileSystemError);
 ...
 
 throw new FileReadError('Error reading image file', 500);
-// resulting error will be instance of: FileReadError, FileSystemError and Error
+// resulting error will be instance of: FileReadError, FileSystemError and Error and a HTTP status code of 500 will be returned to the client.
 ```
 
-_Note: Stack traces only get logged if the `app.config.errorHandler.showStack` flag is turned on_
+_Note: Stack traces only get sent to the client if the `app.config.errorHandler.showStack` flag is turned on_
 
+All the built-in error classes (including the `Error` base class) can generate [view object](#view-object) representations of themselves. In fact, when the error handler sends an error response to the client it uses the view object representation of the error. If sending an instance
+
+## Multiple errors
+
+Another built-in error class is `MultipleError`. Sometimes we may wish to report multiple errors related to a particular operation. 
+A `MultipleError` allows us to group `Error` instances together. When it gets sent to the client in an error response its own view object 
+representation and that of its 'child errors' gets generated.
+
+The [form and field validation errors](#field) both derive from `MultipleError`, allowing Waigo to collect and report multiple validation failures back to the client in an elegant and efficient manner.
 
 ## Debugging
 

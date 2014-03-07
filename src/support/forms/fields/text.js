@@ -7,11 +7,20 @@ var _ = require('lodash'),
 
 var Field = waigo.load('support/forms/field').Field;
 
+/** 
+ * # Text fields
+ *
+ * This module provides a class for reperesenting text input fields. It derivces from  the base `Field` class.
+ */
+
+
 
 
 /**
  * Create a text field.
  *
+ * @param  {Form} form   Parent form
+ * @param  {Object} config Configuration options
  * @constructor
  */
 var Text = exports.Field = function(form, config) {

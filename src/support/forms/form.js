@@ -18,10 +18,14 @@ var errors = waigo.load('support/errors'),
  * easy. A `Form` instance points to numerous `Field` instances which are 
  * created based on a form definition object which is provided during form 
  * construction. A form stores its internal state (including current field 
- * values) within an object which can be retrieved at any time. Importantly, a 
- * form can have its internal state set at any time, allowing for a single 
- * `Form` instance to be re-used for multiple clients (where each client is 
- * associated with an internal state).
+ * values) within an object which can be retrieved at any time. 
+ * 
+ * Importantly, a form can have its internal state changed at any time, 
+ * thus allowing for 
+ * multiple `Form` instances to share data (such as `Field` instances). This 
+ * helps reduce memory usage when multiple clients are accessing and 
+ * manipulating the same 
+ * from on your site.
  *
  * Although you can create and use `Form` objects directly it is better to use 
  * the `Form.new()` static method as this internally keeps track of which forms 
@@ -187,8 +191,6 @@ Form.prototype.toViewObject = function*(ctx) {
 
 
 
-// the form instance cache
-var cache = {};
 
 /** 
  * Create an instance of the given form.
@@ -219,6 +221,8 @@ Form.new = function(id, state) {
     return new Form(cachedInstance, state);
   }
 };
+// the form instance cache
+var cache = {};
 
 
 

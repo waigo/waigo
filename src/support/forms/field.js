@@ -42,6 +42,7 @@ var FieldSanitizationError = exports.FieldSanitizationError = errors.define('Fie
  * 
  * @param  {Form} form   Parent form
  * @param  {Object} config Configuration options
+ * @constructor
  */
 var Field = exports.Field = function(form, config) {
   this.form = form;
