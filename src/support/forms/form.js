@@ -190,6 +190,8 @@ Form.prototype.toViewObject = function*(ctx) {
 
 
 
+// the form instance cache
+var cache = {};
 
 
 /** 
@@ -221,8 +223,6 @@ Form.new = function(id, state) {
     return new Form(cachedInstance, state);
   }
 };
-// the form instance cache
-var cache = {};
 
 
 

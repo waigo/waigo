@@ -393,12 +393,12 @@ If we were to call the URL mapped to this controller method and append the `form
 
 ## View objects
 
-We wish to send model data back to the user we may want to first modify it, e.g. format dates, remove parts of the data that the client does not need to see in the given context, etc. Waigo introduces the concept of _view objects_ to support such functionality.
+When sending model data back to the user we may want to first modify it, e.g. format dates, remove parts of the data that the client does not need to see in the given context, etc. Waigo introduces the concept of _view objects_ to support such functionality.
 
-A view object is a plain Javascript object of key-value pairs with can be rendered to a view. The `render()` method provided by the output formats middleware (see above) checks your passed-in template attributes to see if view objects can be generated for them. An object can generate a view object representation of itself if it implements the `HasViewObject` mixin (see `support/mixins.js`). Applying this mixin to 
-a class requires you to implement a `toViewObject()` generator function for that class. This function takes a single argument - the context for the current request, allowing you to tailor the view object representation to output according to each individual request.
+A view object is simply a plain Javascript object of key-value pairs which can be rendered. The `render()` method provided by the [output formats](#views) middleware checks the passed-in template attributes to see if view objects can be generated for them. An object can generate a view object representation of itself if it implements the `HasViewObject` mixin (see `support/mixins.js`). Applying this mixin to 
+a class requires you to implement a `toViewObject()` generator function for that class. This function takes a single argument - the context for the current request, allowing you to tailor the view object representation according to each individual request.
 
-For example, let's say we have a model instance which we holds data wish to send to the client:
+For example, let's say we have a model instance which holds data wish to send to the client:
 
 ```javascript
 var waigo = require('waigo'),
@@ -457,9 +457,9 @@ The output (if we requested the JSON output format) will look like:
 ```
 
 Notice how the renderer didn't output the `id` attribute of our model instance. Also notice how the `stats` key-value pair was output 
-unmodified. If a given attribute does not implement the `HasViewObject` mixin then it gets output as it is, unchanged.
+just as it is. If a given attribute does not implement the `HasViewObject` mixin then it gets output as it is, unchanged.
 
-If we now make the request with the `x-custom-key: test` header set then we would see:
+If we now make the request with the `x-custom-key: test` header set then we will instead get:
 
 ```javascript
 {
@@ -474,11 +474,15 @@ If we now make the request with the `x-custom-key: test` header set then we woul
 }
 ```
 
+
+All built-in [error](#errors) classes (including form [validation](#validation) errors) can generate view object representations of themselves. In fact, when the error handler sends an error response to the client it uses the view object representation of the error.
+
+
 # Forms
 
-Forms are treated as first-class citizens in Waigo. Each form used in your site has a specific unique identifier and its configuration and input fields specification is specified in a file under the `forms/` path, the file name being the id of the form. 
+Forms are treated as first-class citizens in Waigo. Each form used unique id; its configuration and input fields are specified in a file under the `forms/` path, the file name being the id of the form. 
 
-For example, here is how you might specify a sipmle signup form:
+For example, here is how you might specify a simple signup form:
 
 ```javascript
 // in file: forms/signup.js
@@ -520,7 +524,7 @@ var waigo = require('waigo'),
 var form = Form.new('signup');
 ```
 
-Waigo will automaticall look under the `forms/` file path to see if a form specification for the given id exists. It so it will load in this specification (what you see above) and return a `Form` instance.
+Waigo will automatically look under the `forms/` file path to see if a form specification for the given id exists. It so it will load in this specification and return a `Form` instance.
 
 ## Form fields
 
@@ -534,7 +538,7 @@ A better approach would be to store the data which differs from client to client
 ```javascript
 // save the form state
 var form = Form.new('signup');
-form.setValues( /* user input values */ );
+yield form.setValues( /* user input values */ );
 this.session.formState = form.state;
 
 ...
@@ -598,20 +602,37 @@ Each item in the `sanitizers` array refers to the name of a module file under th
 A sanitizer module exports a single function which should return a generator function (this performs the actual sanitization). For example, Waigo's built-in `trim` sanitizer looks like this:
 
 ```javascript
-var validator = require('validator');
+var validatorSanitizer = require('validator');
 
 module.exports = function() {
   return function*(form, field, value) {
-    return validator.trim(value);
+    return validatorSanitizer.trim(value);
   }
 };
 
 ```
 
-The actual sanitization function gets passed a `Form` and `Field` reference corresponding to the actual form and field it is operating on. This makes it possible to build complex sanitizers which can query other fields and the form itself.
+The actual sanitization function gets passed a `Form` and `Field` reference corresponding to the actual form and field it is operating on. This makes it possible to build complex sanitizers which can query other fields and the form itself. If sanitization fails then a `FieldSanitizationError` error gets thrown for the field for which it failed.
 
-If sanitization fails then a `FieldSanitizationError` error gets thrown for the field for which it failed.
+Note that you can set field values without sanitization processing:
 
+```javascript
+// without sanitization
+form.fields.email.value = 'me@univers.com';
+
+// with sanitization (this will set .value after sanitization is complete)
+yield form.fields.email.setSanitizedValue('ram@hiddentao.com');
+```
+
+Setting values for multiple fields:
+
+```javascript
+// this calls Field.prototype.setSanitizedValue
+yield form.setValues({
+  email: 'ram@hiddentao.com',
+  password: 'test'
+});
+```
 
 ## Validation
 
@@ -704,7 +725,6 @@ throw new FileReadError('Error reading image file', 500);
 
 _Note: Stack traces only get sent to the client if the `app.config.errorHandler.showStack` flag is turned on_
 
-All the built-in error classes (including the `Error` base class) can generate [view object](#view-object) representations of themselves. In fact, when the error handler sends an error response to the client it uses the view object representation of the error. If sending an instance
 
 ## Multiple errors
 
@@ -712,7 +732,7 @@ Another built-in error class is `MultipleError`. Sometimes we may wish to report
 A `MultipleError` allows us to group `Error` instances together. When it gets sent to the client in an error response its own view object 
 representation and that of its 'child errors' gets generated.
 
-The [form and field validation errors](#field) both derive from `MultipleError`, allowing Waigo to collect and report multiple validation failures back to the client in an elegant and efficient manner.
+The [form and field validation errors](#validation) both derive from `MultipleError`, allowing Waigo to collect and report multiple validation failures back to the client in an elegant and efficient manner.
 
 ## Debugging
 

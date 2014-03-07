@@ -1,6 +1,6 @@
 "use strict";
 
-var validator = require('validator');
+var validatorSanitizer = require('validator');
 
 /** 
  * # Sanitizer: trim whitespace from the ends of given string.
@@ -13,7 +13,7 @@ var validator = require('validator');
  */
 module.exports = function() {
   return function*(form, field, value) {
-    return validator.trim(value);
+    return validatorSanitizer.trim(value);
   }
 };
 
