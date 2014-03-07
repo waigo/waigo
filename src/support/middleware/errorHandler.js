@@ -40,21 +40,21 @@ var render = function*(context, config, err) {
 /**
  * Build error handler middleware.
  *
- * @param config {Object} options.
- * @parma config.showStack {Boolean} whether to show the stack trace in error output. Default is false.
+ * @param {Object} options options.
+ * @parma {Boolean} [options.showStack] whether to show the stack trace in error output. Default is false.
  *
  * @return {Function} middleware
  */
-module.exports = function(config) {
-  config = _.extend({
+module.exports = function(options) {
+  options = _.extend({
     showStack: false
-  }, config);
+  }, options);
 
   return function*(next) {
     try {
       yield next;
     } catch (err) {
-      yield render(this, config, err);
+      yield render(this, options, err);
     }
   }
 };

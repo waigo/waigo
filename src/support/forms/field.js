@@ -11,15 +11,18 @@ var errors = waigo.load('support/errors'),
 /** 
  * # Form fields
  *
- * This module provides a base `Field` class for use with the `Form` class. Concrete instances of this class are never created - instead 
- * one of its subtypes will be instantiated depending on the type of field required.
- * 
- * A field is provided a reference to its parent form upon constructions - it uses this primarily to fetch a reference to 
- * the form's internal state object, as this is where fields also store their data (rather than within the `Field` instance). 
- * This makes it easier to re-use form instances for multiple clients.
+ * This module provides a base `Field` class for use with the `Form` class.
+ * Concrete instances of this class are never created - instead one of its
+ * subtypes will be instantiated depending on the type of field required.
  *
- * The `Field.new()` static method makes it easy to initialise a field of any given type and is the recommended method for creating 
- * new field instances.
+ * A field is provided a reference to its parent form upon constructions - it
+ * uses this primarily to fetch a reference to the form's internal state
+ * object, as this is where fields also store their data (rather than within
+ * the `Field` instance). This makes it easier to re-use form instances for
+ * multiple clients.
+ *
+ * The `Field.new()` static method makes it easy to initialise a field of any
+ * given type and is the recommended method for creating new field instances.
  */
 
 
@@ -79,6 +82,19 @@ mixins.applyTo(Field, mixins.HasViewObject);
 
 
 
+Object.defineProperty(Field.prototype, 'name', {
+  /**
+   * Get name of this field.
+   *
+   * @return {String}
+   */
+  get: function() {
+    return this.config.name;
+  }
+});
+
+
+
 Object.defineProperty(Field.prototype, 'value', {
   /**
    * Get the current value of this field.
@@ -87,7 +103,7 @@ Object.defineProperty(Field.prototype, 'value', {
    * @private
    */
   get: function() {
-    return this.form.state[this.config.name];
+    return this.form.state[this.name].value;
   },
   /**
    * Set the current value of this field.
@@ -96,7 +112,7 @@ Object.defineProperty(Field.prototype, 'value', {
    * @private
    */
   set: function(value) {
-    this.form.state[this.config.name] = value;
+    this.form.state[this.name].value = value;
   }
 });
 
@@ -106,11 +122,11 @@ Object.defineProperty(Field.prototype, 'value', {
 /**
  * Set the value of this field.
  *
- * This will run the given value through all available sanitizers prior to actually setting it. Subclasses should override this method 
- * if they wish to perform any additional processing of the value.
- *
+ * This will run the given value through all available sanitizers prior to
+ * actually setting it. Subclasses should override this method if they wish to
+ * perform any additional processing of the value.
+ * 
  * @param {Any} val The value.
- *
  * @throws FieldSanitizationError If any errors occur.
  */
 Field.prototype.setValue = function*(val) {
@@ -170,7 +186,7 @@ Field.prototype.validate = function*() {
 Field.prototype.toViewObject = function*() {
   var ret = {
     type: this.config.type,
-    name: this.config.name,
+    name: this.name,
     label: this.config.label,
     value: this.value
   };
@@ -188,11 +204,11 @@ Field.prototype.toViewObject = function*() {
 /** 
  * Create a `Field` instance.
  *
- * This will load and intialise an instance of the correct `Field` subtype according to the given field definition.
+ * This will load and intialise an instance of the correct `Field` subtype
+ * according to the given field definition.
  * 
  * @param {Form} form The parent form which holds this field's internal state.
  * @param {Object} def The field definition.
- * 
  * @return {Field}
  */
 Field.new = function(form, def) {

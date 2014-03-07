@@ -14,22 +14,22 @@ var viewObjectMethod = Object.keys(mixins.HasViewObject).pop();
 
 /**
  * Build output formats middleware.
- * @param config {Object} output format config.
+ * @param options {Object} output format options.
  * @return {Function} Express middleware.
  */
-module.exports = function(config) {
+module.exports = function(options) {
   var enabledFormats = {};
 
-  var formatNames = Object.keys(config.formats);
+  var formatNames = Object.keys(options.formats);
   for (let i=0; i<formatNames.length; ++i) {
     let format = formatNames[i];
-    enabledFormats[format] = waigo.load('support/outputFormats/' + format).create(config.formats[format]);
+    enabledFormats[format] = waigo.load('support/outputFormats/' + format).create(options.formats[format]);
   }
 
   return function* setoutputFormat(next) {
     var ctx = this;
 
-    var requestedFormat = (this.query[config.paramName] || config.default).toLowerCase();
+    var requestedFormat = (this.query[options.paramName] || options.default).toLowerCase();
 
     // check format is valid
     if (requestedFormat && !enabledFormats[requestedFormat]) {
