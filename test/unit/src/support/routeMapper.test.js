@@ -35,7 +35,7 @@ test['route mapper'] = {
     testUtils.deleteTestFolders()
       .then(testUtils.createTestFolder)
       .then(function() {
-        testUtils.createAppModules({
+        return testUtils.createAppModules({
           'support/middleware/test': 'var a = function*() {}; module.exports = function() { return a }; a.ref = a;',
           'support/middleware/test_options': 'module.exports = function(o) { return function*() { return o; } };'
         });

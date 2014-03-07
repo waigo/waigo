@@ -40,19 +40,9 @@ test['json'] = {
       var render = this.render, 
         ctx = this.ctx;
 
-      new Promise(function(resolve, reject) {
-        co(function*() {
-          yield* render.call(ctx, 'test', 'bla');
-        })(function(err) {
-          try {
-            expect(err.message).to.eql('Plain object required for JSON output format');
-            resolve();
-          } catch(err2) {
-            reject(err2);
-          }
-        });
-      })
-        .nodeify(done);
+      testUtils.spawn(render, ctx, 'test', 'bla')
+        .should.be.rejectedWith('Plain object required for JSON output format')
+        .and.notify(done);
     },
     'renders JSON': function(done) {
       var render = this.render, 

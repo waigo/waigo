@@ -120,7 +120,7 @@ Form.prototype.setValues = function*(values) {
   values = values || {};
 
   for (let fieldName in this.fields) {
-    yield this.fields[fieldName].setValue(values[fieldName]);
+    yield this.fields[fieldName].setSanitizedValue(values[fieldName]);
   }
 };
 

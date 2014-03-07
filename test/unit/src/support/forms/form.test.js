@@ -145,7 +145,7 @@ test['forms'] = {
 
       var values = {};
       _.each(f.fields, function(field, name) {
-        field.setValue = function*(v) {
+        field.setSanitizedValue = function*(v) {
           values[name] = v;
         };
       });

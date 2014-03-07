@@ -21,7 +21,7 @@ test['html'] = {
     testUtils.deleteTestFolders()
       .then(testUtils.createTestFolders)
       .then(function() {
-        testUtils.createAppModules({
+        return testUtils.createAppModules({
           'views/test': 'p hello!',
           'views/test_params': 'p hello #{text}!'
         });

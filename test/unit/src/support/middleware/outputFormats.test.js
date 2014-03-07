@@ -21,7 +21,7 @@ test['output formats middleware'] = {
     testUtils.deleteTestFolders()
       .then(testUtils.createTestFolders)
       .then(function() {
-        testUtils.createAppModules({
+        return testUtils.createAppModules({
           'support/outputFormats/html2': 'module.exports = { create: function() { return { render: function*() { yield 123; } }; } };'
         });
       })

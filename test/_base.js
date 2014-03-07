@@ -23,7 +23,7 @@ fs.existsAsync = Promise.promisify(function(file, cb) {
 rimrafAsync = Promise.promisify(rimraf);
 mkdirpAsync = Promise.promisify(mkdirp);
 chai.use(require('sinon-chai'));
-
+chai.use(require("chai-as-promised"));
 
 var testUtils = {},
   testDataFolder = path.join(__dirname, 'data');
@@ -232,7 +232,11 @@ testUtils.createModules = function(srcFolder, modules, defaultContent) {
 
 
 waigo = require('../index');
-waigo.initAsync = Promise.coroutine(waigo.init);
+waigo.initAsync = Promise.coroutine(function*(){
+  return yield* waigo.init({
+    appFolder: testUtils.appFolder
+  });
+});
 
 
 module.exports = {

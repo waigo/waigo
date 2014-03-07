@@ -129,7 +129,7 @@ Object.defineProperty(Field.prototype, 'value', {
  * @param {Any} val The value.
  * @throws FieldSanitizationError If any errors occur.
  */
-Field.prototype.setValue = function*(val) {
+Field.prototype.setSanitizedValue = function*(val) {
   for (let idx in this.sanitizers) {
     let sanitizerFn = this.sanitizers[idx].fn;
 
@@ -184,18 +184,12 @@ Field.prototype.validate = function*() {
  * @see mixins
  */
 Field.prototype.toViewObject = function*() {
-  var ret = {
+  return {
     type: this.config.type,
     name: this.name,
     label: this.config.label,
     value: this.value
   };
-
-  if (this.config.defaultValue) {
-    ret.defaultvalue = this.config.defaultValue;
-  }
-
-  return ret;
 };
 
 
@@ -208,14 +202,14 @@ Field.prototype.toViewObject = function*() {
  * according to the given field definition.
  * 
  * @param {Form} form The parent form which holds this field's internal state.
- * @param {Object} def The field definition.
+ * @param {Object} config The field configuration.
  * @return {Field}
  */
-Field.new = function(form, def) {
-  let type = def.type,
+Field.new = function(form, config) {
+  let type = config.type,
     FieldClass = waigo.load('support/forms/fields/' + type).Field;
 
-  return new FieldClass(form, def);
+  return new FieldClass(form, config);
 };
 
 

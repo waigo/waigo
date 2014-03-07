@@ -12,7 +12,7 @@ var testBase = require('../_base'),
 
 // waigo = waigo.load('loader') but we do this just to make sure the loader can load itself
 var loader = require('../../src/loader');
-
+loader.initPromise = Promise.coroutine(loader.init);
 
 
 test['app folder'] = {
@@ -70,14 +70,14 @@ test['init()'] = {
     testUtils.deleteTestFolders().nodeify(done);
   },
   'can be called more than once': function(done) {
-    loader.initAsync()
-      .then(loader.initAsync)
+    loader.initPromise()
+      .then(loader.initPromise)
       .nodeify(done);
   },
   'set app folder': function(done) {
     loader.getAppFolder().should.not.eql(testUtils.appFolder);
 
-    loader.initAsync({
+    loader.initPromise({
       appFolder: testUtils.appFolder
     })
       .then(function() {
@@ -89,7 +89,7 @@ test['init()'] = {
     'default options': function(done) {
       var options = {};
 
-      loader.initAsync(options)
+      loader.initPromise(options)
         .then(function checkLoadedPlugins() {
           options.plugins.names.should.eql([]);
         })
@@ -98,7 +98,7 @@ test['init()'] = {
     'custom config': function(done) {
       var options = this.options;
 
-      loader.initAsync(options)
+      loader.initPromise(options)
         .then(function checkLoadedPlugins() {
           options.plugins.names.should.eql(['waigo-plugin-1_TESTPLUGIN', 'waigo-plugin-2_TESTPLUGIN']);
         })
@@ -108,7 +108,7 @@ test['init()'] = {
       var options = this.options;
       options.plugins.glob = ['*another*'];
 
-      loader.initAsync(options)
+      loader.initPromise(options)
         .then(function checkLoadedPlugins() {
           options.plugins.names.should.eql(['another-plugin_TESTPLUGIN']);
         })
@@ -118,7 +118,7 @@ test['init()'] = {
       var options = this.options;
       options.plugins.configKey = ['peerDependencies'];
 
-      loader.initAsync(options)
+      loader.initPromise(options)
         .then(function checkLoadedPlugins() {
           options.plugins.names.should.eql([]);
         })
@@ -131,7 +131,7 @@ test['init()'] = {
         }
       }
 
-      loader.initAsync(options)
+      loader.initPromise(options)
         .then(function checkLoadedPlugins() {
           options.plugins.names.should.eql(['another-plugin_TESTPLUGIN']);
         })
@@ -142,7 +142,7 @@ test['init()'] = {
     'default version': function(done) {
       var options = this.options;
 
-      loader.initAsync(options)
+      loader.initPromise(options)
         .then(function checkLoadedPlugins() {
           loader.__modules['support/errors']._load.should.eql('waigo');
         })
@@ -153,7 +153,7 @@ test['init()'] = {
 
       testUtils.createAppModules(['support/errors'])
         .then(function() {
-          return loader.initAsync(options)
+          return loader.initPromise(options)
             .then(function checkLoadedPlugins() {
               loader.__modules['support/errors']._load.should.eql('app');
             });
@@ -165,7 +165,7 @@ test['init()'] = {
 
       testUtils.createAppModules(['support/blabla'])
         .then(function() {
-          return loader.initAsync(options)
+          return loader.initPromise(options)
             .then(function checkLoadedPlugins() {
               loader.__modules['support/blabla']._load.should.eql('app');
             });
@@ -177,7 +177,7 @@ test['init()'] = {
 
       testUtils.createPluginModules('waigo-plugin-1_TESTPLUGIN', ['support/errors'])
         .then(function() {
-          return loader.initAsync(options)
+          return loader.initPromise(options)
             .then(function checkLoadedPlugins() {
               loader.__modules['support/errors']._load.should.eql('waigo-plugin-1_TESTPLUGIN');
             })
@@ -192,18 +192,10 @@ test['init()'] = {
         testUtils.createPluginModules('waigo-plugin-2_TESTPLUGIN', ['support/errors'])
       ])
         .then(function() {
-          return new Promise(function(resolve, reject) {
-            loader.initAsync(options)
-              .then(function() {
-                reject(new Error('Should not be here'));
-              })
-              .catch(function(err) {
-                err.toString().should.eql('Error: Module "support/errors" has more than one plugin implementation to choose from: waigo-plugin-1_TESTPLUGIN, waigo-plugin-2_TESTPLUGIN');
-                resolve();
-              });
-          });
+          return loader.initPromise(options);
         })
-        .nodeify(done);      
+        .should.be.rejectedWith('Module "support/errors" has more than one plugin implementation to choose from: waigo-plugin-1_TESTPLUGIN, waigo-plugin-2_TESTPLUGIN')
+        .and.notify(done);
     },
     'app overrides plugins': function(done) {
       var options = this.options;
@@ -214,7 +206,7 @@ test['init()'] = {
         testUtils.createAppModules(['support/errors']),
       ])
         .then(function() {
-          return loader.initAsync(options)
+          return loader.initPromise(options)
             .then(function checkLoadedPlugins() {
               loader.__modules['support/errors']._load.should.eql('app');
             })
@@ -253,7 +245,7 @@ test['load()'] = {
           ])
         })
         .then(function() {
-          return loader.initAsync({
+          return loader.initPromise({
             appFolder: testUtils.appFolder,
             plugins: {
               names: ['waigo-plugin-1_TESTPLUGIN', 'waigo-plugin-2_TESTPLUGIN', 'another-plugin_TESTPLUGIN']

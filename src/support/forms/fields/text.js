@@ -15,7 +15,7 @@ var Field = waigo.load('support/forms/field').Field;
  * @constructor
  */
 var Text = exports.Field = function(form, config) {
-  Field.apply(this, _.toArray(arguments));
+  Text.super_.apply(this, _.toArray(arguments));
 };
 util.inherits(Text, Field);
 
