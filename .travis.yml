@@ -1,3 +1,7 @@
+branches:
+  only:
+    - master
+
 language: node_js
 
 node_js:
@@ -13,3 +17,4 @@ script:
 notifications:
   email:
     - ram@hiddentao.com
+
