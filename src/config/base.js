@@ -51,6 +51,20 @@ exports.logging = {
 };
 
 
+/** 
+ * Cookie-signing keys used by Keygrip
+ * @type {Object}
+ */
+app.keygrip = {
+  // cookie signing keys - these are used for signing cookies (using Keygrip) and should be customised for your app
+  keys: ['use', 'your', 'own'],  
+}
+
+
+
+// ---------------------------
+// MIDDLEWARE
+// ---------------------------
 
 
 /**
@@ -60,9 +74,7 @@ exports.logging = {
  *
  * @type {Object}
  */
-exports.session = {
-  // cookie signing keys - these are used for signing cookies (using Keygrip) and should be set for your app
-  // keys: ['use', 'your', 'own'],
+exports._sessions = {
   // session cookie name
   name: 'waigo',
   // session storage
@@ -89,7 +101,7 @@ exports.session = {
  * Server responses to client requests can be in the formats specified here.
  * @type {Object}
  */
-exports.outputFormats = {
+exports._outputFormats = {
   // List of enabled formats along with options to pass to each formatter. */
   formats: {
     html: {
@@ -118,7 +130,7 @@ exports.outputFormats = {
  * Static resources.
  * @type {Object}
  */
-exports.staticResources = {
+exports._staticResources = {
   // relative to app folder
   folder: '../public',
   // see support/middleware/staticResources for options
@@ -132,7 +144,36 @@ exports.staticResources = {
  * Config for request error handler.
  * @type {Object}
  */
-exports.errorHandler = {
+exports._errorHandler = {
   // whether to show stack traces in error output.
   showStack: false
 };
+
+
+
+/**
+ * Middleware for all requests. 
+ * @type {Array}
+ */
+exports.middleware = [
+  {
+    id: 'responseTime'
+  },
+  {
+    id: 'errorHandler',
+    options: exports._errorHandler
+  },
+  {
+    id: 'staticResources',
+    options: exports._staticResources
+  },
+  {
+    id: 'sessions',
+    options: exports._sessions
+  },
+  {
+    id: 'outputFormats',
+    options: exports._outputFormats
+  }
+];
+

@@ -24,7 +24,31 @@ _.str = require('underscore.string');
  * @type {Object}
  */
 var app = module.exports = koa();
-require('koa-trie-router')(app);
+
+/**
+ * Application startup process steps.
+ * @type {Array}
+ * @private
+ */
+app._startup = [];
+
+
+
+/** 
+ * Add a step to the application start-up process.
+ * @param {String}   id Unique id of startup step.
+ * @param {Function} fn   Generator function representing this step.
+ * @param {String} [afterId] Name of startup step after which to add this one. Of ommitted then this step 
+ * will be added as the last step.
+ */
+app.addStartupStep = function(id, fn) {
+  app._startup.push({
+    id: id,
+    fn: fn
+  });
+};
+
+
 
 
 
@@ -79,82 +103,32 @@ app.setupDatabase = function*() {
 
 
 
+
 /**
- * Setup middleware for generating X-Response-Time headers.
+ * Setup middleware chain for all requests.
  *
  * @protected
  */
-app.setupResponseTime = function*() {
-  debug('Setting up X-Response-Time middleware');
-  app.use(waigo.load('support/middleware/responseTime')());
-};
-
-
-
-/**
- * Setup middleware for dealing with errors.
- *
- * @protected
- */
-app.setupErrorHandler = function*() {
-  debug('Setting up error handler middleware');
-  app.use(waigo.load('support/middleware/errorHandler')(app.config.errorHandler));
+app.setupMiddleware = function*() {
+  _.each(app.config.middleware, function(m) {
+    debug('Setting up middleware: ' + m.id);
+    app.use(waigo.load('support/middleware/' + m.id)(m.options));
+  });
 };
 
 
 
 
+
 /**
- * Setup middleware for handling user sessions.
+ * Setup keys for cookie signing by keygrip.
  *
  * @protected
  */
-app.setupSessions = function*() {
-  var sessionConfig = app.config.session;
-  if (sessionConfig) {
-    if (!sessionConfig.keys) {
-      throw new Error('Please specify cookie signing keys (session.keys) in the config file.');
-    }
-
-    debug('Setting up sessions');
-
-    app.keys = sessionConfig.keys;
-    app.use(waigo.load('support/middleware/sessions')({
-      name: sessionConfig.name,
-      store: waigo.load('support/session/store/' + sessionConfig.store.type).create(app, sessionConfig.store.config),
-      cookie: {
-        expires: moment().add('days', sessionConfig.cookie.validForDays).toDate(),
-        path: sessionConfig.cookie.path
-      }
-    }));
-  }
+app.setupKeygripKeys = function*() {
+  app.keys = app.config.keygrip.keys;
 };
 
-
-
-
-/**
- * Setup middleware for serving static resources.
- *
- * @protected
- */
-app.setupStaticResources = function*() {
-  debug('Setting up static resources');
-  app.use(waigo.load('support/middleware/staticResources')(app.config.staticResources));
-};
-
-
-
-
-/**
- * Setup middleware for response output formats.
- *
- * @protected
- */
-app.setupOutputFormats = function*() {
-  debug('Setting up output formats');
-  app.use(waigo.load('support/middleware/outputFormats')(app.config.outputFormats));
-};
 
 
 
@@ -167,6 +141,7 @@ app.setupOutputFormats = function*() {
  */
 app.setupRoutes = function*() {
   debug('Setting up routes');
+  require('koa-trie-router')(app);
   app.routes = waigo.load('routes');
   waigo.load('support/routeMapper').map(app, app.routes);
   app.use(app.router);
@@ -188,6 +163,25 @@ app.startServer = function*() {
 
 
 
+/**
+ * Application startup-steps.
+ *
+ * This lists the functions to execute when starting the application.
+ * 
+ * @type {Array}
+ * @protected
+ */
+app.startupSteps = [
+  app.loadConfig,
+  app.setupLogger,
+  app.setupDatabase,
+  app.setupMiddleware,
+  app.setupKeygripKeys,
+  app.setupRoutes,
+  app.startServer
+];
+
+
 
 /**
  * Start the Koa application.
@@ -198,16 +192,14 @@ app.startServer = function*() {
  * @public
  */
 app.start = function*() {
+
   yield* app.loadConfig();
   yield* app.setupLogger();
   yield* app.setupDatabase();
 
   // middleware chain for every incoming request
-  yield* app.setupResponseTime();
-  yield* app.setupErrorHandler();
-  yield* app.setupStaticResources();
-  yield* app.setupSessions();
-  yield* app.setupOutputFormats();
+  yield* app.setupMiddleware();
+  yield* app.setupKeygripKeys();
 
   yield* app.setupRoutes();
   return yield* app.startServer();    
