@@ -24,7 +24,7 @@ exports.db = {
  * Config for request error handler.
  * @type {Object}
  */
-exports._errorHandler = {
+exports.errorHandler = {
   showStack: true
 };
 

@@ -1,5 +1,16 @@
 var koaSessionStore = require('koa-session-store');
 
+/**
+ * # Middleware: sessions
+ *
+ * **Note: this requires the `cookies` startup step to be enabled**
+ * 
+ * This middleware uses [koa-session-store](https://github.com/hiddentao/koa-session-store) to enable 
+ * session data storage. 
+ */
+
+
+
 module.exports = function(options) {
   if (!options.keys) {
     throw new Error('Please specify cookie signing keys (session.keys) in the config file.');

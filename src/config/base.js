@@ -20,6 +20,13 @@ exports.port = 3000;
 exports.baseURL = 'http://localhost:' + exports.port;
 
 
+
+
+// ---------------------------
+// STARTUP
+// ---------------------------
+
+
 /**
  * Database connection.
  * @type {Object}
@@ -51,14 +58,34 @@ exports.logging = {
 };
 
 
+
 /** 
  * Cookie-signing keys used by Keygrip
  * @type {Object}
  */
-app.keygrip = {
+app.cookies = {
   // cookie signing keys - these are used for signing cookies (using Keygrip) and should be customised for your app
   keys: ['use', 'your', 'own'],  
 }
+
+
+
+/**
+ * The steps to execute as part of the application startup process.
+ *
+ * Each of these corresponds to a module file under the `startup/` route.
+ * 
+ * @type {Array}
+ */
+exports.startupSteps = [
+  'logging',
+  'database',
+  'middleware',
+  'cookies',
+  'routes',
+  'listener'
+];
+
 
 
 
@@ -74,7 +101,7 @@ app.keygrip = {
  *
  * @type {Object}
  */
-exports._sessions = {
+exports.sessions = {
   // session cookie name
   name: 'waigo',
   // session storage
@@ -101,7 +128,7 @@ exports._sessions = {
  * Server responses to client requests can be in the formats specified here.
  * @type {Object}
  */
-exports._outputFormats = {
+exports.outputFormats = {
   // List of enabled formats along with options to pass to each formatter. */
   formats: {
     html: {
@@ -130,7 +157,7 @@ exports._outputFormats = {
  * Static resources.
  * @type {Object}
  */
-exports._staticResources = {
+exports.staticResources = {
   // relative to app folder
   folder: '../public',
   // see support/middleware/staticResources for options
@@ -144,7 +171,7 @@ exports._staticResources = {
  * Config for request error handler.
  * @type {Object}
  */
-exports._errorHandler = {
+exports.errorHandler = {
   // whether to show stack traces in error output.
   showStack: false
 };
@@ -161,19 +188,19 @@ exports.middleware = [
   },
   {
     id: 'errorHandler',
-    options: exports._errorHandler
+    options: exports.errorHandler
   },
   {
     id: 'staticResources',
-    options: exports._staticResources
+    options: exports.staticResources
   },
   {
     id: 'sessions',
-    options: exports._sessions
+    options: exports.sessions
   },
   {
     id: 'outputFormats',
-    options: exports._outputFormats
+    options: exports.outputFormats
   }
 ];
 
