@@ -3,7 +3,7 @@
 
 
 var debug = require('debug')('waigo-startup-routes'),
-  waigo = require('../../');
+  waigo = require('../../../');
 
 
 /**

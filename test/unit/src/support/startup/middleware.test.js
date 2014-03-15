@@ -2,7 +2,7 @@ var moment = require('moment'),
   path = require('path'),
   Promise = require('bluebird');
 
-var testBase = require('../../../_base'),
+var testBase = require('../../../../_base'),
   assert = testBase.assert,
   expect = testBase.expect,
   should = testBase.should,
@@ -30,8 +30,8 @@ test['middleware'] = {
         });
       })
       .then(function() {
-        self.setup = waigo.load('startup/middleware');
-        self.app = waigo.load('server');
+        self.setup = waigo.load('support/startup/middleware');
+        self.app = waigo.load('app');
         self.app.config.middleware = [
           {
             id: 'test',
@@ -48,7 +48,7 @@ test['middleware'] = {
   afterEach: function(done) {
     testUtils.deleteTestFolders().nodeify(done);
   },
-  'loads and initalises middleware': function(done) {
+  'loads and initialises middleware': function(done) {
     var self = this;
 
     var useSpy = test.mocker.spy(self.app, 'use');
@@ -62,18 +62,18 @@ test['middleware'] = {
       .then(function() {
         fn = useSpy.getCall(0).args[0];
 
-        return testUtils.spawn(function*() {
-          return yield fn(128);
+        testUtils.spawn(function*() {
+          return yield fn.call(null, 128);
         })
           .then(function(val) {
-            val.should.eql([  'test', 'foo', 128 ]);
+            val.should.eql([ 'test', 'foo', 128 ]);
           });
       })
       .then(function() {
         fn = useSpy.getCall(1).args[0];
 
-        return testUtils.spawn(function*() {
-          return yield fn(256);
+        testUtils.spawn(function*() {
+          return yield fn.call(null, 256);
         })
           .then(function(val) {
             val.should.eql([  'test2', 'bar', 256 ]);

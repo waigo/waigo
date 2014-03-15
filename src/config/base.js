@@ -59,14 +59,6 @@ exports.logging = {
 
 
 
-/** 
- * Cookie-signing keys used by Keygrip
- * @type {Object}
- */
-app.cookies = {
-  // cookie signing keys - these are used for signing cookies (using Keygrip) and should be customised for your app
-  keys: ['use', 'your', 'own'],  
-}
 
 
 
@@ -81,7 +73,6 @@ exports.startupSteps = [
   'logging',
   'database',
   'middleware',
-  'cookies',
   'routes',
   'listener'
 ];
@@ -102,6 +93,8 @@ exports.startupSteps = [
  * @type {Object}
  */
 exports.sessions = {
+  // cookie signing keys - these are used for signing cookies (using Keygrip) and should be customised for your app
+  keys: ['use', 'your', 'own'],
   // session cookie name
   name: 'waigo',
   // session storage

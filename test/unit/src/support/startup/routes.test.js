@@ -2,7 +2,7 @@ var moment = require('moment'),
   path = require('path'),
   Promise = require('bluebird');
 
-var testBase = require('../../../_base'),
+var testBase = require('../../../../_base'),
   assert = testBase.assert,
   expect = testBase.expect,
   should = testBase.should,
@@ -30,8 +30,8 @@ test['routes'] = {
         });
       })
       .then(function() {
-        self.setup = waigo.load('startup/routes');
-        self.app = waigo.load('server');
+        self.setup = waigo.load('support/startup/routes');
+        self.app = waigo.load('app');
       })
       .nodeify(done);
   },

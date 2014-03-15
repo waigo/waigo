@@ -31,4 +31,5 @@ test['static resources middleware'] = {
 
     pathJoinSpy.should.have.been.calledWithExactly(waigo.getAppFolder(), 'static');
   }
+
 };

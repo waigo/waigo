@@ -37,7 +37,7 @@ test['error handler middleware'] = {
     var fn = errorHandler();
 
     var ctx = {
-      app: waigo.load('server')
+      app: waigo.load('app')
     };
     ctx.app.logger = {
       error: test.mocker.spy()
@@ -69,7 +69,7 @@ test['error handler middleware'] = {
     });
 
     var ctx = {
-      app: waigo.load('server')
+      app: waigo.load('app')
     };
     ctx.app.logger = {
       error: test.mocker.spy()

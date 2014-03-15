@@ -2,7 +2,7 @@
 
 
 var debug = require('debug')('waigo-startup-database'),
-  waigo = require('../../');
+  waigo = require('../../../');
 
 
 
@@ -16,6 +16,8 @@ module.exports = function*(app) {
     var dbType = Object.keys(app.config.db).pop();
     debug('Setting up database connection : ' + dbType);
     app.db = waigo.load('support/db/' + dbType).create(app.config.db[dbType]);
+  } else {
+    app.db = undefined;
   }
 };
 

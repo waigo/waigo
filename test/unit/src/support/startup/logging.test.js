@@ -2,7 +2,7 @@ var moment = require('moment'),
   path = require('path'),
   Promise = require('bluebird');
 
-var testBase = require('../../../_base'),
+var testBase = require('../../../../_base'),
   assert = testBase.assert,
   expect = testBase.expect,
   should = testBase.should,
@@ -29,8 +29,8 @@ test['logging'] = {
         });
       })
       .then(function() {
-        self.setup = waigo.load('startup/logging');
-        self.app = waigo.load('server');
+        self.setup = waigo.load('support/startup/logging');
+        self.app = waigo.load('app');
         self.app.config = {
           logging: {
             test: {

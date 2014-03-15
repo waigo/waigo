@@ -56,9 +56,9 @@ app.start = function*() {
 
   var ret = null;
   for (let idx in app.config.startupSteps) {
-    let stepName = app.config.startupSteps[i];
+    let stepName = app.config.startupSteps[idx];
     debug('Running startup step: ' + stepName);
-    ret = yield* waigo.load('startup/' + stepName)(app);
+    ret = yield* waigo.load('support/startup/' + stepName)(app);
   }
 
   return ret;

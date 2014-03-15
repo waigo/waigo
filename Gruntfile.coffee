@@ -10,14 +10,6 @@ module.exports = (grunt) ->
   grunt.initConfig
     config: config
 
-    # jshint:
-    #   options:
-    #     jshintrc: ".jshintrc"
-
-    #   all: [
-    #     "<%= config.src %>/{,*/}{,*/}{,*/}{,*/}{,*/}{,*/}errorHandler.js"
-    #   ]
-
     watch:
       api_docs:
         files: [
@@ -30,7 +22,6 @@ module.exports = (grunt) ->
           "<%= config.test %>/{,*/}{,*/}{,*/}{,*/}{,*/}{,*/}*.js"
         ]
         tasks: ["mochaTest"]
-
 
     mochaTest:
       test:

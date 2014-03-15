@@ -31,7 +31,7 @@ We will use the [bluebird](https://github.com/petkaantonov/bluebird) library to 
 $ npm install bluebird
 ```
 
-Create a new Javascript file (e.g. `app.js`) in your project folder with the following contents:
+Create a new Javascript file (e.g. `server.js`) in your project folder with the following contents:
 
 ```javascript
 var Promise = require('bluebird'),
@@ -42,7 +42,7 @@ Promise.spawn(function*() {
   // Initialise waigo module loading system
   yield* waigo.init();
   // Start the server
-  yield* waigo.load('server').start();
+  yield* waigo.load('app').start();
 })
   .then(function(err) {
     console.log(err);  
@@ -66,7 +66,7 @@ $ echo "p= title" > src/views/index.jade
 Start the app:
 
 ```bash
-$ node --harmony app.js
+$ node --harmony server.js
 ```
 
 Visit [http://localhost:3000](http://localhost:3000) and you should see the following HTML output: 
@@ -91,7 +91,7 @@ HTML and JSON output, and more [output formats](#views) can be easily added.
 In the "Hello World" example above you will have noticed:
 
 ```javascript
-waigo.load('server')
+waigo.load('app')
 ```
 
 When you want to use something provided by the framework you first have to load its module file through `waigo.load()`. This allows you to:

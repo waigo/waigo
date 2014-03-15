@@ -2,7 +2,7 @@
 
 
 var debug = require('debug')('waigo-startup-listener'),
-  waigo = require('../../');
+  waigo = require('../../../');
 
 
 /**

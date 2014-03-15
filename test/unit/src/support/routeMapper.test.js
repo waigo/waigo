@@ -42,7 +42,7 @@ test['route mapper'] = {
       })
       .then(waigo.initAsync)
       .then(function() {
-        app = waigo.load('server');
+        app = waigo.load('app');
         mapper = waigo.load('support/routeMapper');
 
         app.route = test.mocker.spy(function() {
@@ -159,7 +159,7 @@ test['route mapper'] = {
     },
     'valid reference': function() {
       expect(function() {
-        mapper.map(app, {'HEAD /': 'sessions'});
+        mapper.map(app, {'HEAD /': 'test'});
       }).to.not.throw(Error);                  
     },
     'object reference': function() {

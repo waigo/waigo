@@ -43,7 +43,7 @@ test['mongo'] = {
   },
 
   'reuse app db': function() {
-    var app = waigo.load('server');
+    var app = waigo.load('app');
     app.logger = { info: function() {} };
     app.db = new Date();
 

@@ -2,7 +2,7 @@ var moment = require('moment'),
   path = require('path'),
   Promise = require('bluebird');
 
-var testBase = require('../../../_base'),
+var testBase = require('../../../../_base'),
   assert = testBase.assert,
   expect = testBase.expect,
   should = testBase.should,
@@ -20,8 +20,8 @@ test['listener'] = {
       appFolder: testUtils.appFolder
     })
       .then(function() {
-        self.setup = waigo.load('startup/listener');
-        self.app = waigo.load('server');
+        self.setup = waigo.load('support/startup/listener');
+        self.app = waigo.load('app');
         self.app.config = {
           mode: 'test',
           port: 3000,

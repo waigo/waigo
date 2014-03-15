@@ -2,7 +2,7 @@
 
 
 var debug = require('debug')('waigo-startup-logging'),
-  waigo = require('../../');
+  waigo = require('../../../');
 
 
 /**

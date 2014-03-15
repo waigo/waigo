@@ -13,7 +13,7 @@ var testBase = require('../../_base'),
 
 test['app'] = {
   beforeEach: function(done) {
-    this.resetWaigo = function() {
+    this.resetWaigo = function() {      
       return waigo.initAsync({
         appFolder: testUtils.appFolder
       });
@@ -28,10 +28,10 @@ test['app'] = {
   },
 
 
-  'exports': function(done) {
+  'exports koa object': function(done) {
     this.resetWaigo()
       .then(function() {
-        var app = waigo.load('server');
+        var app = waigo.load('app');
         app.listen.should.be.instanceof(Function);    
       })
       .nodeify(done);
@@ -48,7 +48,7 @@ test['app'] = {
         return self.resetWaigo();
       })
       .then(function() {
-        var app = waigo.load('server');
+        var app = waigo.load('app');
         
         return Promise.spawn(app.loadConfig)
           .then(function() {
@@ -72,7 +72,7 @@ test['app'] = {
   //             return self.resetWaigo();
   //           })
   //           .then(function() {
-  //             self.app = waigo.load('server');
+  //             self.app = waigo.load('app');
   //           })
   //           .nodeify(done);      
   //     },
@@ -104,7 +104,7 @@ test['app'] = {
   //           return self.resetWaigo();
   //         })
   //         .then(function() {
-  //           self.app = waigo.load('server');
+  //           self.app = waigo.load('app');
   //         })
   //         .nodeify(done);      
   //     },
@@ -136,7 +136,7 @@ test['app'] = {
   //             return self.resetWaigo();
   //           })
   //           .then(function() {
-  //             self.app = waigo.load('server');
+  //             self.app = waigo.load('app');
   //           })
   //           .nodeify(done);      
   //     },
@@ -171,102 +171,6 @@ test['app'] = {
   //         .nodeify(done);
   //     }
   //   },    
-  //   'sessions': {
-  //     beforeEach: function(done) {
-  //       var self = this;
-
-  //     testUtils.createAppModules({
-  //       'support/middleware/sessions': 'module.exports = function() { var args = Array.prototype.slice.call(arguments); return function*() { yield args; }; };',
-  //       'support/session/store/testStore': 'module.exports = { create: function(app, cfg) { return cfg; } };'
-  //     })
-  //       .then(function() {
-  //         return self.resetWaigo();
-  //       })
-  //       .then(function() {
-  //         self.app = waigo.load('server');
-  //       })
-  //       .nodeify(done);      
-  //     },
-  //     'does nothing if no sessions config found': function(done) {
-  //       var app = this.app,
-  //         appUseSpy = test.mocker.stub(app, 'use');
-
-  //       delete app.config.session;
-
-  //       Promise.spawn(app.setupSessions)
-  //         .then(function() {
-  //           appUseSpy.should.have.been.notCalled;
-  //         })
-  //         .nodeify(done);
-  //     },
-  //     'verifies that cookie signing keys are set': function(done) {
-  //       var app = this.app;
-
-  //       app.config.session = {};
-
-  //       new Promise(function(resolve, reject) {
-  //         Promise.spawn(app.setupSessions)
-  //           .catch(function(err) {
-  //             err.toString().should.eql('Error: Please specify cookie signing keys (session.keys) in the config file.');
-  //             expect(app.keys).to.be.undefined;
-  //             resolve();
-  //           })
-  //           .then(function() {
-  //             reject(new Error('Should not be here'));
-  //           })
-  //       })
-  //         .nodeify(done);
-  //     },
-  //     'default': function(done) {
-  //       var app = this.app,
-  //         appUseSpy = test.mocker.stub(app, 'use');
-
-  //       var createStoreSpy = test.mocker.spy(waigo.load('support/session/store/testStore'),'create');
-
-  //       app.config.session = { 
-  //         keys: ['testKey'],
-  //         name: 'sessionName',
-  //         store: {
-  //           type: 'testStore',
-  //           config: {
-  //             hello: 'world'
-  //           }
-  //         },
-  //         cookie: {
-  //           validForDays: 3,
-  //           path: '/blah'
-  //         }
-  //       };
-
-  //       Promise.spawn(app.setupSessions)
-  //         .then(function() {
-  //           app.keys.should.not.be.undefined;
-
-  //           createStoreSpy.should.have.been.calledOnce;
-  //           createStoreSpy.should.have.been.calledWithExactly(app, {hello: 'world'});
-
-  //           appUseSpy.should.have.been.calledOnce;
-
-  //           var fn = appUseSpy.getCall(0).args[0];
-  //           var gen = fn();
-  //           var value = gen.next().value[0];
-
-  //           // expires value is accurate to the millisecond so let's munge it
-  //           expect(value.cookie.expires).to.be.instanceof(Date);
-  //           expect(moment(value.cookie.expires).format('YYYY-MM-DD')).to.eql(moment().add('days', 3).format('YYYY-MM-DD'));
-  //           delete value.cookie.expires;
-
-  //           expect(value).to.eql({
-  //             name: 'sessionName',
-  //             store: {hello: 'world'},
-  //             cookie: {
-  //               path: '/blah'
-  //             }              
-  //           });
-  //         })
-  //         .nodeify(done);
-  //     }
-  //   },
   //   'output formats': {
   //     beforeEach: function(done) {
   //       var self = this;
@@ -278,7 +182,7 @@ test['app'] = {
   //         return self.resetWaigo();
   //       })
   //       .then(function() {
-  //         self.app = waigo.load('server');
+  //         self.app = waigo.load('app');
   //       })
   //       .nodeify(done);      
   //     },
@@ -306,11 +210,17 @@ test['app'] = {
     beforeEach: function(done) {
       var self = this;
 
-      self.resetWaigo()
-        .then(function() {
-          self.app = waigo.load('server');
-        })
-        .nodeify(done);            
+    testUtils.createAppModules({
+      'support/startup/test1': 'module.exports = function*(app) { app.dummy1 = 128; return 1; };',
+      'support/startup/test2': 'module.exports = function*(app) { app.dummy2 = 256; return 2; };'
+    })
+      .then(function() {
+        return self.resetWaigo();
+      })
+      .then(function() {
+        self.app = waigo.load('app');
+      })
+      .nodeify(done);    
     },
     'loads app configuration': function(done) {
       var self = this;
@@ -320,6 +230,26 @@ test['app'] = {
       testUtils.spawn(self.app.start)
         .then(function() {
           self.app.loadConfig.should.have.been.calledOnce;
+        })
+        .nodeify(done);
+    },
+    'executes startup steps': function(done) {
+      var self = this;
+
+      test.mocker.stub(self.app, 'loadConfig', function*() {
+        self.app.config = {
+          startupSteps: [
+            'test1',
+            'test2'
+          ]
+        }
+      });
+
+      testUtils.spawn(self.app.start)
+        .then(function(val) {
+          val.should.eql(2);
+          self.app.dummy1.should.eql(128);
+          self.app.dummy2.should.eql(256);
         })
         .nodeify(done);
     }

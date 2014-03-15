@@ -1,10 +1,11 @@
-var koaSessionStore = require('koa-session-store');
+var koaSessionStore = require('koa-session-store'),
+  moment = require('moment'),
+  waigo = require('../../../');
+
 
 /**
  * # Middleware: sessions
  *
- * **Note: this requires the `cookies` startup step to be enabled**
- * 
  * This middleware uses [koa-session-store](https://github.com/hiddentao/koa-session-store) to enable 
  * session data storage. 
  */
@@ -12,9 +13,13 @@ var koaSessionStore = require('koa-session-store');
 
 
 module.exports = function(options) {
+  // this should get the current app
+  var app = waigo.load('app');
+
   if (!options.keys) {
     throw new Error('Please specify cookie signing keys (session.keys) in the config file.');
   }
+  app.keys = options.keys;
 
   return koaSessionStore({
     name: options.name,
