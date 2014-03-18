@@ -22,7 +22,7 @@ Almost all web application at some point need to process form input. Waigo makes
 
 Waigo doesn't come with a built-in model layer - modern ORM and ODM libraries are often comprehensive enough to handle the model layer. So whether it's flat files, Mongo DB or MySQL, use whatever you fancy.
 
-Nowadays most web apps often have single-page web versions and/or mobile apps which need to use a REST API or the equivalent to communicate with the back-end. Waigo supports more than one [output format](#output-formats), allowing you to serve both plain-old web browser and also REST API clients using the same controller code.
+Nowadays most web apps often have single-page web versions and/or mobile apps which need to use a REST API or the equivalent to communicate with the back-end. Waigo supports more than one [output format](#views-and-output-formats), allowing you to serve both plain-old web browser and also REST API clients using the same controller code.
 
 **2. Waigo gets out of you way when you need it to**
 
@@ -119,7 +119,7 @@ Waigo is designed to make it easy to re-use your URL routes as JSON APIs. Visit 
 ```
 
 This is all the data get which gets passed by the default controller to the `index.jade` template we created above. By default Waigo supports 
-HTML and JSON output, and more [output formats](#output-formats) can be easily added.
+HTML and JSON output, and more [output formats](#views-and-output-formats) can be easily added.
 
 # Extend and Override
 
@@ -292,7 +292,7 @@ exports.startupSteps = [
 ```
 
 
-# Configuration
+## Configuration
 
 Configuration info is loaded during [startup](#startup) into the Koa app object and is always accessible at `app.config`.
 
@@ -392,7 +392,7 @@ module.exports = function() {
 During the middleware [startup](#startup) step the following middleware modules are initialised so that all incoming requests get processed by them:
 
 * `errorHandler` - catch and handle all errors thrown during request processing
-* `outputFormats` - setup the response [output format](#output-formats)
+* `outputFormats` - setup the response [output format](#views-and-output-formats)
 * `sessions` - create and retrieve the active client [session](#sessions)
 * `staticResources` - handle requests made to static page resources, e.g. stylesheets, etc.
 
@@ -467,7 +467,7 @@ exports.session = {
 };
 ```
 
-# Output formats
+# Views and Output formats
 
 As mentioned earlier on Waigo supports more than one response output format (e.g. HTML, JSON, etc) in order to make it easy to re-use your backend controllers for serving different types of front-ends.
 
@@ -563,7 +563,7 @@ exports.outputFormats.formats.xml = {
 
 When sending data back to the client we may want to first modify it, e.g. format dates, remove parts of the data that the client does not need to see in the given context, etc. Waigo introduces the concept of _view objects_ to support such functionality.
 
-A view object is simply a plain Javascript object of key-value pairs which can be rendered. The `render()` method provided by the [output formats](#output-formats) middleware checks the passed-in template attributes to see if view objects can be generated for them. An object can generate a view object representation of itself if it implements the `HasViewObject` mixin (see `support/mixins.js`). Applying this mixin to 
+A view object is simply a plain Javascript object of key-value pairs which can be rendered. The `render()` method provided by the [output formats](#views-and-output-formats) middleware checks the passed-in template attributes to see if view objects can be generated for them. An object can generate a view object representation of itself if it implements the `HasViewObject` mixin (see `support/mixins.js`). Applying this mixin to 
 a class requires you to implement a `toViewObject()` generator function for that class. This function takes a single argument - the context for the current request, allowing you to tailor the view object representation according to each individual request.
 
 For example, let's say we have a model instance which holds data wish to send to the client:
