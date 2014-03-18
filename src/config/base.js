@@ -177,9 +177,6 @@ exports.errorHandler = {
  */
 exports.middleware = [
   {
-    id: 'responseTime'
-  },
-  {
     id: 'errorHandler',
     options: exports.errorHandler
   },
