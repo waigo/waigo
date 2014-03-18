@@ -2,11 +2,11 @@
 
 [![Build Status](https://secure.travis-ci.org/waigo/waigo.png)](http://travis-ci.org/waigo/waigo) [![NPM module](https://badge.fury.io/js/waigo.png)](https://npmjs.org/package/waigo) [![Code quality](https://codeclimate.com/github/waigo/waigo.png)](https://codeclimate.com/github/waigo/waigo)
 
-Waigo is a flexible MVC framework for building scalable and maintainable web applications.
+Waigo is a Node.js framework for building scalable and maintainable web applications back-ends.
 
 Based on [koa](http://koajs.com), it uses [generators](http://tobyho.com/2013/06/16/what-are-generators/) for asynchronous programming, removing the need for callbacks. Almost every aspect of the core framework can be easily extended or overridden.
 
-This documentation (along with API docs) is available at [waigojs.com](http://waigojs.com).
+This guide (along with API docs) is available at [waigojs.com](http://waigojs.com).
 
 **Waigo is still in beta (pre-1.0) so expect things to break!**
 
@@ -20,26 +20,17 @@ Waigo keeps it simple. It exposes koa's existing routing and middleware architec
 
 Almost all web application at some point need to process form input. Waigo makes this easy by providing a simple yet scalable form creation and validation system with fine-grained [per-field error reporting](#forms).
 
-Waigo doesn't come with a built-in model layer - modern ORM and ODM libraries are often comprehensive enough to handle the model layer. So whether it's flat files, Mongo DB or MySQL, use whatever you fancy.
+Waigo doesn't come with a built-in model layer since there are plenty of existing layers (ODMs, ORMs, etc) that are already suitable for the job. So whether it's flat files, Mongo DB or MySQL or some other esoteric type of model layer that you want, Waigo will let you do it.
 
-Nowadays most web apps often have single-page web versions and/or mobile apps which need to use a REST API or the equivalent to communicate with the back-end. Waigo supports more than one [output format](#views-and-output-formats), allowing you to serve both plain-old web browser and also REST API clients using the same controller code.
+Nowadays most web apps often have single-page web versions and/or mobile apps which need to use a REST API or the equivalent to communicate with the back-end. Waigo supports more than one [output format](#views-and-output-formats), allowing you to serve both plain-old web browser and API clients using the same controller code.
 
-**2. Waigo gets out of you way when you need it to**
+**2. Waigo gets out of your way when you need it to**
 
 It's great that Waigo provides so many useful features. But what if you don't like the way it does something? 
 
-Experience working with other web frameworks has taught us that it's better not to force a particular way of doing things as there often comes a point where the framework's way of doing things isn't suitable. Ugly hacks are then usually required to get things working the way they need to.
+Experience working with other web frameworks has taught us that it's better not to force a particular structure or idiom as there often comes a point where the framework's way of doing things isn't suitable. Ugly hacks are then usually required to get things working the way they need to.
 
-Waigo lets you easily [override the core functionality](#extend-and-override) in your app and make it work the way you want. All core functionality in Waigo (except the module loader - see below) can be cleanly overridden in this way. No ugly framework hacks are needed!
-
-# Why should I not use Waigo?
-
-There are no major reasons for not using Waigo since it is designed to be a general purpose web framework. With that said...
-
-* Although performance has been taken into consideration in building Waigo (e.g. see [form fields](#form-fields)), [current performance benchmarks](http://spion.github.io/posts/why-i-am-switching-to-promises.html) show that using callbacks is still slightly faster and uses less memory than using generators. This may be important to you, though do note that in real web apps the coding style is rarely ever the performance bottleneck.
-
-* At the moment Waigo does not provide anything to make doing real-time web app (e.g. using Websockets) easier. Waigo is evolving and improving according to the needs of its users. If you think you can build a great real-time stack with Waigo then feel free to [write a plugin](#plugins) or raise a [pull request](https://github.com/waigo/waigo/issues).
-
+Waigo lets you easily [override the core functionality](#extend-and-override) in your app and make it work the way you want. All core functionality in Waigo (except the module loader - see below) can be cleanly overridden in this way. Of course, there will always be a fundamental file layout structure for your app that Waigo expects but this is very simple and minimal.
 
 # Getting started
 
@@ -836,7 +827,7 @@ module.exports = {
 };
 ```
 
-Each item in the `validators` array refers to the name of a module file under the `support/forms/validators/` path. When a validator (or even sanitizer) is specified as an `Object` then its `id` attribute is assumed to be its module file name. The `Object` itself is assumed to be a set of options to pass to the module during initialisation.
+Each item in the `validators` array refers to the name of a module file under the `support/forms/validators/` path. When a validator (or even sanitizer) is specified as an object then its `id` attribute is assumed to be its module file name. The `Object` itself is assumed to be a set of options to pass to the module during initialisation.
 
 So for the above form specification Waigo will expect the following paths to exist:
 
@@ -920,6 +911,11 @@ $ DEBUG=waigo-loader node --harmony app.js
   waigo-loader Loading module "server" from source "waigo" +0ms
   ...
 ``` 
+
+# Roadmap
+
+See the [Github issue queue](https://github.com/waigo/waigo/issues).
+
 
 # Contributing
 
