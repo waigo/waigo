@@ -14,13 +14,15 @@ This guide (along with API docs) is available at [waigojs.com](http://waigojs.co
 
 There are numerous ways in which Waigo kicks ass, all detailed in this guide. But here are the top 2 reasons...
 
-**1. Waigo makes it easy to build a well structured and maintainable web application.**
+**1. Waigo provides a solid, well designed foundation on which to build your web app.**
 
-Waigo keeps it simple. It exposes koa's existing routing and middleware architecture but provides a mechanism for cleanly defining routes separately to controllers and also makes it easy to [customize the middleware](#routing) to use on a route-by-route basis.
+Waigo's design and architecture is influenced by other frameworks that I've used in the past. I wanted something which was very flexible, didn't try to do too much, and most importantly, was very easy to override and customize. 
 
-Almost all web application at some point need to process form input. Waigo makes this easy by providing a simple yet scalable form creation and validation system with fine-grained [per-field error reporting](#forms).
+Waigo keeps it simple. It exposes koa's existing routing and middleware architecture but provides a mechanism for cleanly defining routes separately to controllers. What's more you can [customize the middleware](#routing) to use on a route-by-route basis.
 
-Waigo doesn't come with a built-in model layer since there are plenty of existing layers (ODMs, ORMs, etc) that are already suitable for the job. So whether it's flat files, Mongo DB or MySQL or some other esoteric type of model layer that you want, Waigo will let you do it.
+Almost all web application at some point need to process form input. Waigo makes this easy by providing a simple yet scalable form creation and validation system with fine-grained [per-field error reporting](#forms). And it keeps memory usage to a minimum by sharing what form objects it can across multiple client requests.
+
+In keeping with the theme of simplicity Waigo doesn't come with a built-in model layer since there are plenty of existing layers - e.g. Mongoose, JugglingDB - that already provide for rich model layers. Use whatever model layer you want. Or don't. It's upto you. Waigo does, however provide for model [view objects](#view-objects) when it's time to send your model data back in response to a client.
 
 Nowadays most web apps often have single-page web versions and/or mobile apps which need to use a REST API or the equivalent to communicate with the back-end. Waigo supports more than one [output format](#views-and-output-formats), allowing you to serve both plain-old web browser and API clients using the same controller code.
 
@@ -28,9 +30,9 @@ Nowadays most web apps often have single-page web versions and/or mobile apps wh
 
 It's great that Waigo provides so many useful features. But what if you don't like the way it does something? 
 
-Experience working with other web frameworks has taught us that it's better not to force a particular structure or idiom as there often comes a point where the framework's way of doing things isn't suitable. Ugly hacks are then usually required to get things working the way they need to.
+Experience working with other web frameworks taught me that it's better not to force a particular structure or idiom as there often comes a point where the framework's way of doing things isn't suitable. Ugly hacks are then usually required to get things working the way they need to.
 
-Waigo lets you easily [override the core functionality](#extend-and-override) in your app and make it work the way you want. All core functionality in Waigo (except the module loader - see below) can be cleanly overridden in this way. Of course, there will always be a fundamental file layout structure for your app that Waigo expects but this is very simple and minimal.
+Waigo lets you easily [override the core functionality](#extend-and-override) in your app and make it work the way you want. Want to replace core functionality with your own? sure thing. Want to simply modify the core functionality without replacing it? no problem. Want to bundle up your modifications as a [plugin](#plugins) to distribute to others? it can be done.
 
 # Getting started
 
@@ -343,6 +345,8 @@ The key specifies the HTTP method (one of: `GET`, `POST`, `PUT`, `DEL`, `OPTIONS
 
 The value for each key specifies the middleware chain that will handle that route. If the middleware name has a period (`.`) within it 
 then it assumed to refer to a controller module file and a method name within. Otherwise it is assumed to be the name of a [middleware](#middleware) module file. 
+
+The middleware chain specified for a route gets executed after the common middleware chain that's setup during the [startup](#startup) phase. All in all Waigo lets you cleanly and easily customize the middleware to be executed on a per-route basis.
 
 For the above example, Waigo will process a `PUT` request made to `/newUser` in the following order:
 
