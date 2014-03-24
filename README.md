@@ -16,7 +16,7 @@ There are numerous ways in which Waigo kicks ass, all detailed in this guide. Bu
 
 **1. Waigo provides a solid, well designed foundation on which to build your web app.**
 
-Waigo's design and architecture is influenced by other frameworks that I've used in the past. I wanted something which was very flexible, didn't try to do too much, and most importantly, was very easy to override and customize. 
+Waigo's design and architecture is influenced by other frameworks. We wanted something which was very flexible, didn't try to do too much, and most importantly, was very easy to override and customize. 
 
 Waigo keeps it simple. It exposes koa's existing routing and middleware architecture but provides a mechanism for cleanly defining routes separately to controllers. What's more you can [customize the middleware](#routing) to use on a route-by-route basis.
 
@@ -30,7 +30,7 @@ Nowadays most web apps often have single-page web versions and/or mobile apps wh
 
 It's great that Waigo provides so many useful features. But what if you don't like the way it does something? 
 
-Experience working with other web frameworks taught me that it's better not to force a particular structure or idiom as there often comes a point where the framework's way of doing things isn't suitable. Ugly hacks are then usually required to get things working the way they need to.
+Experience working with other web frameworks taught us that it's better not to force a particular structure or idiom as there often comes a point where the framework's way of doing things isn't suitable. Ugly hacks are then usually required to get things working the way they need to.
 
 Waigo lets you easily [override the core functionality](#extend-and-override) in your app and make it work the way you want. Want to replace core functionality with your own? sure thing. Want to simply modify the core functionality without replacing it? no problem. Want to bundle up your modifications as a [plugin](#plugins) to distribute to others? it can be done.
 
