@@ -6,6 +6,17 @@ var debug = require('debug')('waigo-startup-listener'),
 
 
 /**
+ * # Startup: HTTP listener
+ *
+ * Note: This startup step requires the `logging` startup step to have run beforehand.
+ *
+ * This step initialises the koa HTTP listener on the configured port.
+ */
+
+
+
+
+/**
  * Start the server listener.
  *
  * @param {Object} app The application.

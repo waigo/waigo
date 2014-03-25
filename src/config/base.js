@@ -46,13 +46,11 @@ exports.db = {
  */
 exports.logging = {
   winston: {
-    // log to mongo db
-    mongo: {
-      // log level threshold
-      level: 'error',
-      collection: 'logs',
-      // whether to confirm writes to db log table
-      safe: false
+    // log to console
+    console: {
+      level: 'error', // minimum level to log at
+      colorize: true,
+      timestamp: true
     }
   }
 };
@@ -71,7 +69,6 @@ exports.logging = {
  */
 exports.startupSteps = [
   'logging',
-  'database',
   'middleware',
   'routes',
   'listener'
@@ -99,15 +96,14 @@ exports.sessions = {
   name: 'waigo',
   // session storage
   store: {
-    // session store type
-    type: 'mongo',
+    // session store type (name of module file in support/session/store/)
+    type: 'cookie', 
     // session store config
     config: {
-      url: 'mongodb://127.0.0.1:27017/waigo',
-      collection: 'sessions'
+      // nothing needed for cookie storage
     }
   },
-  // more cookie options
+  // session cookie options
   cookie: {
     // cookie expires in...
     validForDays: 7,

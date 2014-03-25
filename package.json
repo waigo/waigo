@@ -1,7 +1,7 @@
 {
   "name": "waigo",
-  "description": "Next-gen MVC framework based on koa",
-  "version": "0.5.1",
+  "description": "Next-gen MVC framework for node.js based on koa",
+  "version": "0.6",
   "author": {
     "name": "Ramesh Nair",
     "email": "ram@hiddentao.com"
@@ -61,6 +61,9 @@
   "keywords": [
     "express",
     "framework",
+    "koa",
+    "generators",
+    "es6",
     "web",
     "rest",
     "restful",

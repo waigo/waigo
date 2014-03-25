@@ -6,7 +6,7 @@ Waigo is a Node.js framework for building scalable and maintainable web applicat
 
 Based on [koa](http://koajs.com), it uses [generators](http://tobyho.com/2013/06/16/what-are-generators/) for asynchronous programming, removing the need for callbacks. Almost every aspect of the core framework can be easily extended or overridden.
 
-This guide (along with API docs) is available at [waigojs.com](http://waigojs.com).
+This guide (along with API docs) is also available at [waigojs.com](http://waigojs.com).
 
 **Waigo is still in beta (pre-1.0) so expect things to break!**
 
@@ -75,13 +75,6 @@ Promise.spawn(function*() {
   .then(function(err) {
     console.log(err);  
   });
-```
-
-Let's disable database connections and sesssions for now:
-
-```bash
-$ mkdir -p src/config
-$ echo "exports.session = null; exports.db = null;" > src/config/development.js
 ```
 
 Finally, we need a template:
@@ -208,9 +201,9 @@ To create and publish your own plugin to the wider community please follow these
 * Ensure your plugin name is prefixed with `waigo-` so that it's easy to find.
 * Write a good README.md for your plugin explaining what it's for and how to use it.
 * Add tests for your plugin and hook them upto [Travis CI](https://travis-ci.org/).
-* In your `package.json` tag your plugin with the `waigoplugin` keyword.
+* In your `package.json` tag your plugin with the `waigo` keyword.
 
-To see a list of all available plugins visit [https://www.npmjs.org/browse/keyword/waigoplugin](https://www.npmjs.org/browse/keyword/waigoplugin).
+To see a list of all available plugins visit [https://www.npmjs.org/browse/keyword/waigo](https://www.npmjs.org/browse/keyword/waigoplugin).
 
 # Startup
 
@@ -410,7 +403,14 @@ A controller must either call `this.render()` or pass control to the `next` midd
 
 # Database
 
-The default Waigo configuration - `app.config.db` - creates a Mongo database connection using [mongoose](http://mongoosejs.com/). This connection (once established) is available through `app.db`. All supported database connection types are available in the `support/db` module file path. To add your own connection type add an appropriate module under that path.
+Waigo by default does not initialise a database connection during [startup](#startup) as not everyone requires the use of a database. Instead it is recommended that a plugin be used to setup and use databases.
+
+Typically a database plugin provides a [startup](#startup) step acoompanied by configuration parameters which result in the `app.db` property being set to an active database connection. Check the documentation for each plugin to be sure. 
+
+Some available plugins:
+
+* [waigo-db-mongoose](https://github.com/waigo/db-mongoose) - Connect to MongoDB via mongoose. Can work in tandem with [waigo-session-mongo](https://github.com/waigo/session-mongo).
+
 
 # Models
 
@@ -418,7 +418,7 @@ In order to be as flexible as possible Waigo does not provide a model layer. Fee
 
 # Sessions
 
-Sessions are created and loaded by the `sessions` middleware, which internally uses [koa-session-store](https://github.com/hiddentao/koa-session-store). The sessions middleware is automatically initialised as a [startup](#startup) step. 
+Sessions are created and loaded by the `sessions` middleware, which internally uses [koa-session-store](https://github.com/hiddentao/koa-session-store). The default framework configuration automatically initialises and adds the session middleware to all requests.
 
 You can access session data using `this.session`:
 
@@ -432,7 +432,10 @@ exports.index = function*(next) {
 };
 ```
 
-By default sessions are stored in a Mongo database (you can re-use the Mongoose [database](#database) connection) and cookies are issued to clients to keep track of sessions. The session configuration expects you to provide cookie signing keys for use by [Keygrip](https://github.com/jed/keygrip):
+To delete a session simply use `this.session = null`.
+
+The default session configuration looks as follows:
+
 
 ```javascript
 // file: <waigo framework>/src/config/base.js
@@ -445,11 +448,10 @@ exports.session = {
   // session storage
   store: {
     // session store type
-    type: 'mongo',
+    type: 'cookie',
     // session store config
     config: {
-      url: 'mongodb://127.0.0.1:27017/waigo',
-      collection: 'sessions'
+      // nothing needed for cookie sessions
     }
   },
   // more cookie options
@@ -461,6 +463,11 @@ exports.session = {
   }
 };
 ```
+
+By default session data is stored in the session cookie itself. There are other session storage plugins available for use, for example:
+
+* [waigo-session-mongo](https://github.com/waigo/session-mongo) - Store session data in Mongo. Can work in tandem with [waigo-db-mongoose](https://github.com/waigo/db-mongoose).
+
 
 # Views and Output formats
 
