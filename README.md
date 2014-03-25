@@ -198,10 +198,10 @@ _Note: See the `waigo-plugin1` prefix used in the call to `waigo.load()`? that b
 
 To create and publish your own plugin to the wider community please follow these guidelines:
 
-* Ensure your plugin name is prefixed with `waigo-` so that it's easy to find.
+* Ensure your plugin name is prefixed with `waigo-` so that the Waigo can easily find it.
 * Write a good README.md for your plugin explaining what it's for and how to use it.
-* Add tests for your plugin and hook them upto [Travis CI](https://travis-ci.org/).
-* In your `package.json` tag your plugin with the `waigo` keyword.
+* Add automated unit tests for your plugin.
+* In your `package.json` tag your plugin with the `waigo` keyword so that users can easily search for it.
 
 To see a list of all available plugins visit [https://www.npmjs.org/browse/keyword/waigo](https://www.npmjs.org/browse/keyword/waigoplugin).
 
@@ -405,7 +405,7 @@ A controller must either call `this.render()` or pass control to the `next` midd
 
 Waigo by default does not initialise a database connection during [startup](#startup) as not everyone requires the use of a database. Instead it is recommended that a plugin be used to setup and use databases.
 
-Typically a database plugin provides a [startup](#startup) step acoompanied by configuration parameters which result in the `app.db` property being set to an active database connection. Check the documentation for each plugin to be sure. 
+Typically a database plugin provides a [startup](#startup) step accompanied by configuration parameters which result in the `app.db` property being set to an active database connection. Check the documentation for each plugin to be sure. 
 
 Some available plugins:
 
