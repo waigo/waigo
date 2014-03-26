@@ -2,7 +2,7 @@
 
 
 var _ = require('lodash'),
-  debug = require('debug')('waigo-server'),
+  debug = require('debug')('waigo-startup'),
   koa = require('koa'),
   path = require('path'),
   Promise = require('bluebird'),

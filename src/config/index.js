@@ -38,12 +38,13 @@ module.exports = function() {
   });
 
   try {
-    _.extend(config, waigo.load('config/' + config.mode));
+    waigo.load('config/' + config.mode)(config);
   } catch (e) {}
 
   try {
-    _.extend(config, waigo.load('config/' + config.mode + '.' + config.user));
+    waigo.load('config/' + config.mode + '.' + config.user)(config);
   } catch (e) {}
+
 
   return config;
 };

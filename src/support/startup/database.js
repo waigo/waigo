@@ -15,7 +15,10 @@ module.exports = function*(app) {
   if (app.config.db) {
     var dbType = Object.keys(app.config.db).pop();
     debug('Setting up database connection : ' + dbType);
-    app.db = waigo.load('support/db/' + dbType).create(app.config.db[dbType]);
+
+    var builder = waigo.load('support/db/' + dbType);
+
+    app.db = yield builder.create(app.config.db[dbType]);
   } else {
     app.db = undefined;
   }

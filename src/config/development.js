@@ -8,44 +8,39 @@
 
 
 /**
- * Database connection.
- * @type {Object}
+ * Get configuration.
+ * 
+ * @param  {Object} config Configuration object to modify.
  */
-exports.db = {
-  mongoose: {
-    host: '127.0.0.1',
-    port: '27017',
-    db: 'waigo-dev'
-  }
-};
+module.exports = function(config) {
+
+  /**
+   * Config for request error handler.
+   * @type {Object}
+   */
+  config.errorHandler = {
+    showStack: true
+  };
 
 
 
-/**
- * Config for request error handler.
- * @type {Object}
- */
-exports.errorHandler = {
-  showStack: true
-};
-
-
-
-/**
- * Logging config.
- * @type {Object}
- */
-exports.logging = {
-  winston: {
-    // log to console
-    console: {
-      // minimum level to log at
-      level: 'info',
-      colorize: true,
-      timestamp: true
+  /**
+   * Logging config.
+   * @type {Object}
+   */
+  config.logging = {
+    winston: {
+      // log to console
+      console: {
+        // minimum level to log at
+        level: 'info',
+        colorize: true,
+        timestamp: true
+      }
     }
-  }
-};
+  };
 
+
+};
 
 

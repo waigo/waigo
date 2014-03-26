@@ -18,11 +18,11 @@ test['config loader'] = {
       .then(testUtils.createTestFolders)
       .then(function() {
         var modulesToCreate = {
-          'config/base': 'module.exports = { base: 1 };',
-          'config/development': 'module.exports = { dev: 1 };',
-          'config/random': 'module.exports = { random: 1 };'
+          'config/base': 'module.exports = function(config) { config.base = 1 };',
+          'config/development': 'module.exports = function(config) { config.dev = 1 };',
+          'config/random': 'module.exports = function(config) { config.random = 1 };'
         };
-        modulesToCreate['config/development.' + process.env.USER] = 'module.exports = { dev_user: 1 };';
+        modulesToCreate['config/development.' + process.env.USER] = 'module.exports = function(config) { config.dev_user = 1 };';
 
         return Promise.all([
           testUtils.createAppModules(modulesToCreate)

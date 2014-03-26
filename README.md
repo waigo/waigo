@@ -287,7 +287,7 @@ The `config` folder holds the configuration files. The `base` module file gets l
 1. `config/<node environment>`
 2. `config/<node environment>.<current user>`
 
-Thus if node is running in `test` mode (i.e. `NODE_ENVIRONMENT=test`) and the user id of the process is `www-data` then the loader 
+Thus if node is running in `test` mode (i.e. `NODE_ENV=test`) and the user id of the process is `www-data` then the loader 
 looks for the following module files and loads them if present, in the following order:
  
 1. `waigo.load('config/base')`

@@ -20,7 +20,7 @@ test['database'] = {
       .then(testUtils.createTestFolders)
       .then(function() {
         testUtils.createAppModules({
-          'support/db/test': 'module.exports = { create: function() { return Array.prototype.slice.call(arguments); } }; '
+          'support/db/test': 'module.exports = { create: function*() { return Array.prototype.slice.call(arguments); } }; '
         })
       })
       .then(function() {
