@@ -2,15 +2,17 @@ var _ = require('lodash'),
   path = require('path'),
   Promise = require('bluebird');
 
-var testBase = require('../_base'),
-  assert = testBase.assert,
-  expect = testBase.expect,
-  should = testBase.should,
-  testUtils = testBase.utils,
-  test = testUtils.createTest(module);
-
+var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
+  test = _testUtils.test,
+  testUtils = _testUtils.utils,
+  assert = testUtils.assert,
+  expect = testUtils.expect,
+  should = testUtils.should,
+  waigo = testUtils.waigo;
 
 
 test['waigo same as waigo loader'] = function() {
-  testBase.waigo.should.eql(require('../../src/loader'));
+  testUtils.waigo.should.eql(require('../../src/loader'));
 };
+
+

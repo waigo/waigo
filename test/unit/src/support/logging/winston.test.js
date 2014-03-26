@@ -5,13 +5,13 @@ var moment = require('moment'),
   winstonMongoDB = require('winston-mongodb');
 
 
-var testBase = require('../../../../_base'),
-  assert = testBase.assert,
-  expect = testBase.expect,
-  should = testBase.should,
-  testUtils = testBase.utils,
-  test = testUtils.createTest(module),
-  waigo = testBase.waigo;
+var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
+  test = _testUtils.test,
+  testUtils = _testUtils.utils,
+  assert = testUtils.assert,
+  expect = testUtils.expect,
+  should = testUtils.should,
+  waigo = testUtils.waigo;
 
 
 test['create logger'] = {
