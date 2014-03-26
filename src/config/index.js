@@ -30,12 +30,12 @@ var _ = require('lodash'),
  * @return {Object}
  */
 module.exports = function() {
-  var config = _.extend({}, waigo.load('config/base'));
-
-  _.extend(config, {
+  var config = {
     mode: process.env.NODE_ENV || 'development',
-    user: process.env.USER
-  });
+    user: process.env.USER    
+  };
+
+  waigo.load('config/base')(config);
 
   try {
     waigo.load('config/' + config.mode)(config);

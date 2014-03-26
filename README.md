@@ -200,7 +200,7 @@ To create and publish your own plugin to the wider community please follow these
 
 * Ensure your plugin name is prefixed with `waigo-` so that the Waigo can easily find it.
 * Write a good README.md for your plugin explaining what it's for and how to use it.
-* Add automated unit tests for your plugin.
+* Add automated unit tests for your plugin. Look at existing plugins such as [waigo-mongo](https://github.com/waigo/mongo) to see best practices.
 * In your `package.json` tag your plugin with the `waigo` keyword so that users can easily search for it.
 
 To see a list of all available plugins visit [https://www.npmjs.org/browse/keyword/waigo](https://www.npmjs.org/browse/keyword/waigoplugin).
@@ -409,7 +409,7 @@ Typically a database plugin provides a [startup](#startup) step accompanied by c
 
 Some available plugins:
 
-* [waigo-db-mongoose](https://github.com/waigo/db-mongoose) - Connect to MongoDB via mongoose. Can work in tandem with [waigo-session-mongo](https://github.com/waigo/session-mongo).
+* [waigo-mongo](https://github.com/waigo/mongo) - Connect to MongoDB via mongoose.
 
 
 # Models
@@ -466,7 +466,7 @@ exports.session = {
 
 By default session data is stored in the session cookie itself. There are other session storage plugins available for use, for example:
 
-* [waigo-session-mongo](https://github.com/waigo/session-mongo) - Store session data in Mongo. Can work in tandem with [waigo-db-mongoose](https://github.com/waigo/db-mongoose).
+* [waigo-mongo](https://github.com/waigo/mongo) - Store session data in Mongo.
 
 
 # Views and Output formats
