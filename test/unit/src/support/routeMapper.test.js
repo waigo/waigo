@@ -42,7 +42,7 @@ test['route mapper'] = {
       })
       .then(waigo.initAsync)
       .then(function() {
-        app = waigo.load('app');
+        app = waigo.load('application').app;
         mapper = waigo.load('support/routeMapper');
 
         app.route = test.mocker.spy(function() {

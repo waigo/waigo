@@ -30,7 +30,7 @@ test['database'] = {
       })
       .then(function() {
         self.setup = waigo.load('support/startup/database');
-        self.app = waigo.load('app');
+        self.app = waigo.load('application').app;
         self.app.config = {
           db: {
             test: {

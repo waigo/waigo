@@ -60,7 +60,7 @@ If your app folder is located at e.g. `/dev/myapp` then Waigo will by default as
 Create a new Javascript file in your app's source folder with the following contents:
 
 ```javascript
-// file: <app folder>/src/server.js
+// file: <app folder>/src/myapp.js
 
 var Promise = require('bluebird'),
   waigo = require('waigo');
@@ -70,7 +70,7 @@ Promise.spawn(function*() {
   // Initialise waigo module loading system
   yield* waigo.init();
   // Start the server
-  yield* waigo.load('app').start();
+  yield* waigo.load('application').start();
 })
   .then(function(err) {
     console.log(err);  
@@ -87,7 +87,7 @@ $ echo "p= title" > src/views/index.jade
 Start the app:
 
 ```bash
-$ node --harmony server.js
+$ node --harmony myapp.js
 ```
 
 Visit [http://localhost:3000](http://localhost:3000) and you should see the following HTML output: 
@@ -112,7 +112,7 @@ HTML and JSON output, and more [output formats](#views-and-output-formats) can b
 In the "Hello World" example above you will have noticed:
 
 ```javascript
-waigo.load('app')
+waigo.load('application')
 ```
 
 When you want to use something provided by the framework you first have to load its module file through `waigo.load()`. This allows you to:
@@ -120,34 +120,34 @@ When you want to use something provided by the framework you first have to load 
 1. Only load the parts of the framework you will actually use _(performance)_.
 2. **Override any framework module file with your own version** _(extendability and customization)_.
 
-When you want to load the `app` module file (as above) the loader will look for it in the following locations:
+When you want to load the `application` module file (as above) the loader will look for it in the following locations:
 
-1. `<app folder>/src/app.js`
-2. `<waigo npm module folder>/src/app.js`
+1. `<app folder>/src/application.js`
+2. `<waigo npm module folder>/src/application.js`
 
 _Note: if you have [plugins](#plugins) installed their paths will also be searched._
 
-So if you provide a `app.js` within your app's folder tree then Waigo will use that instead of the default one provided by the framework. This rules applies to **every** module file within the framework. 
+So if you provide a `application.js` within your app's folder tree then Waigo will use that instead of the default one provided by the framework. This rules applies to **every** module file within the framework. 
 
-Thus if you don't like something provided by Waigo you can easily override it. But what if you specifically wanted the version of `app.js` provided by the framework? Just prefix `waigo:` to the module file name:
+Thus if you don't like something provided by Waigo you can easily override it. But what if you specifically wanted the version of `application.js` provided by the framework? Just prefix `waigo:` to the module file name:
 
 ```javascript
 // this will load the version of app.js provided by Waigo, and not the one provided by your app
-waigo.load('waigo:app');   
+waigo.load('waigo:application');   
 ```
 
 This also means you don't have to completely override the framework version. You can also _extend_ it:
 
 ```javascript
-// in file: <app folder>/src/app.js
+// in file: <app folder>/src/application.js
 
 var waigo = require('waigo');
 
 // load in Waigo framework version of app.js
-module.exports = waigo.load('waigo:app');    
+var App = module.exports = waigo.load('waigo:application');    
 
 // override start()
-exports.start = function*() {...}   
+App.start = function*() {...}   
 ```
 
 Going back to the small "Hello world" example we built above, there is another call we make:

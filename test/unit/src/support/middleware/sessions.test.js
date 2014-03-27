@@ -28,7 +28,7 @@ test['sessions middleware'] = {
       })
       .then(function() {
         self.middleware = waigo.load('support/middleware/sessions');
-        self.app = waigo.load('app');
+        self.app = waigo.load('application').app;
       })
       .nodeify(done);      
   },

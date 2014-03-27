@@ -19,11 +19,14 @@ var debug = require('debug')('waigo-startup-listener'),
 /**
  * Start the server listener.
  *
+ * If successful `app.server` will point to the HTTP server object.
+ * 
  * @param {Object} app The application.
  */
 module.exports = function*(app) {
   debug('Starting HTTP server');
   app.logger.info('Server listening in ' + app.config.mode + ' mode on port ' + app.config.port + ' (baseURL: ' + app.config.baseURL + ')');
-  return app.listen(app.config.port);
+  app.server = app.listen(app.config.port);
+  return app.server;
 };
 

@@ -31,7 +31,7 @@ test['middleware'] = {
       })
       .then(function() {
         self.setup = waigo.load('support/startup/middleware');
-        self.app = waigo.load('app');
+        self.app = waigo.load('application').app;
         self.app.config.middleware = [
           {
             id: 'test',

@@ -31,7 +31,7 @@ test['routes'] = {
       })
       .then(function() {
         self.setup = waigo.load('support/startup/routes');
-        self.app = waigo.load('app');
+        self.app = waigo.load('application').app;
       })
       .nodeify(done);
   },

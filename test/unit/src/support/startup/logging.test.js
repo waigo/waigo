@@ -30,7 +30,7 @@ test['logging'] = {
       })
       .then(function() {
         self.setup = waigo.load('support/startup/logging');
-        self.app = waigo.load('app');
+        self.app = waigo.load('application').app;
         self.app.config = {
           logging: {
             test: {

@@ -21,7 +21,7 @@ test['listener'] = {
     })
       .then(function() {
         self.setup = waigo.load('support/startup/listener');
-        self.app = waigo.load('app');
+        self.app = waigo.load('application').app;
         self.app.config = {
           mode: 'test',
           port: 3000,
@@ -43,6 +43,8 @@ test['listener'] = {
     })
       .then(function(serverInfo) {
         expect(serverInfo).to.eql('abc');
+
+        expect(self.app.server).to.eql('abc');
 
         self.app.listen.should.have.been.calledOnce;
         self.app.listen.should.have.been.calledWithExactly(3000);
