@@ -99,7 +99,6 @@ test['app'] = {
 
       testUtils.spawn(self.Application.start)
         .then(function(val) {
-          val.should.eql(2);
           self.Application.app.dummy1.should.eql(128);
           self.Application.app.dummy2.should.eql(256);
         })
