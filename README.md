@@ -25,7 +25,7 @@ Most frameworks are opinionated and so is Waigo - it is designed to accommodate 
 
 Think of Waigo as the foundation on which to build your web app. For example the basic framework does not provide a database connection or any front-end templates. Instead it provides you with the hooks and entry points to use whatever database, model layer and/or front-end you want.
 
-Does this mean you have to build everything from scratch each time you use Waigo? Not at all. You can make anything you build re-useable by bundling it up as a [plugin](#plugins). Check out the [current list of plugins](https://www.npmjs.org/search?q=waigo) to see what's already available.
+Does this mean you have to build everything from scratch each time you use Waigo? Not at all. You can make anything you build re-useable by bundling it up as a [plugin](#plugins). Check out the [current list of plugins](https://www.npmjs.org/browse/keyword/waigo) to see what's already available.
 
 # Getting started
 
@@ -158,7 +158,7 @@ _Note: The `.init()` method scanning for `.js` files in the folder trees of the 
 
 ## Plugins
 
-As mentioned earlier, You can make anything you build re-useable by bundling it up as a [plugin](#plugins). 
+As mentioned earlier, You can make anything you build re-useable by bundling it up as a plugin.
 
 By separating non-core functionality into plugins (which can then be thoroughly documented and tested) we encourage code re-use across projects. Plugins help us to keep the core framework more focussed, flexible and increase the overall quality of code in the Waigo ecosystem.
 
