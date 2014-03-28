@@ -4,35 +4,28 @@
 
 Waigo is a Node.js framework for building scalable and maintainable web application back-ends.
 
-Based on [koa](http://koajs.com), it uses [generators](http://tobyho.com/2013/06/16/what-are-generators/) for asynchronous programming, removing the need for callbacks. Almost every aspect of the core framework can be easily extended or overridden.
+Quick overview:
+ * Based on [koa](http://koajs.com/), uses ES6 generators, no callbacks
+ * Database, model-layer and front-end agnostic - use whatever you want
+ * Easily build REST/JSON APIs using [output formats](#views-and-output-formats)
+ * Flexible routing with [per-route middleware](#routing) customization
+ * Memory-efficient [forms](#forms) with sanitization and validation
+ * [Extend](#extend-and-override) or override _any_ part of the core framework
+ * Bundle up functionality into re-usable [plugins](#plugins)
+ 
+Sound good? read on for details...
 
-This guide (along with API docs) is also available at [waigojs.com](http://waigojs.com).
-
-**Waigo is still in beta (pre-1.0) so expect things to break!**
+_(**Note: this guide (along with API docs) is also available at [waigojs.com](http://waigojs.com))_
 
 # Why should I use Waigo?
 
-There are numerous ways in which Waigo kicks ass, all detailed in this guide. But here are the top 2 reasons...
+Waigo provides you with a sensible file layout for your app and a clean app architecture. It doesn't try to do too much and most importantly it gets out of your way when you need it to.
 
-**1. Waigo provides a solid, well designed foundation on which to build your web app.**
+Most frameworks are opinionated and so is Waigo - it is designed to accommodate most people's needs. But it tries to keep its opinions to a minumum, even letting you [override](#extend-and-override) any aspect of its core that you don't find satisfactory.
 
-Waigo's design and architecture is influenced by other frameworks. We wanted something which was very flexible, didn't try to do too much, and most importantly, was very easy to override and customize. 
+Think of Waigo as the foundation on which to build your web app. For example the basic framework does not provide a database connection or any front-end templates. Instead it provides you with the hooks and entry points to use whatever database, model layer and/or front-end you want.
 
-Waigo keeps it simple. It exposes koa's existing routing and middleware architecture but provides a mechanism for cleanly defining routes separately to controllers. What's more you can [customize the middleware](#routing) to use on a route-by-route basis.
-
-Almost all web application at some point need to process form input. Waigo makes this easy by providing a simple yet scalable form creation and validation system with fine-grained [per-field error reporting](#forms). And it keeps memory usage to a minimum by sharing what form objects it can across multiple client requests.
-
-In keeping with the theme of simplicity Waigo doesn't come with a built-in model layer since there are plenty of existing layers - e.g. Mongoose, JugglingDB - that already provide for rich model layers. Use whatever model layer you want. Or don't. It's upto you. Waigo does, however provide for model [view objects](#view-objects) when it's time to send your model data back in response to a client.
-
-Nowadays most web apps often have single-page web versions and/or mobile apps which need to use a REST API or the equivalent to communicate with the back-end. Waigo supports more than one [output format](#views-and-output-formats), allowing you to serve both plain-old web browser and API clients using the same controller code.
-
-**2. Waigo gets out of your way when you need it to**
-
-It's great that Waigo provides so many useful features. But what if you don't like the way it does something? 
-
-Experience working with other web frameworks taught us that it's better not to force a particular structure or idiom as there often comes a point where the framework's way of doing things isn't suitable. Ugly hacks are then usually required to get things working the way they need to.
-
-Waigo lets you easily [override the core functionality](#extend-and-override) in your app and make it work the way you want. Want to replace core functionality with your own? sure thing. Want to simply modify the core functionality without replacing it? no problem. Want to bundle up your modifications as a [plugin](#plugins) to distribute to others? it can be done.
+Does this mean you have to build everything from scratch each time you use Waigo? Not at all. You can make anything you build re-useable by bundling it up as a [plugin](#plugins). Check out the [current list of plugins](https://www.npmjs.org/search?q=waigo) to see what's already available.
 
 # Getting started
 
@@ -109,7 +102,7 @@ HTML and JSON output, and more [output formats](#views-and-output-formats) can b
 
 # Extend and Override
 
-In the "Hello World" example above you will have noticed:
+Waigo has a very modular architecture. In the "Hello World" example above you will have noticed:
 
 ```javascript
 waigo.load('application')
@@ -165,7 +158,11 @@ _Note: The `.init()` method scanning for `.js` files in the folder trees of the 
 
 ## Plugins
 
-You may wish to re-use functionality between different Waigo-based apps. In which case you can place such code into an NPM module - this is essentially what a _plugin_ is. 
+As mentioned earlier, You can make anything you build re-useable by bundling it up as a [plugin](#plugins). 
+
+By separating non-core functionality into plugins (which can then be thoroughly documented and tested) we encourage code re-use across projects. Plugins help us to keep the core framework more focussed, flexible and increase the overall quality of code in the Waigo ecosystem.
+
+And since plugins are just NPM modules they are very easy to share with others, and come with all the benefits that are available to normal NPM modules.
 
 To load a plugin at startup simply `npm install` it and then add it to one of either `dependencies`, `devDependencies` or `peerDependencies` within your `package.json` file. When `waigo.init()` is called Waigo will automatically scan `package.json` to get all plugins (by default it considers anything prefixed with `waigo-` as a plugin). It will then scan each plugin's `src` folder 
 tree for available module files and register them internally.
@@ -322,6 +319,8 @@ _Note: The current Node runtime mode is always stored in `app.config.mode` and t
 
 # Routing
 
+Waigo improves upon koa's built-in router by providing a user-friendly mapping syntax as well as per-route middleware customisation. 
+
 Routes are specified as a mapping in the `routes` module file in the following format:
 
 ```javascript
@@ -339,7 +338,7 @@ The key specifies the HTTP method (one of: `GET`, `POST`, `PUT`, `DEL`, `OPTIONS
 The value for each key specifies the middleware chain that will handle that route. If the middleware name has a period (`.`) within it 
 then it assumed to refer to a controller module file and a method name within. Otherwise it is assumed to be the name of a [middleware](#middleware) module file. 
 
-The middleware chain specified for a route gets executed after the common middleware chain that's setup during the [startup](#startup) phase. All in all Waigo lets you cleanly and easily customize the middleware to be executed on a per-route basis.
+The middleware chain specified for a route gets executed after the common middleware chain that's setup during the [startup](#startup) phase. 
 
 For the above example, Waigo will process a `PUT` request made to `/newUser` in the following order:
 
@@ -401,20 +400,17 @@ exports.index = function*(next) {
 
 A controller must either call `this.render()` or pass control to the `next` middleware in the request chain.
 
-# Database
+# Database and Models
 
-Waigo by default does not initialise a database connection during startup as not everyone requires the use of a database. Instead it is recommended that a plugin be used for this.
+Waigo by default does not initialise a database connection during startup and nor does it dictate what type of storage you should or shouldn't use. There is also no default model layer since that would depend on the type of database (or lack thereof) used by your app.
 
-Typically a database plugin provides a [startup](#startup) step accompanied by configuration parameters which result in the `app.db` property being set to an active database connection. Check the documentation for each plugin to be sure. 
+This design choice reflects the fact there are already plenty of existing components - e.g. Mongoose, JugglingDB - that already provide for rich model layers with various back-ends. 
+
+So use whatever you want. Check to see if there are already [plugins](https://www.npmjs.org/search?q=waigo) for your preferred storage and model layers. If not maybe you can build one!
 
 Some available plugins:
 
-* [waigo-mongo](https://github.com/waigo/mongo) - Connect to MongoDB via mongoose.
-
-
-# Models
-
-In order to be as flexible as possible Waigo does not provide a model layer. Feel free to use an ORM, ODM, flat files or whatever type of model layer you want.
+* [waigo-mongo](https://www.npmjs.org/package/waigo-response-time) - Connect to MongoDB via mongoose.
 
 # Sessions
 
@@ -466,14 +462,12 @@ exports.session = {
 
 By default session data is stored in the session cookie itself. There are other session storage plugins available for use, for example:
 
-* [waigo-mongo](https://github.com/waigo/mongo) - Store session data in Mongo.
+* [waigo-mongo](https://www.npmjs.org/package/waigo-response-time) - Store session data in Mongo.
 
 
 # Views and Output formats
 
-As mentioned earlier on Waigo supports more than one response output format (e.g. HTML, JSON, etc) in order to make it easy to re-use your backend controllers for serving different types of front-ends.
-
-Having different output formats makes it easy to re-use your route handlers (i.e. controllers) for dfferent types of front-ends. For example, you may wish to build a single-page web app or a mobile app which interacts with your back-end in a similar fashion to your normal web interface. Being able to re-use your controllers to output JSON makes life a easier in such cases.
+Nowadays most web apps often have single-page web versions and/or mobile apps which need to use a REST API or the equivalent to communicate with the back-end. Waigo supports more than one [output format](#views-and-output-formats), allowing you to serve both plain-old web browser and API clients using the same controller.
 
 The default output formats configuration is as follows:
 
@@ -650,7 +644,9 @@ All built-in [error](#errors) classes (including form [validation](#validation) 
 
 # Forms
 
-Forms are treated as first-class citizens in Waigo. Each form used unique id; its configuration and input fields are specified in a file under the `forms/` path, the file name being the id of the form. 
+Forms are treated as first-class citizens in Waigo. Form inputs can be sanitized and validated and a per-field error report can be generated. Memory usage to a minimum by sharing what instantiated field objects it can across multiple client requests.
+
+Each form uses a unique id; its configuration and input fields are specified in a file under the `forms/` path, the file name being the id of the form. 
 
 For example, here is how you might specify a simple signup form:
 
