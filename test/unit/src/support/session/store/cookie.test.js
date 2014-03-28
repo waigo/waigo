@@ -11,50 +11,14 @@ var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
   waigo = testUtils.waigo;
 
 
-test['mongo'] = {
+test['cookie'] = {
   beforeEach: function(done) {
-    var self = this;
-
-    waigo.initAsync()
-      .then(function() {
-        var mongoSession = require('koa-session-mongo');
-        self.createSpy = test.mocker.stub(mongoSession, 'create', function() {
-          return 123;
-        });
-      })
-      .nodeify(done);
+    waigo.initAsync().nodeify(done);
   },
 
   'default': function() {
-    var conn = waigo.load('support/session/store/mongo').create(null, {
-      host: 'testhost',
-      port: 1000,
-      db: 'testdb'
-    });
-
-    expect(conn).to.eql(123);
-
-    this.createSpy.should.have.been.calledOnce;
-    this.createSpy.should.have.been.calledWithExactly({
-      host: 'testhost',
-      port: 1000,
-      db: 'testdb'      
-    });
-  },
-
-  'reuse app db': function() {
-    var app = waigo.load('application').app;
-    app.logger = { info: function() {} };
-    app.db = new Date();
-
-    waigo.load('support/session/store/mongo').create(app, {
-      useAppMongooseDbConn: true
-    });
-
-    this.createSpy.should.have.been.calledOnce;
-    this.createSpy.should.have.been.calledWithExactly({
-      useAppMongooseDbConn: true,
-      mongoose: app.db
-    });
+    var conn = waigo.load('support/session/store/cookie').create(null, {});
+    
+    expect(conn).to.eql(null);
   }
 };
