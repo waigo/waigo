@@ -32,7 +32,7 @@ var _ = require('lodash'),
 module.exports = function() {
   var config = {
     mode: process.env.NODE_ENV || 'development',
-    user: process.env.USER    
+    user: process.env.USER
   };
 
   waigo.load('config/base')(config);

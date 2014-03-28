@@ -95,7 +95,7 @@ module.exports = function(config) {
     // session storage
     store: {
       // session store type (name of module file in support/session/store/)
-      type: 'cookie', 
+      type: 'cookie',
       // session store config
       config: {
         // nothing needed for cookie storage

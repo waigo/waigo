@@ -75,6 +75,7 @@
   "main": "index",
   "scripts": {
     "prepublish": "npm prune",
+    "build": "node --harmony `which grunt`",
     "test": "NODE_ENVIRONMENT=test node --harmony `which grunt` test"
   },
   "engines": {
