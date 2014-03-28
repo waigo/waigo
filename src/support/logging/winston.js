@@ -2,9 +2,7 @@
 
 
 var _ = require('lodash'),
-  winston = require('winston'),
-  winstonMongoDB = require('winston-mongodb');
-
+  winston = require('winston');
 
 /**
  * Create a winston logger.
@@ -23,12 +21,6 @@ exports.create = function(winstonConfig) {
       case 'console':
         transport = new winston.transports.Console(winstonConfig[transportType]);
         break;
-      case 'mongo':
-        transport = new winston.transports.MongoDB(winstonConfig[transportType]);
-
-        transport.on('error', function(err) {
-          console.log('Winston failed to log message to MongoDB', err);
-        });
     }
 
     if (transport) {
