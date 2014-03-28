@@ -15,7 +15,7 @@ Quick overview:
  
 Sound good? read on for details...
 
-_(**Note: this guide (along with API docs) is also available at [waigojs.com](http://waigojs.com))_
+_(**Note:** this guide (along with API docs) is also available at [waigojs.com](http://waigojs.com))_
 
 # Why should I use Waigo?
 
