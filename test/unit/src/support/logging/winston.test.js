@@ -1,9 +1,7 @@
 var moment = require('moment'),
   path = require('path'),
   Promise = require('bluebird'),
-  winston = require('winston'),
-  winstonMongoDB = require('winston-mongodb');
-
+  winston = require('winston');
 
 var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
   test = _testUtils.test,
@@ -39,14 +37,10 @@ test['create logger'] = {
 
   'mongo': function() {
     var logger = waigo.load('support/logging/winston').create({
-      console: {},
-      mongo: {
-        db: 'test'
-      }
+      console: {}
     });
 
     expect(logger).to.be.instanceOf(winston.Logger);
     logger.transports.console.should.be.instanceOf(winston.transports.Console);
-    logger.transports.mongodb.should.be.instanceOf(winston.transports.MongoDB);
   }
 };
