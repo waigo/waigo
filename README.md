@@ -403,7 +403,7 @@ A controller must either call `this.render()` or pass control to the `next` midd
 
 # Database
 
-Waigo by default does not initialise a database connection during [startup](#startup) as not everyone requires the use of a database. Instead it is recommended that a plugin be used to setup and use databases.
+Waigo by default does not initialise a database connection during startup as not everyone requires the use of a database. Instead it is recommended that a plugin be used for this.
 
 Typically a database plugin provides a [startup](#startup) step accompanied by configuration parameters which result in the `app.db` property being set to an active database connection. Check the documentation for each plugin to be sure. 
 
