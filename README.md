@@ -19,7 +19,7 @@ _**Note:** this guide (along with API docs) is also available at [waigojs.com](h
 
 # Why should I use Waigo?
 
-Waigo provides you with a sensible file layout for your app and a clean app architecture. It doesn't try to do too much and most importantly it gets out of your way when you need it to.
+Waigo provides you with a sensible file layout for your app and a clean app architecture (mostly MVC). It doesn't try to do too much and most importantly it gets out of your way when you need it to.
 
 Most frameworks are opinionated and so is Waigo - it is designed to accommodate most people's needs. But it tries to keep its opinions to a minumum, even letting you [override](#extend-and-override) any aspect of its core that you don't find satisfactory.
 
