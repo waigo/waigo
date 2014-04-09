@@ -14,8 +14,8 @@ var koaSessionStore = require('koa-session-store'),
 
 module.exports = function(options) {
   // this should get the current app
-  var app = waigo.load('application').app;
-
+  var app = options.app;
+  
   if (!options.keys) {
     throw new Error('Please specify cookie signing keys (session.keys) in the config file.');
   }

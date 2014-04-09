@@ -19,6 +19,7 @@ var _ = require('lodash'),
  * Once parsed the request body parameters are available in `this.request.body`.
  * 
  * @param {Object} options Configuration options.
+ * @param {Object} options.app The application.
  * @param {String} [options.limit] The maximum allowed size of a request body.
  * 
  * @return {Function} middleware

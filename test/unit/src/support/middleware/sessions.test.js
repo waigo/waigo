@@ -39,7 +39,9 @@ test['sessions middleware'] = {
     var self = this;
 
     testUtils.spawn(function*() {
-      yield* self.middleware({});
+      yield* self.middleware({
+        app: self.app
+      });
     })
       .should.be.rejectedWith('Please specify cookie signing keys (session.keys) in the config file.')
       .and.notify(done);
@@ -50,6 +52,7 @@ test['sessions middleware'] = {
     var createStoreSpy = test.mocker.spy(waigo.load('support/session/store/testStore'),'create');
 
     var options = { 
+      app: self.app,
       keys: ['my', 'key'],
       name: 'sessionName',
       store: {

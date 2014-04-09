@@ -12,8 +12,11 @@ var debug = require('debug')('waigo-startup-middleware'),
  */
 module.exports = function*(app) {
   for (let idx in app.config.middleware) {
-    let m = app.config.middleware[idx];
+    let m = app.config.middleware[idx] || {};
+
     debug('Setting up middleware: ' + m.id);
+
+    m.options.app = app;
     app.use(waigo.load('support/middleware/' + m.id)(m.options));
   }
 };

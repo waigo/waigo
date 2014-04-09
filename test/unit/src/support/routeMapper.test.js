@@ -264,7 +264,8 @@ test['route mapper'] = {
       expect(ret).to.eql({
         id: 'test_options',
         option1: 1,
-        option2: 2        
+        option2: 2,
+        app: app
       });
     })
       .nodeify(done);

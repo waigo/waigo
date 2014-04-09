@@ -35,11 +35,15 @@ test['middleware'] = {
         self.app.config.middleware = [
           {
             id: 'test',
-            options: 'foo'
+            options: {
+              dummy: 'foo'
+            }
           },
           {
             id: 'test2',
-            options: 'bar'
+            options: {
+              dummy: 'bar'
+            }
           }
         ];
       })
@@ -66,7 +70,7 @@ test['middleware'] = {
           return yield fn.call(null, 128);
         })
           .then(function(val) {
-            val.should.eql([ 'test', 'foo', 128 ]);
+            val.should.eql([ 'test', { dummy: 'foo', app: self.app }, 128 ]);
           });
       })
       .then(function() {
@@ -76,7 +80,7 @@ test['middleware'] = {
           return yield fn.call(null, 256);
         })
           .then(function(val) {
-            val.should.eql([  'test2', 'bar', 256 ]);
+            val.should.eql([  'test2', { dummy: 'bar', app: self.app }, 256 ]);
           });
       })
       .nodeify(done);

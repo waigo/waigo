@@ -94,6 +94,7 @@ exports.map = function(app, routes) {
           middlewareOptions = ref;
         }
 
+        middlewareOptions.app = app;
         return waigo.load('support/middleware/' + middlewareName)(middlewareOptions);
       }
     });
