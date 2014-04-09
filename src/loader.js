@@ -6,7 +6,7 @@ var _ = require('lodash'),
   debug = require('debug')('waigo-loader'),
   findup = require('findup-sync'),
   path = require('path'),
-  Promise = require('bluebird'),
+  Q = require('bluebird'),
   fs = require('fs'),
   globule = require('globule'),
   walk = require('findit');
@@ -45,7 +45,7 @@ loader.__modules = null;
  * @private
  */
 var _walk = function(folder) {
-  return new Promise(function(resolve, reject) {
+  return new Q(function(resolve, reject) {
     var files = {};
 
     var walker = walk(folder, {

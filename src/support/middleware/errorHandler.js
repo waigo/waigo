@@ -2,7 +2,6 @@
 
 
 var _ = require('lodash'),
-  Promise = require('bluebird'),
   waigo = require('../../../'),
   errors = waigo.load('support/errors'),
   mixins = waigo.load('support/mixins');

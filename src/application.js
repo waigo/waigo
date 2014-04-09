@@ -5,7 +5,7 @@ var _ = require('lodash'),
   debug = require('debug')('waigo-app'),
   koa = require('koa'),
   path = require('path'),
-  Promise = require('bluebird'),
+  Q = require('bluebird'),
   moment = require('moment'),
   waigo = require('../');
 
@@ -75,7 +75,7 @@ App.start = function*() {
 App.shutdown = function*() {
   if (App.app.server) {
     debug('Shutting down HTTP server');
-    yield Promise.promisify(App.app.server.close, App.app.server)();
+    yield Q.promisify(App.app.server.close, App.app.server)();
   } 
 
   // prepare the koa app for a restart

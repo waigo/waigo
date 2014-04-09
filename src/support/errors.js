@@ -6,7 +6,6 @@
  */
 
 var _ = require('lodash'),
-  Promise = require('bluebird'),
   util = require('util');
 
 

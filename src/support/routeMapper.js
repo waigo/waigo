@@ -6,7 +6,6 @@
  */
 
 var _ = require('lodash'),
-  Promise = require('bluebird'),
   route = require('koa-trie-router'),
   util = require('util'),
   waigo = require('../../');
