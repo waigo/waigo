@@ -40,17 +40,18 @@ module.exports = function(options) {
 
     // attach renderer
     this.render = function*(view, locals) {
-      var viewObjects = {};
-
       // convert each local to a view object
+      var viewObjectCalls = {};
       for (let idx in locals) {
         let local = locals[idx];
+
         if (local[viewObjectMethod]) {
-          viewObjects[idx] = yield local[viewObjectMethod].call(local, ctx);
+          viewObjectCalls[idx] = local[viewObjectMethod].call(local, ctx);
         } else {
-          viewObjects[idx] = local;
+          viewObjectCalls[idx] = local;
         }
       }
+      var viewObjects = yield viewObjectCalls;
 
       // call actual rendering method
       yield enabledFormats[requestedFormat].render.call(ctx, view, viewObjects);
