@@ -72,13 +72,13 @@ test['app'] = {
         var Application = waigo.load('application');
 
         var options = {
-          configFn: test.mocker.spy()
+          postConfig: test.mocker.spy()
         };
         
         return testUtils.spawn(Application.loadConfig, Application, options)
           .then(function() {
-            options.configFn.should.have.been.calledOnce;
-            options.configFn.should.have.been.calledWithExactly('hello world');
+            options.postConfig.should.have.been.calledOnce;
+            options.postConfig.should.have.been.calledWithExactly('hello world');
           });
       })
       .nodeify(done);    

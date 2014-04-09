@@ -326,7 +326,7 @@ _Note: The current Node runtime mode is always stored in `app.config.mode` and t
 
 Sometimes we may want to modify the configuration when it gets loaded at runtime, e.g. if we wish to modify the configuration according to command-line parameters. 
 
-We can do so by supplying a configuration function - `configFn` - to `Application.start()`:
+We can do so by supplying a configuration function to `Application.start()`:
 
 ```javascript
 co(function*() {
@@ -334,7 +334,7 @@ co(function*() {
 
   yield* waigo.load('application').start({
     // This function gets passed the final config object returned from the `config/index` module file
-    configFn: function(config) {
+    postConfig: function(config) {
       config.baseURL = ...;
       // ...etc
     }
