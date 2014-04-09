@@ -15,6 +15,7 @@ var _ = require('lodash'),
 /**
  * Build middleware for serving static resources.
  *
+ * @param {Object} app The application.
  * @param {Object} options Configuration options.
  * @param {String} options.folder The filesystem path (relative to the Waigo app folder) from which to serve resources.
  * @param {Integer} [options.maxage] Browser cache max-age in milliseconds (default is `0`).
@@ -24,7 +25,7 @@ var _ = require('lodash'),
  * 
  * @return {Function} middleware
  */
-module.exports = function(options) {
+module.exports = function(app, options) {
   var moreOptions = _.extend({
     maxage: 0,
     hidden: false,

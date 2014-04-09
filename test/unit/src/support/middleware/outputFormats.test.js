@@ -12,7 +12,8 @@ var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
   waigo = testUtils.waigo;
 
 
-var outputFormats = null,
+var app = null,
+  outputFormats = null,
   ctx = null;
 
 
@@ -35,6 +36,7 @@ test['output formats middleware'] = {
           request: {},
           formats: {}
         };
+        app = waigo.load('application').app;
       })
       .nodeify(done);
   },
@@ -44,7 +46,7 @@ test['output formats middleware'] = {
 
   'invalid format in config': function() {
     expect(function() {
-      outputFormats({
+      outputFormats(app, {
         formats: {
           html3: true          
         }
@@ -53,12 +55,12 @@ test['output formats middleware'] = {
   },
 
   'returns middleware': function() {
-    var fn = outputFormats(ctx);
+    var fn = outputFormats(app, ctx);
     expect(testUtils.isGeneratorFunction(fn)).to.be.true;
   },
 
   'uses default format when not specified': function(done) {
-    var fn = outputFormats({
+    var fn = outputFormats(app, {
       paramName: 'format',
       default: 'json',
       formats: {
@@ -75,7 +77,7 @@ test['output formats middleware'] = {
   },
 
   'invalid format in request': function(done) {
-    var fn = outputFormats({
+    var fn = outputFormats(app, {
       paramName: 'format',
       default: 'json',
       formats: {
@@ -106,7 +108,7 @@ test['output formats middleware'] = {
 
 
   'custom format': function(done) {
-    var fn = outputFormats({
+    var fn = outputFormats(app, {
       paramName: 'format',
       default: 'json',
       formats: {
@@ -135,7 +137,7 @@ test['output formats middleware'] = {
   'converts locals to view objects if possible': function(done) {
     var toViewObjectMethodName = Object.keys(waigo.load('support/mixins').HasViewObject).pop();        
 
-    var fn = outputFormats({
+    var fn = outputFormats(app, {
       paramName: 'format',
       default: 'json',
       formats: {

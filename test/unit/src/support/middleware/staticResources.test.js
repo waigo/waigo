@@ -23,7 +23,7 @@ test['static resources middleware'] = {
 
     var pathJoinSpy = test.mocker.spy(path, 'join');
 
-    var fn = m({
+    var fn = m(null, {
       folder: 'static'
     });
 

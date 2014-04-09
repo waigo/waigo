@@ -39,9 +39,7 @@ test['sessions middleware'] = {
     var self = this;
 
     testUtils.spawn(function*() {
-      yield* self.middleware({
-        app: self.app
-      });
+      yield* self.middleware(self.app, {});
     })
       .should.be.rejectedWith('Please specify cookie signing keys (session.keys) in the config file.')
       .and.notify(done);
@@ -67,7 +65,7 @@ test['sessions middleware'] = {
       }
     };
 
-    var fn = self.middleware(options);
+    var fn = self.middleware(self.app, options);
 
     self.app.keys.should.eql(['my', 'key']);
     createStoreSpy.should.have.been.calledOnce;

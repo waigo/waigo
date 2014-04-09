@@ -397,7 +397,7 @@ A middleware module file is expected to export a function which, when called, re
 ```javascript
 // file: <app folder>/src/support/middleware/example.js
 
-module.exports = function(options) {
+module.exports = function(app, options) {
   return function*(next) {
     // do nothing and pass through
     yield next;
@@ -405,9 +405,7 @@ module.exports = function(options) {
 };
 ```
 
-The `options` object passed to each middleware construction function always at least contains a key - `app` - which points to the current application object. 
-
-If a given middleware is being initialised during startup (i.e. as part of the `middleware` [startup](#startup) step) then additional options from the `app.config.middleware` configuration object are also passed through. So for the above example any configuration found in `app.config.middleware.example` gets added into the `options` parameter.
+If a given middleware is being initialised during startup (i.e. as part of the `middleware` [startup](#startup) step) then additional options from the `app.config.middleware` configuration object are also passed as the `options` parameter. So for the above example any configuration found in `app.config.middleware.example` get passed in that parameter.
 
 During the middleware startup step the following middleware modules are initialised so that all incoming requests get processed by them:
 

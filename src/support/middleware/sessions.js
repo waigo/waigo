@@ -12,10 +12,11 @@ var koaSessionStore = require('koa-session-store'),
 
 
 
-module.exports = function(options) {
-  // this should get the current app
-  var app = options.app;
-  
+/** 
+ * @param {Object} app The application.
+ * @param {Object} options Configuration options.
+ */
+module.exports = function(app, options) {
   if (!options.keys) {
     throw new Error('Please specify cookie signing keys (session.keys) in the config file.');
   }

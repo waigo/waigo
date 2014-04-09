@@ -16,7 +16,6 @@ module.exports = function*(app) {
 
     debug('Setting up middleware: ' + m.id);
 
-    m.options.app = app;
-    app.use(waigo.load('support/middleware/' + m.id)(m.options));
+    app.use(waigo.load('support/middleware/' + m.id)(app, m.options));
   }
 };

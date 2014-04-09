@@ -64,12 +64,14 @@ test['error handler middleware'] = {
   },
 
   'show stack': function(done) {
-    var fn = errorHandler({
+    var app = waigo.load('application').app;
+    
+    var fn = errorHandler(app, {
       showStack: true
     });
 
     var ctx = {
-      app: waigo.load('application').app
+      app: app
     };
     ctx.app.logger = {
       error: test.mocker.spy()

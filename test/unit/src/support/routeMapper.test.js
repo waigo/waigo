@@ -37,7 +37,7 @@ test['route mapper'] = {
       .then(function() {
         return testUtils.createAppModules({
           'support/middleware/test': 'var a = function*() {}; module.exports = function() { return a }; a.ref = a;',
-          'support/middleware/test_options': 'module.exports = function(o) { return function*() { return o; } };'
+          'support/middleware/test_options': 'module.exports = function(app, o) { return function*() { return o; } };'
         });
       })
       .then(waigo.initAsync)
@@ -264,8 +264,7 @@ test['route mapper'] = {
       expect(ret).to.eql({
         id: 'test_options',
         option1: 1,
-        option2: 2,
-        app: app
+        option2: 2
       });
     })
       .nodeify(done);
