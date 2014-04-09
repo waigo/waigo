@@ -1,7 +1,7 @@
 {
   "name": "waigo",
   "description": "Next-gen web framework for node.js based on koa",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "author": {
     "name": "Ramesh Nair",
     "email": "ram@hiddentao.com"

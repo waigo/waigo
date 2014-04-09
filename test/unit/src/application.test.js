@@ -58,6 +58,33 @@ test['app'] = {
       .nodeify(done);    
   },
 
+
+  'dynamic config': function(done) {
+    var self = this;
+
+    testUtils.createAppModules({
+      'config/index': 'module.exports = function() { return "hello world"; };'
+    })
+      .then(function() {
+        return self.resetWaigo();
+      })
+      .then(function() {
+        var Application = waigo.load('application');
+
+        var options = {
+          configFn: test.mocker.spy()
+        };
+        
+        return testUtils.spawn(Application.loadConfig, Application, options)
+          .then(function() {
+            options.configFn.should.have.been.calledOnce;
+            options.configFn.should.have.been.calledWithExactly('hello world');
+          });
+      })
+      .nodeify(done);    
+  },
+
+
   'start app': {
     beforeEach: function(done) {
       var self = this;
@@ -79,9 +106,14 @@ test['app'] = {
 
       test.mocker.stub(self.Application, 'loadConfig', function*() {});
 
-      testUtils.spawn(self.Application.start)
+      var options = {
+        dummy: true
+      };
+
+      testUtils.spawn(self.Application.start, self.Application, options)
         .then(function() {
           self.Application.loadConfig.should.have.been.calledOnce;
+          self.Application.loadConfig.should.have.been.calledWithExactly(options);
         })
         .nodeify(done);
     },

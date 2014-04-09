@@ -1,5 +1,7 @@
 # What is Waigo?
 
+\[ [Guide](http://waigojs.com/) • [API](http://waigojs.com/api/) \]
+
 [![Build Status](https://secure.travis-ci.org/waigo/waigo.png)](http://travis-ci.org/waigo/waigo) [![NPM module](https://badge.fury.io/js/waigo.png)](https://npmjs.org/package/waigo) [![Code quality](https://codeclimate.com/github/waigo/waigo.png)](https://codeclimate.com/github/waigo/waigo)
 
 Waigo is a Node.js framework for building scalable and maintainable web application back-ends.
@@ -16,6 +18,7 @@ Quick overview:
 Sound good? read on for details...
 
 _**Note:** this guide (along with API docs) is also available at [waigojs.com](http://waigojs.com)_
+
 
 # Why should I use Waigo?
 
@@ -207,17 +210,10 @@ To see a list of all available plugins visit [https://www.npmjs.org/browse/keywo
 Then the application starts up and `waigo.load('app').start()` is called Waigo executes the following:
 
 ```javascript
-// file: <waigo framework>/src/app.js
+// file: <waigo framework>/src/application.js
 
-
-app.loadConfig = function*() {
-  debug('Loading configuration');
-  app.config = waigo.load('config/index')();
-};
-
-
-app.start = function*() {
-  yield* app.loadConfig();
+app.start = function*(...) {
+  ...
 
   var ret = null;
   for (let idx in app.config.startupSteps) {
@@ -264,14 +260,16 @@ We then tell Waigo to load and execute this startup step by modifying the config
 ```javascript
 // file:  <app folder>/src/config/development.js
 
-exports.startupSteps = [
-  'logging',
-  'database',
-  'middleware',
-  'routes',
-  'listener',
-  'timeAndDate'
-];
+module.exports = function(config) {
+  config.startupSteps = [
+    'logging',
+    'database',
+    'middleware',
+    'routes',
+    'listener',
+    'timeAndDate'
+  ];
+};
 ```
 
 
@@ -298,11 +296,16 @@ For example, let's say our production site URL is usually `http://example.com`:
 ```javascript
 // file: <app folder>/src/config/base.js
 
-module.exports = waigo.load('waigo:config/base');
+var waigoBaseConfig = waigo.load('waigo:config/base');
 
-exports.baseURL = 'http://example.com'
+module.exports = function(config) {
+  waigoBaseConfig(config);
 
-exports.port = 80;
+  config.baseURL = 'http://example.com';
+
+  config.port = 80;    
+};
+
 ```
 
 When running the site on our devbox in `development` mode we might wish to use a different URL as such:
@@ -310,12 +313,38 @@ When running the site on our devbox in `development` mode we might wish to use a
 ```javascript
 // file: <app folder>/src/config/development.js
 
-exports.baseURL = 'http://dev.example.com'
+module.exports = function(config) {
+  config.baseURL = 'http://dev.example.com';
+};
 ```
 
 The `app.config.port` will still be `80` when running in `development` mode since we didn't override and change it in the `development` config file. The same goes for all other properties in the `base` configuration file.
 
 _Note: The current Node runtime mode is always stored in `app.config.mode` and the user id in `app.config.user`._
+
+## Runtime modification
+
+Sometimes we may want to modify the configuration when it gets loaded at runtime, e.g. if we wish to modify the configuration according to command-line parameters. 
+
+We can do so by supplying a configuration function - `configFn` - to `Application.start()`:
+
+```javascript
+co(function*() {
+  yield* waigo.init();
+
+  yield* waigo.load('application').start({
+    // This function gets passed the final config object returned from the `config/index` module file
+    configFn: function(config) {
+      config.baseURL = ...;
+      // ...etc
+    }
+  });
+
+})(function(err) {
+  console.log(err);  
+});
+```
+
 
 # Routing
 

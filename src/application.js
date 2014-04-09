@@ -37,11 +37,22 @@ var App = module.exports = {
 /**
  * Load in the application configuration.
  *
+ * @param {Object} [options] Additional options.
+ * @param {Object} [options.configFn] Function to pass configuration object to once loaded. Useful for performing dynamic 
+ * runtime configuration.
+ * 
  * @protected
  */
-App.loadConfig = function*() {
+App.loadConfig = function*(options) {
+  options = options || {};
+
   debug('Loading configuration');
   App.app.config = waigo.load('config/index')();
+
+  if (options.configFn) {
+    debug('Executing dynamic configuration');
+    options.configFn.call(null, App.app.config);
+  }
 };
 
 
@@ -53,11 +64,15 @@ App.loadConfig = function*() {
  *
  * This is a convenience method for initialising the various parts of the app and setting up the general middleware chain.
  *
+ * @param {Object} [options] Additional options.
+ * @param {Object} [options.configFn] Function to pass configuration object to once loaded. Useful for performing dynamic 
+ * runtime configuration.
+ * 
  * @return {Object} The result of the call to the final startup step.
  * @public
  */
-App.start = function*() {
-  yield* App.loadConfig();
+App.start = function*(options) {
+  yield* App.loadConfig(options);
 
   for (let idx in App.app.config.startupSteps) {
     let stepName = App.app.config.startupSteps[idx];
