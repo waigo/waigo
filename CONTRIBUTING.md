@@ -25,7 +25,7 @@ Use the same style as is used in the surrounding code.
 
 ###Whitespace
 
-- No more than 80 columns per line
+- Try not to use more than 80 columns per line
 - 2 space indentation
 - No trailing whitespace
 - LF at end of files
@@ -38,6 +38,11 @@ Use the same style as is used in the surrounding code.
 - It's ok to use a single `var` statement with comma separator
 - Try not declare variables until you need them
 
+###Error handling
+
+- Instead of throwing an `Error` throw one of the error classes in [support/errors](https://github.com/waigo/waigo/blob/master/src/support/errors.js)
+- Feel free to subclass the built-in error classes to create your own (use the provided `define()` method to create a subclass)
+
 ###Equality and type checks
 
 - Always use `===`.
@@ -45,6 +50,6 @@ Use the same style as is used in the surrounding code.
 
 ## Testing
 
-- Ensure JSHint and all tests pass by running `grunt build` after you have made your changes.
+- Ensure build passes by running `node --harmony ``which grunt`` ` after you have made your changes.
 - Ensure you update and improve any tests impacted by your changes. Write new tests if necessary to ensure all your code is tested.
 
