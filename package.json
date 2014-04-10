@@ -1,7 +1,7 @@
 {
   "name": "waigo",
-  "description": "Next-gen web framework for node.js based on koa",
-  "version": "0.6.8",
+  "description": "Next-gen web framework for node.js using generators",
+  "version": "1.0.0",
   "author": {
     "name": "Ramesh Nair",
     "email": "ram@hiddentao.com"
@@ -74,7 +74,7 @@
   },
   "main": "index",
   "scripts": {
-    "prepublish": "npm prune",
+    "prepublish": "npm prune && npm run build",
     "build": "node --harmony `which grunt`",
     "test": "NODE_ENVIRONMENT=test node --harmony `which grunt` test"
   },

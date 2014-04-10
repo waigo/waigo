@@ -6,5 +6,5 @@ docs
 test
 .travis.yml
 .jshintrc
-Gruntfile.coffee
+Gruntfile.*
 test/
