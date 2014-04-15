@@ -16,19 +16,15 @@ var errors = waigo.load('support/errors'),
  * This module provides a `Form` class which makes dealing with forms very 
  * easy. A `Form` instance points to numerous `Field` instances which are 
  * created based on a form definition object which is provided during form 
- * construction. A form stores its internal state (including current field 
- * values) within an object which can be retrieved at any time. 
- * 
- * Importantly, a form can have its internal state changed at any time, 
- * thus allowing for 
- * multiple `Form` instances to share data (such as `Field` instances). This 
- * helps reduce memory usage when multiple clients are accessing and 
- * manipulating the same 
- * from on your site.
+ * construction. 
+ *
+ * Form field values get stored in an internal state object which can be retrieved 
+ * and set at any time, thus allowing you to share state between Form instances 
+ * as well as quickly restore a Form instance to a previously set state.
  *
  * Although you can create and use `Form` objects directly it is better to use 
- * the `Form.new()` static method as this internally keeps track of which forms 
- * have been initialised, making for easy instance re-use.
+ * the `Form.new()` static method as this handles the loading of form 
+ * configuration from the `form` specs folder.
  */
 
 
@@ -49,20 +45,20 @@ var FormValidationError = exports.FormValidationError = errors.define('FormValid
  */
 var Form = exports.Form = function(config, state) {
   if (config instanceof Form) {
-    let existingForm = config;
-    this.config = existingForm.config;
-    this._fields = existingForm._fields;
-  } else {
-    this.config = config || {};
-    // initialise fields
-    this._fields = {};
-    for (let idx in this.config.fields) {
-      let def = this.config.fields[idx];
-      this._fields[def.name] = Field.new(this, def);
-    }
+    // passed-in state overrides existing form's state
+    state = state || config.state;  
+    config = config.config;
   }
 
-  this.state = state || {};
+  this.config = config;
+
+  this._fields = {};
+  for (let idx in this.config.fields) {
+    let def = this.config.fields[idx];
+    this._fields[def.name] = Field.new(this, def);
+  }
+
+  this.state = _.extend({}, state);
 };
 mixins.applyTo(Form, mixins.HasViewObject);
 
@@ -168,16 +164,20 @@ Form.prototype.validate = function*() {
  */
 Form.prototype.toViewObject = function*(ctx) {
   var fields = this.fields,
-    fieldViewObjects = [];
+    fieldViewObjects = {},
+    fieldOrder = [];
 
   for (let idx in this.config.fields) {
-    let def = this.config.fields[idx];
+    let def = this.config.fields[idx],
+      field = fields[def.name];
       
-    fieldViewObjects.push(yield fields[def.name].toViewObject(ctx));
+    fieldViewObjects[def.name] = yield field.toViewObject(ctx);
+    fieldOrder.push(def.name);
   }
 
   var ret = {
-    fields: fieldViewObjects
+    fields: fieldViewObjects,
+    order: fieldOrder
   }
 
   if (this.config.id) {
@@ -189,7 +189,7 @@ Form.prototype.toViewObject = function*(ctx) {
 
 
 
-// the form instance cache
+// the form spec cache
 var cache = {};
 
 
@@ -210,17 +210,14 @@ var cache = {};
  * @return {Form}
  */
 Form.new = function(id, state) {
-  var cachedInstance = cache[id];
+  var cachedSpec = cache[id];
 
-  if (!cachedInstance) {
-    let config = waigo.load('forms/' + id);
-    config.id = id;
-    cachedInstance = new Form(config, state);
-    cache[id] = cachedInstance;
-    return cachedInstance;
-  } else {
-    return new Form(cachedInstance, state);
+  if (!cachedSpec) {
+    cache[id]  = cachedSpec = waigo.load('forms/' + id);
+    cachedSpec.id = id;
   }
+
+  return new Form(cachedSpec, state);
 };
 
 

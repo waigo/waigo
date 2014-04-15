@@ -63,7 +63,14 @@ test['form fields'] = {
 
   'Field': {
     beforeEach: function() {
-      this.form = new form.Form(null, {
+      this.form = new form.Form({
+        fields: [
+          {
+            name: 'name',
+            type: 'text'
+          }
+        ]
+      }, {
         test: {}        
       });
 
@@ -289,7 +296,12 @@ test['form fields'] = {
 
   'create new Field': {
     'loads field class and constructs and instance': function() {
-      var newForm = new form.Form();
+      var newForm = new form.Form({
+        fields: [{
+          name: 'blah2',
+          type: 'text'
+        }]
+      });
       var f = field.Field.new(newForm, {
         name: 'blah',
         type: 'text'

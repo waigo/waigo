@@ -18,8 +18,7 @@ var errors = waigo.load('support/errors'),
  * A field is provided a reference to its parent form upon constructions - it
  * uses this primarily to fetch a reference to the form's internal state
  * object, as this is where fields also store their data (rather than within
- * the `Field` instance). This makes it easier to re-use form instances for
- * multiple clients.
+ * the `Field` instance).
  *
  * The `Field.new()` static method makes it easy to initialise a field of any
  * given type and is the recommended method for creating new field instances.

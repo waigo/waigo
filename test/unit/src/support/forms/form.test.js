@@ -47,7 +47,7 @@ test['forms'] = {
         };
       });
 
-      this.form = new form.Form({
+      this.formConfig = {
         fields: [
           {
             name: 'email',
@@ -58,23 +58,27 @@ test['forms'] = {
             type: 'number'
           },
         ]
-      });
+      }
+
+      this.form = new form.Form(this.formConfig);
     },
 
     'construction': {
       'initialises state': function() {
-        var f = new form.Form();
-        expect(f.state).to.eql({});        
-
-        f = new form.Form(null, 123);
-        expect(f.state).to.eql(123);
+        var f = new form.Form(this.formConfig);
+        expect(f.state).to.eql({ 
+          email: { 
+            value: null 
+          }, 
+          age: { 
+            value: null 
+          }
+        });
       },
 
       'initialises config': function() {
-        var f = new form.Form();
-        expect(f.config).to.eql({});        
-        f = new form.Form(123);
-        expect(f.config).to.eql(123);
+        var f = new form.Form(this.formConfig);
+        expect(f.config).to.eql(this.formConfig);        
       },
 
       'initialises fields': function() {
@@ -91,14 +95,38 @@ test['forms'] = {
       },
 
       'can re-use stuff from existing Form': function() {
-        var f = new form.Form(this.form, 456);
+        this.form.state = {
+          email: 'test',
+          age: 12
+        };
+
+        var f = new form.Form(this.form);
 
         expect(f.config).to.eql(this.form.config);
         expect(f._fields).to.eql(this.form.fields);
 
-        expect(f.state).to.not.eql(this.form.state);
-        expect(f.state).to.eql(456);
-      }
+        expect(f.state).to.eql(this.form.state);
+      },
+
+      'but can pass in state to override state from existing Form': function() {
+        this.form.state = {
+          email: 'test',
+          age: 12
+        };
+
+        var f = new form.Form(this.form, {
+          email: 'blah',
+          age: 23
+        });
+
+        expect(f.config).to.eql(this.form.config);
+        expect(f._fields).to.eql(this.form.fields);
+
+        expect(f.state).to.eql({
+          email: 'blah',
+          age: 23
+        });
+      }      
     },
 
     'get fields': function() {
@@ -224,16 +252,17 @@ test['forms'] = {
         .then(function(viewObject) {
           expect(viewObject).to.eql({
             id: 'testForm',
-            fields: [
-              {
-                dummy: true,
-                name: 'email'
+            fields: {
+              email: {
+                name: 'email',
+                dummy: true
               },
-              {
-                dummy: true,
-                name: 'age'
+              age: {
+                name: 'age',
+                dummy: true
               }
-            ]
+            },
+            order: ['email', 'age']
           })
         })
         .nodeify(done);
@@ -252,33 +281,20 @@ test['forms'] = {
       });
     },
 
-    'loads form definition to create the form, and caches it': function() {
+    'loads form definition to create the form': function() {
       this.formDef.dummy =  true;
 
-      var f = form.Form.new('blah', 256);
+      var f = form.Form.new('blah');
 
       this.waigoLoadStub.should.have.been.calledOnce;
       this.waigoLoadStub.should.have.been.calledWithExactly('forms/blah');
 
-      // this.formSpy.should.have.been.calledOnce;
-      // this.formSpy.should.have.been.calledWithNew;
-      // this.formSpy.should.have.been.calledWithExactly(formDef, 123);
-
-      expect(f.state).to.eql(256);      
       expect(f.config).to.eql({
         id: 'blah',
         dummy: true
       });
 
-      f2 = form.Form.new('blah', 512);
-
-      this.waigoLoadStub.should.have.been.calledOnce;
-      // this.formSpy.should.have.been.calledTwice;
-      // this.formSpy.should.have.been.calledWithExactly(f, 512);
-
-      expect(f.fields).to.eql(f2.fields);      
-      expect(f.state).to.eql(256);      
-      expect(f2.state).to.eql(512);      
+      expect(f.state).to.eql({});
     }
   }
 };
