@@ -66,7 +66,7 @@ test['error handler middleware'] = {
   'show stack': function(done) {
     var app = waigo.load('application').app;
     
-    var fn = errorHandler(app, {
+    var fn = errorHandler({
       showStack: true
     });
 

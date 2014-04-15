@@ -14,11 +14,10 @@ var viewObjectMethod = Object.keys(mixins.HasViewObject).pop();
 
 /**
  * Build output formats middleware.
- * @param {Object} app The application.
  * @param {Object} options Configuration options.
  * @return {Function} Express middleware.
  */
-module.exports = function(app, options) {
+module.exports = function(options) {
   var enabledFormats = {};
 
   var formatNames = Object.keys(options.formats);

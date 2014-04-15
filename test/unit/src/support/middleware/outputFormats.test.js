@@ -46,7 +46,7 @@ test['output formats middleware'] = {
 
   'invalid format in config': function() {
     expect(function() {
-      outputFormats(app, {
+      outputFormats({
         formats: {
           html3: true          
         }
@@ -55,12 +55,12 @@ test['output formats middleware'] = {
   },
 
   'returns middleware': function() {
-    var fn = outputFormats(app, ctx);
+    var fn = outputFormats(ctx);
     expect(testUtils.isGeneratorFunction(fn)).to.be.true;
   },
 
   'uses default format when not specified': function(done) {
-    var fn = outputFormats(app, {
+    var fn = outputFormats({
       paramName: 'format',
       default: 'json',
       formats: {
@@ -77,7 +77,7 @@ test['output formats middleware'] = {
   },
 
   'invalid format in request': function(done) {
-    var fn = outputFormats(app, {
+    var fn = outputFormats({
       paramName: 'format',
       default: 'json',
       formats: {
@@ -108,7 +108,7 @@ test['output formats middleware'] = {
 
 
   'custom format': function(done) {
-    var fn = outputFormats(app, {
+    var fn = outputFormats({
       paramName: 'format',
       default: 'json',
       formats: {
@@ -137,7 +137,7 @@ test['output formats middleware'] = {
   'converts locals to view objects if possible': function(done) {
     var toViewObjectMethodName = Object.keys(waigo.load('support/mixins').HasViewObject).pop();        
 
-    var fn = outputFormats(app, {
+    var fn = outputFormats({
       paramName: 'format',
       default: 'json',
       formats: {

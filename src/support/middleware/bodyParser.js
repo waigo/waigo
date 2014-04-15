@@ -18,13 +18,12 @@ var _ = require('lodash'),
  *
  * Once parsed the request body parameters are available in `this.request.body`.
  * 
- * @param {Object} app The application.
  * @param {Object} options Configuration options.
  * @param {String} [options.limit] The maximum allowed size of a request body.
  * 
  * @return {Function} middleware
  */
-var fn = module.exports = function(app, options) {
+var fn = module.exports = function(options) {
   return function*(next) {
     this.request.body = yield fn._bodyParser(this, options);
     yield next;

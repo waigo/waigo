@@ -39,13 +39,12 @@ var render = function*(context, config, err) {
 /**
  * Build error handler middleware.
  *
- * @param {Object} app The application.
  * @param {Object} options Configuration options.
  * @parma {Boolean} [options.showStack] whether to show the stack trace in error output. Default is false.
  *
  * @return {Function} middleware
  */
-module.exports = function(app, options) {
+module.exports = function(options) {
   options = _.extend({
     showStack: false
   }, options);
