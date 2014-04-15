@@ -4,11 +4,11 @@
 
 [![Build Status](https://secure.travis-ci.org/waigo/waigo.png)](http://travis-ci.org/waigo/waigo) [![NPM module](https://badge.fury.io/js/waigo.png)](https://npmjs.org/package/waigo) [![Code quality](https://codeclimate.com/github/waigo/waigo.png)](https://codeclimate.com/github/waigo/waigo)
 
-Waigo is a Node.js framework for building scalable and maintainable web application back-ends.
-
-**NOTE: Waigo is still under development and interfaces are likely to change**
+Waigo is a Node.js framework for building scalable and maintainable web 
+application back-ends.
 
 Quick overview:
+
  * Based on [koa](http://koajs.com/), uses ES6 generators, no callbacks
  * Database, model-layer and front-end agnostic - use whatever you want
  * Easily build REST/JSON APIs using [output formats](#views-and-output-formats)
@@ -16,27 +16,38 @@ Quick overview:
  * Memory-efficient [forms](#forms) with sanitization and validation
  * [Extend](#extend-and-override) or override _any_ part of the core framework
  * Bundle up functionality into re-usable [plugins](#plugins)
+ * And much, much more...
  
-Sound good? read on for details...
-
 _**Note:** this guide (along with API docs) is also available at [waigojs.com](http://waigojs.com)_
 
 
 # Why should I use Waigo?
 
-Waigo provides you with a sensible file layout for your app and a clean app architecture (mostly MVC). It doesn't try to do too much and most importantly it gets out of your way when you need it to.
+Waigo provides you with a sensible file layout for your app and a clean app 
+architecture (mostly MVC). It doesn't try to do too much and most importantly 
+it gets out of your way when you need it to.
 
-Most frameworks are opinionated and so is Waigo - it is designed to accommodate most people's needs. But it tries to keep its opinions to a minumum, even letting you [override](#extend-and-override) any aspect of its core that you don't find satisfactory.
+Most frameworks are opinionated and so is Waigo - it is designed to accommodate 
+most people's needs. But it tries to keep its opinions to a minumum, even 
+letting you [override](#extend-and-override) any aspect of its core that you 
+don't find satisfactory.
 
-Think of Waigo as the foundation on which to build your web app. For example the basic framework does not provide a database connection or any front-end templates. Instead it provides you with the hooks and entry points to use whatever database, model layer and/or front-end you want.
+Think of Waigo as the foundation on which to build your web app. For example 
+the basic framework does not provide a database connection or any front-end 
+templates. Instead it provides you with the hooks and entry points to use 
+whatever database, model layer and/or front-end you want.
 
-Does this mean you have to build everything from scratch each time you use Waigo? Not at all. You can make anything you build re-useable by bundling it up as a [plugin](#plugins). Check out the [current list of plugins](https://www.npmjs.org/browse/keyword/waigo) to see what's already available.
+Does this mean you have to build everything from scratch each time you use 
+Waigo? Not at all. You can make anything you build re-useable by bundling it up 
+as a [plugin](#plugins). Check out the [current list of plugins](https://www.npmjs.org/browse/keyword/waigo) 
+to see what's already available.
 
 # Getting started
 
 ## Installation
 
-Waigo requires **Node.js v0.11.10 or above**. This along with the command-line `--harmony` flag will give us the ES6 features we need. An easy 
+Waigo requires **Node.js v0.11.10 or above**. This along with the command-line 
+`--harmony` flag will give us the ES6 features we need. An easy 
 way to manage multiples versions of Node.js is to use [NVM](https://github.com/creationix/nvm).
 
 Once Node is installed go ahead and install Waigo:
@@ -47,30 +58,33 @@ $ npm install waigo
 
 ## Hello world
 
-We will use the [bluebird](https://github.com/petkaantonov/bluebird) library to iterate through our generators:
+We will use [co](https://github.com/visionmedia/co) to iterate through our 
+generators:
 
 ```bash
-$ npm install bluebird
+$ npm install co
 ```
 
-If your app folder is located at e.g. `/dev/myapp` then Waigo will by default assume that the source code for your app is located in a `src` subfolder, i.e. at `/dev/myapp/src`.
+If your app folder is located at e.g. `/dev/myapp` then Waigo will by default 
+assume that the source code for your app is located in a `src` subfolder, i.e. 
+at `/dev/myapp/src`.
 
-Create a new Javascript file in your app's source folder with the following contents:
+Create a new Javascript file in your app's source folder with the following 
+contents:
 
 ```javascript
 // file: <app folder>/src/myapp.js
 
-var Promise = require('bluebird'),
+var co = require('co'),
   waigo = require('waigo');
 
 // Generator co-routine
-Promise.spawn(function*() {
+co(function*() {
   // Initialise waigo module loading system
-  yield* waigo.init();
+  yield waigo.init();
   // Start the server
-  yield* waigo.load('application').start();
-})
-  .then(function(err) {
+  yield waigo.load('application').start();
+})(function(err) {
     console.log(err);  
   });
 ```
@@ -88,13 +102,16 @@ Start the app:
 $ node --harmony myapp.js
 ```
 
-Visit [http://localhost:3000](http://localhost:3000) and you should see the following HTML output: 
+Visit [http://localhost:3000](http://localhost:3000) and you should see the 
+following HTML output: 
 
 ```html
 <p>Hello world!</p>
 ```
 
-Waigo is designed to make it easy to re-use your URL routes as JSON APIs. Visit [http://localhost:3000/?format=json](http://localhost:3000/?format=json) and you should see:
+Waigo is designed to make it easy to re-use your URL routes as JSON APIs. 
+Visit [http://localhost:3000/?format=json](http://localhost:3000/?format=json) 
+and you should see:
 
 ```json
 {
@@ -102,39 +119,54 @@ Waigo is designed to make it easy to re-use your URL routes as JSON APIs. Visit 
 }
 ```
 
-This is all the data get which gets passed by the default controller to the `index.jade` template we created above. By default Waigo supports 
-HTML and JSON output, and more [output formats](#views-and-output-formats) can be easily added.
+This is all the data get which gets passed by the default controller to the 
+`index.jade` template we created above. By default Waigo supports 
+HTML and JSON output, and more [output formats](#views-and-output-formats) can 
+be easily added.
 
 # Extend and Override
 
-Waigo has a very modular architecture. In the "Hello World" example above you will have noticed:
+Waigo has a very modular architecture. In the "Hello World" example above you 
+will have noticed the call:
 
 ```javascript
 waigo.load('application')
 ```
 
-When you want to use something provided by the framework you first have to load its module file through `waigo.load()`. This allows you to:
+When you want to use something provided by the framework you first have to load 
+its module file through `waigo.load()`. This allows you to:
 
-1. Only load the parts of the framework you will actually use _(performance)_.
-2. **Override any framework module file with your own version** _(extendability and customization)_.
+1. Only load the parts of the framework you will actually use _(good for 
+performance)_.
+2. **Override any framework module file with your own version** _(extendability 
+and customization)_.
 
-When you want to load the `application` module file (as above) the loader will look for it in the following locations:
+When you want to load the `application` module file (as above) the loader will 
+look for it in the following locations:
 
 1. `<app folder>/src/application.js`
 2. `<waigo npm module folder>/src/application.js`
 
-_Note: if you have [plugins](#plugins) installed their paths will also be searched._
+_Note: if you have [plugins](#plugins) installed their paths will also be 
+searched._
 
-So if you provide a `application.js` within your app's folder tree then Waigo will use that instead of the default one provided by the framework. This rules applies to **every** module file within the framework. 
+So if you provide a `application.js` within your app's folder tree then Waigo 
+will use that instead of the default one provided by the framework. This rules 
+applies to **every** module file within the framework. 
 
-Thus if you don't like something provided by Waigo you can easily override it. But what if you specifically wanted the version of `application.js` provided by the framework? Just prefix `waigo:` to the module file name:
+**If you do not like something provided by Waigo you can easily override it.**
+
+But what if you specifically wanted the version of `application.js` provided by 
+the framework? Just prefix `waigo:` to the module file name:
 
 ```javascript
-// this will load the version of app.js provided by Waigo, and not the one provided by your app
+// this will load the version of app.js provided by Waigo, 
+// and not the one provided by your app
 waigo.load('waigo:application');   
 ```
 
-This also means you don't have to completely override the framework version. You can also _extend_ it:
+This also means you don't have to completely override the framework version. 
+You can also _extend_ it:
 
 ```javascript
 // in file: <app folder>/src/application.js
@@ -145,47 +177,118 @@ var waigo = require('waigo');
 var App = module.exports = waigo.load('waigo:application');    
 
 // override start()
-App.start = function*() {...}   
+App.start = ...
 ```
 
-Going back to the small "Hello world" example we built above, there is another call we make:
+## Module loader
+
+Going back to the small "Hello world" example we built above, there is another 
+call we make:
 
 ```javascript
-yield* waigo.init();
+waigo.init();
 ```
 
-Waigo works out which module files are available in the call to `waigo.init()`. It does this so that:
+Waigo works out which module files are available in this call. This 
+always has to be the first call you make when initialising your application. 
 
-1. Subsequent calls to `waigo.load()` are fast _(node's `require()` already caches loaded modules but having this extra optimisation doesn't hurt)_.
-2. It can catch any [plugin conflicts](#plugins) at startup _(rather than later on, when your app is already running)_.
+It does this so that it can catch any [plugin conflicts](#plugins) at startup 
+_(rather than later on, when your app is already running)_.
 
-_Note: The `.init()` method scanning for `.js` files in the folder trees of the framework, plugins as well as your app. It is thus recommended that your app's folder tree only contain code that will run in node. Place your front-end scrips in a different folder._
+The `.init()` method scans for `.js` files in the folder trees of the 
+framework, any loaded plugins as well as your app. To speed up this process it 
+is thus recommended that your app's folder tree only contain Javascript code 
+that will run as part of the Waigo app.
 
 ## Plugins
 
-As mentioned earlier, You can make anything you build re-useable by bundling it up as a plugin.
+As mentioned earlier, You can make anything you build re-useable by bundling it 
+up as a plugin.
 
-By separating non-core functionality into plugins (which can then be thoroughly documented and tested) we encourage code re-use across projects. Plugins help us to keep the core framework more focussed, flexible and increase the overall quality of code in the Waigo ecosystem.
+By separating non-core functionality into plugins (which can then be thoroughly 
+documented and tested) we encourage code re-use across projects. Plugins help 
+us to keep the core framework more focussed, flexible and increase the overall 
+quality of code in the Waigo ecosystem.
 
-And since plugins are just NPM modules they are very easy to share with others, and come with all the benefits that are available to normal NPM modules.
+Since plugins are just NPM modules they are very easy to share with others,
+and come with all the benefits that are available to normal NPM modules.
 
-To load a plugin at startup simply `npm install` it and then add it to one of either `dependencies`, `devDependencies` or `peerDependencies` within your `package.json` file. When `waigo.init()` is called Waigo will automatically scan `package.json` to get all plugins (by default it considers anything prefixed with `waigo-` as a plugin). It will then scan each plugin's `src` folder 
-tree for available module files and register them internally.
+## Example
 
-Let's say you have a plugin - `waigo-mongo` - which enables the use of MongoDB database connections. And let's say it provides the following module file: `support/db/mongo.js`.
+The [waigo-mongo](https://www.npmjs.org/package/waigo-mongo) plugin enables 
+database connectivity and session storage using MongoDB. It provides the 
+following modules files:
 
-One `waigo.init()` has been called, if you then call `waigo.load('support/db/mongo')` the system will load the module file from the plugin module's `src` folder. If you were to now create `support/db/mongo.js` within your app's source folder tree then the app version would take precendence over the plugin version. 
+* `src/support/db/mongo`
+* `src/support/session/store/mongo`
 
-Strictly speaking, location precendence is as follows: **App > Plugins > Waigo framework**.
+To get the plugin use `npm`:
 
-What would happen if you had two plugins which both provided the same module file? in this case the call to `waigo.init()` would fail with 
-an error which looks like the following:
+```bash
+# --save ensures it gets added as depenency in package.json
+npm install --save waigo-mongo 
+```
+
+To enable the database connectivity, your base configuration may look like:
+
+```javascript
+// in file: <app folder>/src/config/base.js
+
+var waigo = require('waigo');
+
+var defaultConfig = waigo.load('config/base');
+
+module.exports = function(config) {
+  defaultConfig(config);
+
+  config.db = {
+    host: '127.0.0.1',
+    port: 27017
+    db: 'myapp'
+  };
+};
+```
+
+You can of course also load in the plugin's module files within any of your own 
+code as such:
+
+```javascript
+// in file: <app folder>/src/myrandomfile.js
+
+// notice how we prefix with the plugin name so that Waigo knows we want this 
+// specific version
+var mongoDb = waigo.load('waigo-mongo:support/db/mongo');
+```
+
+And you can of course override any module file the plugin provides with your 
+own:
+
+```javascript
+// in file: <app folder>/src/support/db/mongo.js
+
+exports.create = function*(dbConfig) {
+  ...
+};
+```
+
+Calls made to `waigo.load('support/db/mongo')` will now load your app version 
+rather then the plugin version.
+
+Strictly speaking, location precendence is as follows: **App > Plugins > Waigo
+framework**.
+
+What would happen if you had two plugins which both provided the same module
+file? in this case the call to `waigo.init()` would fail with an error which
+looks like the following:
 
 ```bash
 Error: Module "support/db/mongo" has more than one plugin implementation to choose from: waigo-plugin1, waigo-plugin2, ...
 ```
 
-If you don't want to remove one of the offending plugins then pick which plugin's implementation you want to use by providing a version of the module file within your app's source folder tree. For example, if you wanted Waigo to use the implementation provided by `waigo-plugin1` then you would do:
+If you don't want to remove one of the offending plugins then pick which
+plugin's implementation you want to use by providing a version of the module
+file within your app's source folder tree. For example, if you wanted Waigo to
+use the implementation provided by `waigo-plugin1` then you would do:
 
 ```javascript
 // in file: <app folder>/src/support/db/mongo.js
@@ -196,20 +299,28 @@ var waigo = require('waigo');
 module.exports = waigo.load('waigo-plugin1:support/db/mongo');    
 ```
 
-_Note: See the `waigo-plugin1` prefix used in the call to `waigo.load()`? that basically tells the loader which module to load from._
+## Publishing
 
-To create and publish your own plugin to the wider community please follow these guidelines:
+To create and publish your own plugin to the wider community please follow 
+these guidelines:
 
-* Ensure your plugin name is prefixed with `waigo-` so that the Waigo can easily find it.
+* Check to see if what you've made is worth putting into a plugin. For instance 
+it's very easy to re-use [koa](http://koajs.com) middleware in Waigo without 
+needing to create plugins.
+* Ensure your plugin name is prefixed with `waigo-` so that it's easy to find.
 * Write a good README.md for your plugin explaining what it's for and how to use it.
-* Add automated unit tests for your plugin. Look at existing plugins such as [waigo-mongo](https://www.npmjs.org/package/waigo-mongo) to see best practices.
-* In your `package.json` tag your plugin with the `waigo` keyword so that users can easily search for it.
+* Add automated unit tests for your plugin. Look at existing plugins to learn 
+best practices.
+* In your `package.json` tag your plugin with the `waigo` keyword so that 
+users can easily search for it.
 
-To see a list of all available plugins visit [https://www.npmjs.org/browse/keyword/waigo](https://www.npmjs.org/browse/keyword/waigoplugin).
+To see a list of all available plugins visit 
+[https://www.npmjs.org/browse/keyword/waigo](https://www.npmjs.org/browse/keyword/waigoplugin).
 
 # Startup
 
-Then the application starts up and `waigo.load('app').start()` is called Waigo executes the following:
+When the application starts up - i.e. when`waigo.load('application').start()` 
+is called - Waigo runs the configured startup steps.
 
 ```javascript
 // file: <waigo framework>/src/application.js
@@ -228,7 +339,11 @@ app.start = function*(...) {
 };
 ```
 
-As you can Waigo first loads in the app [configuration](#configuration). Once loaded it finds out which startup modules to load by checking `app.config.startupSteps`. Startup modules are responsible for initialising the various aspects of your application. For example, here is the `middleware` startup step:
+As you can Waigo first loads in the app [configuration](#configuration). Once
+loaded it finds out which startup modules to load by checking
+`app.config.startupSteps`. Startup modules are responsible for initialising the
+various aspects of your application. For example, here is the `middleware`
+startup step:
 
 
 ```javascript
