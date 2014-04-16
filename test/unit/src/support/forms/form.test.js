@@ -193,6 +193,22 @@ test['forms'] = {
         .nodeify(done);
     },
 
+    'set field original values': function(done) {
+      var f = this.form;
+
+      testUtils.spawn(function*() {
+        yield f.setOriginalValues({
+          email: '123',
+          age: '546'
+        });
+      })
+        .then(function() {
+          expect(f.fields.email.originalValue).to.eql('123');
+          expect(f.fields.age.originalValue).to.eql('546');
+        })
+        .nodeify(done);
+    },
+
     'check if dirty': function() {
       var f = this.form,
         fields = f.fields;

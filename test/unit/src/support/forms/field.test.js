@@ -307,6 +307,7 @@ test['form fields'] = {
       f.config.type = 'text';
       f.config.label = 'Name';
       f.value = 87;
+      f.originalValue = 98;
 
       testUtils.spawn(f[viewObjectMethodName], f)
         .then(function(viewObject) {
@@ -314,7 +315,8 @@ test['form fields'] = {
             type: 'text',
             name: 'test',
             label: 'Name',
-            value: 87
+            value: 87,
+            originalValue: 98
           });
         })
         .nodeify(done);

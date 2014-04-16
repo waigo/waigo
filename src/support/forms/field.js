@@ -219,7 +219,8 @@ Field.prototype.toViewObject = function*() {
     type: this.config.type,
     name: this.name,
     label: this.config.label,
-    value: this.value
+    value: this.value,
+    originalValue: this.originalValue
   };
 };
 

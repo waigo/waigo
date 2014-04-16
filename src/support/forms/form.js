@@ -125,6 +125,26 @@ Form.prototype.setValues = function*(values) {
 
 
 
+
+/**
+ * Set field original values.
+ *
+ * Note: unlike when setting the current field values these values do not 
+ * get sanitized. So be careful when using this.
+ * 
+ * @param {Object} values Mapping from field name to field original value.
+ */
+Form.prototype.setOriginalValues = function*(values) {
+  values = values || {};
+
+  for (let fieldName in this.fields) {
+    this.fields[fieldName].originalValue = values[fieldName];
+  }
+};
+
+
+
+
 /** 
  * Get whether this form is dirty.
  * 
