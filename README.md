@@ -13,7 +13,7 @@ Quick overview:
  * Database, model-layer and front-end agnostic - use whatever you want
  * Easily build REST/JSON APIs using [output formats](#views-and-output-formats)
  * Flexible routing with [per-route middleware](#routing) customisation
- * Memory-efficient [forms](#forms) with sanitization and validation
+ * Easily build [forms](#forms) with sanitization and validation
  * [Extend](#extend-and-override) or override _any_ part of the core framework
  * Bundle up functionality into re-usable [plugins](#plugins)
  * And much, much more...
@@ -108,21 +108,6 @@ following HTML output:
 ```html
 <p>Hello world!</p>
 ```
-
-Waigo is designed to make it easy to re-use your URL routes as JSON APIs. 
-Visit [http://localhost:3000/?format=json](http://localhost:3000/?format=json) 
-and you should see:
-
-```json
-{
-  title: "Hello world!"
-}
-```
-
-This is all the data get which gets passed by the default controller to the 
-`index.jade` template we created above. By default Waigo supports 
-HTML and JSON output, and more [output formats](#views-and-output-formats) can 
-be easily added.
 
 # Extend and Override
 
@@ -593,6 +578,7 @@ module.exports = function(config) {
   ];
   ...
 }
+```
 
 ## Common middleware
 
@@ -719,7 +705,7 @@ the result to the client.
 However, if the incoming request has the `format` query parameter set to 'json' 
 then the requesting client will see the following output:
 
-```javascript
+```
 {
   title: 'Hello world!'
 }
@@ -896,7 +882,7 @@ exports.index = function*() {
 
 The output (if we requested the JSON output format) will look like:
 
-```javascript
+```
 {
   person: {
     name: 'John'
@@ -916,7 +902,7 @@ output as it is, unchanged.
 If we now make the request with the `x-custom-key: test` header set then we will
 instead get:
 
-```javascript
+```
 {
   person: {
     name: 'John',
@@ -1217,7 +1203,7 @@ exports.index = function*(next) {
 A request handled by the above route handler would result in a HTTP status code 
 of 400 being returned to the client along with the error message:
 
-```javascript
+```
 {
   type: RuntimeError,
   msg: 'oh dear!',
@@ -1246,7 +1232,7 @@ throw new MultipleError('oh dear!', 400, {
 
 The response to the client would look like:
 
-```javascript
+```
 {
   type: MultipleError,
   msg: 'oh dear!',
