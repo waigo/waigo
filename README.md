@@ -12,7 +12,7 @@ Quick overview:
  * Based on [koa](http://koajs.com/), uses ES6 generators, no callbacks
  * Database, model-layer and front-end agnostic - use whatever you want
  * Easily build REST/JSON APIs using [output formats](#views-and-output-formats)
- * Flexible routing with [per-route middleware](#routing) customization
+ * Flexible routing with [per-route middleware](#routing) customisation
  * Memory-efficient [forms](#forms) with sanitization and validation
  * [Extend](#extend-and-override) or override _any_ part of the core framework
  * Bundle up functionality into re-usable [plugins](#plugins)
@@ -139,7 +139,7 @@ its module file through `waigo.load()`. This allows you to:
 1. Only load the parts of the framework you will actually use _(good for 
 performance)_.
 2. **Override any framework module file with your own version** _(extendability 
-and customization)_.
+and customisation)_.
 
 When you want to load the `application` module file (as above) the loader will 
 look for it in the following locations:
@@ -278,17 +278,17 @@ Strictly speaking, location precendence is as follows: **App > Plugins > Waigo
 framework**.
 
 What would happen if you had two plugins which both provided the same module
-file? in this case the call to `waigo.init()` would fail with an error which
-looks like the following:
+file? in this case the call to `waigo.init()` would fail with an error:
 
 ```bash
 Error: Module "support/db/mongo" has more than one plugin implementation to choose from: waigo-plugin1, waigo-plugin2, ...
 ```
 
-If you don't want to remove one of the offending plugins then pick which
-plugin's implementation you want to use by providing a version of the module
-file within your app's source folder tree. For example, if you wanted Waigo to
-use the implementation provided by `waigo-plugin1` then you would do:
+If you need to use both plugins (maybe because they provide other
+functionality) then pick which plugin's implementation you want to use by
+providing a version of the module file within your app's source folder tree. For
+example, if you wanted Waigo to use the implementation provided by `waigo-
+plugin1` then you would do:
 
 ```javascript
 // in file: <app folder>/src/support/db/mongo.js
@@ -325,23 +325,18 @@ is called - Waigo runs the configured startup steps.
 ```javascript
 // file: <waigo framework>/src/application.js
 
-app.start = function*(...) {
+App.start = function*(...) {
   ...
 
-  var ret = null;
   for (let idx in app.config.startupSteps) {
     let stepName = app.config.startupSteps[idx];
-    debug('Running startup step: ' + stepName);
-    ret = yield* waigo.load('support/startup/' + stepName)(app);
+    ...
+    yield* waigo.load('support/startup/' + stepName)(app);
   }
-
-  return ret;
 };
 ```
 
-As you can Waigo first loads in the app [configuration](#configuration). Once
-loaded it finds out which startup modules to load by checking
-`app.config.startupSteps`. Startup modules are responsible for initialising the
+Startup modules are responsible for initialising the
 various aspects of your application. For example, here is the `middleware`
 startup step:
 
@@ -352,15 +347,19 @@ startup step:
 module.exports = function*(app) {
   for (let idx in app.config.middleware) {
     let m = app.config.middleware[idx];
-    debug('Setting up middleware: ' + m.id);
+    ...
     app.use(waigo.load('support/middleware/' + m.id)(m.options));
   }
 };
 ```
 
-This particular startup step sets up the middleware that will apply to all incoming requests _(you can of course add additional middleware steps in the [routing configuration](#routing)_.
+This particular startup step sets up the middleware that will apply to *all*
+incoming requests. You can customise the middleware for a particular route in 
+the [routing configuration](#routing)_.
 
-The default startup steps can all be found under the `support/startup` file path and can all be overridden within your app. And of course, you can add your own startup steps. 
+The default startup steps can all be found under the `support/startup` file path
+and can all be overridden within your app. And of course, you can add your own
+startup steps.
 
 For example, lets add a step which simply outputs the current date and time:
 
@@ -372,7 +371,8 @@ mdoule.exports = function*(app) {
 };
 ```
 
-We then tell Waigo to load and execute this startup step by modifying the configuration:
+We then tell Waigo to load and execute this startup step in `development` mode 
+by modifying the appropriate configuration file:
 
 ```javascript
 // file:  <app folder>/src/config/development.js
@@ -390,84 +390,114 @@ module.exports = function(config) {
 ```
 
 
-## Configuration
+# Configuration
 
-Configuration info is loaded during [startup](#startup) into the Koa app object and is always accessible at `app.config`.
+Configuration for your application is loaded during [startup](#startup) and is 
+always accessible at `this.app.config` within your controllers.
 
-The `config` folder holds the configuration files. The `base` module file gets loaded first. Additional configuration modules then get loaded in the following order:
+The `config` folder path within your application holds the configuration files.
+Each configuration file exports a function which accepts the current
+configuration object as a parameter. This object can then be modified:
+
+```javascript
+module.exports = function(config) {
+  // modify config in here
+};
+```
+
+Each successively loaded configuration file gets passed the same configuration
+object. As we'll see in the next section this makes it easy to customise the
+application configuration depending on the mode in which we're running it -
+production, testing, etc.
+
+## File load order
+
+The `config/index` module file is the configuration loader. It looks for and 
+loads configuration files in the following order:
+
+1. `config/base`
+2. `config/<node environment>`
+3. `config/<node environment>.<current user>`
+
+The `config/base` file sets the configuration common to all modes in 
+which the application may run.
+
+The configuration files following this one are optional. Which ones get loaded
+depends on the value of the `NODE_ENV` environment variable. If this is not set
+then we assume that the application is being run in development mode (i.e. we
+assume its value to be `development`).
+
+_Note: When running your application in a production environment ensure you
+set the `NODE_ENV` environment variable to `production` or something similar._
+
+The final configuration file which gets loaded is associated with the mode in 
+which the application is running as well as the id of the user who is 
+executing the current application. This conveniently allows different users to 
+further customise the configuration according to their own needs.
+
+Let's look at a concrete example...
+
+Let's say `NODE_ENV` is set to `test` mode and that the user id of the process 
+is `www-data`. The configuration loader will initialise an object 
+configuration object and then pass it to each of the following files in the 
+given order:
  
-1. `config/<node environment>`
-2. `config/<node environment>.<current user>`
+1. `config/base`
+1. `config/test`
+2. `config/test.www-data`
 
-Thus if node is running in `test` mode (i.e. `NODE_ENV=test`) and the user id of the process is `www-data` then the loader 
-looks for the following module files and loads them if present, in the following order:
- 
-1. `waigo.load('config/base')`
-1. `waigo.load('config/test')`
-2. `waigo.load('config/test.www-data')`
-
-The configuration object gets _extended_ with each subsequently loaded config module file. This means that in each subsequent file you only need to override the configuration properties that differ.
-
-For example, let's say our production site URL is usually `http://example.com`:
+Let's say we want to provide `config/base` in our app but that we want to re-use
+some of the configuration provided by the framework's version of this file.
+We can easily do this as follows:
 
 ```javascript
 // file: <app folder>/src/config/base.js
 
-var waigoBaseConfig = waigo.load('waigo:config/base');
-
 module.exports = function(config) {
-  waigoBaseConfig(config);
+  // re-use config/base from framework
+  waigo.load('waigo:config/base')(config);
 
+  // now we override the necessary bits for our app...
   config.baseURL = 'http://example.com';
-
-  config.port = 80;    
-};
-
-```
-
-When running the site on our devbox in `development` mode we might wish to use a different URL as such:
-
-```javascript
-// file: <app folder>/src/config/development.js
-
-module.exports = function(config) {
-  config.baseURL = 'http://dev.example.com';
+  config.port = 9000;  
 };
 ```
 
-The `app.config.port` will still be `80` when running in `development` mode since we didn't override and change it in the `development` config file. The same goes for all other properties in the `base` configuration file.
-
-_Note: The current Node runtime mode is always stored in `app.config.mode` and the user id in `app.config.user`._
+_Note: The application mode is always accessible at `app.config.mode`
+and the id of the user owning the process at `app.config.user`._
 
 ## Runtime modification
 
-Sometimes we may want to modify the configuration when it gets loaded at runtime, e.g. if we wish to modify the configuration according to command-line parameters. 
+Sometimes we may want to modify the configuration when it gets loaded at
+runtime, beyond what's in our configuration files. For example, we may wish to 
+modify the configuration according to command-line parameters which have 
+been passed in.
 
-We can do so by supplying a configuration function to `Application.start()`:
+The `Application.start()` accepts an options object. One of the options is a 
+`postConfig` function which behaves the same as a configuration file. It will 
+get passed the configuration object once all configuation files have already 
+been loaded and executed:
 
 ```javascript
-co(function*() {
-  yield* waigo.init();
+let App = yield* waigo.load('application');
 
-  yield* waigo.load('application').start({
-    // This function gets passed the final config object returned from the `config/index` module file
-    postConfig: function(config) {
-      config.baseURL = ...;
-      // ...etc
-    }
-  });
-
-})(function(err) {
-  console.log(err);  
+App.start({
+  // This function gets passed the final config object returned by the 
+  // configuration loader
+  postConfig: function(config) {
+    config.baseURL = ...;
+    // ...etc
+  }
 });
 ```
 
-
 # Routing
 
-Waigo improves upon koa's built-in router by providing a user-friendly mapping syntax as well as per-route middleware customisation. 
+Waigo's router provides a user-friendly mapping syntax as well as per-route
+middleware customisation.
 
-Routes are specified as a mapping in the `routes` module file in the following format:
+Routes are specified as a mapping in the `routes` module file in the following
+format:
 
 ```javascript
 // file: <app folder>/src/routes.js
@@ -479,20 +509,32 @@ module.exports = {
 };
 ```
 
-The key specifies the HTTP method (one of: `GET`, `POST`, `PUT`, `DEL`, `OPTIONS` and `HEAD`) and the route URL (relative to `app.config.baseURL`). Parameterized routing is supported thanks to [trie-router](https://github.com/koajs/trie-router).
+The key specifies the HTTP method. This must be one of: `GET`, `POST`, `PUT`,
+`DEL`, `OPTIONS` and `HEAD`. The second part of the key is the route URL
+relative to `app.config.baseURL`. 
 
-The value for each key specifies the middleware chain that will handle that route. If the middleware name has a period (`.`) within it 
-then it assumed to refer to a controller module file and a method name within. Otherwise it is assumed to be the name of a [middleware](#middleware) module file. 
+_Note: Parameterized and regex routing is also supported. See [trie-
+router](https://github.com/koajs/trie-router) for more information._
 
-The middleware chain specified for a route gets executed after the common middleware chain that's setup during the [startup](#startup) phase. 
+The value mapped to a key specifies the middleware chain that will handle that
+route. If the middleware name has a period (`.`) within it then it is assumed to
+refer to a controller module file and a method name within. Otherwise it is
+assumed to be the name of a [middleware](#middleware) module file.
 
-For the above example, Waigo will process a `PUT` request made to `/newUser` in the following order:
+For the above example, Waigo will process a `PUT` request made to `/newUser` as
+follows:
 
-1. `waigo.load('support/middleware/sanitizeValue')` and pass request to its exported method
-2. `waigo.load('support/middleware/checkRequestBodySize')` and pass request to its exported method
-3. `waigo.load('controllers/main')` and pass request to its `newUser` method
+1. Load `support/middleware/sanitizeValue` and pass request to its exported
+method. 
+2. Load `support/middleware/checkRequestBodySize` and pass request to its
+exported method. 
+3. Load `controllers/main` and pass request to its `newUser` method.
 
-If you wish to initialise a particular middleware with options then you can specify it as an object. For example:
+The middleware chain specified for a route gets executed after the 
+[common middleware](#common-middleware).
+
+If you wish to initialise a particular middleware with options then you can
+specify it as an object:
 
 ```javascript
 // in routes.js
@@ -503,18 +545,25 @@ module.exports = {
 };
 ```
 
-In the above configuration the `bodyParser` middleware will get initialized with the request body size limit of `1KB`. Initialization takes place once, when the routes are first parsed and processed.
+In the above configuration the `bodyParser` middleware will get initialized with
+the request body size limit of `1KB`. For performance reasons this
+initialization process only happens once, when the routes are first parsed and
+processed.
 
-## Middleware
+# Middleware
 
-Waigo middleware works the same as Koa middleware. All middleware module files can be found under the `support/middleware` path. Additional middleware provided by your app and/or plugins should also sit under this path.
+Waigo middleware works the same as Koa middleware. All middleware module files
+can be found under the `support/middleware` path. Additional middleware provided
+by your app and/or plugins should also sit under this path.
 
-A middleware module file is expected to export a function which, when called, returns a generator function to add to the Koa middleware layer. For example:
+A middleware module file is expected to export a 'constructor' function which,
+when called will returns a generator function to add to the Koa middleware
+layer. For example:
 
 ```javascript
 // file: <app folder>/src/support/middleware/example.js
 
-module.exports = function(app, options) {
+module.exports = function(options) {
   return function*(next) {
     // do nothing and pass through
     yield next;
@@ -522,19 +571,44 @@ module.exports = function(app, options) {
 };
 ```
 
-If a given middleware is being initialised during startup (i.e. as part of the `middleware` [startup](#startup) step) then additional options from the `app.config.middleware` configuration object are also passed as the `options` parameter. So for the above example any configuration found in `app.config.middleware.example` get passed in that parameter.
+**Thus, existing koa middleware can easily be used with Waigo with little 
+extra work.**
 
-During the middleware startup step the following middleware modules are initialised so that all incoming requests get processed by them:
+If a given middleware is being initialised during startup (i.e. see below) then
+additional options from the `app.config.middleware` configuration object get
+passed to the middleware  constructor:
+
+```javascript
+// in file: <app folder>/src/config/base.js
+module.exports = function(config) {
+  ...
+  config.middleware = [
+    {
+      id: 'example',
+      options: {
+        // everything in here gets passed to the example middleware constructor
+      }
+    },
+    ...
+  ];
+  ...
+}
+
+## Common middleware
+
+During the `middleware` startup step, by default the following middleware
+modules are initialised so that all incoming requests get processed by them:
 
 * `errorHandler` - catch and handle all errors thrown during request processing
+* `staticResources` - handle requests made to static page resources, e.g. stylesheets, etc.
 * `outputFormats` - setup the response [output format](#views-and-output-formats)
 * `sessions` - create and retrieve the active client [session](#sessions)
-* `staticResources` - handle requests made to static page resources, e.g. stylesheets, etc.
 
 
 # Controllers
 
-Controllers expose their route handling methods as generator functions. The default controller - `controllers/main` - simply has:
+Controllers in Waigo expose route handling methods which work as they do in koa.
+The default controller - `controllers/main` - simply has:
 
 ```javascript
 // file: <waigo framework>/src/controllers/main.js
@@ -546,23 +620,30 @@ exports.index = function*(next) {
 };
 ```
 
-A controller must either call `this.render()` or pass control to the `next` middleware in the request chain.
+A controller must either send some output or pass control to the `next`
+middleware in the request chain. The `this.render()` call is provided by the 
+[output formats](#views-and-output-formats) middleware.
 
 # Database and Models
 
-Waigo by default does not initialise a database connection during startup and nor does it dictate what type of storage you should or shouldn't use. There is also no default model layer since that would depend on the type of database (or lack thereof) used by your app.
+By default Waigo does not initialise a database connection during startup and
+nor does it dictate what type of storage you should or shouldn't use. There is
+also no default model layer since that would probably depend on the type of
+database (or lack thereof) used by your app.
 
-This design choice reflects the fact there are already plenty of existing components - e.g. Mongoose, JugglingDB - that already provide for rich model layers with various back-ends. 
+This design choice reflects the fact there are already plenty of existing
+components - e.g. Mongoose, JugglingDB - that already provide for rich model
+layers with various back-ends.
 
-So use whatever you want. Check to see if there are already [plugins](https://www.npmjs.org/search?q=waigo) for your preferred storage and model layers. If not maybe you can build one!
+So use whatever you want. Check to see if there are already
+[plugins](https://www.npmjs.org/search?q=waigo) for your preferred storage and
+model layers. If not maybe you can build one!
 
 Some available plugins:
 
 * [waigo-mongo](https://www.npmjs.org/package/waigo-mongo) - Connect to MongoDB via mongoose.
 
 # Sessions
-
-Sessions are created and loaded by the `sessions` middleware, which internally uses [koa-session-store](https://github.com/hiddentao/koa-session-store). The default framework configuration automatically initialises and adds the session middleware to all requests.
 
 You can access session data using `this.session`:
 
@@ -578,8 +659,11 @@ exports.index = function*(next) {
 
 To delete a session simply use `this.session = null`.
 
-The default session configuration looks as follows:
+Sessions are created and loaded by the `sessions` middleware, which internally
+uses [koa-session-store](https://github.com/hiddentao/koa-session-store) to
+allow for pluggable session storage layers.
 
+The default session configuration looks as follows:
 
 ```javascript
 // file: <waigo framework>/src/config/base.js
@@ -598,7 +682,7 @@ exports.session = {
       // nothing needed for cookie sessions
     }
   },
-  // more cookie options
+  // session cookie options
   cookie: {
     // cookie expires in...
     validForDays: 7,
@@ -608,14 +692,48 @@ exports.session = {
 };
 ```
 
-By default session data is stored in the session cookie itself. There are other session storage plugins available for use, for example:
+By default session data is stored in the session cookie itself. There are other
+session storage plugins available for use, for example:
 
 * [waigo-mongo](https://www.npmjs.org/package/waigo-mongo) - Store session data in Mongo.
 
 
 # Views and Output formats
 
-Nowadays most web apps often have single-page web versions and/or mobile apps which need to use a REST API or the equivalent to communicate with the back-end. Waigo supports more than one [output format](#views-and-output-formats), allowing you to serve both plain-old web browser and API clients using the same controller.
+The default controller - `controllers/main` - renders the `index` view:
+
+```javascript
+// file: <waigo framework>/src/controllers/main.js
+
+exports.index = function*(next) {
+  yield this.render('index', {
+    title: 'Hello world!'
+  });
+};
+```
+
+When this gets executed Waigo will look for and load `<app folder>/views/index.jade`, 
+pass it to the [Jade](jade-lang.com) template engine for rendering, and pass 
+the result to the client.
+
+However, if the incoming request has the `format` query parameter set to 'json' 
+then the requesting client will see the following output:
+
+```javascript
+{
+  title: 'Hello world!'
+}
+```
+
+Why is this? 
+
+Waigo introduces the concept of 'output formats' to make it easy to cater 
+for different types of clients.
+
+Nowadays most web apps often have single-page web versions and/or mobile apps
+which need to use a REST API or the equivalent to communicate with the back-end.
+By supporting more than one one output format Waigo enables you to serve all of
+these different clients using the same route handler.
 
 The default output formats configuration is as follows:
 
@@ -644,33 +762,26 @@ exports.outputFormats = {
 };
 ```
 
-As you can see, HTML and JSON output formats are supported by default, with the specific format chosen via a configurable URL query parameter. The actual implementations of each output format can be found in the `support/outputFormats` module file path. 
+HTML and JSON output formats are supported by default, with the
+specific format chosen via the `format` URL query parameter. The actual
+implementations of each output format can be found in the
+`support/outputFormats` module file path.
 
-The `outputFormats` middleware sets up the output format for every request. It adds a `render()` method to the middleware context object (remember [seeing this earlier](#controllers)?). You use this as as follows:
+The `outputFormats` middleware sets up the output format for every request. It 
+also adds the `this.render()` method you saw being used earlier in the default 
+controller.
 
-```javascript
-// in file: controllers/mycontroller.js
-
-exports.userProfile = function*(next) {
-  yield this.render('profile', {
-    id: this.params.userId
-  });
-};
-```
-
-If we were to call the URL mapped to this controller method and append the `format=json` query parameter then the output would be of JSON type. The default JSON output formatter simply outputs the attribute data passed to the template, i.e. the output for above (assuming `this.params.userId` is 123) would be:
-
-```javascript
-{ 
-  id: 123 
-}
-```
-
-**Tip:** In order to make effective use of output formats, ensure all the data needed by your view templates is generated before you render the template. This will make it easier for you to switch between differnet output formats as and when needed without having to generate data separately for each different format.
+**Tip: In order to make effective use of output formats, ensure all the data
+needed by your view templates is generated before you render the template.
+This will make it easier for you to switch between differnet output formats as
+and when needed without having to generate data separately for each different
+format.**
 
 ## Custom formats
 
-You can easily add your own custom output formats. For example, let's say you wanted to add an XML output format. You would first create an implementation for your output under the `support/outputFormats path:
+You can easily add your own custom output formats. For example, let's say you
+wanted to add an XML output format. You would first create an implementation for
+your output format:
 
 ```javascript
 // file: <app folder>/src/outputFormats/xml.js
@@ -680,7 +791,8 @@ var xml_renderer = ...
 exports.create = function(options) {
   var render = xml_renderer.init(options);    
 
-  // 'render' should now equal a generator function which wil return the rendered output
+  // 'render' should now equal a generator function which wil return the 
+  // rendered output
 
   return {
     render: function*(view, locals) {
@@ -691,26 +803,52 @@ exports.create = function(options) {
 };
 ```
 
-Once this is done and you can enable it by modifying the `outputFormats` middleware configuration. For example:
+Once this is done and you can enable it by modifying the `outputFormats`
+middleware configuration. For example:
 
 ```javascript
 // file: <app folder>/src/config/base.js
 
-module.exports = waigo.load('config/base');
-
-exports.outputFormats.formats.xml = {
-  /* any XML renderer initialisation go here */
-};
+module.exports = function(config) {
+  ...
+  config.outputFormats = {
+    ...
+    xml: {
+      config: {
+        // any initialisation for the XML renderer could go here
+      }
+    }
+  };
+  ...
+}
 ```
 
 ## View objects
 
-When sending data back to the client we may want to first modify it, e.g. format dates, remove parts of the data that the client does not need to see in the given context, etc. Waigo introduces the concept of _view objects_ to support such functionality.
+_View objects_ are plain Javascript objects which represent back-end data we
+wish to send to the client.
 
-A view object is simply a plain Javascript object of key-value pairs which can be rendered. The `render()` method provided by the [output formats](#views-and-output-formats) middleware checks the passed-in template attributes to see if view objects can be generated for them. An object can generate a view object representation of itself if it implements the `HasViewObject` mixin (see `support/mixins.js`). Applying this mixin to 
-a class requires you to implement a `toViewObject()` generator function for that class. This function takes a single argument - the context for the current request, allowing you to tailor the view object representation according to each individual request.
+Why use them?
 
-For example, let's say we have a model instance which holds data wish to send to the client:
+When sending data back to the client we may want to first modify it, e.g. format
+dates, remove parts of the data that the client does not need to see in the
+given context, etc. 
+
+The `this.render()` method provided by the [output formats](#views-and-
+output-formats) middleware checks the passed-in template variables to see if
+view objects can be generated for them. 
+
+An object can generate a view object representation of itself if it implements
+the `HasViewObject` mixin (see the  `support/mixins` module file). Applying this
+mixin to a class requires you to implement a `toViewObject()` generator function
+for that class. 
+
+The `toViewObject()` function takes a single argument - the context for the
+current request, allowing you to tailor the view object representation according
+to each individual request.
+
+For example, let's say we have a model instance which holds data wish to send to
+the client:
 
 ```javascript
 var waigo = require('waigo'),
@@ -723,6 +861,8 @@ var Model = function(name) {
 mixins.apply(Model, mixins.HasViewObject);
 
 Model.prototype.toViewObject = function*(ctx) {
+  // we will alter the view object representation according to a specific 
+  // request header which gets passed in
   customKey = ctx.req.header['x-custom-key'];
 
   if ('test' === customKey) {
@@ -768,10 +908,13 @@ The output (if we requested the JSON output format) will look like:
 }
 ```
 
-Notice how the renderer didn't output the `id` attribute of our model instance. Also notice how the `stats` key-value pair was output 
-just as it is. If a given attribute does not implement the `HasViewObject` mixin then it gets output as it is, unchanged.
+Notice how the renderer didn't output the `id` attribute of our model instance.
+Also notice how the `stats` key-value pair was output  just as it is. If a given
+template variable does not implement the `HasViewObject` mixin then it gets
+output as it is, unchanged.
 
-If we now make the request with the `x-custom-key: test` header set then we will instead get:
+If we now make the request with the `x-custom-key: test` header set then we will
+instead get:
 
 ```javascript
 {
@@ -786,15 +929,18 @@ If we now make the request with the `x-custom-key: test` header set then we will
 }
 ```
 
-
-All built-in [error](#errors) classes (including form [validation](#validation) errors) can generate view object representations of themselves. In fact, when the error handler sends an error response to the client it uses the view object representation of the error.
-
+All built-in [error](#errors) classes (including form [validation](#validation)
+errors) implement the `HasViewObject` mixin. In fact, when
+the error handler sends an error response to the client it uses the view object
+representation of the error.
 
 # Forms
 
-Forms are treated as first-class citizens in Waigo. Form inputs can be sanitized and validated and a per-field error report can be generated. Memory usage to a minimum by sharing what instantiated field objects it can across multiple client requests.
+Forms are treated as first-class citizens in Waigo. Form inputs can be sanitized
+and validated and a per-field error report can be generated.
 
-Each form uses a unique id; its configuration and input fields are specified in a file under the `forms/` path, the file name being the id of the form. 
+Each form uses a unique id; its configuration and input fields are specified in
+a file under the `forms/` path, the file name being the id of the form.
 
 For example, here is how you might specify a simple signup form:
 
@@ -822,12 +968,15 @@ module.exports = {
 };
 ```
 
-The field `type` refers to the name of a module file under the `support/forms/fields/` path. So for the above form specification Waigo will expect the following paths to exist:
+The field `type` refers to the name of a module file under the
+`support/forms/fields/` path. So for the above form specification Waigo will
+expect the following paths to exist:
 
 * `support/forms/fields/text`
 * `support/forms/fields/password`
 
-All field type classes inherit from the base `Field` class (found in `support/forms/field`). 
+All field type classes inherit from the base `Field` class (found in
+`support/forms/field`).
 
 To create an instance of the above form you would do:
 
@@ -838,49 +987,38 @@ var waigo = require('waigo'),
 var form = Form.new('signup');
 ```
 
-Waigo will automatically look under the `forms/` file path to see if a form specification for the given id exists. It so it will load in this specification and return a `Form` instance.
+Waigo will automatically look under the `forms/` file path to see if a form
+specification for the given id exists. It so it will load in this specification
+and return a `Form` instance.
 
-## Form fields
+## Internal state
 
-When a form gets constructed it constructs and holds references to `Field` instances (see `support/forms/field`) depending on its field specification. 
-
-A naive implementation would have each `Field` instance stores its current field value. The problem with this approach is that 
-if we have, say, a 1000 clients all using the same form we would need a 1000 instances of each field in the form in order to store the data for each client separately. 
-
-A better approach would be to store the data which differs from client to client in its own `Object` so that we can re-use `Field` instances across multiple `Form` instances. Waigo does this by storing all field values within a `state` property on the `Form` instance. The state can be get/set at any time and can also be passed in as a second parameter to the `Form` constructor:
+Sometimes we may wish to restore a form to a previous state. The form 
+architecture allows for this exposing the ability to get and set the form's 
+internal state. This state contains the current field values too.
 
 ```javascript
 // save the form state
 var form = Form.new('signup');
 yield form.setValues( /* user input values */ );
 this.session.formState = form.state;
-
 ...
-
 // restore the form (and field values) to previous state
 var form = Form.new('signup');
 form.state = this.session.formState;
+```
 
-// we could also set the state during construction
+We can also set the internal state during construction:
+
+```javascript
 var form = Form.new('signup', this.session.formState);
-```
-
-Let's say we wish to create another "signup" form for another client. We would again call `Form.new()`:
-
-```javascript
-var form2 = Form.new('signup');
-```
-
-`Form.new()` will internally check the `Form` instance cache to see if a `signup` form has already been created. If so it passes that to the `Form` constructor which then copies the references to its `Field` instances and any other common data:
-
-```javascript
-form2.fields === form.fields;   // true
-form2.state === form.state;     // false 
 ```
 
 ## Sanitization
 
-When setting form field values Waigo first sanitizes them. Sanitization is specified on a per-field basis in the form configuration. Let's trim all user input to our signup form: 
+When setting form field values Waigo first sanitizes them. Sanitization is
+specified on a per-field basis in the form configuration. Let's trim all user
+input to our signup form:
 
 ```javascript
 // in file: forms/signup.js
@@ -909,11 +1047,15 @@ module.exports = {
 };
 ```
 
-Each item in the `sanitizers` array refers to the name of a module file under the `support/forms/sanitizers/` path. So for the above form specification Waigo will expect the following path to exist:
+Each item in the `sanitizers` array refers to the name of a module file under
+the `support/forms/sanitizers/` path. So for the above form specification Waigo
+will expect the following path to exist:
 
 * `support/forms/sanitizers/trim`
 
-A sanitizer module exports a single function which should return a generator function (this performs the actual sanitization). For example, Waigo's built-in `trim` sanitizer looks like this:
+A sanitizer module should export a single function which returns a generator
+function (this performs the actual sanitization). For example, Waigo's built-in
+`trim` sanitizer looks like this:
 
 ```javascript
 var validatorSanitizer = require('validator');
@@ -926,7 +1068,13 @@ module.exports = function() {
 
 ```
 
-The actual sanitization function gets passed a `Form` and `Field` reference corresponding to the actual form and field it is operating on. This makes it possible to build complex sanitizers which can query other fields and the form itself. If sanitization fails then a `FieldSanitizationError` error gets thrown for the field for which it failed.
+If sanitization fails then a `FieldSanitizationError` error gets thrown
+for the field for which it failed.
+
+The actual sanitization function gets passed a `Form` and `Field` reference
+corresponding to the actual form and field it is operating on. This makes it
+possible to build complex sanitizers which can query other fields and the form
+itself. 
 
 Note that you can set field values without sanitization processing:
 
@@ -950,7 +1098,9 @@ yield form.setValues({
 
 ## Validation
 
-Once form field values have been set we can validate them by calling `Form.prototype.validate()`. Validation is specified on a per-field basis in the form configuration. Let's validate our signup form:
+Once form field values have been set we can validate them by calling
+`Form.prototype.validate()`. Validation is specified on a per-field basis in the
+form configuration. Let's validate our signup form:
 
 ```javascript
 // in file: forms/signup.js
@@ -982,7 +1132,11 @@ module.exports = {
 };
 ```
 
-Each item in the `validators` array refers to the name of a module file under the `support/forms/validators/` path. When a validator (or even sanitizer) is specified as an object then its `id` attribute is assumed to be its module file name. The `Object` itself is assumed to be a set of options to pass to the module during initialisation.
+Each item in the `validators` array refers to the name of a module file under
+the `support/forms/validators/` path. When a validator (or even sanitizer) is
+specified as an object then its `id` attribute is assumed to be its module file
+name. The object itself is assumed to be a set of options to pass to the
+module file during initialisation.
 
 So for the above form specification Waigo will expect the following paths to exist:
 
@@ -990,7 +1144,9 @@ So for the above form specification Waigo will expect the following paths to exi
 * `support/forms/validators/isLength`
 * `support/forms/validators/matchesField`
 
-A validator module exports a single function which should return a generator function (this performs the actual validation). For example, Waigo's built-in `isEmailAddress` validator looks like this:
+A validator module exports a single function which should return a generator
+function (this performs the actual validation). For example, Waigo's built-in
+`isEmailAddress` validator looks like this:
 
 ```javascript
 var validator = require('validator');
@@ -1005,55 +1161,148 @@ module.exports = function() {
 
 ```
 
-The actual validation function gets passed a `Form` and `Field` reference corresponding to the actual form and field it is operating on. This makes it possible to build complex validators which can query other fields and the form itself.
+The actual validation function gets passed a `Form` and `Field` reference
+corresponding to the actual form and field it is operating on. This makes it
+possible to build complex validators which can query other fields and the form
+itself.
 
-When `Form.prototype.validate()` is called `Field.prototype.validate()` gets called for each field belonging to the form. For each field every validator gets run and all validation errors are grouped together within a single `FieldValidationError` instance. In `Form.prototype.validate()` all field validation errors are grouped together within a single `FormValidationError` instance. In this way validaton error reporting is very comprehensive and makes it easy to show the end-user exactly what failed to validate and why.
+This is what happens when `Form.prototype.validate()` gets called:
+
+1. `Field.prototype.validate()` gets called for each field belonging to the form.
+2. For each field every validator gets run and all validation errors are grouped together within a single
+`FieldValidationError` instance. 
+3. In `Form.prototype.validate()` all field validation errors are grouped 
+together within a single `FormValidationError` instance. 
+
+Thus validaton error reporting is very comprehensive and makes it easy to
+show the end-user exactly what failed to validate and why.
 
 # Logging
 
-Waigo provides support for [winston](https://github.com/flatiron/winston) by default. The default Winston logging target (see `config/base`) is a Mongo database. For `development` mode it's set to the console. All uncaught exceptions and `error` events emitted on the koa app object get logged in this way.
+Waigo provides support for [winston](https://github.com/flatiron/winston) by
+default. The default Winston logging target (see `config/base`) is the console.
+All uncaught exceptions and `error` events emitted on the koa app object get
+logged in this way.
 
-You may use any logging library you wish. The `app.config.logging` configuration object both specifies the name of a logger (to be loaded from the `support/logging` path) and configuration to pass to that logger.
+You don't have to use Winston - you can use any logging library you want. The
+`app.config.logging` configuration object both specifies the name of a logger
+(to be loaded from the `support/logging` path) and configuration to pass to that
+logger.
 
 # Errors
 
-The `support/middleware/errorHandler` middleware is responsible for handling all errors which get thrown during the request handling process. Errors get logged through the default logger as well as getting sent back to the client which made the original request. 
+The `support/middleware/errorHandler` middleware is responsible for handling all
+errors which get thrown during the request handling process. Errors get logged
+through the default logger as well as getting sent back to the client which made
+the original request.
 
-It is highly recommended that your define and use your own error classes rather than use the built-in `Error` class. The `support/errors` module provides functionality to do this - your new error class will inherit from `RuntimeError` which in turn inherits from `Error`. `RuntimeError` allows you to set a HTTP status code along with the error message. This status code is used by the error handling middleware. For example:
+## RuntimeError
+
+Waigo provides a base error class - `RuntimeError` - which allows you to set a
+HTTP status code along with the error message. This status code is used by the
+error handling middleware when sending the final error response to the client:
 
 ```javascript
+// file: <app folder>/controllers/main.js
+
 var waigo = require('waigo'),
-  errors = waigo.load('support/errors');
+  errors = waigo.load('support/errors'),
+  RuntimeError = errors.RuntimeError;
 
-// FileSystemError will inherit from errors.RuntimeError
-var FileSystemError = errors.define('FileSystemError');
+exports.index = function*(next) {
+  throw new RuntimeError('oh dear!', 400); // 400 = bad request
+}
+```
 
-// FileReadError will inherit from FileSystemError
-var FileReadError = errors.define('FileReadError', FileSystemError);
+A request handled by the above route handler would result in a HTTP status code 
+of 400 being returned to the client along with the error message:
+
+```javascript
+{
+  type: RuntimeError,
+  msg: 'oh dear!',
+  stack: ....stack trace
+}
+```
+
+_Note: Stack traces only get sent to the client if the
+`app.config.errorHandler.showStack` flag is turned on._
+
+## MultipleError
+
+The `MultipleError` class represents a group of related errors. It inherits from
+`RuntimeError`. As well as message and  status code its constructor also accepts
+a collection of `Error` objects. 
+
+The view object representation of a `MultipleError` includes the view object 
+representations of all of its encapsulated errors. For example, given:
+
+```javascript
+throw new MultipleError('oh dear!', 400, {
+  firstError: new RuntimeError('fail1'),
+  secondError: new Error('test')
+});
+```
+
+The response to the client would look like:
+
+```javascript
+{
+  type: MultipleError,
+  msg: 'oh dear!',
+  errors: {
+    firstErrror: {
+      type: 'RuntimeError',
+      msg: 'fail1'
+    },
+    secondError: {
+      type: 'Error',
+      msg: 'test'
+    } 
+  }
+}
+```
+
+_Note: The [form and field validation error](#validation) classes inherit from
+`MultipleError`._
+
+## Custom errors
+
+It is highly recommended that you define and use your own error classes as they
+will allow you to better poinpoint the cause of errors. The `support/errors`
+module provides functionality to make this easy:
+
+```javascript
+var errors = waigo.load('support/errors');
+
+var UserNotFound = errors.define('FormValidationError');
+// UserNotFound inherits from RuntimeError
 
 ...
 
-throw new FileReadError('Error reading image file', 500);
-// resulting error will be instance of: FileReadError, FileSystemError and Error and a HTTP status code of 500 will be returned to the client.
+throw UserNotFound('...');
 ```
 
-_Note: Stack traces only get sent to the client if the `app.config.errorHandler.showStack` flag is turned on_
+The second parameter to the `define()` call is the parent class to inherit 
+from. A custom error class can even inherit from another one:
 
+```javascript
+var errors = waigo.load('support/errors');
 
-## Multiple errors
+var ProcessingErrors = errors.define('ProcessingErrors', errors.MultipleError);
+// ProcessingErrors inherits from MultipleError
 
-Another built-in error class is `MultipleError`. Sometimes we may wish to report multiple errors related to a particular operation. 
-A `MultipleError` allows us to group `Error` instances together. When it gets sent to the client in an error response its own view object 
-representation and that of its 'child errors' gets generated.
+var ValidationErrors = errors.define('ValidationErrors', ProcessingErrors);
+// ValidationErrors inherits from ProcessingErrors
+```
 
-The [form and field validation errors](#validation) both derive from `MultipleError`, allowing Waigo to collect and report multiple validation failures back to the client in an elegant and efficient manner.
+# Debugging
 
-## Debugging
+In order to fix a problem it's sometimes useful to know what's going on inside the framework.
 
-Sometimes in order to fix a problem it's useful to know what's going on inside the framework.
-
-Waigo makes use of the [debug](https://github.com/visionmedia/debug) utility internally in some parts. For instance, to debug the 
-[loading system](#extend-and-override) run your app with the `DEBUG` environment variable as follows:
+Waigo makes use of the [debug](https://github.com/visionmedia/debug) utility
+internally in some parts. For instance, to debug the  [loading system](#extend-and-override) 
+run your app with the `DEBUG` environment variable as follows:
 
 ```bash
 $ DEBUG=waigo-loader node --harmony app.js
