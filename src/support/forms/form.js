@@ -49,9 +49,11 @@ FormValidationError.prototype.toViewObject = function*(ctx) {
     for (let id in this.errors) {
       let fieldErrors = (yield this.errors[id].toViewObject(ctx)).errors;
 
-      ret.fields[id] = _.map(fieldErrors, function(fe) {
-        return fe.msg;
-      });
+      ret.fields[id] = [];
+
+      for (let feId in fieldErrors) {
+        ret.fields[id].push(fieldErrors[feId].msg)
+      }
     }
 
     return ret;
@@ -176,7 +178,9 @@ Form.prototype.setOriginalValues = function*(values) {
  */
 Form.prototype.isDirty = function() {
   for (let fieldName in this.fields) {
-    if (this.fields[fieldName].isDirty()) return true;
+    if (this.fields[fieldName].isDirty()) {
+      return true;
+    }
   }
 
   return false;

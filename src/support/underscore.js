@@ -15,13 +15,17 @@
 exports.get = function(obj, path, fallbackValue) {
   var self = this;  // underscore
 
-  if (self.isUndefined(obj) || null === obj) return fallbackValue;
+  if (self.isUndefined(obj) || null === obj) {
+    return fallbackValue;
+  }
 
   var fields = path.split('.'),
     result = obj;
 
   for (var i=0; i<fields.length; ++i) {
-    if (!self.isObject(result) && !self.isArray(result)) return fallbackValue;
+    if (!self.isObject(result) && !self.isArray(result)) {
+      return fallbackValue;
+    }
 
     result = result[fields[i]];
   }
