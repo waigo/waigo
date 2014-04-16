@@ -198,7 +198,7 @@ quality of code in the Waigo ecosystem.
 Since plugins are just NPM modules they are very easy to share with others,
 and come with all the benefits that are available to normal NPM modules.
 
-## Example
+### Example
 
 The [waigo-mongo](https://www.npmjs.org/package/waigo-mongo) plugin enables 
 database connectivity and session storage using MongoDB. It provides the 
@@ -284,7 +284,7 @@ var waigo = require('waigo');
 module.exports = waigo.load('waigo-plugin1:support/db/mongo');    
 ```
 
-## Publishing
+### Publishing
 
 To create and publish your own plugin to the wider community please follow 
 these guidelines:
