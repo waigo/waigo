@@ -36,6 +36,71 @@ test['forms'] = {
     'extends MultipleError': function() {
       var e = new form.FormValidationError();
       e.should.be.instanceOf(errors.MultipleError);
+    },
+    'default toViewObject': function(done) {
+      var e = new form.FormValidationError('test', 400, {
+        field1: new field.FieldValidationError('field1', 400, {
+          val1: new Error('blah1'),
+          val2: new Error('blah2')
+        }),
+        field2: new field.FieldValidationError('field2', 400, {
+          val1: new Error('blah3'),
+          val2: new Error('blah4')
+        })
+      });
+
+      var actualViewObject = null;
+
+      testUtils.spawn(e.toViewObject, e)
+        .then(function(viewObject) {
+          actualViewObject = viewObject;
+
+          var me = new errors.MultipleError('test', 400, e.errors);
+          return testUtils.spawn(me.toViewObject, me);
+        })
+        .then(function(expectedViewObject) {
+          expectedViewObject.type = 'FormValidationError';
+
+          expect(actualViewObject).to.eql(expectedViewObject);
+        })
+        .nodeify(done);
+    },
+    'lean view object': function(done) {
+      var e = new form.FormValidationError('test', 400, {
+        field1: new field.FieldValidationError('field1', 400, {
+          val1: new Error('blah1'),
+          val2: new Error('blah2')
+        }),
+        field2: new field.FieldValidationError('field2', 400, {
+          val1: new Error('blah3'),
+          val2: new Error('blah4')
+        })
+      });
+
+      testUtils.spawn(e.toViewObject, e, {
+        request: {
+          query: {
+            leanErrors: true
+          }
+        }
+      })
+        .then(function(viewObject) {
+          expect(viewObject).to.eql({
+            type: 'FormValidationError',
+            msg: 'test',
+            fields: {
+              'field1': [
+                'blah1',
+                'blah2'
+              ],
+              'field2': [
+                'blah3',
+                'blah4'
+              ]
+            }
+          });
+        })
+        .nodeify(done);
     }
   },
 

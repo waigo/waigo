@@ -19,7 +19,7 @@ exports.create = function(config) {
 
   return {
     render: function*(view, locals) {
-      this.body = yield render(view, _.extend({}, locals, this.app.locals));
+      this.body = yield render(view, _.extend({}, this.app.locals, locals));
       this.type = 'html';
     }
   };

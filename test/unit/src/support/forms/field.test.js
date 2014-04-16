@@ -51,7 +51,7 @@ test['form fields'] = {
     'extends MultipleError': function() {
       var e = new field.FieldValidationError();
       e.should.be.instanceOf(errors.MultipleError);
-    }
+    },
   },
 
   'FieldSanitizationError': {

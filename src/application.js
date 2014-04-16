@@ -9,7 +9,10 @@ var _ = require('lodash'),
   moment = require('moment'),
   waigo = require('../');
 
+// underscore mixins
 _.str = require('underscore.string');
+_.mixin(waigo.load('support/underscore'));
+
 
 /** 
  * # Waigo application

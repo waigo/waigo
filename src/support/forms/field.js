@@ -1,3 +1,4 @@
+
 "use strict";
 
 var _ = require('lodash'),
@@ -31,6 +32,7 @@ var errors = waigo.load('support/errors'),
 /** @type {Error} A field validation error. */
 var FieldValidationError = exports.FieldValidationError = errors.define('FieldValidationError', errors.MultipleError);
 
+  
 /** @type {Error} A field sanitization error. */
 var FieldSanitizationError = exports.FieldSanitizationError = errors.define('FieldSanitizationError');
 

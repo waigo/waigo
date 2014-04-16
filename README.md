@@ -902,7 +902,7 @@ output as it is, unchanged.
 If we now make the request with the `x-custom-key: test` header set then we will
 instead get:
 
-```
+```javascript
 {
   person: {
     name: 'John',
@@ -919,6 +919,57 @@ All built-in [error](#errors) classes (including form [validation](#validation)
 errors) implement the `HasViewObject` mixin. In fact, when
 the error handler sends an error response to the client it uses the view object
 representation of the error.
+
+## Template globals
+
+The HTML output format contains the following rendering code:
+
+```javascript
+this.body = yield render(view, _.extend({}, this.app.locals, locals));
+```
+
+The template variables passed to the `render()` method get converted to view
+objects and then passed in as `locals`. Notice however, that `this.app.locals`
+also gets passed in to the template.
+
+This variable is for holding any global template variables or helper functions
+which are to be made available to all templates.
+
+For example, if you wanted to add a template helper to pretty-print a `Date`
+object using the [moment.js](http://momentjs.com/) library you could create a 
+[startup](#startup) step to add it:
+
+```javascript
+// file: <app folder>/support/startup/helpers.js
+
+var _ = require('lodash'), 
+  moment = require('moment');
+
+module.exports = function*(app) {
+  app.locals = _.extend({}, app.locals, {
+    prettyDate: function(date) {
+      return moment(date).format('dd-mm-yyyy');
+    } 
+  });
+};
+
+// file: <app folder>/config/base.js
+
+module.exports = function(config) {
+  ...
+  config.startupSteps = [
+    'helpers',
+    ...
+  ];
+  ...
+};
+```
+
+Within your Jade template the `prettyDate` function would now be available:
+
+```jade
+#{ prettyDate(mydate) }
+```
 
 
 # Static resources
@@ -1174,16 +1225,66 @@ corresponding to the actual form and field it is operating on. This makes it
 possible to build complex validators which can query other fields and the form
 itself.
 
+## Validation errors
+
+Validaton error reporting is very comprehensive and makes it easy to show the
+end-user exactly what failed to validate and why.
+
 This is what happens when `Form.prototype.validate()` gets called:
 
 1. `Field.prototype.validate()` gets called for each field belonging to the form.
-2. For each field every validator gets run and all validation errors are grouped together within a single
-`FieldValidationError` instance. 
+2. For each field every validator gets run and all validation errors are 
+grouped together within a single `FieldValidationError` instance. 
 3. In `Form.prototype.validate()` all field validation errors are grouped 
 together within a single `FormValidationError` instance. 
 
-Thus validaton error reporting is very comprehensive and makes it easy to
-show the end-user exactly what failed to validate and why.
+When sending this error object back to the client it's view object 
+representation gets generated and looks something like:
+
+```javascript
+{
+  type: 'FormValidationError',
+  msg: 'Form validation failed',
+  errors: {
+    field1: {
+      type: 'FieldValidationError',
+      msg: 'Field validation failed',
+      errors: {
+        notEmpty: {
+          type: 'Error',
+          msg: 'Must not be empty'
+        },
+        isEmailAddress: {
+          type: 'RuntimeError',
+          msg: 'Must be email address'
+        },
+        ...
+      }
+    },
+    ...
+  }
+}
+```
+
+Sometimes you might not need such detail and may simply wish to display the 
+specific error messages associated with each field. In such cases add a URL 
+query parameter `?leanErrors=true` to the request and the final view object will 
+look like:
+
+```javascript
+{
+  type: 'FormValidationError',
+  msg: 'Form validation failed',
+  fields: {
+    field1: [
+      'Must not be empty',
+      'Must be email address',
+      ...
+    ],
+    ...
+  }
+}
+```
 
 # Logging
 
@@ -1225,7 +1326,7 @@ exports.index = function*(next) {
 A request handled by the above route handler would result in a HTTP status code 
 of 400 being returned to the client along with the error message:
 
-```
+```javascript
 {
   type: RuntimeError,
   msg: 'oh dear!',
@@ -1254,7 +1355,7 @@ throw new MultipleError('oh dear!', 400, {
 
 The response to the client would look like:
 
-```
+```javascript
 {
   type: MultipleError,
   msg: 'oh dear!',

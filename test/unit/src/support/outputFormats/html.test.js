@@ -23,7 +23,8 @@ test['html'] = {
       .then(function() {
         return testUtils.createAppModules({
           'views/test': 'p hello!',
-          'views/test_params': 'p hello #{text}!'
+          'views/test_params': 'p hello #{text}!',
+          'views/test_params_2': 'p hello #{text}, #{prettyPrint(text2)}!'
         });
       })
       .then(function() {
@@ -86,14 +87,20 @@ test['html'] = {
       testUtils.spawn(function*() {
         ctx.app = {
           locals: {
-            text: 'sheep'
+            text: 'sheep',
+            text2: 'bee',
+            prettyPrint: function(str) {
+              return '^' + str + '^';
+            }
           }
         };
 
-        yield render.call(ctx, 'test_params');
+        yield render.call(ctx, 'test_params_2', {
+          text2: 'cow'  // should override app.locals.text2
+        });
       })
         .then(function() {
-          expect(ctx.body).to.eql('<p>hello sheep!</p>');                     
+          expect(ctx.body).to.eql('<p>hello sheep, ^cow^!</p>');
           expect(ctx.type).to.eql('html');                     
         })
         .nodeify(done);
