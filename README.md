@@ -586,7 +586,7 @@ During the `middleware` startup step, by default the following middleware
 modules are initialised so that all incoming requests get processed by them:
 
 * `errorHandler` - catch and handle all errors thrown during request processing
-* `staticResources` - handle requests made to static page resources, e.g. stylesheets, etc.
+* `staticResources` - handle requests made to [static resources](#static-resources)
 * `outputFormats` - setup the response [output format](#views-and-output-formats)
 * `sessions` - create and retrieve the active client [session](#sessions)
 
@@ -919,6 +919,28 @@ All built-in [error](#errors) classes (including form [validation](#validation)
 errors) implement the `HasViewObject` mixin. In fact, when
 the error handler sends an error response to the client it uses the view object
 representation of the error.
+
+
+# Static resources
+
+Waigo uses the [koa-static](https://github.com/koajs/static) middleware to serve
+up static resources such as  scipts, stylesheets and fonts needed by the front-
+end of your web application.  The default configuration for this middleware is:
+
+```javascript
+// <waigo framework>/src/config/base.js
+...
+  config.staticResources = {
+    // relative to app folder
+    folder: '../public',
+    options: {}
+  };
+...
+```
+
+Thus if your app folder is located at `/var/www/myapp` then static 
+resources are expected to reside in `/var/www/public`.
+
 
 # Forms
 
