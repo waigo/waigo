@@ -1267,9 +1267,14 @@ representation gets generated and looks something like:
 ```
 
 Sometimes you might not need such detail and may simply wish to display the 
-specific error messages associated with each field. In such cases add a URL 
-query parameter `?leanErrors=true` to the request and the final view object will 
-look like:
+specific error messages associated with each field. In such cases set the 
+following inside your controller, prior to rendering output:
+
+```javascript
+this.request.leanErrors = true;
+```
+
+The final view object will look like:
 
 ```javascript
 {

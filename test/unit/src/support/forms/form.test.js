@@ -79,9 +79,7 @@ test['forms'] = {
 
       testUtils.spawn(e.toViewObject, e, {
         request: {
-          query: {
-            leanErrors: true
-          }
+          leanErrors: true
         }
       })
         .then(function(viewObject) {

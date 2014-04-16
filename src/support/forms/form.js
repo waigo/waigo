@@ -40,7 +40,7 @@ var FormValidationError = exports.FormValidationError = errors.define('FormValid
  * resulting view object will be simpler to analyse and iterate over.
  */
 FormValidationError.prototype.toViewObject = function*(ctx) {
-  if (!_.get(ctx, 'request.query.leanErrors')) {
+  if (!_.get(ctx, 'request.leanErrors')) {
     return yield errors.MultipleError.prototype.toViewObject.call(this, ctx);
   } else {
     var ret = yield errors.RuntimeError.prototype.toViewObject.call(this, ctx);
