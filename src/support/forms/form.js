@@ -125,6 +125,21 @@ Form.prototype.setValues = function*(values) {
 
 
 
+/** 
+ * Get whether this form is dirty.
+ * 
+ * @return {Boolean} True if any fields are dirty; false otherwise.
+ */
+Form.prototype.isDirty = function() {
+  for (let fieldName in this.fields) {
+    if (this.fields[fieldName].isDirty()) return true;
+  }
+
+  return false;
+};
+
+
+
 
 /**
  * Validate the contents of this form.

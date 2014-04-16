@@ -95,21 +95,42 @@ Object.defineProperty(Field.prototype, 'name', {
 
 
 
+Object.defineProperty(Field.prototype, 'originalValue', {
+  /**
+   * Get the original value of this field.
+   *
+   * @return {Any}
+   */
+  get: function() {
+    return this.form.state[this.name].originalValue;
+  },
+  /**
+   * Set the original value of this field.
+   *
+   * @param {Any} value The value to set.
+   */
+  set: function(value) {
+    this.form.state[this.name].originalValue = value;
+  }
+});
+
+
+
+
+
 Object.defineProperty(Field.prototype, 'value', {
   /**
    * Get the current value of this field.
    *
    * @return {Any}
-   * @private
    */
   get: function() {
     return this.form.state[this.name].value;
   },
   /**
-   * Set the current value of this field.
+   * Set the value of this field.
    *
    * @param {Any} value The value to set.
-   * @private
    */
   set: function(value) {
     this.form.state[this.name].value = value;
@@ -143,6 +164,16 @@ Field.prototype.setSanitizedValue = function*(val) {
   this.value = val;
 };
 
+
+
+/** 
+ * Get whether this field is dirty.
+ * 
+ * @return {Boolean} True if this field's current value is different from its original value; false otherwise.
+ */
+Field.prototype.isDirty = function() {
+  return this.value !== this.originalValue;
+};
 
 
 

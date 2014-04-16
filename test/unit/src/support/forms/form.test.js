@@ -193,6 +193,35 @@ test['forms'] = {
         .nodeify(done);
     },
 
+    'check if dirty': function() {
+      var f = this.form,
+        fields = f.fields;
+
+      var emailDirty = false;
+      fields.email.isDirty = function() {
+        return emailDirty;
+      };
+
+      var ageDirty = false;
+      fields.age.isDirty = function() {
+        return ageDirty;
+      };
+
+      f.isDirty().should.be.false;
+
+      emailDirty = true;
+      ageDirty = false;
+      f.isDirty().should.be.true;
+
+      emailDirty = false;
+      ageDirty = true;
+      f.isDirty().should.be.true;
+
+      emailDirty = true;
+      ageDirty = true;
+      f.isDirty().should.be.true;
+    },
+
     'validate': {
       'pass': function(done) {
         var f = this.form;

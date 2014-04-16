@@ -183,6 +183,33 @@ test['form fields'] = {
       });
     },
 
+    'get/set original value': function() {
+      var f = new field.Field(this.form, {
+        name: 'test'
+      });
+
+      f.originalValue = 'ah';
+      f.originalValue.should.eql('ah');
+    },
+
+    'check if dirty': function() {
+      var f = new field.Field(this.form, {
+        name: 'test'
+      });
+
+      f.value = 'ah';
+
+      f.isDirty().should.be.true;
+
+      f.originalValue = 'ah';
+
+      f.isDirty().should.be.false;
+
+      f.value = 'blah';
+
+      f.isDirty().should.be.true;
+    },
+
     'set sanitized value': {
       'sanitization pass': function(done) {
         var f = this.field;
