@@ -2,17 +2,10 @@
 
 
 /**
- * # Route mapping
- * 
- * This module maps URLs to handlers.
+ * Route map.
  *
- * The default module maps the `/` URL to the `index()` method on the [`main` controller](controllers/main.js.html):
+ * This maps `/` URL to the `index()` method on the [`main` controller](controllers/main.js.html):
  *
- * ```js
- * module.exports = {  
- *  'GET /' : 'main.index'
- *  };
- * ```
  * _Note: Supported request methods are: GET, POST, PUT, DEL, OPTIONS and HEAD_.
  *
  * You can specify one or more middleware which should get run before running the controller method:
@@ -49,11 +42,6 @@
  * ```
  * 
  * In the above configuration the `bodyParser` get initialized with the request body size limit of `1KB`.
- */
-
-/**
- * Default route mapping.
- * @type {Object}
  */
 module.exports = {
   'GET /' : 'main.index'

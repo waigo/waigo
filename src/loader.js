@@ -19,22 +19,10 @@ var waigoFolder = path.join(__dirname),
 
 
 /** 
- * # The Loader
- *
- * This is the Waigo module loader and is responsible for loading in 
- * functionality from the core framework, plugins, and from your application. 
- * Whenever you call `require('waigo')` it is this module which gets returned.
- */
-
-
-
-/** 
  * Internal module loading configuration. Do not access or manipulate this yourself. This is exposed purely for testing purposes.
  * @private
  */
 loader.__modules = null;
-
-
 
 
 
@@ -70,26 +58,6 @@ var _walk = function(folder) {
   });
 };
 
-
-
-/**
- * Get absolute path to folder containing Waigo core framework.
- * @return {string}
- */
-loader.getWaigoFolder = function() {
-  return waigoFolder;
-};
-
-
-
-
-/**
- * Get absolute path to folder containing application code.
- * @return {string}
- */
-loader.getAppFolder = function() {
-  return appFolder;
-};
 
 
 
@@ -268,6 +236,29 @@ loader.load = function(moduleName) {
 
   return require(loader.__modules[sanitizedModuleName].sources[source]);
 };
+
+
+
+
+/**
+ * Get absolute path to folder containing Waigo core framework.
+ * @return {string}
+ */
+loader.getWaigoFolder = function() {
+  return waigoFolder;
+};
+
+
+
+
+/**
+ * Get absolute path to folder containing application code.
+ * @return {string}
+ */
+loader.getAppFolder = function() {
+  return appFolder;
+};
+
 
 
 

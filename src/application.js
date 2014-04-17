@@ -14,20 +14,15 @@ _.str = require('underscore.string');
 _.mixin(waigo.load('support/underscore'));
 
 
-/** 
- * # Waigo application
- *
- * This module contains the main entry point for all Waigo applications. It is responsible for constructing the Koa `app` object 
- * and initialising logging, database connections, sessions and the various middleware components amongst other things.
- */
-
 
 /** 
- * The application object.
- *
- * This holds a reference to the koa `app` object.
+ * The application object is the main entry point for all Waigo applications.
  * 
- * @type {Object}
+ * It is responsible for constructing the Koa `app` object and initialising
+ * logging, database connections, sessions and the various middleware
+ * components amongst other things.
+ *
+ * Internally it holds a reference to the Koa `app` object.
  */
 var App = module.exports = {
   app: koa()
@@ -40,9 +35,11 @@ var App = module.exports = {
 /**
  * Load in the application configuration.
  *
+ * This gets called automatically from `start()` and should not be called 
+ * directly.
+ *
  * @param {Object} [options] Additional options.
- * @param {Function} [options.postConfig] Function to pass configuration object to once loaded. Useful for performing dynamic 
- * runtime configuration.
+ * @param {Function} [options.postConfig] Function to pass configuration object to once loaded. Useful for performing dynamic runtime configuration.
  * 
  * @protected
  */
@@ -68,11 +65,9 @@ App.loadConfig = function*(options) {
  * This is a convenience method for initialising the various parts of the app and setting up the general middleware chain.
  *
  * @param {Object} [options] Additional options.
- * @param {Function} [options.postConfig] Function to pass configuration object to once loaded. Useful for performing dynamic 
- * runtime configuration.
+ * @param {Function} [options.postConfig] see `loadConfig()`.
  * 
  * @return {Object} The result of the call to the final startup step.
- * @public
  */
 App.start = function*(options) {
   yield* App.loadConfig(options);
@@ -89,6 +84,8 @@ App.start = function*(options) {
 
 /**
  * Stop the currently running application.
+ *
+ * This will reset the internal Koa `app` object.
  */
 App.shutdown = function*() {
   if (App.app.server) {

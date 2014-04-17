@@ -1,12 +1,6 @@
 var _ = require('lodash'),
   waigo = require('../../');
 
-/**
- * # Configuration loader
- *
- * This module is responsible for loading in application configuration from the `config/` folder.
- */
-
 
 
 /**
