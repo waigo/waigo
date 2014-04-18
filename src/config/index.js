@@ -20,7 +20,7 @@ var _ = require('lodash'),
  * `www-data` then this looks for the following module files and loads them if
  * present, in the following order:
  *
- * 1. [`config/test`](test.js.html) 
+ * 1. `config/test`
  * 2. `config/test.www-data`
  *
  * The current configuration object gets passed to each subsequently loaded
