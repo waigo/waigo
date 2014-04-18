@@ -1027,7 +1027,7 @@ module.exports = {
 };
 ```
 
-The field `type` refers to the name of a module file under the
+The field `type` key refers to the name of a module file under the
 `support/forms/fields/` path. So for the above form specification Waigo will
 expect the following paths to exist:
 
@@ -1049,6 +1049,49 @@ var form = Form.new('signup');
 Waigo will automatically look under the `forms/` file path to see if a form
 specification for the given id exists. It so it will load in this specification
 and return a `Form` instance.
+
+A `Form` instance can generate a [view object](#view-objects) representation of
+itself. It looks  something like:
+
+```javascript
+{
+  /* form id */
+  id: "uniqueFormId",
+
+  /* fields */
+  fields: {
+    title: {
+      type: "text",
+      name: "title",
+      label: "Title",
+      value: null,
+      originalValue: null   /* see 'Dirty checking' section for explanation */
+    },
+    body: {
+      type: "text",
+      name: "body",
+      label: "Body",
+      value: null,
+      originalValue: null     
+    },
+    comment: {
+      type: "text",
+      name: "comment",
+      label: "Comment",
+      value: null,
+      originalValue: null     
+    }
+  },
+
+  /* the suggested display order for the fields, based on the form spec */
+  order: [
+    "title",
+    "body",
+    "comment"
+  ]
+}
+```
+
 
 ## Internal state
 
@@ -1290,6 +1333,83 @@ The final view object will look like:
   }
 }
 ```
+
+## Dirty checking
+
+Form fields have two types of values - _original values_ and _current values_. 
+Sanitization and validation takes place on a form's current values, and these 
+are the values input by the user. 
+
+Original values on the other hand are meant to represent the original 
+values of the form's various input fields when the form gets displayed to 
+the user. You are not forced to set or use original values, but they're 
+useful if you wish to check whether the user made any changes to the form.
+
+Every `Field` instance exposes an `isDirty()` method to check whether the
+current value differs from the original value. Every `Form` instance also
+exposes such a method, which simply calls through to the same for every one of
+its  fields. If even one field is dirty then the form is considered dirty.
+
+Let's see how this works in pracice...
+
+Say the user signed up to our site with a name and telephone number. They wish 
+to edit these details. The form for this:
+
+```javascript
+// file: <app folder>/forms/editProfile.js
+
+{
+  id: 'editProfile',
+  fields: [
+    {
+      name: 'name',
+      type: 'text',
+      sanitizers: [ 'trim' ],
+      validators: [ 'notEmpty' ]
+    },
+    {
+      name: 'phone',
+      type: 'text',
+      sanitizers: [ 'trim' ],
+      validators: [ 'notEmpty', 'isPhoneNumber' ]
+    }
+  ]  
+}
+```
+
+When the user submits the form we wish to find out whether they have made any 
+changes. In the route handler which processes the user submission we might have:
+
+```javascript
+// file: <app folder>/controllers/profile.js
+
+exports.updateProfile = function*(next) {
+  var model = {
+    name: //...existing name...
+    phone: //...exiting phone number...
+  };  
+
+  try {
+    var form = Form.new('editProfile');
+    yield form.setOriginalValues(model);
+    yield form.setValues(this.request.body);
+    yield form.validate();
+
+    if (form.isDirty()) {
+      //...update model data and persist...
+    }
+
+    this.response.redirect('/profile');
+  } catch (err) {
+    //...handle sanitization, validation errors, etc...
+  }
+};
+```
+
+In the above controller method we only update the model data and persist it if 
+if has actually changed. Thus 'dirty checking' allows us to be efficient with 
+updates.
+
 
 # Logging
 
