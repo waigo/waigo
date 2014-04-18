@@ -49,7 +49,7 @@ module.exports = (grunt) ->
           '<%= config.src %>/**/**/**/*.js' 
         ].join(' ')
       api_docs:
-        command: 'node_modules/.bin/doxx --source <%= config.src %> --target <%= config.api_docs %>'
+        command: 'node_modules/.bin/doxx --ignore nothingToIgnore --source <%= config.src %> --target <%= config.api_docs %>'
 
 
   grunt.registerTask "test", [ 
