@@ -398,19 +398,19 @@ production, testing, etc.
 ## File load order
 
 The `config/index` module file is the configuration loader. It looks for and 
-loads configuration files in the following order:
+loads configuration module files in the following order:
 
 1. `config/base`
 2. `config/<node environment>`
 3. `config/<node environment>.<current user>`
 
-The `config/base` file sets the configuration common to all modes in 
+The `config/base` module file sets the configuration common to all modes in 
 which the application may run.
 
-The configuration files following this one are optional. Which ones get loaded
-depends on the value of the `NODE_ENV` environment variable. If this is not set
-then we assume that the application is being run in development mode (i.e. we
-assume its value to be `development`).
+The configuration module files following this one are optional. Which ones get
+loaded depends on the value of the `NODE_ENV` environment variable. If this is
+not set then we assume that the application is being run in development mode
+(i.e. we assume its value to be `development`).
 
 _Note: When running your application in a production environment ensure you
 set the `NODE_ENV` environment variable to `production` or something similar._
