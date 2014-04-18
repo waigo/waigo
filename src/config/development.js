@@ -1,22 +1,19 @@
-/**
- * # Configuration for 'development' mode
- *
- * This file contains configuration which gets loaded when node is running in `development` mode. It overrides the 
- * [base configuration](base.js.html).
- */
-
+"use strict";
 
 
 /**
- * Get configuration.
+ * # Development mode configuration
+ * 
+ * This is the `development` mode configuration for the application.
+ * 
+ * This configuration module file is optional.
  * 
  * @param  {Object} config Configuration object to modify.
  */
 module.exports = function(config) {
 
   /**
-   * Config for request error handler.
-   * @type {Object}
+   * Configuration for request error handler.
    */
   config.errorHandler = {
     showStack: true
@@ -26,14 +23,13 @@ module.exports = function(config) {
 
   /**
    * Logging config.
-   * @type {Object}
    */
   config.logging = {
     winston: {
       // log to console
       console: {
         // minimum level to log at
-        level: 'info',
+        level: 'debug',
         colorize: true,
         timestamp: true
       }

@@ -1,12 +1,13 @@
+"use strict";
+
+
 /**
  * # Base configuration
- *
- * This is the base configuration module which gets loaded first by the [configuration loader](index.js.html).
- */
-
-
-/**
- * Get configuration.
+ * 
+ * This is the base configuration for the application.
+ * 
+ * This configuration module file is mandatory and gets applied for all modes 
+ * in which the application may run.
  * 
  * @param  {Object} config Configuration object to modify.
  */
@@ -14,35 +15,25 @@ module.exports = function(config) {
 
   /**
    * Server listening port.
-   * @type {Number}
    */
   config.port = 3000;
 
 
   /**
    * Base web URL
-   * @type {String}
    */
   config.baseURL = 'http://localhost:' + config.port;
 
 
 
-
-  // ---------------------------
-  // STARTUP
-  // ---------------------------
-
-
   /**
    * Database connection.
-   * @type {Object}
    */
   config.db = null;
 
 
   /**
    * Logging config.
-   * @type {Object}
    */
   config.logging = {
     winston: {
@@ -60,9 +51,7 @@ module.exports = function(config) {
   /**
    * The steps to execute as part of the application startup process.
    *
-   * Each of these corresponds to a module file under the `startup/` route.
-   * 
-   * @type {Array}
+   * Each of these corresponds to a module file under the `support/startup` path.
    */
   config.startupSteps = [
     'logging',
@@ -73,18 +62,8 @@ module.exports = function(config) {
 
 
 
-
-  // ---------------------------
-  // MIDDLEWARE
-  // ---------------------------
-
-
   /**
-   * Session configuration.
-   *
-   * We don't provide default `keys` so as to encourage developers to provide a custom one for their app.
-   *
-   * @type {Object}
+   * Session middleware configuration.
    */
   config.sessions = {
     // cookie signing keys - these are used for signing cookies (using Keygrip) and should be customised for your app
@@ -93,7 +72,7 @@ module.exports = function(config) {
     name: 'waigo',
     // session storage
     store: {
-      // session store type (name of module file in support/session/store/)
+      // session store type (name of module file in `support/session/store`)
       type: 'cookie',
       // session store config
       config: {
@@ -112,7 +91,6 @@ module.exports = function(config) {
 
   /**
    * Server responses to client requests can be in the formats specified here.
-   * @type {Object}
    */
   config.outputFormats = {
     // List of enabled formats along with options to pass to each formatter. */
@@ -141,7 +119,6 @@ module.exports = function(config) {
 
   /**
    * Static resources.
-   * @type {Object}
    */
   config.staticResources = {
     // relative to app folder
@@ -155,7 +132,6 @@ module.exports = function(config) {
 
   /**
    * Config for request error handler.
-   * @type {Object}
    */
   config.errorHandler = {
     // whether to show stack traces in error output.
@@ -166,7 +142,8 @@ module.exports = function(config) {
 
   /**
    * Middleware for all requests. 
-   * @type {Array}
+   *
+   * Each `id` corresponds to a module file under the `support/middleware` path.
    */
   config.middleware = [
     {

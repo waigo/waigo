@@ -1,26 +1,30 @@
+"use strict";
+
+
 var _ = require('lodash'),
   waigo = require('../../');
 
 
-
 /**
- * Load application configuration.
- * 
- * The [base configuration](base.js.html) module gets loaded first. Additional configuration modules 
- * then get loaded using the following logic:
+ * # Configuration loader
  *
- * 1. `config/<node environment>`
- * 1. `config/<node environment>.<current user>`
+ * This loads the application configuration.
  *
- * Thus if node is running in `test` mode (i.e. `NODE_ENVIRONMENT=test`) and the user id of the process is `www-data` then the loader 
- * looks for the following modules and loads them if present, in the following order:
+ * The [base configuration](base.js.html) module gets loaded first. Additional
+ * configuration modules then get loaded using the following logic:
  *
- * 1. [`config/test`](test.js.html)
- * 1. `config/test.www-data`
+ * 1. `config/<node environment>` 
+ * 2. `config/<node environment>.<current user>`
  *
- * The current configuration object gets _extended_ with the configuration object from each subsequently loaded module. This means 
- * that in each additional configuration file you only need to override the configuration properties that are different.
- * 
+ * Thus if node is running in `test` mode and the user id of the process is
+ * `www-data` then this looks for the following module files and loads them if
+ * present, in the following order:
+ *
+ * 1. [`config/test`](test.js.html) 
+ * 2. `config/test.www-data`
+ *
+ * The current configuration object gets passed to each subsequently loaded
+ * configuration module file.
  * @return {Object}
  */
 module.exports = function() {

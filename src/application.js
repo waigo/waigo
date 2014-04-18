@@ -24,7 +24,7 @@ _.mixin(waigo.load('support/underscore'));
  *
  * Internally it holds a reference to the Koa `app` object.
  */
-var App = module.exports = {
+var Application = module.exports = {
   app: koa()
 };
 
@@ -43,15 +43,15 @@ var App = module.exports = {
  * 
  * @protected
  */
-App.loadConfig = function*(options) {
+Application.loadConfig = function*(options) {
   options = options || {};
 
   debug('Loading configuration');
-  App.app.config = waigo.load('config/index')();
+  Application.app.config = waigo.load('config/index')();
 
   if (options.postConfig) {
     debug('Executing dynamic configuration');
-    options.postConfig.call(null, App.app.config);
+    options.postConfig.call(null, Application.app.config);
   }
 };
 
@@ -69,13 +69,13 @@ App.loadConfig = function*(options) {
  * 
  * @return {Object} The result of the call to the final startup step.
  */
-App.start = function*(options) {
-  yield* App.loadConfig(options);
+Application.start = function*(options) {
+  yield* Application.loadConfig(options);
 
-  for (let idx in App.app.config.startupSteps) {
-    let stepName = App.app.config.startupSteps[idx];
+  for (let idx in Application.app.config.startupSteps) {
+    let stepName = Application.app.config.startupSteps[idx];
     debug('Running startup step: ' + stepName);
-    yield* waigo.load('support/startup/' + stepName)(App.app);
+    yield* waigo.load('support/startup/' + stepName)(Application.app);
   }
 };
 
@@ -87,15 +87,15 @@ App.start = function*(options) {
  *
  * This will reset the internal Koa `app` object.
  */
-App.shutdown = function*() {
-  if (App.app.server) {
+Application.shutdown = function*() {
+  if (Application.app.server) {
     debug('Shutting down HTTP server');
-    yield Q.promisify(App.app.server.close, App.app.server)();
+    yield Q.promisify(Application.app.server.close, Application.app.server)();
   } 
 
   // prepare the koa app for a restart
   debug('Resetting koa app');
-  App.app = koa();
+  Application.app = koa();
 };
 
 

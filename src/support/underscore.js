@@ -1,6 +1,4 @@
-/**
- * Underscore mixins
- */
+"use strict";
 
 
 /**

@@ -1,21 +1,18 @@
-/**
- * # Configuration for 'test' mode
- *
- * This file contains configuration which gets loaded when node is running in `test` mode. It overrides the 
- * [base configuration](base.js.html).
- */
+"use strict";
 
 
 /**
- * Get configuration.
+ * # Test mode configuration
+ * 
+ * This is the `test` mode configuration for the application.
+ * 
+ * This configuration module file is optional.
  * 
  * @param  {Object} config Configuration object to modify.
  */
 module.exports = function(config) {
-
   /**
-   * Config for request error handler.
-   * @type {Object}
+   * Configuration for request error handler.
    */
   config.errorHandler = {
     showStack: true
@@ -23,8 +20,7 @@ module.exports = function(config) {
 
 
   /**
-   * Logging config.
-   * @type {Object}
+   * Logging configuration.
    */
   config.logging = {
     winston: {
@@ -37,7 +33,4 @@ module.exports = function(config) {
       }
     }
   };
-
-
 };
-

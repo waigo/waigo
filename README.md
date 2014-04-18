@@ -1347,7 +1347,7 @@ useful if you wish to check whether the user made any changes to the form.
 
 Every `Field` instance exposes an `isDirty()` method to check whether the
 current value differs from the original value. Every `Form` instance also
-exposes such a method, which simply calls through to the same for every one of
+exposes this method, which simply calls through to the same for every one of
 its  fields. If even one field is dirty then the form is considered dirty.
 
 Let's see how this works in pracice...
