@@ -1448,6 +1448,9 @@ exports.index = function*(next) {
 }
 ```
 
+**Always try and use `RuntimeError` insted of `Error` as it provides for more 
+descriptive output.**
+
 A request handled by the above route handler would result in a HTTP status code 
 of 400 being returned to the client along with the error message:
 

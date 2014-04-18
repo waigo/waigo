@@ -1,10 +1,6 @@
 "use strict";
 
 
-/**
- * Exceptions and error handlers.
- */
-
 var _ = require('lodash'),
   util = require('util');
 
@@ -18,11 +14,12 @@ mixins.applyTo(Error, mixins.HasViewObject);
 
 
 /**
- * Get renderable representation of this error.
+ * Get renderable representation of this `Error`.
  *
- * You should use `BaseError`-derived error classes instead of one as they provide a number of useful features.
- *
- * @see mixins
+ * Is is better to use `RuntimeError`-derived error classes instead of `Error` 
+ * as they provide other useful features. However unexpected errors may occur 
+ * which is why it is important to be able to process them for output.
+ * 
  * @return {Object} Plain object.
  */
 Error.prototype.toViewObject = function*(ctx) {
@@ -35,12 +32,13 @@ Error.prototype.toViewObject = function*(ctx) {
 
 
 /**
- * Runtime error.
+ * Base runtime error class.
  *
- * This represents an error which occurred. Waigo prefers to use this rather than `Error` it is more informative.
+ * Use this in preference to `Error` where possible as it provides for more 
+ * descriptive output. 
  *
  * @param {String} msg Error message.
- * @param {Number} status HTTP return status code to set.
+ * @param {Number} status HTTP return status code to set (used by the [error handler middleware](middleware/errorHandler.js.html))
  */
 var RuntimeError = exports.RuntimeError = function(msg, status) {
   Error.call(this);
@@ -58,11 +56,12 @@ util.inherits(RuntimeError, Error);
 
 
 /**
- * Multiple request errors grouped together.
+ * Represents multiple errors grouped together.
  *
- * This error represents a group of related `Error` instances.
+ * Sometimes we may wish to report multiple related errors (e.g. form field 
+ * validation failures). This error class makes it easy to do so.
  *
- * @param {Object} errors Map of errors, where each value is itself a `Error` instance.
+ * @param {Object} errors Map of errors, where each value is itself an `Error` instance.
  * @param {Number} status HTTP return status code to set.
  */
 var MultipleError = exports.MultipleError = function(msg, status, errors) {
@@ -74,10 +73,13 @@ var MultipleError = exports.MultipleError = function(msg, status, errors) {
 util.inherits(MultipleError, RuntimeError);
 
 
+
 /**
  * Get renderable representation of this error.
  *
- * @see mixins
+ * This collects view object representations of all the sub-errors and into a 
+ * single object.
+ *
  * @return {Object} Plain object.
  */
 MultipleError.prototype.toViewObject = function*(ctx) {
@@ -95,12 +97,13 @@ MultipleError.prototype.toViewObject = function*(ctx) {
 
 
 /**
- * Define an Error.
+ * Define an `Error` class.
  *
- * This is a convenience method for quickly creating custom error classes.
+ * This is a convenience method for quickly creating custom error classes which 
+ * inherit from `Error` and have all the correct properties setup.
  *
  * @param {String} newClassName Name of this new error type.
- * @param {Class} [baseClass] Base class (should be a subtype of `Error`) to derivce this new error from. Default is `RuntimeError`.
+ * @param {Class} [baseClass] Base class to derive the new class from. Default is `RuntimeError`.
  *
  * @return {Function} The new error class.
  */

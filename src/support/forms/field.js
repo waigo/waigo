@@ -29,11 +29,11 @@ var errors = waigo.load('support/errors'),
 
 
 
-/** @type {Error} A field validation error. */
+/** A field validation error. */
 var FieldValidationError = exports.FieldValidationError = errors.define('FieldValidationError', errors.MultipleError);
 
   
-/** @type {Error} A field sanitization error. */
+/** A field sanitization error. */
 var FieldSanitizationError = exports.FieldSanitizationError = errors.define('FieldSanitizationError');
 
 
@@ -84,12 +84,10 @@ mixins.applyTo(Field, mixins.HasViewObject);
 
 
 
+/**
+ * Field name.
+ */
 Object.defineProperty(Field.prototype, 'name', {
-  /**
-   * Get name of this field.
-   *
-   * @return {String}
-   */
   get: function() {
     return this.config.name;
   }
@@ -97,20 +95,16 @@ Object.defineProperty(Field.prototype, 'name', {
 
 
 
+/**
+ * Field original value.
+ *
+ * This is useful if we wish to check whether the field value has changed 
+ * from its previous value.
+ */
 Object.defineProperty(Field.prototype, 'originalValue', {
-  /**
-   * Get the original value of this field.
-   *
-   * @return {Any}
-   */
   get: function() {
     return this.form.state[this.name].originalValue;
   },
-  /**
-   * Set the original value of this field.
-   *
-   * @param {Any} value The value to set.
-   */
   set: function(value) {
     this.form.state[this.name].originalValue = value;
   }
@@ -119,21 +113,13 @@ Object.defineProperty(Field.prototype, 'originalValue', {
 
 
 
-
+/**
+ * Current value of this field.
+ */
 Object.defineProperty(Field.prototype, 'value', {
-  /**
-   * Get the current value of this field.
-   *
-   * @return {Any}
-   */
   get: function() {
     return this.form.state[this.name].value;
   },
-  /**
-   * Set the value of this field.
-   *
-   * @param {Any} value The value to set.
-   */
   set: function(value) {
     this.form.state[this.name].value = value;
   }
@@ -149,7 +135,7 @@ Object.defineProperty(Field.prototype, 'value', {
  * actually setting it. Subclasses should override this method if they wish to
  * perform any additional processing of the value.
  * 
- * @param {Any} val The value.
+ * @param {*} val The value.
  * @throws FieldSanitizationError If any errors occur.
  */
 Field.prototype.setSanitizedValue = function*(val) {
@@ -170,8 +156,10 @@ Field.prototype.setSanitizedValue = function*(val) {
 
 /** 
  * Get whether this field is dirty.
+ *
+ * It is dirty if its current value is different from its original value.
  * 
- * @return {Boolean} True if this field's current value is different from its original value; false otherwise.
+ * @return {Boolean}
  */
 Field.prototype.isDirty = function() {
   return this.value !== this.originalValue;
@@ -214,7 +202,7 @@ Field.prototype.validate = function*() {
 /**
  * Get renderable representation of this field.
  *
- * @see mixins
+ * @return {Object}
  */
 Field.prototype.toViewObject = function*() {
   return {
