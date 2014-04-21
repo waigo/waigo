@@ -11,6 +11,7 @@ var _ = require('lodash'),
  * HTML output format.
  *
  * @param {Object} config configuration for this output format.
+ * @param {String} config.folder View templates folder, relative to application root folder.
  * @param {String} config.ext Default template file extension.
  * @param {String} config.engine Default template rendering engine.
  *
