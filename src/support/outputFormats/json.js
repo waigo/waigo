@@ -8,11 +8,13 @@ var _ = require('lodash'),
 var errors = waigo.load('support/errors');
 
 
+
 /**
- * Create an instance of this output format.
- * @param config {Object} configuration for this output format.
+ * JSON output format.
+ *
+ * @return {Object} Object with render method.
  */
-exports.create = function(config) {
+exports.create = function() {
   return {
     render: function*(view, locals) {
       locals = locals || {};

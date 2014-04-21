@@ -6,19 +6,15 @@ var _ = require('lodash'),
   path = require('path'),
   waigo = require('../../../');
 
-/**
- * # Middleware: request body parser
- *
- * This middleware uses [co-body](https://github.com/visionmedia/co-body) to parse request POST bodies.
- */
-
 
 /**
  * Build middleware for parsing request bodies.
  *
- * Once parsed the request body parameters are available in `this.request.body`.
+ * This middleware uses [co-body](https://github.com/visionmedia/co-body) to 
+ * parse request POST bodies. Once parsed the request body parameters are 
+ * available in `this.request.body`.
  * 
- * @param {Object} options Configuration options.
+ * @param {Object} options Configuration options for `co-body`.
  * @param {String} [options.limit] The maximum allowed size of a request body.
  * 
  * @return {Function} middleware

@@ -1,14 +1,16 @@
 "use strict";
 
 
+
+
 /**
  * Get a deeply nested object property.
  *
- * @param obj the object
- * @param path the path
- * @param fallbackValue value to return if not found.
+ * @param {Object} obj The object.
+ * @param {String} path The path within the object to fetch.
+ * @param {*} fallbackValue The value to return if given path not found.
  *
- * @return {*} defaultValue if not found
+ * @return {*} Returns value if found; otherwise the fallbackVAlue.
  */
 exports.get = function(obj, path, fallbackValue) {
   var self = this;  // underscore

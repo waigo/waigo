@@ -10,33 +10,16 @@ var errors = waigo.load('support/errors'),
   mixins = waigo.load('support/mixins');
 
 
-/** 
- * # Forms
- *
- * This module provides a `Form` class which makes dealing with forms very 
- * easy. A `Form` instance points to numerous `Field` instances which are 
- * created based on a form definition object which is provided during form 
- * construction. 
- *
- * Form field values get stored in an internal state object which can be retrieved 
- * and set at any time, thus allowing you to share state between Form instances 
- * as well as quickly restore a Form instance to a previously set state.
- *
- * Although you can create and use `Form` objects directly it is better to use 
- * the `Form.new()` static method as this handles the loading of form 
- * configuration from the `form` specs folder.
- */
 
 
-
-
-/** @type {Error} A form validation error. */
+/** Form validation error. */
 var FormValidationError = exports.FormValidationError = errors.define('FormValidationError', errors.MultipleError);
 
+
 /**
- * Get view object representation of field validation error.
+ * Get view object representation of form validation error.
  *
- * This checks the `leanErrors` request query parameter. If set then the 
+ * This checks the `leanErrors` request flag. If set then the 
  * resulting view object will be simpler to analyse and iterate over.
  */
 FormValidationError.prototype.toViewObject = function*(ctx) {
@@ -65,6 +48,10 @@ FormValidationError.prototype.toViewObject = function*(ctx) {
 /**
  * Construct a form.
  *
+ * Form field values get stored in an internal state object which can be retrieved 
+ * and set at any time, thus allowing you to share state between `Form` instances 
+ * as well as quickly restore a `Form` to a previously set state.
+ * 
  * @param {Object|Form} config form configuration or an existing `Form` instance.
  * @param {Object} [state] The internal state to set for this form.
  * @constructor
@@ -92,13 +79,6 @@ mixins.applyTo(Form, mixins.HasViewObject);
 
 
 Object.defineProperty(Form.prototype, 'fields', {
-  /**
-   * Get the fields of this form.
-   *
-   * Fields will be returned as `Field` instances.
-   *
-   * @return {Object} `String` -> `Field` mappings.
-   */
   get: function() {
     return this._fields;
   }
@@ -108,19 +88,9 @@ Object.defineProperty(Form.prototype, 'fields', {
 
 
 Object.defineProperty(Form.prototype, 'state', {
-  /**
-   * Get the internal state of this form.
-   *
-   * @return {Object}
-   */
   get: function() {
     return this._state;
   },
-  /**
-   * Set the internal state of this form.
-   *
-   * @param {Object} state The new internal state to set for this form.
-   */
   set: function(state) {
     this._state = state || {};
 
@@ -137,7 +107,9 @@ Object.defineProperty(Form.prototype, 'state', {
 
 
 /**
- * Set field values.
+ * Set values.
+ *
+ * This will sanitize each value prior to setting it.
  *
  * @param {Object} values Mapping from field name to field value.
  */
@@ -153,10 +125,10 @@ Form.prototype.setValues = function*(values) {
 
 
 /**
- * Set field original values.
+ * Set original values.
  *
- * Note: unlike when setting the current field values these values do not 
- * get sanitized. So be careful when using this.
+ * _Note: unlike when setting the current field values these values do not 
+ * get sanitized_
  * 
  * @param {Object} values Mapping from field name to field original value.
  */
@@ -223,7 +195,8 @@ Form.prototype.validate = function*() {
 
 /**
  * Get renderable representation of this form.
- * @see mixins
+ *
+ * @return {Object} Renderable plain object representation.
  */
 Form.prototype.toViewObject = function*(ctx) {
   var fields = this.fields,
@@ -259,8 +232,9 @@ var cache = {};
 /** 
  * Create an instance of the given form.
  *
- * The given id is used to load in the form definition from the `forms` file 
- * path.
+ * Although you can create and use `Form` objects directly it is better to use 
+ * this static method as it handles the loading of form configuration from 
+ * the `forms` module file path.
  * 
  * An optional initial internal state can also be provided. This is useful to 
  * e.g. restore the from and its fields to a previous state. If not provided 

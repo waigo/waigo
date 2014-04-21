@@ -6,9 +6,18 @@ var debug = require('debug')('waigo-startup-logging'),
 
 
 /**
- * Setup application logging.
+ * Setup application logger.
  *
+ * The logging configuration is a key-value map where the key specifies the 
+ * name of the module file under the `support.logging` path and the mapped 
+ * value specifies the configuration for the specific logger type.
+ * 
+ * Upon completion `app.logger` will be set.
+ *
+ * _Note: At present only the first specified logger actually gets initialised_.
+ * 
  * @param {Object} app The application.
+ * @param {Object} app.config.logging Logger configuration.
  */
 module.exports = function*(app) {
   var appLoggerType = Object.keys(app.config.logging).pop();

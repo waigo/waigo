@@ -1,10 +1,6 @@
 "use strict";
 
 
-/**
- * Route -> Controller mapper.
- */
-
 var _ = require('lodash'),
   route = require('koa-trie-router'),
   util = require('util'),
@@ -17,13 +13,13 @@ var errors = waigo.load('support/errors'),
 
 
 /**
- * Parse a route methodUrl string.
+ * Parse a route http method and URL string.
  *
  * @param str {String} in the form "(httpMethod) (url)", e.g. "GET /index"
  *
  * @return {Object} object with form `{ method: (httpMethod), url: (url) }`.
  *
- * @throws RouteError if unsupported HTTP method used.
+ * @throws RouteError if route URL is invalid or using an unsupported HTTP method.
  */
 var parseMethodUrl = function(str) {
   var tokens = _.str.clean(str).split(' ');
@@ -47,8 +43,8 @@ var parseMethodUrl = function(str) {
  * @param app {Object} the koa app to map routes on.
  * @param routes {Array} list of route definitions.
  *
- * Upon completion `app.controllers` will hold the loaded controller instances. And `app.router` will be setup with the
- * route mappings.
+ * Upon completion `app.controllers` will hold the loaded controller instances. 
+ * And `app.router` will be setup with the route mappings.
  *
  * @throws RouteError if there are any problems.
  */

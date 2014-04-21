@@ -3,12 +3,13 @@
 var validator = require('validator');
 
 /** 
- * # Validator: check whether given value is non-empty.
+ * # 
  */
 
 /**
- * Get the validator function.
- * @return {Function}
+ * Validator to check whether given value is non-empty.
+ * 
+ * @throws Error If empty.
  */
 module.exports = function() {
   return function*(form, field, value) {

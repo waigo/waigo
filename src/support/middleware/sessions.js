@@ -6,19 +6,23 @@ var koaSessionStore = require('koa-session-store'),
   waigo = require('../../../');
 
 
+
+
 /**
- * # Middleware: sessions
- *
+ * Build session middleware.
+ *  
  * This middleware uses [koa-session-store](https://github.com/hiddentao/koa-session-store) 
- * to enable session data storage. 
- * 
- * This requires the `sessions` startup step to have been run.
- */
-
-
-
-/** 
+ * to enable session data storage.
+ *
  * @param {Object} options Configuration options.
+ * @param {Array} options.keys Cookie signing keys for keygrip.
+ * @param {String} options.name Session cookie name.
+ * @param {Object} options.store Session store configuration.
+ * @param {String} options.store.type Session store type.
+ * @param {String} options.store.config Session store instance configuration.
+ * @param {Object} options.cookie Session cookie options.
+ * @param {Integer} options.cookie.validForDays No. of days cookie remains valid for.
+ * @param {String} options.cookie.path Cookie path.
  */
 module.exports = function(options) {
   var app = waigo.load('application').app;

@@ -9,6 +9,7 @@ var debug = require('debug')('waigo-startup-middleware'),
  * Setup middleware common to all requests.
  *
  * @param {Object} app The application.
+ * @param {Array} app.config.middleware Names of middleware to initialise.
  */
 module.exports = function*(app) {
   for (let idx in app.config.middleware) {

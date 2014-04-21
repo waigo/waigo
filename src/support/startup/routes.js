@@ -7,8 +7,11 @@ var debug = require('debug')('waigo-startup-routes'),
 
 
 /**
- * Setup routes.
+ * Setup route mappings.
  *
+ * This sets up a `koa-trie-router` and maps routes to it using the 
+ * [route mapper](../routeMapper.js.html).
+ * 
  * @param {Object} app The application.
  */
 module.exports = function*(app) {

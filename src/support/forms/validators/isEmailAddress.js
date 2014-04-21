@@ -3,15 +3,12 @@
 var validator = require('validator');
 
 
-/** 
- * # Validator: check whether given string represents an email address.
- */
-
 
 
 /**
- * Get the validator function.
- * @return {Function}
+ * Validator to check whether given string represents an email address.
+ *
+ * @throws Error If not an email address.
  */
 module.exports = function() {
   return function*(form, field, value) {

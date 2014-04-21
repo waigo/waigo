@@ -5,9 +5,14 @@ var _ = require('lodash'),
   winston = require('winston');
 
 /**
- * Create a winston logger.
+ * Create a winston logger instance.
  *
- * @param winstonConfig {Object} winston loggin configuration.
+ * The configuration object specifies the transports to initialise as well as 
+ * their configuration options. At present only the 
+ * [console](https://github.com/flatiron/winston/blob/master/docs/transports.md#console-transport) 
+ * transport is supported. 
+ * 
+ * @param winstonConfig {Object} winston logging configuration.
  *
  * @return {Object} winston logger.
  */

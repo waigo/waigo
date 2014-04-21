@@ -2,14 +2,11 @@
 
 var validatorSanitizer = require('validator');
 
-/** 
- * # Sanitizer: trim whitespace from the ends of given string.
- */
-
 
 /**
- * Get the sanitizer function.
- * @return {Function}
+ * Sanitizer to trim whitespace from the end of strings.
+ * 
+ * @return {String}
  */
 module.exports = function() {
   return function*(form, field, value) {

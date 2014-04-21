@@ -8,8 +8,13 @@ var _ = require('lodash'),
 
 
 /**
- * Create an instance of this output format.
- * @param config {Object} configuration for this output format.
+ * HTML output format.
+ *
+ * @param {Object} config configuration for this output format.
+ * @param {String} config.ext Default template file extension.
+ * @param {String} config.engine Default template rendering engine.
+ *
+ * @return {Object} Object with render method.
  */
 exports.create = function(config) {
   var render = views(path.join(waigo.getAppFolder(), config.folder), {

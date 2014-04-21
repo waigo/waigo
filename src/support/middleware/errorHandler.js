@@ -39,6 +39,9 @@ var render = function*(context, config, err) {
 /**
  * Build error handler middleware.
  *
+ * This will catch any errors thrown from downstream middleware or controller 
+ * handler functions.
+ * 
  * @param {Object} options Configuration options.
  * @parma {Boolean} [options.showStack] whether to show the stack trace in error output. Default is false.
  *

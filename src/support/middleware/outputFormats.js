@@ -14,7 +14,17 @@ var viewObjectMethod = Object.keys(mixins.HasViewObject).pop();
 
 /**
  * Build output formats middleware.
+ *
+ * Each format specified in `options.formats` is a key-value mapping where the 
+ * key is the canonical name of the format and the mapped value specifies the 
+ * configuration options for the format. See [html](../outputFormats/html.js.html) and 
+ * [json](../outputFormats/json.js.html) for more details.
+ * 
  * @param {Object} options Configuration options.
+ * @param {Object} [options.formats] The supported formats.
+ * @param {String} [options.default] Default format when none is specified.
+ * @param {String} [options.paramName] Name of format query parameter.
+ * 
  * @return {Function} Express middleware.
  */
 module.exports = function(options) {

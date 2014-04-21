@@ -5,16 +5,13 @@ var _ = require('lodash'),
   path = require('path'),
   waigo = require('../../../');
 
-/**
- * # Middleware: static resources
- *
- * This middleware uses [koa-static](https://www.npmjs.org/package/koa-static) to serve static resources.
- */
 
 
 /**
  * Build middleware for serving static resources.
  *
+ * This middleware uses [koa-static](https://www.npmjs.org/package/koa-static).
+*
  * @param {Object} options Configuration options.
  * @param {String} options.folder The filesystem path (relative to the Waigo app folder) from which to serve resources.
  * @param {Integer} [options.maxage] Browser cache max-age in milliseconds (default is `0`).

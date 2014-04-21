@@ -9,7 +9,11 @@ var debug = require('debug')('waigo-startup-database'),
 /**
  * Setup database connection.
  *
+ * If database configuration is set then upon completion `app.db` will be an 
+ * active database connection.
+ * 
  * @param {Object} app The application.
+ * @param {Object} [app.config.db] Database configuration.
  */
 module.exports = function*(app) {
   if (app.config.db) {
