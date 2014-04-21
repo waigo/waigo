@@ -2,9 +2,6 @@
 
 var validator = require('validator');
 
-/** 
- * # 
- */
 
 /**
  * Validator to check whether given value is non-empty.
