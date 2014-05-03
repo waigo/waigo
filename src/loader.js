@@ -102,6 +102,10 @@ loader.init = function*(options) {
     var pattern = options.plugins.glob || ['waigo-*'];
     var config = options.plugins.config || findup('package.json') || {};
     var scope = options.plugins.configKey || ['dependencies', 'devDependencies', 'peerDependencies'];
+    
+    if (typeof config === 'string') {
+      config = require(path.resolve(config));
+    }
 
     var names = scope.reduce(function (result, prop) {
       return result.concat(Object.keys(config[prop] || {}));
