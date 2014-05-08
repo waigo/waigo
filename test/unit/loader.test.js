@@ -125,7 +125,7 @@ test['init()'] = {
           options.plugins.config = path.join(options.appFolder, 'invalid.js');
 
           loader.initPromise(options)
-            .should.be.rejectedWith("Cannot find module '/Users/home/dev/js/waigo-framework/waigo/test/data/app/invalid.js'")
+            .should.be.rejectedWith("Cannot find module '" + options.plugins.config + "'")
             .and.notify(done);
         }
       }
