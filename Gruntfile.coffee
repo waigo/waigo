@@ -52,21 +52,22 @@ module.exports = (grunt) ->
         command: 'node_modules/.bin/doxx --ignore nothingToIgnore --source <%= config.src %> --target <%= config.api_docs %>'
 
 
-  grunt.registerTask "test", [ 
-    "mochaTest" 
+
+  grunt.registerTask "jshint", [ 
+    "shell:jshint" 
   ]
 
   grunt.registerTask "docs", [ 
     "shell:api_docs" 
   ]
 
-  grunt.registerTask "jshint", [ 
-    "shell:jshint" 
+  grunt.registerTask "test", [ 
+    "jshint",
+    "mochaTest" 
   ]
 
   grunt.registerTask "build", [
-    "jshint"
-    "mochaTest"
+    "test"
     "docs"
   ]
 

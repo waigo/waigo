@@ -62,7 +62,10 @@ test['init()'] = {
         return Promise.all([
           testUtils.createPluginModules('waigo-plugin-1_TESTPLUGIN'),
           testUtils.createPluginModules('waigo-plugin-2_TESTPLUGIN'),
-          testUtils.createPluginModules('another-plugin_TESTPLUGIN')
+          testUtils.createPluginModules('another-plugin_TESTPLUGIN'),
+          testUtils.createAppModules({
+            'pluginConfig.js': 'module.exports = { dependencies: {"waigo-plugin-1_TESTPLUGIN": "0.0.1"} }'
+          })
         ]);
       })
       .nodeify(done);
@@ -92,18 +95,40 @@ test['init()'] = {
 
       loader.initPromise(options)
         .then(function checkLoadedPlugins() {
-          options.plugins.names.should.eql(["waigo-test-utils"]);
+          options.plugins.names.should.eql([]);
         })
         .nodeify(done);
     },
-    'custom config': function(done) {
-      var options = this.options;
+    'custom config': {
+      'object': function(done) {
+        var options = this.options;
 
-      loader.initPromise(options)
-        .then(function checkLoadedPlugins() {
-          options.plugins.names.should.eql(['waigo-plugin-1_TESTPLUGIN', 'waigo-plugin-2_TESTPLUGIN']);
-        })
-        .nodeify(done);
+        loader.initPromise(options)
+          .then(function checkLoadedPlugins() {
+            options.plugins.names.should.eql(['waigo-plugin-1_TESTPLUGIN', 'waigo-plugin-2_TESTPLUGIN']);
+          })
+          .nodeify(done);
+      },
+      'path to file': {
+        'file exists': function(done) {
+          var options = this.options;
+          options.plugins.config = path.join(options.appFolder, 'pluginConfig.js');
+
+          loader.initPromise(options)
+            .then(function checkLoadedPlugins() {
+              options.plugins.names.should.eql(['waigo-plugin-1_TESTPLUGIN']);
+            })
+            .nodeify(done);          
+        },
+        'file does not exist': function(done) {
+          var options = this.options;
+          options.plugins.config = path.join(options.appFolder, 'invalid.js');
+
+          loader.initPromise(options)
+            .should.be.rejectedWith("Cannot find module '/Users/home/dev/js/waigo-framework/waigo/test/data/app/invalid.js'")
+            .and.notify(done);
+        }
+      }
     },
     'custom globbing pattern': function(done) {
       var options = this.options;
