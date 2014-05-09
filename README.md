@@ -1,6 +1,6 @@
 # What is Waigo?
 
-\[ [Guide](http://waigojs.com/) • [API](http://waigojs.com/api/) \]
+\[ [Guide](http://waigojs.com/) • [API](http://waigojs.com/api/) • [Examples](http://waigojs.com/examples.html) • [Sites](http://waigojs.com/sites.html) \]
 
 [![Build Status](https://secure.travis-ci.org/waigo/waigo.png)](http://travis-ci.org/waigo/waigo) [![NPM module](https://badge.fury.io/js/waigo.png)](https://npmjs.org/package/waigo) [![Code quality](https://codeclimate.com/github/waigo/waigo.png)](https://codeclimate.com/github/waigo/waigo)
 
