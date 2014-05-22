@@ -1,6 +1,9 @@
 "use strict";
 
 
+var _ = require('lodash');
+
+
 /**
  * # Development mode configuration
  * 
@@ -11,14 +14,14 @@
  * @param  {Object} config Configuration object to modify.
  */
 module.exports = function(config) {
-
-  /**
-   * Configuration for request error handler.
-   */
-  config.errorHandler = {
-    showStack: true
-  };
-
+  
+  // modify errorHandler middleware
+  var errorHandlerConfig = _.find(config.middleware, function(f) {
+    return 'errorHandler' === f.id;
+  })
+  if (errorHandlerConfig) {
+    errorHandlerConfig.options.showStack = true;
+  }
 
 
   /**

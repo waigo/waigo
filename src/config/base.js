@@ -62,82 +62,6 @@ module.exports = function(config) {
 
 
 
-  /**
-   * Session middleware configuration.
-   */
-  config.sessions = {
-    // cookie signing keys - these are used for signing cookies (using Keygrip) and should be customised for your app
-    keys: ['use', 'your', 'own'],
-    // session cookie name
-    name: 'waigo',
-    // session storage
-    store: {
-      // session store type (name of module file in `support/session/store`)
-      type: 'cookie',
-      // session store config
-      config: {
-        // nothing needed for cookie storage
-      }
-    },
-    // session cookie options
-    cookie: {
-      // cookie expires in...
-      validForDays: 7,
-      // cookie valid for url path...
-      path: '/'
-    }
-  };
-
-
-  /**
-   * Server responses to client requests can be in the formats specified here.
-   */
-  config.outputFormats = {
-    // List of enabled formats along with options to pass to each formatter. */
-    formats: {
-      html: {
-        // Folder relative to application root folder, in which to look for view templates. */
-        folder: 'views',
-        // Default view template filename extension when not explicitly provided. */
-        ext: 'jade',
-        // Map file extension to rendering engine
-        engine: {
-          'jade': 'jade'
-        }
-      },
-      json: {}
-    },
-    // Use this URL query parameter to determine output format. */
-    paramName: 'format',
-    // Default format, in case URL query parameter which determines output format isn't provided. */
-    default: 'html'
-  };
-
-
-
-
-
-  /**
-   * Static resources.
-   */
-  config.staticResources = {
-    // relative to app folder
-    folder: '../public',
-    // see support/middleware/staticResources for options
-    options: {}
-  };
-
-
-
-
-  /**
-   * Config for request error handler.
-   */
-  config.errorHandler = {
-    // whether to show stack traces in error output.
-    showStack: false
-  };
-
 
 
   /**
@@ -148,19 +72,67 @@ module.exports = function(config) {
   config.middleware = [
     {
       id: 'errorHandler',
-      options: config.errorHandler
+      options: {
+        // whether to show stack traces in error output.
+        showStack: false
+      }
     },
     {
       id: 'staticResources',
-      options: config.staticResources
+      options: {
+        // relative to app folder
+        folder: '../public',
+        // see support/middleware/staticResources for options
+        options: {}
+      }
     },
     {
       id: 'sessions',
-      options: config.sessions
+      options: {
+        // cookie signing keys - these are used for signing cookies (using Keygrip) and should be customised for your app
+        keys: ['use', 'your', 'own'],
+        // session cookie name
+        name: 'waigo',
+        // session storage
+        store: {
+          // session store type (name of module file in `support/session/store`)
+          type: 'cookie',
+          // session store config
+          config: {
+            // nothing needed for cookie storage
+          }
+        },
+        // session cookie options
+        cookie: {
+          // cookie expires in...
+          validForDays: 7,
+          // cookie valid for url path...
+          path: '/'
+        }
+      }
     },
     {
       id: 'outputFormats',
-      options: config.outputFormats
+      options: {
+        // List of enabled formats along with options to pass to each formatter. */
+        formats: {
+          html: {
+            // Folder relative to application root folder, in which to look for view templates. */
+            folder: 'views',
+            // Default view template filename extension when not explicitly provided. */
+            ext: 'jade',
+            // Map file extension to rendering engine
+            engine: {
+              'jade': 'jade'
+            }
+          },
+          json: {}
+        },
+        // Use this URL query parameter to determine output format. */
+        paramName: 'format',
+        // Default format, in case URL query parameter which determines output format isn't provided. */
+        default: 'html'
+      }
     }
   ];
 
