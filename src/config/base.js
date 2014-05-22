@@ -69,26 +69,25 @@ module.exports = function(config) {
    *
    * Each `id` corresponds to a module file under the `support/middleware` path.
    */
-  config.middleware = [
-    {
-      id: 'errorHandler',
-      options: {
+  config.middleware = {
+    order: [
+      'errorHandler',
+      'staticResources',
+      'sessions',
+      'outputFormats'
+    ],
+    options: {
+      errorHandler: {
         // whether to show stack traces in error output.
         showStack: false
-      }
-    },
-    {
-      id: 'staticResources',
-      options: {
+      },
+      staticResources: {
         // relative to app folder
         folder: '../public',
         // see support/middleware/staticResources for options
         options: {}
-      }
-    },
-    {
-      id: 'sessions',
-      options: {
+      },
+      sessions: {
         // cookie signing keys - these are used for signing cookies (using Keygrip) and should be customised for your app
         keys: ['use', 'your', 'own'],
         // session cookie name
@@ -109,11 +108,8 @@ module.exports = function(config) {
           // cookie valid for url path...
           path: '/'
         }
-      }
-    },
-    {
-      id: 'outputFormats',
-      options: {
+      },
+      outputFormats: {
         // List of enabled formats along with options to pass to each formatter. */
         formats: {
           html: {
@@ -134,7 +130,7 @@ module.exports = function(config) {
         default: 'html'
       }
     }
-  ];
+  };
 
 
 };

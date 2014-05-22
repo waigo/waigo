@@ -1,8 +1,6 @@
 "use strict";
 
 
-var _ = require('lodash');
-
 
 /**
  * # Development mode configuration
@@ -15,14 +13,9 @@ var _ = require('lodash');
  */
 module.exports = function(config) {
   
-  // modify errorHandler middleware
-  var errorHandlerConfig = _.find(config.middleware, function(f) {
-    return 'errorHandler' === f.id;
-  })
-  if (errorHandlerConfig) {
-    errorHandlerConfig.options.showStack = true;
+  config.middleware.options.errorHandler = {
+    showStack: true
   }
-
 
   /**
    * Logging config.
@@ -38,8 +31,4 @@ module.exports = function(config) {
       }
     }
   };
-
-
 };
-
-

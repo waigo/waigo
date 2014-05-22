@@ -32,20 +32,20 @@ test['middleware'] = {
       .then(function() {
         self.setup = waigo.load('support/startup/middleware');
         self.app = waigo.load('application').app;
-        self.app.config.middleware = [
-          {
-            id: 'test',
-            options: {
+        self.app.config.middleware = {
+          order: [
+            'test',
+            'test2'
+          ],
+          options: {
+            test: {
               dummy: 'foo'
-            }
-          },
-          {
-            id: 'test2',
-            options: {
+            },
+            test2: {
               dummy: 'bar'
             }
           }
-        ];
+        };
       })
       .nodeify(done);
   },
