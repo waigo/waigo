@@ -292,7 +292,11 @@ these guidelines:
 * Check to see if what you've made is worth putting into a plugin. For instance 
 it's very easy to re-use [koa](http://koajs.com) middleware in Waigo without 
 needing to create plugins.
-* Ensure your plugin name is prefixed with `waigo-` so that it's easy to find.
+* Ensure your plugin name is prefixed with `waigo-` so that users and Waigo 
+itself can easily find it and use it.
+* In your plugin's `package.json` set the `main` key is set to `index.js`. Create a dummy 
+`index.js` file in your plugin's root folder. This is needed to be able to load and 
+use your plugin. 
 * Write a good README.md for your plugin explaining what it's for and how to use it.
 * Add automated unit tests for your plugin. Look at existing plugins to learn 
 best practices.
