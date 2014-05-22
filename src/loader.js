@@ -105,7 +105,7 @@ loader.init = function*(options) {
     
     if ('string' === typeof config) {
       if ('package.json' === config) {
-        config = findup('package.json');
+        config = require(findup('package.json'));
       } else {
         config = require(path.resolve(config));        
       }
