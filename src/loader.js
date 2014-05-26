@@ -14,7 +14,7 @@ var _ = require('lodash'),
 
 // some stuff
 var waigoFolder = path.join(__dirname),
-  appFolder = path.join(process.cwd(), 'src'),
+  appFolder = path.join(path.dirname(require.main.filename), 'src'),
   loader = {};
 
 

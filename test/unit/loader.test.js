@@ -18,7 +18,7 @@ loader.initPromise = Promise.coroutine(loader.init);
 
 test['app folder'] = {
   'get': function() {
-    expectedAppFolder = path.join(process.cwd(), 'src');
+    expectedAppFolder = path.join(path.dirname(require.main.filename), 'src');
     loader.getAppFolder().should.eql(expectedAppFolder);
   }
 };
