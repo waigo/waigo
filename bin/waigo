@@ -1,0 +1,46 @@
+#!/usr/bin/env node --harmony
+
+"use strict";
+
+
+var _ = require('lodash'),
+  co = require('co'),
+  commander = require('commander'),
+  path = require('path');
+
+var waigo = require(path.join(__dirname, '..'));
+
+
+co(function*() {
+
+  // init
+  yield* waigo.init({
+    appFolder: __dirname
+  });
+
+  // load all commands
+  var commands = waigo.getModulesInPath('support/cli');
+
+  // initialise parser
+  var program = commander;
+  _.each(commands, function(command) {
+    var meta = waigo.load(command);
+
+    var cmd = program
+      .command(path.basename(command))
+      .description(meta.description)
+      .action(co(meta.run));
+
+    _.each(meta.options, function(o) {
+      cmd.option.apply(cmd, o);
+    });
+  }); 
+
+  // parse and dispatch
+  program.parse(process.argv);
+
+})(function(err) {
+  if (err) {
+    console.error(err);
+  }
+});

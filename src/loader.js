@@ -256,6 +256,36 @@ loader.load = function(moduleName) {
 
 
 /**
+ * Get names of all Waigo module files under a particular path.
+ *
+ * This will look through the initialised module list for all modules files 
+ * which reside under the given path (items in sub folders are ignored) 
+ * and then return their names. Module files provided by both plugins and the 
+ * app itself will also be included.
+ *
+ * This is useful in situations where a particular path holds a number of 
+ * related module files and you wish to see which ones are 
+ * available.
+ *
+ * @param {string} path Path to check under.
+ * @return {Array} List of module file names (without the file extension).
+ * @throws Error if there was an error.
+ */
+loader.getModulesInPath = function(path) {
+  if (!loader.__modules) {
+    throw new Error('Please initialise Waigo first');
+  }
+
+  return _.filter(_.keys(loader.__modules), function(moduleFilePath) {
+    return 0 === moduleFilePath.indexOf(path);
+  });
+};
+
+
+
+
+
+/**
  * Get absolute path to folder containing the Waigo framework.
  * @return {String}
  */
