@@ -26,7 +26,9 @@
     "findit": "~1.1.x",
     "validator": "~3.4.x",
     "co-body": "0.0.1",
-    "commander": "~2.2.0"
+    "commander": "~2.2.0",
+    "fs-then": "~0.2.0",
+    "shelljs": "~0.3.0"
   },
   "devDependencies": {
     "chai": "~1.8.1",

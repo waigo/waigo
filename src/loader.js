@@ -28,16 +28,33 @@ loader.__modules = null;
 
 /**
  * Walk given folder and its subfolders and return all `.js` files.
+ *
+ * @param {Object} [options] Additional options.
+ * @param {Array} [options.excludeFolders] Sub-folders to exclude in the search, relative to the root folder.
  * 
  * @return {Promise}
  * @private
  */
-var _walk = function(folder) {
+var _walk = function(folder, options) {
+  options = _.extend({
+    excludeFolders: []
+  }, options);
+
   return new Q(function(resolve, reject) {
     var files = {};
 
     var walker = walk(folder, {
       followSymlinks: false
+    });
+
+    walker.on('directory', function (dir, stat, stop) {
+      // remove root folder path and trailing slash to get subpath, e.g. config
+      var subPath = dir.substr(folder.length + 1);
+
+      // skip excluded folders
+      if (0 <= _.indexOf(options.excludeFolders, subPath)) {
+        stop();
+      }
     });
 
     walker.on('file', function(file, stat) {
@@ -138,7 +155,12 @@ loader.init = function*(options) {
 
   for (var i = 0; i < scanOrder.length; ++i) {
     var sourceName = scanOrder[i],
-      moduleMap = yield _walk(sourcePaths[sourceName]);
+      moduleMap = yield _walk(sourcePaths[sourceName], {
+        excludeFolders: [
+          'cli/data',
+          'views'
+        ]
+      });
 
     _.each(moduleMap, function(modulePath, moduleName) {
       loader.__modules[moduleName] = loader.__modules[moduleName] || { 

@@ -6,6 +6,7 @@
 var _ = require('lodash'),
   co = require('co'),
   commander = require('commander'),
+  debug = require('debug')('waigo-cli'),
   path = require('path');
 
 var waigo = require(path.join(__dirname, '..'));
@@ -18,16 +19,27 @@ co(function*() {
     appFolder: __dirname
   });
 
+  debug('Waigo initialised');
+
   // load all commands
   var commands = waigo.getModulesInPath('support/cli');
 
   // initialise parser
   var program = commander;
+
+  // version
+  var packageJson = require(path.join(waigo.getWaigoFolder(), '..', 'package.json'));
+  program.version(packageJson.version);
+
+  // commands
   _.each(commands, function(command) {
+    debug('Found command: ' + command);
+    var commandName = path.basename(command);
+
     var meta = waigo.load(command);
 
     var cmd = program
-      .command(path.basename(command))
+      .command(commandName)
       .description(meta.description)
       .action(co(meta.run));
 
