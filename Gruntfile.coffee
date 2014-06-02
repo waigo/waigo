@@ -5,17 +5,11 @@ module.exports = (grunt) ->
   config =
     src: 'src'
     test: 'test'
-    api_docs: 'docs/api'
 
   grunt.initConfig
     config: config
 
     watch:
-      api_docs:
-        files: [
-          "<%= config.src %>/{,*/}{,*/}{,*/}{,*/}*.js"
-        ]
-        tasks: ["api_docs"]
       test:
         files: [
           "<%= config.src %>/{,*/}{,*/}{,*/}{,*/}{,*/}{,*/}*.js"
@@ -33,6 +27,7 @@ module.exports = (grunt) ->
           '<%= config.test %>/unit/index.test.js'
           '<%= config.test %>/unit/loader.test.js'
           '<%= config.test %>/unit/src/{,*/}{,*/}{,*/}{,*/}{,*/}{,*/}*.test.js'
+          '<%= config.test %>/unit/src/support/cliCommand.test.js'
         ]
 
     shell:
@@ -48,17 +43,11 @@ module.exports = (grunt) ->
           '<%= config.src %>/**/**/*.js' 
           '<%= config.src %>/**/**/**/*.js' 
         ].join(' ')
-      api_docs:
-        command: 'node_modules/.bin/doxx --ignore nothingToIgnore --source <%= config.src %> --target <%= config.api_docs %>'
 
 
 
   grunt.registerTask "jshint", [ 
     "shell:jshint" 
-  ]
-
-  grunt.registerTask "docs", [ 
-    "shell:api_docs" 
   ]
 
   grunt.registerTask "test", [ 
@@ -68,7 +57,6 @@ module.exports = (grunt) ->
 
   grunt.registerTask "build", [
     "test"
-    "docs"
   ]
 
   grunt.registerTask "default", ["build"]

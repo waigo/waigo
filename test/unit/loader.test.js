@@ -56,7 +56,10 @@ test['init()'] = {
       }
     };
 
-    testUtils.deleteTestFolders()
+    Promise.all([
+      testUtils.deletePackageJson(),
+      testUtils.deleteTestFolders()
+    ])
       .then(testUtils.createTestFolders)
       .then(function createPlugins() {
         return Promise.all([
@@ -64,14 +67,17 @@ test['init()'] = {
           testUtils.createPluginModules('waigo-plugin-2_TESTPLUGIN'),
           testUtils.createPluginModules('another-plugin_TESTPLUGIN'),
           testUtils.createAppModules({
-            'pluginConfig.js': 'module.exports = { dependencies: {"waigo-plugin-1_TESTPLUGIN": "0.0.1"} }'
+            'pluginConfig': 'module.exports = { dependencies: {"waigo-plugin-1_TESTPLUGIN": "0.0.1"} }'
           })
         ]);
       })
       .nodeify(done);
   },
   afterEach: function(done) {
-    testUtils.deleteTestFolders().nodeify(done);
+    Promise.all([
+      testUtils.deletePackageJson(),
+      testUtils.deleteTestFolders(),
+    ]).nodeify(done);
   },
   'can be called more than once': function(done) {
     loader.initPromise()
@@ -110,23 +116,52 @@ test['init()'] = {
           .nodeify(done);
       },
       'path to file': {
-        'file exists': function(done) {
-          var options = this.options;
-          options.plugins.config = path.join(options.appFolder, 'pluginConfig.js');
+        'custom': {
+          'exists': function(done) {
+            var options = this.options;
+            options.plugins.config = path.join(options.appFolder, 'pluginConfig.js');
 
-          loader.initPromise(options)
-            .then(function checkLoadedPlugins() {
-              options.plugins.names.should.eql(['waigo-plugin-1_TESTPLUGIN']);
-            })
-            .nodeify(done);          
+            loader.initPromise(options)
+              .then(function checkLoadedPlugins() {
+                options.plugins.names.should.eql(['waigo-plugin-1_TESTPLUGIN']);
+              })
+              .nodeify(done);          
+          },
+          'does not exist': function(done) {
+            var options = this.options;
+            options.plugins.config = path.join(options.appFolder, 'invalid.js');
+
+            loader.initPromise(options)
+              .should.be.rejectedWith("Cannot find module '" + options.plugins.config + "'")
+              .and.notify(done);
+          }          
         },
-        'file does not exist': function(done) {
-          var options = this.options;
-          options.plugins.config = path.join(options.appFolder, 'invalid.js');
+        'package.json': {
+          'exists': function(done) {
+            var options = this.options;
+            options.plugins.config = 'package.json';
 
-          loader.initPromise(options)
-            .should.be.rejectedWith("Cannot find module '" + options.plugins.config + "'")
-            .and.notify(done);
+            testUtils.writePackageJson(
+              '{ "dependencies": {"waigo-plugin-1_TESTPLUGIN": "0.0.1"} }'
+            )
+              .then(function() {
+                return loader.initPromise(options);
+              })
+              .then(function checkLoadedPlugins() {
+                options.plugins.names.should.eql(['waigo-plugin-1_TESTPLUGIN']);
+              })
+              .nodeify(done);          
+          },
+          'does not exist': function(done) {
+            var options = this.options;
+            options.plugins.config = 'package.json';
+
+            loader.initPromise(options)
+              .then(function checkLoadedPlugins() {
+                options.plugins.names.should.not.contain('waigo-plugin-1_TESTPLUGIN');
+              })
+              .nodeify(done);          
+          }          
         }
       }
     },

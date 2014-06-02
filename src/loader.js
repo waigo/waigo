@@ -59,7 +59,9 @@ var _walk = function(folder, options) {
 
     walker.on('file', function(file, stat) {
       var extName = path.extname(file);
-      if ('.js' !== extName) return;
+      if ('.js' !== extName) {
+        return;
+      }
 
       // /x/y/z/abc.js -> /x/y/z/abc
       var dirname = path.dirname(file),
@@ -98,7 +100,7 @@ var _walk = function(folder, options) {
  * @param {Object} [options.plugins] Plugin loading configuration.
  * @param {Array} [options.plugins.names] Plugins to load. If omitted then other options are used to load plugins.
  * @param {Array} [options.plugins.glob] Regexes specifying plugin naming conventions. Default is `waigo-*`.
- * @param {String} [options.plugins.config] JSON config containing names of plugins to load. Default is to load `package.json`.
+ * @param {String|Object} [options.plugins.config] JSON config containing names of plugins to load. If a string is given then it assumed to be the path of a Javasript file. Default is to load `package.json`.
  * @param {Array} [options.plugins.configKey] Names of keys in JSON config whose values contain names of plugins. Default is `dependencies, devDependencies, peerDependencies`.
  */
 loader.init = function*(options) {
@@ -169,6 +171,7 @@ loader.init = function*(options) {
         ]
       });
 
+    /*jshint -W083 */
     _.each(moduleMap, function(modulePath, moduleName) {
       loader.__modules[moduleName] = loader.__modules[moduleName] || { 
         sources: {} 

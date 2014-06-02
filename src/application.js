@@ -70,11 +70,13 @@ Application.loadConfig = function*(options) {
  * @return {Object} The result of the call to the final startup step.
  */
 Application.start = function*(options) {
+  /*jshint -W030 */
   yield* Application.loadConfig(options);
 
   for (let idx in Application.app.config.startupSteps) {
     let stepName = Application.app.config.startupSteps[idx];
     debug('Running startup step: ' + stepName);
+    /*jshint -W030 */
     yield* waigo.load('support/startup/' + stepName)(Application.app);
   }
 };

@@ -50,10 +50,11 @@ Waigo requires **Node.js v0.11.10 or above**. This along with the command-line
 `--harmony` flag will give us the ES6 features we need. An easy 
 way to manage multiples versions of Node.js is to use [NVM](https://github.com/creationix/nvm).
 
-Once Node is installed go ahead and install Waigo:
+Waigo comes with a [command-line interface](#command-line) (CLI). It's best to install 
+Waigo as a global NPM module so that you can easily use this tool.
 
 ```bash
-$ npm install waigo
+$ npm install -g waigo
 ```
 
 ## Hello world
@@ -66,48 +67,32 @@ $ npm install co
 ```
 
 If your app folder is located at e.g. `/dev/myapp` then Waigo will by default 
-assume that the source code for your app is located in a `src` subfolder, i.e. 
-at `/dev/myapp/src`.
+assume that the source code for your app will be located in a `src` subfolder, 
+i.e. at `/dev/myapp/src`.
 
-Create a new Javascript file in your app's source folder with the following 
-contents:
-
-```javascript
-// file: <app folder>/src/myapp.js
-
-var co = require('co'),
-  waigo = require('waigo');
-
-// Generator co-routine
-co(function*() {
-  // Initialise waigo module loading system
-  yield waigo.init();
-  // Start the server
-  yield waigo.load('application').start();
-})(function(err) {
-    console.log(err);  
-  });
-```
-
-Finally, we need a template:
+Inside your app folder run the following command:
 
 ```bash
-$ mkdir -p src/views
-$ echo "p= title" > src/views/index.jade
+$ waigo init
+
+[waigo-cli] NPM install waigo
+[waigo-cli] NPM install co
+... 
+[waigo-cli] Creating: start-app.js
+[waigo-cli] Creating: src/views/index.jade
 ```
 
-Start the app:
+You can now start your application by running:
 
 ```bash
-$ node --harmony myapp.js
+$ ./start-app.js
+
+2014-06-02T05:13:25.993Z - info: Server listening in development mode on port 3000 (baseURL: http://localhost:3000)
 ```
 
-Visit [http://localhost:3000](http://localhost:3000) and you should see the 
-following HTML output: 
+Visit [http://localhost:3000](http://localhost:3000) and you should see some 
+HTML which says 'Hello Waigo'.
 
-```html
-<p>Hello world!</p>
-```
 
 # Extend and Override
 
@@ -136,8 +121,7 @@ _Note: if you have [plugins](#plugins) installed their paths will also be
 searched._
 
 So if you provide a `application.js` within your app's folder tree then Waigo 
-will use that instead of the default one provided by the framework. This rules 
-applies to **every** module file within the framework. 
+will use that instead of the default one provided by the framework.
 
 **If you do not like something provided by Waigo you can easily override it.**
 
@@ -167,23 +151,26 @@ App.start = ...
 
 ## Module loader
 
-Going back to the small "Hello world" example we built above, there is another 
-call we make:
+We said earlier that you can override every module file within the framework 
+with your own custom version that sits within your application folder tree. 
 
-```javascript
-waigo.init();
-```
-
-Waigo works out which module files are available in this call. This 
+The available module files and their overrides are all worked out in the call 
+to [`waigo.init()`](http://waigojs.com/api/loader.js.html#init). This 
 always has to be the first call you make when initialising your application. 
 
-It does this so that it can catch any [plugin conflicts](#plugins) at startup 
-_(rather than later on, when your app is already running)_.
+The `.init()` method scans for module files in the following locations:
 
-The `.init()` method scans for `.js` files in the folder trees of the 
-framework, any loaded plugins as well as your app. To speed up this process it 
-is thus recommended that your app's folder tree only contain Javascript code 
-that will run as part of the Waigo app.
+* The Waigo framework folder tree
+* Folder trees belonging to Waigo [plugins](#plugins)
+* Your application's folder tree
+
+Note that it does not scan the following sub paths within each folder tree:
+
+* `src/views` - this usually contains Jade templates
+* `cli/data` - this contains data for use by the [command-line](#command-line) tools
+
+Thus anything you place within the above sub-paths can neither be loaded 
+through `waigo.load()` nor overridden. 
 
 ## Plugins
 
@@ -198,6 +185,35 @@ quality of code in the Waigo ecosystem.
 Since plugins are just NPM modules they are very easy to share with others,
 and come with all the benefits that are available to normal NPM modules.
 
+### Loading plugins
+
+The `waigo.init()` method automatically tries to work out what plugins are 
+available by loading in the `package.json` file. By default it searches the 
+`dependencies`, `devDependencies` and `peerDependencies` lists for any modules 
+which are prefixed with `waigo-` and assumes that these are plugins which 
+should be loaded.
+
+However you can override every aspect of this search. The documentation for 
+`waigo.init()` gives you the available options:
+
+```javascript
+/**
+ * ...
+ * @param {Object} [options.plugins] Plugin loading configuration.
+ * @param {Array} [options.plugins.names] Plugins to load. If omitted then other options are used to load plugins.
+ * @param {Array} [options.plugins.glob] Regexes specifying plugin naming conventions. Default is `waigo-*`.
+ * @param {String|Object} [options.plugins.config] JSON config containing names of plugins to load. If a string is given then it assumed to be the path of a Javasript file. Default is to load `package.json`.
+ * @param {Array} [options.plugins.configKey] Names of keys in JSON config whose values contain names of plugins. Default is `dependencies, devDependencies, peerDependencies`.
+ ...
+*/
+```
+
+As you can see you can list the desired plugins in a config file of your 
+choosing and then supply the path to this file. Or you can directly supply a 
+config `Object` itself. And you can override the plugin naming conventions, i.e. 
+how Waigo decided whether something is a plugin name or not. 
+
+
 ### Example
 
 The [waigo-mongo](https://www.npmjs.org/package/waigo-mongo) plugin enables 
@@ -210,7 +226,7 @@ following modules files:
 To get the plugin use `npm`:
 
 ```bash
-# --save ensures it gets added as depenency in package.json
+# --save ensures it gets added as depenendcy in package.json (so that Waigo will find it)
 npm install --save waigo-mongo 
 ```
 
@@ -221,10 +237,9 @@ To enable the database connectivity, your base configuration may look like:
 
 var waigo = require('waigo');
 
-var defaultConfig = waigo.load('config/base');
-
 module.exports = function(config) {
-  defaultConfig(config);
+  // re-use base config from framework
+  waigo.load('waigo:config/base')(config);
 
   config.db = {
     host: '127.0.0.1',
@@ -305,6 +320,73 @@ users can easily search for it.
 
 To see a list of all available plugins visit 
 [https://www.npmjs.org/browse/keyword/waigo](https://www.npmjs.org/browse/keyword/waigoplugin).
+
+
+
+
+# Command-line
+
+Waigo comes with a Command-line interface (CLI) which makes it easy to get a 
+working application up and running. 
+
+We recommend installing Waigo as a global NPM module so that the CLI is 
+available in your `PATH`. It's smart enough to delegate control to your local 
+installation of Waigo (in your `node_modules` folder) if one is present.
+
+The available CLI commands can be seen by typing:
+
+```bash
+$ waigo --help
+
+  Usage: waigo [options] [command]
+
+  Commands:
+
+    init [options]         Initialise and create a skeleton Waigo app
+    ...
+
+  Options:
+
+    -h, --help     output usage information
+    -V, --version  output the version number
+
+``` 
+
+Further help is available for each command. For example to find out what 
+arguments are possible for the `init` command (which we used in the 
+[Hello World](#hello-world) example earlier):
+
+```bash
+$ waigo init --help
+
+  Usage: init [options]
+
+  Options:
+
+    -h, --help             output usage information
+    ...
+```
+
+In the Waigo framework folder tree you will notice the `cli/data` path. This 
+folder contains 
+any data to be used the CLI commands (e.g. script templates) and does not get 
+scanned by the Waigo [module loader](#module-loader).
+
+## Custom commands
+
+Each CLI command is implemented as a module file under the `cli/` path. The 
+CLI executable scans this path at startup and loads in all available commands. 
+
+You can easily override and/or extend 
+built-in commands as well as add your own, and even bundle up custom commands 
+as plugins to be shared with others.
+
+Each module file under the `cli` path represents a single command and exports 
+a subclass of `AbstractCommand`, which is available in 
+[`support/cliCommand`](http://waigojs.com/api/support/cliCommand.js.html). This 
+base class provides a number of useful utility methods for use by actual 
+commands.
+
 
 # Startup
 
@@ -571,15 +653,19 @@ passed to the middleware  constructor:
 // in file: <app folder>/src/config/base.js
 module.exports = function(config) {
   ...
-  config.middleware = [
-    {
-      id: 'example',
-      options: {
-        // everything in here gets passed to the example middleware constructor
+  config.middleware = {
+    /* Order in which middleware gets run */
+    order: [
+      'errorHandler',
+      'example',
+    ],
+    /* Options for each middleware */
+    options: {
+      example: {
+        // everything in here gets passed to the 'example' middleware constructor
       }
-    },
-    ...
-  ];
+    }
+  };
   ...
 }
 ```
@@ -653,33 +739,35 @@ Sessions are created and loaded by the `sessions` middleware, which internally
 uses [koa-session-store](https://github.com/hiddentao/koa-session-store) to
 allow for pluggable session storage layers.
 
-The default session configuration looks as follows:
+The default session middleware configuration looks as follows:
 
 ```javascript
 // file: <waigo framework>/src/config/base.js
+module.exports = function(config) {
+  ...
 
-exports.session = {
-  // cookie signing keys - these are used for signing cookies (using Keygrip) and should be set for your app
-  keys: ['use', 'your', 'own'],
-  // session cookie name
-  name: 'waigo',
-  // session storage
-  store: {
-    // session store type
-    type: 'cookie',
-    // session store config
-    config: {
-      // nothing needed for cookie sessions
+  config.middleware.options.sessions = {
+    // cookie signing keys - these are used for signing cookies (using Keygrip) and should be set for your app
+    keys: ['use', 'your', 'own'],
+    // session cookie name
+    name: 'waigo',
+    // session storage
+    store: {
+      // session store type
+      type: 'cookie',
+      // session store config
+      config: {
+        // nothing needed for cookie sessions
+      }
+    },
+    // session cookie options
+    cookie: {
+      // cookie expires in...
+      validForDays: 7,
+      // cookie valid for url path...
+      path: '/'
     }
-  },
-  // session cookie options
-  cookie: {
-    // cookie expires in...
-    validForDays: 7,
-    // cookie valid for url path...
-    path: '/'
-  }
-};
+  };
 ```
 
 By default session data is stored in the session cookie itself. There are other
@@ -729,27 +817,29 @@ The default output formats configuration is as follows:
 
 ```javascript
 // file: <waigo framework>/src/config/base.js
+module.exports = function(config) {
+  ...
 
-exports.outputFormats = {
-  // List of enabled formats along with options to pass to each formatter.
-  formats: {
-    html: {
-      // Folder relative to application root folder, in which to look for view templates.
-      folder: 'views',
-      // Default view template filename extension when not explicitly provided.
-      ext: 'jade'
-      // Map file extension to rendering engine
-      engine: {
-        'jade': 'jade'
-      }
+  config.middleware.options.outputFormats = {
+    // List of enabled formats along with options to pass to each formatter.
+    formats: {
+      html: {
+        // Folder relative to application root folder, in which to look for view templates.
+        folder: 'views',
+        // Default view template filename extension when not explicitly provided.
+        ext: 'jade'
+        // Map file extension to rendering engine
+        engine: {
+          'jade': 'jade'
+        }
+      },
+      json: {}
     },
-    json: {}
-  },
-  // Use this URL query parameter to determine output format.
-  paramName: 'format',
-  // Default format, in case URL query parameter which determines output format isn't provided.
-  default: 'html'
-};
+    // Use this URL query parameter to determine output format.
+    paramName: 'format',
+    // Default format, in case URL query parameter which determines output format isn't provided.
+    default: 'html'
+  };
 ```
 
 HTML and JSON output formats are supported by default, with the
@@ -798,10 +888,10 @@ middleware configuration. For example:
 
 ```javascript
 // file: <app folder>/src/config/base.js
-
-module.exports = function(config) {
+module.exports = {
   ...
-  config.outputFormats = {
+
+  config.middleware.options.outputFormats = {
     ...
     xml: {
       config: {
@@ -809,8 +899,6 @@ module.exports = function(config) {
       }
     }
   };
-  ...
-}
 ```
 
 ## View objects
@@ -965,8 +1053,6 @@ module.exports = function(config) {
     'helpers',
     ...
   ];
-  ...
-};
 ```
 
 Within your Jade template the `prettyDate` function would now be available:
@@ -985,11 +1071,11 @@ end of your web application.  The default configuration for this middleware is:
 ```javascript
 // <waigo framework>/src/config/base.js
 ...
-  config.staticResources = {
-    // relative to app folder
-    folder: '../public',
-    options: {}
-  };
+config.middleware.options.staticResources = {
+  // relative to app folder
+  folder: '../public',
+  options: {}
+};
 ...
 ```
 

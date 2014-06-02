@@ -1,8 +1,7 @@
 "use strict";
 
 
-var debug require('debug')('waigo-cli-init'),
-  fs = require('fs-then'),
+var debug = require('debug')('waigo-cli-init'),
   path = require('path'),
   util = require('util');
 
@@ -10,70 +9,29 @@ var waigo = require('../../'),
   AbstractCommand = waigo.load('support/cliCommand');
   
 
+var dataFolder = path.join(__dirname, 'data', 'init');  
 
-var Command = module.exports = AbstractCommand.define(
-  'Initialise and create a skeleton Waigo app'
-);
 
-function(name, description) {
-  AbstractCommand.call(this, module, );
+/**
+ * @constructor
+ */
+var Command = module.exports = function() {
+  AbstractCommand.call(this, 
+    'Initialise and create a skeleton Waigo app', []
+  );
 };
-util.inheritsFrom(Command, AbstractCommand);
-
-
-
-Command.prototype.getOptions = function() {
-  return [
-    ['--app-folder [folder]', 'Relative path to application root folder (default: src)', 'src']
-  ];
-};
-
-
-
-Command.prototype.run = function*() {
-  // get current folder
-  var currentFolder = process.cwd();
-  debug(currentFolder);
-
-  // do index.js
-  var pathToIndexJs = path.join(currentFolder, 'index.js');
-  if (! (yield fs.exists(pathToIndexJs)) ) {
-    this.log('Creating index.js...');
-  } else {
-    this.log('Index.js already present.');
-  }
-};
+util.inherits(Command, AbstractCommand);
 
 
 
 /**
- * This command creates the barebones structure of a basic Waigo application, 
- * enough to run your application.
- *
- * It generates the following:
- *
- * * `index.js` - the application entry point
- * * `src/` - the application source folder
- * * `src/views/index.jade` - a default 'Hello World' view template for the built-in default controller.
+ * @override
  */
-module.exports = {
-  description: 'Initialise and create a skeleton Waigo app',
+Command.prototype.run = function*() {
+  var currentFolder = this._getProjectFolder();
 
-  options: [
-    ['--app-folder [folder]', 'Relative path to application root folder (default: src)', 'src']
-  ],
-
-  run: function*() {
-    // get current folder
-    var currentFolder = process.cwd();
-    debug(currentFolder);
-
-    // do index.js
-    var pathToIndexJs = path.join(currentFolder, 'index.js');
-    if (! (yield fs.exists(pathToIndexJs)) ) {
-      console.log('need to create');
-    } else {
-      debug('index.js found ')
-    }
-  }
+  yield this.installPkgs('waigo', 'co');
+  yield this.copyFile(path.join(dataFolder, 'start-app.js'), 'start-app.js');
+  yield this.copyFile(path.join(dataFolder, 'index.jade'), 'src/views/index.jade');
 };
+
