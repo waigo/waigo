@@ -122,9 +122,16 @@ loader.init = function*(options) {
     
     if ('string' === typeof config) {
       if ('package.json' === config) {
-        config = require(findup('package.json', {
+        var pathToPackageJson = findup('package.json', {
           cwd: appFolder
-        }));
+        });
+
+        if (pathToPackageJson) {
+          config = require(pathToPackageJson);
+        } else {
+          debug('Unable to find package.json.');
+          config = {};
+        } 
       } else {
         config = require(path.resolve(config));        
       }
