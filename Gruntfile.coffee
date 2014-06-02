@@ -38,7 +38,7 @@ module.exports = (grunt) ->
       jshint:
         command: [
           'node_modules/.bin/jshint --config .jshintrc'
-          '<%= config.src %>/routes.js'
+          '<%= config.src %>/*.js'
           '<%= config.src %>/**/*.js'
           '<%= config.src %>/**/**/*.js' 
           '<%= config.src %>/**/**/**/*.js' 
