@@ -143,7 +143,8 @@ loader.init = function*(options) {
       return result.concat(Object.keys(config[prop] || {}));
     }, []);
 
-    options.plugins.names = _.uniq(globule.match(pattern, names));
+    options.plugins.names = 
+      _.without(_.uniq(globule.match(pattern, names)), 'waigo-test-utils');
   }
   
   debug('Plugins to load: ' + options.plugins.names.join(', '));

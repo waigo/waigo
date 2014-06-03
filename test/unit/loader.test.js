@@ -101,7 +101,7 @@ test['init()'] = {
 
       loader.initPromise(options)
         .then(function checkLoadedPlugins() {
-          options.plugins.names.should.eql(['waigo-test-utils']);
+          options.plugins.names.should.eql([]);
         })
         .nodeify(done);
     },
