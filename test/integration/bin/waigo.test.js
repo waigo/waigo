@@ -19,7 +19,7 @@ var pathToBin = path.join(__dirname, '..', '..', '..', 'bin', 'waigo');
 var execBin = function(args) {
   var defer = Promise.defer();
 
-  shell.exec(pathToBin + ' ' + args, function(code, output) {
+  shell.exec('node --harmony ' + pathToBin + ' ' + args, function(code, output) {
     if (0 !== code) {
       console.error(output);
       defer.reject(new Error('Exit: ' + code));
