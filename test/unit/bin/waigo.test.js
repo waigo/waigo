@@ -21,6 +21,7 @@ var execBin = function(args) {
 
   shell.exec(pathToBin + ' ' + args, function(code, output) {
     if (0 !== code) {
+      console.error(output);
       defer.reject(new Error('Exit: ' + code));
     } else {
       defer.resolve(output);
