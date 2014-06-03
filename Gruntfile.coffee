@@ -27,7 +27,6 @@ module.exports = (grunt) ->
           '<%= config.test %>/unit/index.test.js'
           '<%= config.test %>/unit/loader.test.js'
           '<%= config.test %>/unit/src/{,*/}{,*/}{,*/}{,*/}{,*/}{,*/}*.test.js'
-          '<%= config.test %>/unit/src/support/cliCommand.test.js'
         ]
 
     shell:

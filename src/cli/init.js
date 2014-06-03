@@ -13,7 +13,9 @@ var dataFolder = path.join(__dirname, 'data', 'init');
 
 
 /**
- * @constructor
+ * The init CLI command.
+ *
+ * This command initialises a skeleton Waigo application with a basic view template.
  */
 var Command = module.exports = function() {
   AbstractCommand.call(this, 
@@ -25,11 +27,9 @@ util.inherits(Command, AbstractCommand);
 
 
 /**
- * @override
+ * Run this command.
  */
 Command.prototype.run = function*() {
-  var currentFolder = this._getProjectFolder();
-
   yield this.installPkgs('waigo', 'co');
   yield this.copyFile(path.join(dataFolder, 'start-app.js'), 'start-app.js');
   yield this.copyFile(path.join(dataFolder, 'index.jade'), 'src/views/index.jade');

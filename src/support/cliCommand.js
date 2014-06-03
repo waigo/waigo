@@ -16,7 +16,10 @@ shell.execAsync = Q.promisify(shell.exec, shell);
 
 
 /**
- * Abstract base class for CLI commands.
+ * Abstract base class for command-line tool commands.
+ *
+ * This gets used the command-line executable and is not really meant for 
+ * use within your web application.
  *
  * @param  {String} description Description of what it does.
  * @param  {Array} options Command options.
@@ -32,8 +35,7 @@ var AbstractCommand = module.exports = function(description, options) {
 /** 
  * Run this command.
  *
- * This function gets passed to [Commander.action](http://visionmedia.github.io/commander.js/#Command.prototype.action) 
- * as the command handler.
+ * This function gets passed to [Commander.action](http://visionmedia.github.io/commander.js/#Command.prototype.action) as the command handler.
  */
 AbstractCommand.prototype.run = function*() {
   throw new Error('Not yet implemented');
@@ -59,7 +61,7 @@ AbstractCommand.prototype.log = function(msg) {
 /** 
  * Copy a file to given destination if it doesn't already exist at that destination.
  *
- * This simply checks to see if a file with the same name exists at the 
+ * This checks to see if a file with the same name exists at the 
  * destination. It doesn't check that it contains the same content as the 
  * source file.
  *
@@ -87,12 +89,11 @@ AbstractCommand.prototype.copyFile = function*(src, dst) {
 
 
 /** 
- * Install one or more NPM packages into the local modules folder.
+ * Install one or more NPM packages into the local NPM modules folder.
  *
- * If a package is already present then it does 
- * not get installed again.
+ * If a package is already present then it does not get installed again.
  * 
- * Note: This does not modify the local package.json (if it exists).
+ * _Note: This does not modify the local package.json (if it exists)._
  *
  * @param {String} ... NPM package names.
  */

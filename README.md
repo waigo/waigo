@@ -381,9 +381,8 @@ You can easily override and/or extend
 built-in commands as well as add your own, and even bundle up custom commands 
 as plugins to be shared with others.
 
-Each module file under the `cli` path represents a single command and exports 
-a subclass of `AbstractCommand`, which is available in 
-[`support/cliCommand`](http://waigojs.com/api/support/cliCommand.js.html). This 
+All CLI commands are implemented as concrete subclasses of 
+[`AbstractCommand`](http://waigojs.com/api/support/cliCommand.js.html). This 
 base class provides a number of useful utility methods for use by actual 
 commands.
 
