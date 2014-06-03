@@ -18,3 +18,4 @@ docs/api/*
 # test
 test/data/app
 test/data/*
+src/cli/__test.js

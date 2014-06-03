@@ -62,7 +62,7 @@ co(function*() {
       .description(obj.description)
       .action(
         co(function*() {
-          yield* obj.run.apply(obj, arguments);
+          yield obj.run.apply(obj, arguments);
         })
       );
 

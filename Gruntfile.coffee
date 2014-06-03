@@ -26,6 +26,7 @@ module.exports = (grunt) ->
         src: [
           '<%= config.test %>/unit/index.test.js'
           '<%= config.test %>/unit/loader.test.js'
+          '<%= config.test %>/unit/bin/waigo.test.js'
           '<%= config.test %>/unit/src/{,*/}{,*/}{,*/}{,*/}{,*/}{,*/}*.test.js'
         ]
 

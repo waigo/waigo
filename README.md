@@ -59,18 +59,12 @@ $ npm install -g waigo
 
 ## Hello world
 
-We will use [co](https://github.com/visionmedia/co) to iterate through our 
-generators:
+If your project folder is located at e.g. `/dev/myapp` then Waigo will by 
+default assume that the source code for your app will be located in a 
+`src` subfolder, i.e. at `/dev/myapp/src`. This folder will from now on be 
+referred to as your 'app folder'.
 
-```bash
-$ npm install co
-```
-
-If your app folder is located at e.g. `/dev/myapp` then Waigo will by default 
-assume that the source code for your app will be located in a `src` subfolder, 
-i.e. at `/dev/myapp/src`.
-
-Inside your app folder run the following command:
+Inside your project folder run the following command:
 
 ```bash
 $ waigo init
