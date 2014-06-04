@@ -36,6 +36,7 @@ test['route mapper'] = {
       .then(testUtils.createTestFolder)
       .then(function() {
         return testUtils.createAppModules({
+          'controllers/main': 'exports.index = function*() { yield this.render("index", { title: "Hello World" }); };',
           'support/middleware/test': 'var a = function*() {}; module.exports = function() { return a }; a.ref = a;',
           'support/middleware/test_options': 'module.exports = function(o) { return function*() { return o; } };'
         });

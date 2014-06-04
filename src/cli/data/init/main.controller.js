@@ -11,7 +11,7 @@
  */
 exports.index = function*(next) {
   yield this.render('index', {
-    title: 'Hello world!'
+    title: 'Hello Waigo!'
   });
 };
 

@@ -62,13 +62,19 @@ test['init command'] = {
         installPkgSpy.should.have.been.calledOnce;
         installPkgSpy.should.have.been.calledWithExactly('waigo', 'co');
 
-        copyFileSpy.should.have.been.calledTwice;
+        expect(copyFileSpy.callCount).to.eql(4);
         var dataFolder = path.join(process.cwd(), 'src', 'cli', 'data', 'init');
         copyFileSpy.should.have.been.calledWithExactly(
           path.join(dataFolder, 'start-app.js'), 'start-app.js'
         );
         copyFileSpy.should.have.been.calledWithExactly(
           path.join(dataFolder, 'index.jade'), 'src/views/index.jade'
+        );
+        copyFileSpy.should.have.been.calledWithExactly(
+          path.join(dataFolder, 'main.controller.js'), 'src/controllers/main.js'
+        );
+        copyFileSpy.should.have.been.calledWithExactly(
+          path.join(dataFolder, 'routes.js'), 'src/routes.js'
         );
       })
       .nodeify(done);

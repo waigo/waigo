@@ -6,8 +6,6 @@
  *
  * This maps URL routes to handler methods.
  *
- * The default route map maps `/` URL to the `index()` method on the [`main` controller](controllers/main.js.html):
- *
  * _Note: Supported request methods are: `GET`, `POST`, `PUT`, `DEL`, `OPTIONS` and `HEAD`_
  *
  * You can specify one or more middleware which should get run before running
@@ -54,7 +52,7 @@
  * get initialized for this route with the request body size limit set to `1KB`.
  */
 module.exports = {
-  'GET /' : 'main.index'
+  
 };
 
 
