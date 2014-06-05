@@ -21,8 +21,11 @@ var viewObjectMethod = Object.keys(mixins.HasViewObject).pop();
 var render = function*(context, config, err) {
   try {
     context.status = err.status || 500;
-    context.body = yield* err[viewObjectMethod].call(err, context);
+
+    context.body = yield errors[viewObjectMethod].call(null, context, err);
+
     context.type = 'json';
+
     if (config.showStack) {
       context.body.stack = err.stack.split("\n");
     }

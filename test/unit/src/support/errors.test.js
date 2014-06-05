@@ -202,7 +202,39 @@ test['errors'] = {
         })
         .nodeify(done);
     }
-  }  
+  },
+
+
+  'convert error to view object': {
+    'Error with method to convert itself': function(done) {
+      var err = new Error('test');
+
+      test.mocker.stub(err, 'toViewObject', function() {
+        return Promise.resolve('blah');
+      });
+
+      testUtils.spawn(err.toViewObject, err)
+        .then(function(vo) {
+          vo.should.eql('blah');
+        })
+        .nodeify(done);
+    },
+    'Error without method to convert itself': function(done) {
+      var err = new Error('test');
+
+      delete err.toViewObject;
+
+      testUtils.spawn(err.toViewObject, err)
+        .then(function(vo) {
+          vo.should.eql({
+            type: 'Error',
+            msg: 'test'
+          });
+        })
+        .nodeify(done);
+    }
+  }
+  
 };
 
 

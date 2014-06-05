@@ -11,6 +11,9 @@ var waigo = require('../../'),
 
 mixins.applyTo(Error, mixins.HasViewObject);
 
+var viewObjectMethod = Object.keys(mixins.HasViewObject).pop();
+
+
 
 
 /**
@@ -22,7 +25,7 @@ mixins.applyTo(Error, mixins.HasViewObject);
  * 
  * @return {Object} Plain object.
  */
-Error.prototype.toViewObject = function*(ctx) {
+Error.prototype[viewObjectMethod] = function*(ctx) {
   return {
     type: this.name || 'Error',
     msg: this.message
@@ -82,7 +85,7 @@ util.inherits(MultipleError, RuntimeError);
  *
  * @return {Object} Plain object.
  */
-MultipleError.prototype.toViewObject = function*(ctx) {
+MultipleError.prototype[viewObjectMethod] = function*(ctx) {
   var ret = yield RuntimeError.prototype.toViewObject.call(this, ctx);
   ret.errors = {};
 
@@ -121,6 +124,26 @@ exports.define = function(newClassName, baseClass) {
 
 
 
+
+
+/**
+ * Convert given error into a view object representation.
+ *
+ * @param {Object} ctx Request context.
+ * @param {Error} err An error object.
+ * 
+ * @return {Object} A plain object.
+ */
+exports[viewObjectMethod] = function*(ctx, err) {
+  if (err[viewObjectMethod]) {
+    return yield err[viewObjectMethod].call(err, ctx);
+  } else {
+    return {
+      type: err.name || 'Error',
+      msg: err.message
+    }
+  }
+};
 
 
 
