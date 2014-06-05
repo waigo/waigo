@@ -11,7 +11,7 @@ var validator = require('validator');
  * @throws Error If not an email address.
  */
 module.exports = function() {
-  return function*(form, field, value) {
+  return function*(field, value) {
     if (!validator.isEmail(value)) {
       throw new Error('Must be an email address');
     }

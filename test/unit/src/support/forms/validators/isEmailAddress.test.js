@@ -35,7 +35,7 @@ test['isEmailAddress'] = {
     var self = this;
     var fn = validator();
 
-    testUtils.spawn(fn, fn, null, null, 'test')
+    testUtils.spawn(fn, fn, null, 'test')
       .finally(function() {
         try {
           self.spy.should.have.been.calledWithExactly('test');

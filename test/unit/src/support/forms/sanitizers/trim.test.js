@@ -37,7 +37,7 @@ test['trim'] = {
 
     sanitizerResult = 123;
 
-    testUtils.spawn(fn, fn, null, null, 'test')
+    testUtils.spawn(fn, fn, null, 'test')
       .then(function(val) {
         self.spy.should.have.been.calledWithExactly('test');
         expect(val).to.eql(123);

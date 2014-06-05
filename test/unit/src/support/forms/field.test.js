@@ -217,7 +217,7 @@ test['form fields'] = {
         f.sanitizers = [
           {
             id: 'test',
-            fn: function*(form, field, v) {
+            fn: function*(field, v) {
               return v + '123';
             }
           }
@@ -235,7 +235,7 @@ test['form fields'] = {
         f.sanitizers = [
           {
             id: 'test',
-            fn: function*(form, field, v) {
+            fn: function*(field, v) {
               throw new Error('blah');
             }
           }
@@ -265,7 +265,7 @@ test['form fields'] = {
         f.validators = [
           {
             id: 'testv',
-            fn: function*(form, field, v) {}
+            fn: function*(field, v) {}
           }
         ];
 
@@ -279,7 +279,7 @@ test['form fields'] = {
         f.validators = [
           {
             id: 'testv',
-            fn: function*(form, field, v) {
+            fn: function*(field, v) {
               throw new Error('blah');
             }
           }

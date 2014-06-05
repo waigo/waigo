@@ -29,49 +29,49 @@ test['notEmpty'] = {
   'null': function(done) {
     var fn = validator();
 
-    testUtils.spawn(fn, fn, null, null, null)
+    testUtils.spawn(fn, fn, null, null)
       .should.be.rejectedWith('Must not be empty')
       .and.notify(done);
   },
   'undefined': function(done) {
     var fn = validator();
 
-    testUtils.spawn(fn, fn, null, null, undefined)
+    testUtils.spawn(fn, fn, null, undefined)
       .should.be.rejectedWith('Must not be empty')
       .and.notify(done);
   },
   'empty string': function(done) {
     var fn = validator();
 
-    testUtils.spawn(fn, fn, null, null, '')
+    testUtils.spawn(fn, fn, null, '')
       .should.be.rejectedWith('Must not be empty')
       .and.notify(done);
   },
   'non-empty string': function(done) {
     var fn = validator();
 
-    testUtils.spawn(fn, fn, null, null, 'a')
+    testUtils.spawn(fn, fn, null, 'a')
       .should.be.fulfilled
       .and.notify(done);
   },
   'number': function(done) {
     var fn = validator();
 
-    testUtils.spawn(fn, fn, null, null, 123)
+    testUtils.spawn(fn, fn, null, 123)
       .should.be.fulfilled
       .and.notify(done);
   },
   'boolean: true': function(done) {
     var fn = validator();
 
-    testUtils.spawn(fn, fn, null, null, true)
+    testUtils.spawn(fn, fn, null, true)
       .should.be.fulfilled
       .and.notify(done);
   },
   'boolean: false': function(done) {
     var fn = validator();
 
-    testUtils.spawn(fn, fn, null, null, false)
+    testUtils.spawn(fn, fn, null, false)
       .should.be.fulfilled
       .and.notify(done);
   }
