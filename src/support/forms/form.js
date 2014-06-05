@@ -51,7 +51,8 @@ FormValidationError.prototype.toViewObject = function*(ctx) {
  * Form field values get stored in an internal state object which can be retrieved 
  * and set at any time, thus allowing you to share state between `Form` instances 
  * as well as quickly restore a `Form` to a previously set state.
- * 
+ *
+ * @param {Object} ctx Current request context.
  * @param {Object|Form} config form configuration or an existing `Form` instance.
  * @param {Object} [state] The internal state to set for this form.
  * @constructor

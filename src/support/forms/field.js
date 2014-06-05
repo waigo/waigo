@@ -143,7 +143,7 @@ Field.prototype.setSanitizedValue = function*(val) {
     let sanitizerFn = this.sanitizers[idx].fn;
 
     try {
-      val = yield sanitizerFn(this.form, this, val);
+      val = yield sanitizerFn(this, val);
     } catch (e) {
       throw new FieldSanitizationError(e.message);
     }
@@ -180,7 +180,7 @@ Field.prototype.validate = function*() {
     let validator = this.validators[idx];
 
     try {
-      yield validator.fn(this.form, this, this.value);
+      yield validator.fn(this, this.value);
     } catch (err) {
       if (!errors) {
         errors = {};
@@ -202,9 +202,11 @@ Field.prototype.validate = function*() {
 /**
  * Get renderable representation of this field.
  *
+ * @param {Object} ctx Current request context.
+ * 
  * @return {Object}
  */
-Field.prototype.toViewObject = function*() {
+Field.prototype.toViewObject = function*(ctx) {
   return {
     type: this.config.type,
     name: this.name,
