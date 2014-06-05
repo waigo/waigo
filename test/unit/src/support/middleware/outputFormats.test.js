@@ -150,11 +150,24 @@ test['output formats middleware'] = {
       dummy: true,
       dummy2: {
         blah: 123
-      }
+      },
+      dummy3: [
+        456,
+        [ 1 ],
+        { bar: 999 },
+        {}
+      ]
     };
+
     locals.dummy2[toViewObjectMethodName] = function*() {
       return {
         val: 55
+      };
+    };
+
+    locals.dummy3[3][toViewObjectMethodName] = function*() {
+      return {
+        val: 77
       };
     };
 
@@ -163,13 +176,19 @@ test['output formats middleware'] = {
         expect(testUtils.isGeneratorFunction(ctx.render)).to.be.true;
       })
       .then(function() {
-        testUtils.spawn(ctx.render, ctx, locals)
-          .then(function(value) {
-            expect(value).to.eql({
+        return testUtils.spawn(ctx.render, ctx, null, locals)
+          .then(function() {
+            expect(ctx.body).to.eql({
               dummy: true,
               dummy2: {
                 val: 55
-              }
+              },
+              dummy3: [
+                456,
+                [ 1 ],
+                { bar: 999 },
+                { val: 77 }
+              ]
             });
           });
       })

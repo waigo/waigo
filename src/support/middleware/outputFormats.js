@@ -13,6 +13,38 @@ var viewObjectMethod = Object.keys(mixins.HasViewObject).pop();
 
 
 /**
+ * Get generator for converting given template variable into a view object.
+ *
+ * @param {Object} ctx Current request context.
+ * @param  {*} templateVar Template variable.
+ * @return {Generator}
+ * @private
+ */
+var toViewObjectGenerator = function(ctx, templateVar) {
+  // has view object method
+  if (templateVar[viewObjectMethod]) {
+    return templateVar[viewObjectMethod].call(templateVar, ctx);
+  } 
+  // is an array
+  else if (templateVar instanceof Array) {
+    // recursive call on all children
+    return templateVar.map(function(local) {
+      return toViewObjectGenerator(ctx, local);
+    });
+  }
+  // everything else
+  else {
+    return templateVar;
+  }
+
+};
+
+
+
+
+
+
+/**
  * Build output formats middleware.
  *
  * Each format specified in `options.formats` is a key-value mapping where the 
@@ -50,18 +82,14 @@ module.exports = function(options) {
 
     // attach renderer
     this.render = function*(view, locals) {
-      // convert each local to a view object
-      var viewObjectCalls = {};
+      
+      // get generators for converting locals into view objects
+      var viewObjectGenerators = {};
       for (let idx in locals) {
-        let local = locals[idx];
-
-        if (local[viewObjectMethod]) {
-          viewObjectCalls[idx] = local[viewObjectMethod].call(local, ctx);
-        } else {
-          viewObjectCalls[idx] = local;
-        }
+        viewObjectGenerators[idx] = toViewObjectGenerator(ctx, locals[idx]);
       }
-      var viewObjects = yield viewObjectCalls;
+
+      var viewObjects = yield viewObjectGenerators;
 
       // call actual rendering method
       yield enabledFormats[requestedFormat].render.call(ctx, view, viewObjects);

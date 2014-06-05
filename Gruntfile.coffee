@@ -26,8 +26,8 @@ module.exports = (grunt) ->
         src: [
           '<%= config.test %>/unit/index.test.js'
           '<%= config.test %>/unit/loader.test.js'
-          '<%= config.test %>/integration/bin/waigo.test.js'
           '<%= config.test %>/unit/src/{,*/}{,*/}{,*/}{,*/}{,*/}{,*/}*.test.js'
+          '<%= config.test %>/integration/bin/waigo.test.js'
         ]
 
     shell:
