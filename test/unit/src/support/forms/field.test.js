@@ -306,6 +306,7 @@ test['form fields'] = {
       var f = this.field;
       f.config.type = 'text';
       f.config.label = 'Name';
+      f.config.helpText = 'ahahaha ssd';
       f.value = 87;
       f.originalValue = 98;
 
@@ -315,6 +316,7 @@ test['form fields'] = {
             type: 'text',
             name: 'test',
             label: 'Name',
+            helpText: 'ahahaha ssd',
             value: 87,
             originalValue: 98
           });

@@ -211,6 +211,7 @@ Field.prototype.toViewObject = function*(ctx) {
     type: this.config.type,
     name: this.name,
     label: this.config.label,
+    helpText: this.config.helpText,
     value: this.value,
     originalValue: this.originalValue
   };
