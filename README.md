@@ -453,6 +453,16 @@ module.exports = function(config) {
 };
 ```
 
+## Shutdown steps
+
+Similar to startup steps, Waigo also allows for _shutdown steps_, tasks which 
+get executed when `Application.shutdown()` is called. 
+
+The default shutdown steps can all be found under the `support/shutdown` file path
+and can all be overridden within your app. And of course, you can add your own steps.
+
+Waigo provides a `listener` shutdown step which stops the HTTP server.
+
 
 # Configuration
 
