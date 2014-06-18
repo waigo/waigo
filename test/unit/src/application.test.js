@@ -173,7 +173,6 @@ test['app'] = {
       var self = this;
 
       self.Application.app.middleware = [1];
-      self.Application.app.config = {};
 
       testUtils.spawn(self.Application.shutdown)
         .then(function() {

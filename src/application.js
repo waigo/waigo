@@ -93,8 +93,9 @@ Application.start = function*(options) {
  */
 Application.shutdown = function*() {
   // run shutdown steps
-  for (let idx in Application.app.config.shutdownSteps) {
-    let stepName = Application.app.config.shutdownSteps[idx];
+  var shutdownSteps = _.get(Application.app, 'config.shutdownSteps', []);
+  for (let idx in shutdownSteps) {
+    let stepName = shutdownSteps[idx];
     debug('Running shutdown step: ' + stepName);
     /*jshint -W030 */
     yield* waigo.load('support/shutdown/' + stepName)(Application.app);
