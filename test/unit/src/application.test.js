@@ -143,33 +143,37 @@ test['app'] = {
     beforeEach: function(done) {
       var self = this;
 
-      self.resetWaigo()
+      testUtils.createAppModules({
+        'support/shutdown/test': 'module.exports = function*(app) { app.shutdown = 123; };'
+      })
+        .then(function() {
+          return self.resetWaigo();
+        })
         .then(function() {
           self.Application = waigo.load('application');
+          self.app = self.Application.app;
         })
         .nodeify(done);
     },
-    'closes the server if set': function(done) {
+    'calls shutdown steps': function(done) {
       var self = this;
 
-      var closed = 0;
-      self.Application.app.server = {
-        close: function(cb) {
-          closed += 1;
-          cb();
-        }
-      };
+      self.Application.app.config.shutdownSteps = [
+        'test'
+      ];
 
       testUtils.spawn(self.Application.shutdown)
         .then(function() {
-          closed.should.eql(1);
+          self.app.shutdown.should.eql(123);
         })
         .nodeify(done);
+
     },
     'recreates app': function(done) {
       var self = this;
 
       self.Application.app.middleware = [1];
+      self.Application.app.config = {};
 
       testUtils.spawn(self.Application.shutdown)
         .then(function() {

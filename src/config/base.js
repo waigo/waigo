@@ -62,6 +62,16 @@ module.exports = function(config) {
 
 
 
+  /**
+   * The steps to execute as part of the application shutdown process.
+   *
+   * Each of these corresponds to a module file under the `support/shutdown` path.
+   */
+  config.shutdownSteps = [
+    'listener'
+  ];
+
+
 
 
   /**

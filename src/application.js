@@ -74,9 +74,6 @@ Application.start = function*(options) {
   /*jshint -W030 */
   yield* Application.loadConfig(options);
 
-  // setup timers management
-  Application.app.timers = new waigo.load('support/timers');
-
   // run startup steps
   for (let idx in Application.app.config.startupSteps) {
     let stepName = Application.app.config.startupSteps[idx];
@@ -95,13 +92,13 @@ Application.start = function*(options) {
  * This will reset the internal Koa `app` object.
  */
 Application.shutdown = function*() {
-  debug('Stopping timers');
-  Application.app.timers.stop();
-
-  if (Application.app.server) {
-    debug('Shutting down HTTP server');
-    yield Q.promisify(Application.app.server.close, Application.app.server)();
-  } 
+  // run shutdown steps
+  for (let idx in Application.app.config.shutdownSteps) {
+    let stepName = Application.app.config.shutdownSteps[idx];
+    debug('Running shutdown step: ' + stepName);
+    /*jshint -W030 */
+    yield* waigo.load('support/shutdown/' + stepName)(Application.app);
+  }
 
   // prepare the koa app for a restart
   debug('Resetting koa app');

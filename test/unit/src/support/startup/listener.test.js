@@ -12,7 +12,7 @@ var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
 
 
 
-test['listener'] = {
+test['startup listener'] = {
   beforeEach: function(done) {
     var self = this;
 
