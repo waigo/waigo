@@ -70,9 +70,14 @@ Application.loadConfig = function*(options) {
  * @return {Object} The result of the call to the final startup step.
  */
 Application.start = function*(options) {
+  // load config
   /*jshint -W030 */
   yield* Application.loadConfig(options);
 
+  // setup timers management
+  Application.app.timers = new waigo.load('support/timers');
+
+  // run startup steps
   for (let idx in Application.app.config.startupSteps) {
     let stepName = Application.app.config.startupSteps[idx];
     debug('Running startup step: ' + stepName);
@@ -90,6 +95,9 @@ Application.start = function*(options) {
  * This will reset the internal Koa `app` object.
  */
 Application.shutdown = function*() {
+  debug('Stopping timers');
+  Application.app.timers.stop();
+
   if (Application.app.server) {
     debug('Shutting down HTTP server');
     yield Q.promisify(Application.app.server.close, Application.app.server)();
