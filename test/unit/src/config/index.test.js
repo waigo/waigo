@@ -20,7 +20,8 @@ test['config loader'] = {
         var modulesToCreate = {
           'config/base': 'module.exports = function(config) { config.base = 1 };',
           'config/development': 'module.exports = function(config) { config.dev = 1 };',
-          'config/random': 'module.exports = function(config) { config.random = 1 };'
+          'config/random': 'module.exports = function(config) { config.random = 1 };',
+          'config/error': 'module.exports = function(config) { throw new Error("haha") };'
         };
         modulesToCreate['config/development.' + process.env.USER] = 'module.exports = function(config) { config.dev_user = 1 };';
 
@@ -72,5 +73,12 @@ test['config loader'] = {
       user: process.env.USER,
       base: 1
     });
+  },
+  'error in config file': function() {
+    process.env.NODE_ENV = 'error';
+
+    var config = waigo.load('config/index');
+
+    expect(waigo.load('config/index')).to.throw('haha');
   }
 };

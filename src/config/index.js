@@ -2,7 +2,24 @@
 
 
 var _ = require('lodash'),
+  fs = require('fs'),
   waigo = require('../../');
+
+
+/**
+ * Load config module.
+ * @param  {String} name Config module name.
+ * @return {Function} `null` if module not found.
+ */
+var loadConfigModule = function(name) {
+  try {
+    return waigo.load('config/' + name);
+  } catch (e) {
+    return null;
+  }
+};
+
+
 
 
 /**
@@ -33,19 +50,30 @@ module.exports = function() {
     user: process.env.USER
   };
 
-  waigo.load('config/base')(config);
+  // base
+  var fn = loadConfigModule('base');
+  if (!fn) {
+    throw new Error('Base configuration file not found');
+  }
+  fn(config);
 
-  try {
-    waigo.load('config/' + config.mode)(config);
-  } catch (e) {}
 
-  try {
-    waigo.load('config/' + config.mode + '.' + config.user)(config);
-  } catch (e) {}
+  // mode
+  fn = loadConfigModule(config.mode);
+  if (fn) {
+    fn(config);
+  }
 
+  // mode.userId
+  fn = loadConfigModule(config.mode + '.' + config.user);
+  if (fn) {
+    fn(config);
+  }
 
   return config;
 };
+
+
 
 
 
