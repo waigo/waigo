@@ -444,7 +444,6 @@ by modifying the appropriate configuration file:
 module.exports = function(config) {
   config.startupSteps = [
     'logging',
-    'database',
     'middleware',
     'routes',
     'listener',
@@ -452,6 +451,15 @@ module.exports = function(config) {
   ];
 };
 ```
+
+The following startup steps come with Waigo:
+
+* `logging` - *Default: Enabled*. This setups logging available through `app.logger`.
+* `database`- *Default: Disabled*. This sets up the database connection using the configuration found at the `app.config.db`.
+* `models` - *Default: Disabled*. This sets up data model instances based on files found under the `models/` file path inside the application folder.
+* `middleware` - *Default: Enabled*. This sets up the default middleware which gets executed for every request.
+* `routes` - *Default: Enabled*. This maps URL routes contained in `routes.js` to controllers.
+* `listener` - *Default: Enabled*. This starts the HTTP server and is usually the last start step to be run.
 
 ## Shutdown steps
 
