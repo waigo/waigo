@@ -18,6 +18,14 @@ var waigoFolder = path.join(__dirname),
   loader = {};
 
 
+
+
+/**
+ * Get reference to `lodash` extended with `underscore.string` module and Waigo's enhanced mixins (see `support/underscore.js`).
+ */
+loader._ = _;
+
+
 /** 
  * Internal module loading configuration. Do not access or manipulate this yourself. This is exposed purely for testing purposes.
  * @private
