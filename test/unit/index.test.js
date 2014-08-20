@@ -16,3 +16,7 @@ test['waigo same as waigo loader'] = function() {
 };
 
 
+test['exports lodash'] = function() {
+  testUtils.waigo._.should.eql(_);
+};
+
