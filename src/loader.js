@@ -21,7 +21,11 @@ var waigoFolder = path.join(__dirname),
 
 
 /**
- * Get reference to `lodash` extended with `underscore.string` module and Waigo's enhanced mixins (see `support/underscore.js`).
+ * Reference to `lodash`.
+ * 
+ * Once waigo.load('application') has been called this will have been extended 
+ * with `underscore.string` module and Waigo's 
+ * enhanced mixins (see `support/underscore.js`).
  */
 loader._ = _;
 
