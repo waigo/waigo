@@ -24,23 +24,11 @@ _**Note:** this guide (along with API docs) is also available at [waigojs.com](h
 # Why should I use Waigo?
 
 Waigo provides you with a sensible file layout for your app and a clean app 
-architecture (mostly MVC). It doesn't try to do too much and most importantly 
-it gets out of your way when you need it to.
+architecture (mostly MVC). It doesn't try to do too much and gets out of your way when you need it to, even letting you [override](#extend-and-override) any aspect of its core that you don't find satisfactory.
 
-Most frameworks are opinionated and so is Waigo - it is designed to accommodate 
-most people's needs. But it tries to keep its opinions to a minumum, even 
-letting you [override](#extend-and-override) any aspect of its core that you 
-don't find satisfactory.
+This is the foundation on which to build your web app. You get a database connection and models out of the box but you don't have to use them. You can instead provide your own database, model layer and session storage adapters. And the choice of front-end templating is yours to make.
 
-Think of Waigo as the foundation on which to build your web app. For example 
-the basic framework does not provide a database connection or any front-end 
-templates. Instead it provides you with the hooks and entry points to use 
-whatever database, model layer and/or front-end you want.
-
-Does this mean you have to build everything from scratch each time you use 
-Waigo? Not at all. You can make anything you build re-useable by bundling it up 
-as a [plugin](#plugins). Check out the [current list of plugins](https://www.npmjs.org/browse/keyword/waigo) 
-to see what's already available.
+Waigo builds on top of [koa](koajs.com), meaning that all koa middleware plugins can be re-used with Waigo without modification. Furthermore, any code you write which plugs into Waigo can be made re-useable by bundling it up as a [plugin](#plugins).
 
 # Getting started
 
@@ -713,22 +701,147 @@ middleware in the request chain. The `this.render()` call is provided by the
 
 # Database and Models
 
-By default Waigo does not initialise a database connection during startup and
-nor does it dictate what type of storage you should or shouldn't use. There is
-also no default model layer since that would probably depend on the type of
-database (or lack thereof) used by your app.
+The `database` startup-step is responsible for loading in the database configuration (`app.config.db`) and setting up the connection accordingly.
 
-This design choice reflects the fact there are already plenty of existing
-components - e.g. Mongoose, JugglingDB - that already provide for rich model
-layers with various back-ends.
+Waigo connects to [MongoDB](http://mongodb.org) by default (`127.0.0.1:27017`), using the [mongoose](http://mongoosejs.com) ORM library. You can of course use whatever type database you want or not use one at all. 
 
-So use whatever you want. Check to see if there are already
-[plugins](https://www.npmjs.org/search?q=waigo) for your preferred storage and
-model layers. If not maybe you can build one!
+## Model initialisation
 
-Some available plugins:
+The `models` startup step is responsible for initialising your model classes such that they are available under the `app.models` namespace. Place your model classes one-per-file in the `models/` folder path. 
 
-* [waigo-mongo](https://www.npmjs.org/package/waigo-mongo) - Connect to MongoDB via mongoose.
+For example, if you have a model defined as follows:
+
+```js
+// file: models/user.js
+
+"use strict";
+
+var waigo = require('waigo'),
+  schema = waigo.load('support/db/mongoose/schema');
+
+var UserSchema = schema.create({
+  name: String
+});
+
+module.exports = function(dbConn) {
+  return dbConn.model('User', UserSchema);
+};
+```
+
+Once the app has started up you will be able to use it like any other Mongoose model class as follows:
+
+```js
+// file: controllers/main.js
+
+exports.createUser = function*() {
+  var u = new this.app.db.models.User({
+    name: 'James'
+  });
+
+  yield u.saveQ();      // saveQ() returns a Promise  
+};
+```
+
+_Note that the `modelName` attribute of the returned model definition determines the name of the model class. If this is not available then the filename of the module file (i.e. `user` in `models/user.js`) will be used instead._
+
+## Model data
+
+You may have noted that we are using a special `Schema` base class in the above model definition code snippets:
+
+```js
+...
+schema = waigo.load('support/db/mongoose/schema');
+
+var UserSchema = schema.create({...});
+```
+
+Waigo provides a base Mongoose _schema_ class for initialising your Mongoose models with. this class extends `mongoose.Schema` with additional functionality. 
+
+It enables you automatically add timestamp fields to keep track of when an items get created and updated:
+
+```js
+// file: models/user.js
+
+"use strict";
+
+var waigo = require('waigo'),
+  schema = waigo.load('support/db/mongoose/schema');
+
+var UserSchema = schema.create({
+  name: String,
+  { 
+    /** Auto-add `created_at` and `updated_at` timestamp fields */
+    addTimestampFields: true
+  }
+});
+
+module.exports = function(dbConn) {
+  return dbConn.model('User', UserSchema);
+};
+```
+
+Moreover, this schema class provides methods which makes it easy for your Mongo models to work with [output formats](#views-and-output-formats):
+
+```js
+// file: models/user.js
+
+"use strict";
+
+var waigo = require('waigo'),
+  schema = waigo.load('support/db/mongoose/schema');
+
+var UserSchema = schema.create({
+  name: String
+});
+
+/** The properties to output when converting an item into a view object */
+UserSchema.method('viewObjectKeys', function() {
+  return ['name'];
+});
+
+/** Convert value for given item key into a view object */
+schema.method('formatForViewObject', function*(ctx, key, val) {
+  if ('name' === key) {
+    return '[' + name + ']';
+  } else {
+    return val;
+  }
+});
+
+module.exports = function(dbConn) {
+  return dbConn.model('User', UserSchema);
+};
+```
+
+_Note that `formatForViewObject` is a generator method which gets passed the current request context - `ctx` - so that you can customize the output based on the request._
+
+With the above schema, we can now easily render a `User` item for output:
+
+```js
+// file:  controllers/main.js
+
+var waigo = require('waigo');
+
+exports.index = function*() {
+  var u = new this.app.db.models.User({
+    name: 'James'
+  });
+
+  yield this.render('show', {
+    item: u
+  });
+};
+```
+
+We can expect the following output from the above controller:
+
+```js
+{
+  item: {
+    name: '[James]'
+  }
+}
+```
 
 # Sessions
 
@@ -781,11 +894,33 @@ module.exports = function(config) {
   };
 ```
 
-By default session data is stored in the session cookie itself. There are other
-session storage plugins available for use, for example:
+By default session data is stored in the session cookie itself. 
 
-* [waigo-mongo](https://www.npmjs.org/package/waigo-mongo) - Store session data in Mongo.
+## Mongo 
 
+There is also `mongo` session store available by default. This is based on [koa-session-mongo](https://github.com/hiddentao/koa-session-mongo) and expects the same configuration accordingly. 
+
+You can also instruct it to re-use the `app.db` Mongoose connection with the following configuration:
+
+```javascript
+...
+config.middleware.options.sessions = {
+  ...
+  store: {
+    // session store type
+    type: 'mongo',
+    // session store config
+    config: {
+      // re-use app.db mongoose connection
+      useAppMongooseDbConn: true
+    }
+  }
+  ...
+};
+...
+```
+
+You can of course override how these session store adapters work or create a different one for your needs - simply save your adapter within the `support/session/store/` file path.
 
 # Views and Output formats
 

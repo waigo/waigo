@@ -23,14 +23,16 @@ module.exports = function*(app) {
   app.models = {};
 
   modelModuleFiles.forEach(function(modulePath) {
-    var name = _.str.capitalize(
+    var filename = _.str.capitalize(
       path.basename(modulePath, path.extname(modulePath))
     );
 
     var modelClass = waigo.load(modulePath)(app.db);
     
-    debug('Adding model: ' + name);
+    var name = modelClass.modelName || filename;
 
-    app.models[modelClass.modelName || name] = modelClass;
+    debug('Adding model (' + filename + '): ' + name);
+
+    app.models[name] = modelClass;
   });
 };

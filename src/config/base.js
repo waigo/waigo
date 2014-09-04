@@ -29,7 +29,13 @@ module.exports = function(config) {
   /**
    * Database connection.
    */
-  config.db = null;
+  config.db = {
+    mongoose: {
+      host: '127.0.0.1',
+      port: '27017',
+      db: 'waigo'
+    }
+  }
 
 
   /**
@@ -55,6 +61,7 @@ module.exports = function(config) {
    */
   config.startupSteps = [
     'logging',
+    'database',
     'middleware',
     'routes',
     'listener'
