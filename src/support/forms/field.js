@@ -207,7 +207,7 @@ Field.prototype.validate = function*() {
  * @return {Object}
  */
 Field.prototype.toViewObject = function*(ctx) {
-  return {
+  var r = {
     type: this.config.type,
     name: this.name,
     label: this.config.label,
@@ -215,6 +215,12 @@ Field.prototype.toViewObject = function*(ctx) {
     value: this.value,
     originalValue: this.originalValue
   };
+
+  if (this.config.meta) {
+    r.meta = this.config.meta;
+  }
+
+  return r;
 };
 
 

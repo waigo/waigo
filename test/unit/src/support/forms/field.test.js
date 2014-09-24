@@ -306,7 +306,11 @@ test['form fields'] = {
       var f = this.field;
       f.config.type = 'text';
       f.config.label = 'Name';
-      f.config.helpText = 'ahahaha ssd';
+      f.config.helpText = 'bla bla bla';
+      f.config.meta = {
+        multiline: true,
+        dummyKey: 1,
+      };
       f.value = 87;
       f.originalValue = 98;
 
@@ -316,7 +320,11 @@ test['form fields'] = {
             type: 'text',
             name: 'test',
             label: 'Name',
-            helpText: 'ahahaha ssd',
+            helpText: 'bla bla bla',
+            meta: {
+              multiline: true,
+              dummyKey: 1,
+            },
             value: 87,
             originalValue: 98
           });
