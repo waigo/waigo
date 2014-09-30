@@ -1,6 +1,5 @@
 var moment = require('moment'),
-  path = require('path'),
-  Promise = require('bluebird');
+  path = require('path');
 
 var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
   test = _testUtils.test,
@@ -50,7 +49,7 @@ test['app'] = {
       .then(function() {
         var Application = waigo.load('application');
         
-        return Promise.spawn(Application.loadConfig)
+        return testUtils.spawn(Application.loadConfig)
           .then(function() {
             Application.app.config.should.eql('hello world');
           });

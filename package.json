@@ -7,7 +7,7 @@
     "email": "ram@hiddentao.com"
   },
   "dependencies": {
-    "bluebird": "~0.11.x",
+    "bluebird": "^2.3.4",
     "co": "^3.1.0",
     "co-body": "0.0.1",
     "co-views": "~0.2.x",
