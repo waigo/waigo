@@ -1,7 +1,7 @@
 {
   "name": "waigo",
   "description": "Next-gen web framework for node.js using generators",
-  "version": "1.5.6",
+  "version": "1.5.7",
   "author": {
     "name": "Ramesh Nair",
     "email": "ram@hiddentao.com"

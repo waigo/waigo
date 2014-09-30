@@ -1,12 +1,19 @@
 "use strict";
 
-var _ = require('lodash'),
-  util = require('util'),
-  waigo = require('../../../../');
+var util = require('util'),
+  waigo = require('../../../../'),
+  _ = waigo._;
 
 
 var Field = waigo.load('support/forms/field').Field;
 
+
+
+var _arrayToStr = function(arr) {
+  return _.map(arr, function(v) {
+    return '' + v;
+  });
+}
 
 
 
@@ -26,8 +33,20 @@ var Select = exports.Field = function(form, config) {
     fn: function*(field, val) {
       var options = yield field.getOptions();
 
-      if (undefined === options[val]) {
-        throw new Error('Must be one of: ' + _.values(options).join(', '));
+      if (!_.isArray(val)) {
+        val = [val];
+      }
+
+      val = _arrayToStr(val);
+      var expected = _arrayToStr(_.keys(options));
+
+      var diff = _.difference(val, expected);
+      
+      // if unknown option given OR if more than one given for a non-multiple select
+      if (diff.length || (1 < val.length && !field.config.multiple)) {
+        var str = field.config.multiple ? 'one or more of' : 'one of';
+
+        throw new Error('Must be ' + str + ': ' + _.values(options).join(', '));
       }
     }
   });

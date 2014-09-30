@@ -53,48 +53,135 @@ test['select field'] = {
       },
 
       'it ensures value is one of the valid options': {
-        beforeEach: function() {
-          var f = this._field = new select.Field(123, {
-            name: 'test'
-          });
-          f.form = {
-            state: {
-              test: {
-                value: null
+        single: {
+          beforeEach: function() {
+            var f = this._field = new select.Field(123, {
+              name: 'test'
+            });
+            f.form = {
+              state: {
+                test: {
+                  value: null
+                }
               }
             }
-          }
 
-          test.mocker.stub(f, 'getOptions', function*() {
-            return {
-              1: 'item1',
-              2: 'item2'
-            };
-          });
-        },
-
-        'when not valid': function(done) {
-          this._field.value = 3;
-
-          testUtils.spawn(this._field.validate, this._field)
-            .then(function() {
-              done(new Error('should not be here'));
-            })
-            .catch(function(err) {
-              try {
-                err.should.be.instanceOf(field.FieldValidationError);
-                expect(_.get(err, 'errors.validOption.message')).to.eql('Must be one of: item1, item2');
-                done();
-              } catch (err2) {
-                done(err2);
-              }
+            test.mocker.stub(f, 'getOptions', function*() {
+              return {
+                1: 'item1',
+                2: 'item2'
+              };
             });
-        },
-        'when valid': function(done) {
-          this._field.value = 1;
+          },
 
-          testUtils.spawn(this._field.validate, this._field)
-            .nodeify(done);
+          'when not valid': function(done) {
+            this._field.value = 3;
+
+            testUtils.spawn(this._field.validate, this._field)
+              .then(function() {
+                done(new Error('should not be here'));
+              })
+              .catch(function(err) {
+                try {
+                  err.should.be.instanceOf(field.FieldValidationError);
+                  expect(_.get(err, 'errors.validOption.message')).to.eql('Must be one of: item1, item2');
+                  done();
+                } catch (err2) {
+                  done(err2);
+                }
+              });
+          },
+
+          'when multiple given': function(done) {
+            this._field.value = [1, 2];
+
+            testUtils.spawn(this._field.validate, this._field)
+              .then(function() {
+                done(new Error('should not be here'));
+              })
+              .catch(function(err) {
+                try {
+                  err.should.be.instanceOf(field.FieldValidationError);
+                  expect(_.get(err, 'errors.validOption.message')).to.eql('Must be one of: item1, item2');
+                  done();
+                } catch (err2) {
+                  done(err2);
+                }
+              });
+          },
+
+          'when valid': function(done) {
+            this._field.value = 1;
+
+            testUtils.spawn(this._field.validate, this._field)
+              .nodeify(done);
+          }
+        },
+
+        multiple: {
+          beforeEach: function() {
+            var f = this._field = new select.Field(123, {
+              name: 'test',
+              multiple: true,
+            });
+            f.form = {
+              state: {
+                test: {
+                  value: null
+                }
+              }
+            }
+
+            test.mocker.stub(f, 'getOptions', function*() {
+              return {
+                1: 'item1',
+                2: 'item2'
+              };
+            });
+          },
+
+          'when not valid': function(done) {
+            this._field.value = 3;
+
+            testUtils.spawn(this._field.validate, this._field)
+              .then(function() {
+                done(new Error('should not be here'));
+              })
+              .catch(function(err) {
+                try {
+                  err.should.be.instanceOf(field.FieldValidationError);
+                  expect(_.get(err, 'errors.validOption.message')).to.eql('Must be one or more of: item1, item2');
+                  done();
+                } catch (err2) {
+                  done(err2);
+                }
+              });
+          },
+
+          'when one invalid': function(done) {
+            this._field.value = [1, 3];
+
+            testUtils.spawn(this._field.validate, this._field)
+              .then(function() {
+                done(new Error('should not be here'));
+              })
+              .catch(function(err) {
+                try {
+                  err.should.be.instanceOf(field.FieldValidationError);
+                  expect(_.get(err, 'errors.validOption.message')).to.eql('Must be one or more of: item1, item2');
+                  done();
+                } catch (err2) {
+                  done(err2);
+                }
+              });
+          },
+
+          'when valid': function(done) {
+            this._field.value = [1, 2];
+
+            testUtils.spawn(this._field.validate, this._field)
+              .nodeify(done);
+          }
         }
       }
     }
