@@ -80,18 +80,16 @@ test['html'] = {
         })
         .nodeify(done);
     },
-    'includes application-level template params': function(done) {
+    'template params override context-level params': function(done) {
       var render = this.render, 
         ctx = this.ctx;
 
       testUtils.spawn(function*() {
-        ctx.app = {
-          locals: {
-            text: 'sheep',
-            text2: 'bee',
-            prettyPrint: function(str) {
-              return '^' + str + '^';
-            }
+        ctx.locals = {
+          text: 'sheep',
+          text2: 'bee',
+          prettyPrint: function(str) {
+            return '^' + str + '^';
           }
         };
 
@@ -101,6 +99,33 @@ test['html'] = {
       })
         .then(function() {
           expect(ctx.body).to.eql('<p>hello sheep, ^cow^!</p>');
+          expect(ctx.type).to.eql('html');                     
+        })
+        .nodeify(done);
+    },
+    'context-level params override application-level params ': function(done) {
+      var render = this.render, 
+        ctx = this.ctx;
+
+      testUtils.spawn(function*() {
+        ctx.app = {
+          locals: {
+            text: 'goat',
+            text2: 'bee',
+            prettyPrint: function(str) {
+              return '^' + str + '^';
+            }
+          }
+        };
+
+        ctx.locals = {
+          text: 'sheep',
+        };
+
+        yield render.call(ctx, 'test_params_2');
+      })
+        .then(function() {
+          expect(ctx.body).to.eql('<p>hello sheep, ^bee^!</p>');
           expect(ctx.type).to.eql('html');                     
         })
         .nodeify(done);
