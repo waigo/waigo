@@ -39,7 +39,7 @@ test['form fields'] = {
         form = waigo.load('support/forms/form');
         field = waigo.load('support/forms/field');
         errors = waigo.load('support/errors');
-        viewObjectMethodName = Object.keys(waigo.load('support/mixins').HasViewObject).pop();
+        viewObjectMethodName = waigo.load('support/viewObjects').methodName;
       })
       .nodeify(done);
   },

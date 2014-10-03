@@ -4,40 +4,7 @@ var views = require('co-views'),
   waigo = require('../../../');
 
 var errors = waigo.load('support/errors'),
-  mixins = waigo.load('support/mixins');
-
-
-var viewObjectMethod = Object.keys(mixins.HasViewObject).pop();
-
-
-
-
-/**
- * Get generator for converting given template variable into a view object.
- *
- * @param {Object} ctx Current request context.
- * @param  {*} templateVar Template variable.
- * @return {Generator}
- * @private
- */
-var toViewObjectGenerator = function(ctx, templateVar) {
-  // has view object method
-  if (templateVar[viewObjectMethod]) {
-    return templateVar[viewObjectMethod].call(templateVar, ctx);
-  } 
-  // is an array
-  else if (templateVar instanceof Array) {
-    // recursive call on all children
-    return templateVar.map(function(local) {
-      return toViewObjectGenerator(ctx, local);
-    });
-  }
-  // everything else
-  else {
-    return templateVar;
-  }
-
-};
+  viewObjects = waigo.load('support/viewObjects');
 
 
 
@@ -84,17 +51,16 @@ module.exports = function(options) {
     this.render = function*(view, locals) {
       
       // get generators for converting locals into view objects
-      var viewObjectGenerators = {};
+      var viewObjectYieldables = {};
       for (let idx in locals) {
-        viewObjectGenerators[idx] = toViewObjectGenerator(ctx, locals[idx]);
+        viewObjectYieldables[idx] = viewObjects.toViewObjectYieldable(ctx, locals[idx]);
       }
 
-      var viewObjects = yield viewObjectGenerators;
+      var localsViewObjects = yield viewObjectYieldables;
 
       // call actual rendering method
-      yield enabledFormats[requestedFormat].render.call(ctx, view, viewObjects);
+      yield enabledFormats[requestedFormat].render.call(ctx, view, localsViewObjects);
     }
-
 
     yield next;
   };

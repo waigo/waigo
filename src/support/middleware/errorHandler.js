@@ -4,10 +4,8 @@
 var _ = require('lodash'),
   waigo = require('../../../'),
   errors = waigo.load('support/errors'),
-  mixins = waigo.load('support/mixins');
+  viewObjects = waigo.load('support/viewObjects');
 
-
-var viewObjectMethod = Object.keys(mixins.HasViewObject).pop();
 
 
 /**
@@ -22,7 +20,7 @@ var render = function*(context, config, err) {
   try {
     context.status = err.status || 500;
 
-    context.body = yield errors[viewObjectMethod].call(null, context, err);
+    context.body = yield errors[viewObjects.methodName].call(null, context, err);
 
     context.type = 'json';
 

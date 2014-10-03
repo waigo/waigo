@@ -135,7 +135,7 @@ test['output formats middleware'] = {
 
 
   'converts locals to view objects if possible': function(done) {
-    var toViewObjectMethodName = Object.keys(waigo.load('support/mixins').HasViewObject).pop();        
+    var toViewObjectMethodName = waigo.load('support/viewObjects').methodName;
 
     var fn = outputFormats({
       paramName: 'format',

@@ -6,7 +6,7 @@ var _ = require('lodash'),
 
 
 var errors = waigo.load('support/errors'),
-  mixins = waigo.load('support/mixins');
+  viewObjects = waigo.load('support/viewObjects');
 
 
 /** 
@@ -79,7 +79,6 @@ var Field = exports.Field = function(form, config) {
     };
   });
 };
-mixins.applyTo(Field, mixins.HasViewObject);
 
 
 
@@ -206,7 +205,7 @@ Field.prototype.validate = function*() {
  * 
  * @return {Object}
  */
-Field.prototype.toViewObject = function*(ctx) {
+Field.prototype[viewObjects.methodName] = function*(ctx) {
   var r = {
     type: this.config.type,
     name: this.name,

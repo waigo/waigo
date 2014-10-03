@@ -6,13 +6,7 @@ var _ = require('lodash'),
 
 
 var waigo = require('../../'),
-  mixins = waigo.load('support/mixins');
-
-
-mixins.applyTo(Error, mixins.HasViewObject);
-
-var viewObjectMethod = Object.keys(mixins.HasViewObject).pop();
-
+  viewObjects = waigo.load('support/viewObjects');
 
 
 
@@ -25,7 +19,7 @@ var viewObjectMethod = Object.keys(mixins.HasViewObject).pop();
  * 
  * @return {Object} Plain object.
  */
-Error.prototype[viewObjectMethod] = function*(ctx) {
+Error.prototype[viewObjects.methodName] = function*(ctx) {
   return {
     type: this.name || 'Error',
     msg: this.message
@@ -85,12 +79,12 @@ util.inherits(MultipleError, RuntimeError);
  *
  * @return {Object} Plain object.
  */
-MultipleError.prototype[viewObjectMethod] = function*(ctx) {
-  var ret = yield RuntimeError.prototype.toViewObject.call(this, ctx);
+MultipleError.prototype[viewObjects.methodName] = function*(ctx) {
+  var ret = yield RuntimeError.prototype[viewObjects.methodName].call(this, ctx);
   ret.errors = {};
 
   for (var id in this.errors) {
-    ret.errors[id] = yield this.errors[id].toViewObject(ctx);
+    ret.errors[id] = yield this.errors[id][viewObjects.methodName](ctx);
   }
 
   return ret;
@@ -134,9 +128,9 @@ exports.define = function(newClassName, baseClass) {
  * 
  * @return {Object} A plain object.
  */
-exports[viewObjectMethod] = function*(ctx, err) {
-  if (err[viewObjectMethod]) {
-    return yield err[viewObjectMethod].call(err, ctx);
+exports[viewObjects.methodName] = function*(ctx, err) {
+  if (err[viewObjects.methodName]) {
+    return yield err[viewObjects.methodName].call(err, ctx);
   } else {
     return {
       type: err.name || 'Error',

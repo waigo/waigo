@@ -7,7 +7,7 @@ var _ = require('lodash'),
 
 var errors = waigo.load('support/errors'),
   Field = waigo.load('support/forms/field').Field,
-  mixins = waigo.load('support/mixins');
+  viewObjects = waigo.load('support/viewObjects');
 
 
 
@@ -24,13 +24,13 @@ var FormValidationError = exports.FormValidationError = errors.define('FormValid
  */
 FormValidationError.prototype.toViewObject = function*(ctx) {
   if (!_.get(ctx, 'request.leanErrors')) {
-    return yield errors.MultipleError.prototype.toViewObject.call(this, ctx);
+    return yield errors.MultipleError.prototype[viewObjects.methodName].call(this, ctx);
   } else {
-    var ret = yield errors.RuntimeError.prototype.toViewObject.call(this, ctx);
+    var ret = yield errors.RuntimeError.prototype[viewObjects.methodName].call(this, ctx);
     ret.fields = {};
 
     for (let id in this.errors) {
-      let fieldErrors = (yield this.errors[id].toViewObject(ctx)).errors;
+      let fieldErrors = (yield this.errors[id][viewObjects.methodName](ctx)).errors;
 
       ret.fields[id] = [];
 
@@ -74,7 +74,6 @@ var Form = exports.Form = function(config, state) {
 
   this.state = _.extend({}, state);
 };
-mixins.applyTo(Form, mixins.HasViewObject);
 
 
 
@@ -199,7 +198,7 @@ Form.prototype.validate = function*() {
  *
  * @return {Object} Renderable plain object representation.
  */
-Form.prototype.toViewObject = function*(ctx) {
+Form.prototype[viewObjects.methodName] = function*(ctx) {
   var fields = this.fields,
     fieldViewObjects = {},
     fieldOrder = [];
@@ -208,7 +207,7 @@ Form.prototype.toViewObject = function*(ctx) {
     let def = this.config.fields[idx],
       field = fields[def.name];
       
-    fieldViewObjects[def.name] = yield field.toViewObject(ctx);
+    fieldViewObjects[def.name] = yield field[viewObjects.methodName](ctx);
     fieldOrder.push(def.name);
   }
 
