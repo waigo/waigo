@@ -49,14 +49,8 @@ module.exports = function(options) {
 
     // attach renderer
     this.render = function*(view, locals) {
-      
-      // get generators for converting locals into view objects
-      var viewObjectYieldables = {};
-      for (let idx in locals) {
-        viewObjectYieldables[idx] = viewObjects.toViewObjectYieldable(ctx, locals[idx]);
-      }
-
-      var localsViewObjects = yield viewObjectYieldables;
+      // get yieldables
+      var localsViewObjects = yield viewObjects.toViewObjectYieldable(ctx, locals);
 
       // call actual rendering method
       yield enabledFormats[requestedFormat].render.call(ctx, view, localsViewObjects);
