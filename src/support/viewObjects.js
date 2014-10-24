@@ -1,6 +1,9 @@
 "use strict";
 
 
+var _ = require('lodash');
+
+
 
 /**
  * The name of the method which when called will return a view object representation of the callee.
@@ -25,14 +28,14 @@ var toViewObjectYieldable = exports.toViewObjectYieldable = function(ctx, inputO
       return inputObject[methodName].call(inputObject, ctx);
     } 
     // is an array
-    else if (inputObject instanceof Array) {
+    else if (_.isArray(inputObject)) {
       // recursive call on all children
       return inputObject.map(function(local) {
         return toViewObjectYieldable(ctx, local);
       });
     }
     // is an object
-    else if (inputObject instanceof Object) {
+    else if (_.isPlainObject(inputObject)) {
       var yieldables = {};
 
       for (let idx in inputObject) {

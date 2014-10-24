@@ -72,6 +72,29 @@ test['viewObjects'] = {
         .nodeify(done);
     },
 
+    'date items are unchanged': function(done) {
+      var date1 = new Date();
+
+      var obj1 = {
+        def: date1,
+      };
+
+      var ctx = 5;
+
+      var gen1 = viewObjects.toViewObjectYieldable(ctx, obj1);
+
+      testUtils.spawn(function*() { 
+        return yield [gen1];
+      })
+        .then(function(res) {
+          expect(res).to.eql([
+            { def: date1 },
+          ])
+        })
+        .nodeify(done);
+    },
+
+
     'array': function(done) {
       var arr1 = [
         {
