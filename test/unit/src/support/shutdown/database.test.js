@@ -20,7 +20,7 @@ test['database'] = {
       .then(testUtils.createTestFolders)
       .then(function() {
         return testUtils.createAppModules({
-          'support/db/test': 'module.exports = { create: function*() { return Array.prototype.slice.call(arguments); } }; '
+          'support/db/test': 'module.exports = { create: function*() { return Array.prototype.slice.call(arguments); }, shutdown: function*(db) { db.shutdown = true; } }; '
         });
       })
       .then(function() {
@@ -29,7 +29,7 @@ test['database'] = {
         });
       })
       .then(function() {
-        self.setup = waigo.load('support/startup/database');
+        self.shutdownStep = waigo.load('support/shutdown/database');
         self.app = waigo.load('application').app;
         self.app.config = {
           db: {
@@ -48,25 +48,26 @@ test['database'] = {
     var self = this;
 
     delete self.app.config.db;
+    self.app.db = {};
 
     testUtils.spawn(function*() {
-      return yield* self.setup(self.app);
+      return yield* self.shutdownStep(self.app);
     })
       .then(function() {
-        expect(self.app.db).to.be.undefined;
+        expect(self.app.db.shutdown).to.not.be.true;
       })
       .nodeify(done);
   },
-  'otherwise sets up the db': function(done) {
+  'otherwise shuts down the db': function(done) {
     var self = this;
 
+    self.app.db = {};
+
     testUtils.spawn(function*() {
-      return yield* self.setup(self.app);
+      return yield* self.shutdownStep(self.app);
     })
       .then(function() {
-        self.app.db.should.eql([
-          { hello: 'world' }
-        ]);
+        self.app.db.shutdown.should.be.true;
       })
       .nodeify(done);
   }    
