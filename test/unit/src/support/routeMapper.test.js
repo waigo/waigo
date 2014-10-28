@@ -38,7 +38,7 @@ test['route mapper'] = {
         return testUtils.createAppModules({
           'controllers/main': 'exports.index = function*() { yield this.render("index", { title: "Hello World" }); };',
           'support/middleware/test': 'var a = function*() {}; module.exports = function() { return a }; a.ref = a;',
-          'support/middleware/test_options': 'module.exports = function(o) { return function*() { return o; } };'
+          'support/middleware/test_options': 'module.exports = function(o) { o.a = 5; return function*() { return o; } };'
         });
       })
       .then(waigo.initAsync)
@@ -232,14 +232,16 @@ test['route mapper'] = {
   },
   'middleware with options': function(done) {
     testUtils.spawn(function*() {
+      var mOpts = {
+        id: 'test_options',
+        option1: 1,
+        option2: 2
+      };
+
       routes = {
         'GET /': [ 
           'test',
-          {
-            id: 'test_options',
-            option1: 1,
-            option2: 2
-          }
+          mOpts
         ]
       };
 
@@ -263,6 +265,14 @@ test['route mapper'] = {
       var ret = yield* getArgs[1]();
 
       expect(ret).to.eql({
+        id: 'test_options',
+        option1: 1,
+        option2: 2,
+        a: 5,
+      });
+
+      // original options object should not have been modified.
+      expect(mOpts).to.eql({
         id: 'test_options',
         option1: 1,
         option2: 2

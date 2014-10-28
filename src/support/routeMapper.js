@@ -87,7 +87,7 @@ exports.map = function(app, routes) {
         // if reference is an object then it's a middleware reference with initialisation options
         if (_.isPlainObject(ref)) {
           middlewareName = ref.id;
-          middlewareOptions = ref;
+          _.extend(middlewareOptions, ref);
         }
 
         return waigo.load('support/middleware/' + middlewareName)(middlewareOptions);
