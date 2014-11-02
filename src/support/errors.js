@@ -36,16 +36,38 @@ Error.prototype[viewObjects.methodName] = function*(ctx) {
  *
  * @param {String} msg Error message.
  * @param {Number} status HTTP return status code to set (used by the [error handler middleware](middleware/errorHandler.js.html))
+ * @param {Object} data Additional data pertaining to this error.
  */
-var RuntimeError = exports.RuntimeError = function(msg, status) {
+var RuntimeError = exports.RuntimeError = function(msg, status, data) {
   Error.call(this);
   this.name = 'RuntimeError';
   this.message = msg || 'An error occurred';
   this.status = status || 500;
+  this.data = data || null;
   Error.captureStackTrace(this, RuntimeError);
 };
 util.inherits(RuntimeError, Error);
 
+
+
+
+/**
+ * Get renderable representation of this error.
+ *
+ * @return {Object} Plain object.
+ */
+RuntimeError.prototype[viewObjects.methodName] = function*(ctx) {
+  var ret = {
+    type: this.name,
+    msg: this.message,
+  };
+
+  if (this.data) {
+    ret.data = this.data;
+  }
+
+  return ret;
+};
 
 
 
@@ -80,7 +102,11 @@ util.inherits(MultipleError, RuntimeError);
  * @return {Object} Plain object.
  */
 MultipleError.prototype[viewObjects.methodName] = function*(ctx) {
-  var ret = yield RuntimeError.prototype[viewObjects.methodName].call(this, ctx);
+  var ret = {
+    type: this.name,
+    msg: this.message
+  };
+
   ret.errors = {};
 
   for (var id in this.errors) {
@@ -89,6 +115,7 @@ MultipleError.prototype[viewObjects.methodName] = function*(ctx) {
 
   return ret;
 };
+
 
 
 

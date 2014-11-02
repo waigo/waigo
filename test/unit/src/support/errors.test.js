@@ -53,21 +53,39 @@ test['errors'] = {
       e.status.should.eql(500);
     },
     'with params': function() {
-      var e = new errors.RuntimeError('my msg', 505);
+      var e = new errors.RuntimeError('my msg', 505, {
+        blah: true
+      });
 
       e.message.should.eql('my msg');
       e.name.should.eql('RuntimeError');
       e.status.should.eql(505);
+      e.data.should.eql({ blah: true });
     },
     'view object': function(done) {
-      var e = new errors.RuntimeError('my msg', 505);
+      var e = new errors.RuntimeError('my msg', 505, {
+        blah: true
+      });
+
+      var e2 = new errors.RuntimeError('my msg', 505);
 
       testUtils.spawn(e.toViewObject, e)
         .then(function(viewObject) {
           viewObject.should.eql({
             type: 'RuntimeError',
-            msg: 'my msg'
+            msg: 'my msg',
+            data: {
+              blah: true,
+            },
           });
+
+          return testUtils.spawn(e2.toViewObject, e2);
+        })
+        .then(function(viewObject) {
+          viewObject.should.eql({
+            type: 'RuntimeError',
+            msg: 'my msg',
+          });          
         })
         .nodeify(done);
     }
