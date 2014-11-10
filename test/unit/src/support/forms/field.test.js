@@ -290,7 +290,19 @@ test['form fields'] = {
           }
         ];
 
-        testUtils.spawn(f.validate, f)
+        new Promise(function(resolve, reject) {
+          testUtils.spawn(f.validate, f)
+            .then(reject)
+            .catch(function(err) {
+              try {
+                expect(err).to.be.instanceOf(field.FieldValidationError);
+                expect(err.errors.required.toString()).to.eql('Error: Must be set');
+                resolve();
+              } catch (err2) {
+                reject(err2);
+              }
+            });
+        })
           .nodeify(done);
       },
       'pass': function(done) {

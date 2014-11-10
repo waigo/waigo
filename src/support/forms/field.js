@@ -176,22 +176,28 @@ Field.prototype.validate = function*() {
   var errors = null;
 
   // if value is undefined and field is not required then nothing to do
-  if (undefined === this.value && !this.config.required) {
-    return;
-  }
-
-  for (let idx in this.validators) {
-    let validator = this.validators[idx];
-
-    try {
-      yield validator.fn(this, this.value);
-    } catch (err) {
-      if (!errors) {
-        errors = {};
-      }
-
-      errors[validator.id] = err;
+  if (undefined === this.value) {
+    if (!this.config.required) {
+      return;
+    } else {
+      errors = {
+        required: new Error('Must be set')
+      };
     }
+  } else {
+    for (let idx in this.validators) {
+      let validator = this.validators[idx];
+
+      try {
+        yield validator.fn(this, this.value);
+      } catch (err) {
+        if (!errors) {
+          errors = {};
+        }
+
+        errors[validator.id] = err;
+      }
+    }    
   }
 
   if (errors) {
