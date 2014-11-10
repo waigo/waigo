@@ -176,7 +176,7 @@ Field.prototype.validate = function*() {
   var errors = null;
 
   // if value is undefined and field is not required then nothing to do
-  if (undefined === this.value) {
+  if (undefined === this.value || null === this.value) {
     if (!this.config.required) {
       return;
     } else {
