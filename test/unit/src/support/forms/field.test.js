@@ -259,8 +259,44 @@ test['form fields'] = {
 
 
     'validate': {
+      'not required and not set': function(done) {
+        var f = this.field;
+        f.config.required = false;
+
+        f.validators = [
+          {
+            id: 'testv',
+            fn: function*(field, v) {
+              throw new Error("blah");
+            }
+          }
+        ];
+
+        testUtils.spawn(f.validate, f)
+          .nodeify(done);
+      },
+      'required and not set': function(done) {
+        var f = this.field;
+        f.config.required = true;
+
+        f.validators = [
+          {
+            id: 'testv',
+            fn: function*(field, v) {
+              if (undefined !== v) {
+                throw new Error("blah");
+              }
+            }
+          }
+        ];
+
+        testUtils.spawn(f.validate, f)
+          .nodeify(done);
+      },
       'pass': function(done) {
         var f = this.field;
+        f.config.required = true;
+        f.value = 123;
 
         f.validators = [
           {
@@ -275,12 +311,14 @@ test['form fields'] = {
 
       'fail': function(done) {
         var f = this.field;
+        f.config.required = true;
+        f.value = 123;
 
         f.validators = [
           {
             id: 'testv',
             fn: function*(field, v) {
-              throw new Error('blah');
+              throw new Error('blah' + 123);
             }
           }
         ];
@@ -291,7 +329,7 @@ test['form fields'] = {
             .catch(function(err) {
               try {
                 expect(err).to.be.instanceOf(field.FieldValidationError);
-                expect(err.errors.testv.toString()).to.eql('Error: blah');
+                expect(err.errors.testv.toString()).to.eql('Error: blah123');
                 resolve();
               } catch (err2) {
                 reject(err2);

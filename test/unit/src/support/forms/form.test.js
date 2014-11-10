@@ -131,10 +131,10 @@ test['forms'] = {
         var f = new form.Form(this.formConfig);
         expect(f.state).to.eql({ 
           email: { 
-            value: null 
+            value: undefined 
           }, 
           age: { 
-            value: null 
+            value: undefined
           }
         });
       },
@@ -226,7 +226,7 @@ test['forms'] = {
           value: false
         },
         age: {
-          value: null
+          value: undefined
         }
       });
     },

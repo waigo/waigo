@@ -96,7 +96,7 @@ Object.defineProperty(Form.prototype, 'state', {
 
     for (let fieldName in this.fields) {
       this._state[fieldName] = this._state[fieldName] || {
-        value: null
+        value: undefined
       };
     }
   }

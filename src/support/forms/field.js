@@ -175,6 +175,11 @@ Field.prototype.isDirty = function() {
 Field.prototype.validate = function*() {
   var errors = null;
 
+  // if value is undefined and field is not required then nothing to do
+  if (undefined === this.value && !this.config.required) {
+    return;
+  }
+
   for (let idx in this.validators) {
     let validator = this.validators[idx];
 
