@@ -293,7 +293,24 @@ test['form fields'] = {
 
           testUtils.spawn(f.validate, f)
             .nodeify(done);
-        }
+        },
+        'empty string': function(done) {
+          var f = this.field;
+          f.config.required = false;
+          f.value = '';
+
+          f.validators = [
+            {
+              id: 'testv',
+              fn: function*(field, v) {
+                throw new Error("blah");
+              }
+            }
+          ];
+
+          testUtils.spawn(f.validate, f)
+            .nodeify(done);
+        },
       },
       'required and not set': {
         'null': function(done) {
@@ -357,7 +374,38 @@ test['form fields'] = {
               });
           })
             .nodeify(done);
-        }
+        },
+        'empty string': function(done) {
+          var f = this.field;
+          f.config.required = true;
+          f.value = '';
+
+          f.validators = [
+            {
+              id: 'testv',
+              fn: function*(field, v) {
+                if (undefined !== v) {
+                  throw new Error("blah");
+                }
+              }
+            }
+          ];
+
+          new Promise(function(resolve, reject) {
+            testUtils.spawn(f.validate, f)
+              .then(reject)
+              .catch(function(err) {
+                try {
+                  expect(err).to.be.instanceOf(field.FieldValidationError);
+                  expect(err.errors.required.toString()).to.eql('Error: Must be set');
+                  resolve();
+                } catch (err2) {
+                  reject(err2);
+                }
+              });
+          })
+            .nodeify(done);
+        },
       },
       'pass': function(done) {
         var f = this.field;
