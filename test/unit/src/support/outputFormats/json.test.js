@@ -58,6 +58,30 @@ test['json'] = {
           expect(ctx.type).to.eql('json');                     
         })
         .nodeify(done);
-    }
-  }
+    },
+  },
+
+  'redirect': {
+    beforeEach: function() {
+      this.redirect = json.create().redirect;
+      this.ctx = {
+        app: {}
+      };
+    },
+    'must be plain object': function(done) {
+      var redirect = this.redirect, 
+        ctx = this.ctx;
+
+      testUtils.spawn(redirect, ctx, 'test')
+        .then(function() {
+          expect(ctx.body).to.eql({
+            redirectTo: 'test'
+          });                     
+          expect(ctx.type).to.eql('json');
+          expect(ctx.status).to.eql(200);
+        })
+        .nodeify(done);
+    },
+
+  },
 };

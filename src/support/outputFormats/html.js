@@ -29,8 +29,14 @@ exports.create = function(config) {
         _.extend({}, this.app.locals, this.locals, locals)
       );
       this.type = 'html';
-    }
+    },
+
+    redirect: function*(url) {
+      this.response.redirect(url);
+    },
   };
 };
+
+
 
 

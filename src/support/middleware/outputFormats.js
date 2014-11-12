@@ -54,7 +54,14 @@ module.exports = function(options) {
 
       // call actual rendering method
       yield enabledFormats[requestedFormat].render.call(ctx, view, localsViewObjects);
-    }
+    };
+
+    // redirect method
+    this.redirect = function*(url) {
+      // call actual rendering method
+      yield enabledFormats[requestedFormat].redirect.call(ctx, url);
+    };
+
 
     yield next;
   };

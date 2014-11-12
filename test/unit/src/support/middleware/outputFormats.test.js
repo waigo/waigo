@@ -193,5 +193,30 @@ test['output formats middleware'] = {
           });
       })
       .nodeify(done);    
-  }
+  },
+
+
+  'redirect to url': function(done) {
+    var fn = outputFormats({
+      paramName: 'format',
+      default: 'json',
+      formats: {
+        json: true
+      }
+    });
+
+    testUtils.spawn(fn, ctx, function*() {})
+      .then(function() {
+        expect(testUtils.isGeneratorFunction(ctx.redirect)).to.be.true;
+      })
+      .then(function() {
+        return testUtils.spawn(ctx.redirect, ctx, 'www.test.com')
+          .then(function() {
+            expect(ctx.body).to.eql({
+              redirectTo: 'www.test.com'
+            });
+          });
+      })
+      .nodeify(done);  
+  },  
 };

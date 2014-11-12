@@ -25,7 +25,16 @@ exports.create = function() {
 
       this.body = locals;
       this.type = 'json';
-    }
+    },
+
+
+    redirect: function*(url) {
+      this.type = 'json';
+      this.status = 200;
+      this.body = {
+        redirectTo: url
+      };
+    },
   };
 };
 

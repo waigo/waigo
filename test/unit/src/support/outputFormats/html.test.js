@@ -129,6 +129,28 @@ test['html'] = {
           expect(ctx.type).to.eql('html');                     
         })
         .nodeify(done);
-    }
+    },
+  },
+
+  'redirect': {
+    beforeEach: function() {
+      this.redirect = html.create(config).redirect;
+      this.ctx = {
+        response: {
+          redirect: test.mocker.spy()
+        }
+      };
+    },
+    'redirects to url': function(done) {
+      var redirect = this.redirect, 
+        ctx = this.ctx;
+
+      testUtils.spawn(redirect, ctx, 'test_params')
+        .then(function() {
+          ctx.response.redirect.should.have.been.calledOnce;
+          ctx.response.redirect.should.have.been.calledWithExactly('test_params');
+        })
+        .nodeify(done);
+    },
   }
 };
