@@ -1,5 +1,10 @@
-#!/usr/bin/env node --harmony
+#!/usr/bin/env node
 "use strict";
+
+
+// Turn on Harmony features
+var v8flags = require('v8-flags');
+v8flags.harmony(true);
 
 
 /**

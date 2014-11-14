@@ -28,6 +28,7 @@
     "shelljs": "~0.3.0",
     "then-fs": "~1.0.6",
     "underscore.string": "~2.3.x",
+    "v8-flags": "^0.1.2",
     "validator": "~3.4.x",
     "winston": "~0.7.x"
   },

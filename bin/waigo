@@ -1,4 +1,4 @@
-#!/usr/bin/env node --harmony
+#!/usr/bin/env node
 
 "use strict";
 
@@ -7,7 +7,13 @@ var _ = require('lodash'),
   commander = require('commander'),
   debug = require('debug')('waigo-cli'),
   path = require('path'),
-  shell = require('shelljs');
+  shell = require('shelljs'),
+  v8flags = require('v8-flags');
+
+
+// Turn on Harmony features
+var v8flags = require('v8-flags');
+v8flags.harmony(true);
 
 
 // check to see if we have a local installation of Waigo we can use
