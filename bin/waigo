@@ -2,11 +2,7 @@
 
 "use strict";
 
-var _ = require('lodash'),
-  co = require('co'),
-  commander = require('commander'),
-  debug = require('debug')('waigo-cli'),
-  path = require('path'),
+var path = require('path'),
   shell = require('shelljs'),
   v8flags = require('v8-flags');
 
@@ -16,83 +12,22 @@ var v8flags = require('v8-flags');
 v8flags.harmony(true);
 
 
+// ['node', '../../bin/waigo', 'arg1', ...]
+var cliArgs = process.argv.slice(2);
+
+// by default let's assume waigo-cli is in this folder
+var pathToWaigoCli = path.join(__dirname, 'waigo-cli');
+
+
 // check to see if we have a local installation of Waigo we can use
 // (we'll assume that the CLI is always run in the project root folder, where 
 // node_modules also resides)
 var pathToLocalWaigoCli = 
-  path.join(process.cwd(), 'node_modules', 'waigo', 'bin', 'waigo');
-if (shell.test('-f', pathToLocalWaigoCli) 
-        /* check that we're not calling ourselves again! */
-          && require.main.filename !== pathToLocalWaigoCli) {
-  // ['node', '../../bin/waigo', 'arg1', ...]
-  var cliArgs = process.argv.slice(2);
+  path.join(process.cwd(), 'node_modules', 'waigo', 'bin', 'waigo-co');
 
-  var spawned = shell.exec(pathToLocalWaigoCli + ' ' + cliArgs.join(' '), 
-    function(code, output) {
-      process.exit(code);
-    }
-  );
-
-  return;
+if (shell.test('-f', pathToLocalWaigoCli)) {
+  pathToWaigoCli = pathToLocalWaigoCli;
 }
 
 
-var frameworkFolderPath = path.join(__dirname, '..');
-
-var waigo = require(path.join(__dirname, '..'));
-
-
-co(function*() {
-  // app folder available?
-  var appFolderPath = path.join(process.cwd(), 'src');
-  if (!shell.test('-d', appFolderPath)) {
-    // if not then use the framework folder
-    appFolderPath = path.join(frameworkFolderPath, 'src');
-  }
-
-  // init
-  yield* waigo.init({
-    appFolder: appFolderPath
-  });
-
-  debug('Waigo initialised');
-
-  // load all commands
-  var commands = waigo.getModulesInPath('cli');
-
-  // initialise parser
-  var program = commander;
-
-  // version
-  var packageJson = require(path.join(waigo.getWaigoFolder(), '..', 'package.json'));
-  program.version(packageJson.version);
-
-  // commands
-  _.each(commands, function(command) {
-    debug('Found command: ' + command);
-    var commandName = path.basename(command);
-
-    var obj = new (waigo.load(command))();
-
-    var cmd = program
-      .command(commandName)
-      .description(obj.description)
-      .action(
-        co(function*() {
-          yield obj.run.apply(obj, arguments);
-        })
-      );
-
-    _.each(obj.options, function(o) {
-      cmd.option.apply(cmd, o);
-    });
-  }); 
-
-  // parse and dispatch
-  program.parse(process.argv);
-
-})(function(err) {
-  if (err) {
-    console.error(err);
-  }
-});
+requre(pathToWaigoCli);
