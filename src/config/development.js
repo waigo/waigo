@@ -13,14 +13,10 @@
  */
 module.exports = function(config) {
   
-  config.middleware.options.errorHandler = {
+  config.middleware.config.errorHandler = {
     showStack: true
   }
 
-
-  config.logging = {
-    // minimum logging level
-    minLevel: 'DEBUG',
-  };
+  config.logging.minLevel = 'DEBUG';
 
 };

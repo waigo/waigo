@@ -7,7 +7,6 @@ var debug = require('debug')('waigo-shutdown-listener'),
 
 
 
-
 /**
  * Shutdown the HTTP server.
  *

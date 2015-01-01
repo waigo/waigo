@@ -75,10 +75,12 @@ Application.loadConfig = function*(options) {
  * @param {Object} cfg Logger configuration.
  */
 Application.setupLogger = function*(cfg) {
+  var app = Application.app;
+  
   debug('setup logging');
 
   log4js.configure({
-    cfg.appenders || [],
+    appenders: cfg.appenders || [],
   });
 
   app.logger = log4js.getLogger(cfg.category);
