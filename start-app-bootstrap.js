@@ -1,11 +1,15 @@
 "use strict";
 
 /**
- * @fileOverview The main entry point for your Waigo application.
+ * @fileOverview
+ * 
+ * Main bootstrap. We'll get rid of this file once Node 0.12 ships with 
+ * ES6 support built-in.
  */
 
- var co = require('co'),
-  waigo = require('../');
+
+var co = require('co'),
+  waigo = require('./');
 
 
 

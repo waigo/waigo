@@ -16,6 +16,7 @@ var debug = require('debug')('waigo-shutdown-listener'),
 module.exports = function*(app) {
   if (app.server) {
     debug('Shutting down HTTP server');
+    
     yield Q.promisify(app.server.close, app.server)();
   } 
 };

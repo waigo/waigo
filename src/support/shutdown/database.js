@@ -12,14 +12,13 @@ var debug = require('debug')('waigo-shutdown-database'),
  * @param {Object} app The application.
  */
 module.exports = function*(app) {
-  if (app.config.db) {
-    var dbType = Object.keys(app.config.db).pop();
-    debug('Shutting down database connection : ' + dbType);
+  debug('Shutting down database connections');
 
-    var builder = waigo.load('support/db/' + dbType);
+  var dbAdapters = waigo.getModulesInPath('support/db');
 
-    yield builder.shutdown(app.db);
-  }
+  yield Promise.map(dbAdapters, function(adapter) {
+    yield Promise.coroutine(waigo.load(adapter).closeAll)();
+  });
 };
 
 
