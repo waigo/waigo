@@ -27,23 +27,22 @@ module.exports = function(config) {
 
 
   /**
-   * Database connection.
-   */
-  config.db = null;
-
-
-  /**
-   * Logging config.
+   * Logging config (log4js-node).
+   *
+   * See [https://github.com/nomiddlename/log4js-node/wiki/Appenders](log4j docs) for config options.
    */
   config.logging = {
-    winston: {
-      // log to console
-      console: {
-        level: 'error', // minimum level to log at
-        colorize: true,
-        timestamp: true
+    // default logging category
+    category: 'app',
+    // minimum logging level
+    minLevel: 'ERROR',
+    // where logging output should go
+    appenders: [
+      {
+        type: 'console',
+        layout: 'coloured'
       }
-    }
+    ],
   };
 
 
@@ -54,7 +53,8 @@ module.exports = function(config) {
    * Each of these corresponds to a module file under the `support/startup` path.
    */
   config.startupSteps = [
-    'logging',
+    'database',
+    'models',
     'middleware',
     'routes',
     'listener'
@@ -68,9 +68,35 @@ module.exports = function(config) {
    * Each of these corresponds to a module file under the `support/shutdown` path.
    */
   config.shutdownSteps = [
-    'listener'
+    'listener',
+    'database',
   ];
 
+
+  /**
+   * Database connection.
+   *
+   * You can specify multiple database connections as long as `main` connection
+   * is also always specified. The built-in model classes will store their data 
+   * in this connection.
+   */
+  config.db = {
+    // connection id
+    main: {
+      // currently supported: mongo
+      type: 'mongo',
+      // name of db
+      name: 'waigo',
+      // host/replica sets
+      hosts: [
+        // first entry is always treated as the master
+        {
+          host: '127.0.0.1',
+          port: 27017,
+        }
+      ],
+    }
+  };
 
 
 
@@ -80,13 +106,14 @@ module.exports = function(config) {
    * Each `id` corresponds to a module file under the `support/middleware` path.
    */
   config.middleware = {
+    // the order in which middleware gets execured
     order: [
       'errorHandler',
       'staticResources',
       'sessions',
       'outputFormats'
     ],
-    options: {
+    config: {
       errorHandler: {
         // whether to show stack traces in error output.
         showStack: false
@@ -141,7 +168,6 @@ module.exports = function(config) {
       }
     }
   };
-
 
 };
 

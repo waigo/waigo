@@ -1,0 +1,5 @@
+/**
+ * @fileOverview Base model class.
+ */
+
+

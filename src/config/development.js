@@ -17,18 +17,10 @@ module.exports = function(config) {
     showStack: true
   }
 
-  /**
-   * Logging config.
-   */
+
   config.logging = {
-    winston: {
-      // log to console
-      console: {
-        // minimum level to log at
-        level: 'debug',
-        colorize: true,
-        timestamp: true
-      }
-    }
+    // minimum logging level
+    minLevel: 'DEBUG',
   };
+
 };
