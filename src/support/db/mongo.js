@@ -5,6 +5,9 @@ var debug = require('debug')('waigo-db-mongo'),
   Mongorito = require('mongorito'),
   Q = require('bluebird');
 
+var waigo = require('../../../'),
+  _ = waigo._;
+
 
 
 // keep track of connections
@@ -26,21 +29,21 @@ exports.create = function*(dbConfig) {
   var name = dbConfig.name,
     hosts = dbConfig.hosts;
 
-  var mongoUrls = _.map(hosts, function(soFar, thisHost) {
+  var mongoUrls = _.map(hosts, function(thisHost) {
     // user/passwd
     var auth = '';
     if (thisHost.user && thisHost.pass) {
       auth = thisHost.user + ':' + thisHost.pass + '@';
     }
 
-    var url = return auth + thisHost.host + ':' + thisHost.port + '/' + name;
+    var url = auth + thisHost.host + ':' + thisHost.port + '/' + name;
 
     debug(url);
 
     return url;
   });
 
-  var db = Mongorito.connect.apply(mongoUrls);
+  var db = Mongorito.connect.apply(Mongorito, mongoUrls);
 
   yield new Q(function(resolve, reject) {
     var connectionTimeout = setTimeout(function() {

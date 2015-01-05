@@ -7,30 +7,37 @@ var _ = require('lodash'),
   path = require('path'),
   waigo = require('../../../');
 
+var modelBuilder = waigo.load('support/models/builder');
+
 
 /**
  * Load models.
  *
- * This requires the 'database' startup step to be enabled.
- *
  * @param {Object} app The application.
  */
 module.exports = function*(app) {
-  var modelModuleFiles = waigo.getModulesInPath('models');
+  debug('loading');
 
-  debug('Loading models');
+  var modelModuleFiles = waigo.getModulesInPath('models');
 
   app.models = {};
 
   modelModuleFiles.forEach(function(modulePath) {
-    var name = _.str.capitalize(
-      path.basename(modulePath, path.extname(modulePath))
-    );
+    var moduleFileName = path.basename(modulePath, path.extname(modulePath));
 
-    var modelClass = waigo.load(modulePath)(app.db);
+    var modelInfo = waigo.load(modulePath)();
+
+    var name = modelInfo.className || _.str.capitalize(moduleFileName),
+      schema = modelInfo.schema || {},
+      dbName = modelInfo.db || 'main',
+      collectionName = modelInfo.collection || _.str.plural(name);
     
-    debug('Adding model: ' + name);
+    debug('adding ' + name + ' for ' + dbName  + '/' + collectionName);
 
-    app.models[modelClass.modelName || name] = modelClass;
+    app.models[name] = modelBuilder.new({
+      db: app.dbs[app.dbs],
+      schema: schema,
+      collection: ,
+    });
   });
 };
