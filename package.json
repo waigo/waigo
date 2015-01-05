@@ -29,6 +29,7 @@
     "mongorito": "^0.5.1",
     "raw-body": "~1.1.x",
     "shelljs": "~0.3.0",
+    "simple-mongo-schema": "^0.1.0",
     "then-fs": "~1.0.6",
     "underscore.string": "~2.3.x",
     "validator": "~3.4.x",
