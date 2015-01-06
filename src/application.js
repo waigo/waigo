@@ -12,6 +12,7 @@ var _ = require('lodash'),
 
 // underscore mixins
 _.str = require('underscore.string');
+_.str.pluralize = require('pluralize');
 _.mixin(waigo.load('support/underscore'));
 
 

@@ -6,7 +6,7 @@ var ProfileSchema = {
 };
 
 
-var EmailSchema: {
+var EmailSchema = {
   email: { type: String, required: true },
   verified: { type: Boolean },
 };

@@ -27,6 +27,7 @@
     "markdown": "~0.5.x",
     "moment": "~2.4.x",
     "mongorito": "^0.5.1",
+    "pluralize": "^1.1.0",
     "raw-body": "~1.1.x",
     "shelljs": "~0.3.0",
     "simple-mongo-schema": "^0.1.0",

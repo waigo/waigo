@@ -10,6 +10,11 @@ var compose = require('koa-compose'),
   Mongorito = require('mongorito');
 
 
+var waigo = require('../../../'),
+  _ = waigo._;
+
+
+
 /**
  * Build a new model class.
  */
@@ -26,7 +31,6 @@ exports.new = function(params) {
   var defaultPreEventHandlers = {},
     preEventHandlers = {},
     postEventHandlers = {};
-  }
 
   // instance methods
 
@@ -91,6 +95,8 @@ exports.new = function(params) {
 
   // create new model
   var NewModel = Mongorito.Model.extend(InstanceMethods, StaticMethods);
+
+  return NewModel;
 };
 
 

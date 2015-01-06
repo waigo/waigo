@@ -25,19 +25,19 @@ module.exports = function*(app) {
   modelModuleFiles.forEach(function(modulePath) {
     var moduleFileName = path.basename(modulePath, path.extname(modulePath));
 
-    var modelInfo = waigo.load(modulePath)();
+    var modelInfo = waigo.load(modulePath);
 
     var name = modelInfo.className || _.str.capitalize(moduleFileName),
       schema = modelInfo.schema || {},
       dbName = modelInfo.db || 'main',
-      collectionName = modelInfo.collection || _.str.plural(name);
+      collectionName = modelInfo.collection || _.str.pluralize(name).toLowerCase();
     
     debug('adding ' + name + ' for ' + dbName  + '/' + collectionName);
 
     app.models[name] = modelBuilder.new({
       db: app.dbs[app.dbs],
       schema: schema,
-      collection: ,
+      collection: collectionName,
     });
   });
 };
