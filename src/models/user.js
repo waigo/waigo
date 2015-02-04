@@ -20,10 +20,31 @@ var AuthSchema = {
 
 module.exports = {
   schema: {
-    username: { type: String, required: true },
+    username: { type: String, required: true, index: true },
     profile: { type: ProfileSchema, required: true },
     emails: { type: [EmailSchema], required: true },
     auth: { type: [AuthSchema], required: true },
+    roles: { type: [String], required: true },
   },
+  indexes: [
+    // username
+    {
+      fields: {
+        username: 1
+      }
+    },
+    // emails
+    {
+      fields: {
+        'emails.email': 1
+      }
+    },
+    // roles
+    {
+      fields: {
+        roles: 1
+      }
+    },
+  ]
 };
 

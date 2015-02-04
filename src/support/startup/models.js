@@ -5,9 +5,9 @@
 var _ = require('lodash'),
   debug = require('debug')('waigo-startup-models'),
   path = require('path'),
+  Robe = require('Robe'),
   waigo = require('../../../');
 
-var modelBuilder = waigo.load('support/models/builder');
 
 
 /**
@@ -34,10 +34,6 @@ module.exports = function*(app) {
     
     debug('adding ' + name + ' for ' + dbName  + '/' + collectionName);
 
-    app.models[name] = modelBuilder.new({
-      db: app.dbs[app.dbs],
-      schema: schema,
-      collection: collectionName,
-    });
+    app.models[name] = app.dbs[dbName].collection('collectionName', modelInfo);
   });
 };

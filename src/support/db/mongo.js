@@ -2,7 +2,7 @@
 
 
 var debug = require('debug')('waigo-db-mongo'),
-  Mongorito = require('mongorito'),
+  Robe = require('robe'),
   Q = require('bluebird');
 
 var waigo = require('../../../'),
@@ -43,22 +43,11 @@ exports.create = function*(dbConfig) {
     return url;
   });
 
-  var db = Mongorito.connect.apply(Mongorito, mongoUrls);
+  var db = yield Robe.connect(Mongorito, mongoUrls);
 
-  yield new Q(function(resolve, reject) {
-    var connectionTimeout = setTimeout(function() {
-      reject(new Error('Timed out waiting to connect to db'));
-    }, 10000);  // 10 seconds timeout
+  _connections.push(db);
 
-    db.once('open', function() {
-      clearTimeout(connectionTimeout);
-      _connections.push(db);
-
-      debug('connection established');
-
-      resolve(db);
-    });
-  });
+  return db;
 };
 
 
@@ -69,15 +58,7 @@ exports.create = function*(dbConfig) {
 exports.closeAll = function*() {
   debug('close all connections');
 
-  yield Q.map(_connections, function(c) {
-    return new Q(function(resolve, reject) {
-      c.close(function(err) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      })
-    });
-  })
+  yield Q.map(_connections, function(db) {
+    return db.close();
+  });
 };
