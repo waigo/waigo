@@ -182,15 +182,15 @@ loader.init = function*(options) {
     debug('Scanning for files in: ' + sourceName);
 
     _.extend(moduleMap, yield _walk(sourcePaths[sourceName], {
-        // only want JS files, but not any from cli/ or views/
+        // only want .js files, but not any from cli/ or views/
         matchFiles: /^(?!(cli|views)\/)(.+?\.js)$/i,
       })
     );
 
     _.extend(moduleMap, yield _walk(sourcePaths[sourceName], {
-        // only want files from views/
-        matchFiles: /^views\/(.+?)$/i,
-        // may have many view templates with name but different extensions
+        // only want files from views/, but not ones which are prefixed with an underscore
+        matchFiles: /^views\/(.*\/)?(((?!_)[A-Za-z0-9])+\.?\w+)$/i,
+        // may have many view templates with same names but different extensions
         keepExtensions: true,
       })
     );
