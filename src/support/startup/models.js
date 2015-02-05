@@ -16,13 +16,15 @@ var _ = require('lodash'),
  * @param {Object} app The application.
  */
 module.exports = function*(app) {
-  debug('loading');
+  debug('Loading');
 
-  var modelModuleFiles = waigo.getModulesInPath('models');
+  var modelModuleFiles = waigo.getFilesInFolder('models');
 
   app.models = {};
 
-  modelModuleFiles.forEach(function(modulePath) {
+  _.each(modelModuleFiles, function(modulePath) {
+    debug('Loading ' + modulePath);
+
     var moduleFileName = path.basename(modulePath, path.extname(modulePath));
 
     var modelInfo = waigo.load(modulePath);
@@ -32,8 +34,8 @@ module.exports = function*(app) {
       dbName = modelInfo.db || 'main',
       collectionName = modelInfo.collection || _.str.pluralize(name).toLowerCase();
     
-    debug('adding ' + name + ' for ' + dbName  + '/' + collectionName);
-
     app.models[name] = app.dbs[dbName].collection(collectionName, modelInfo);
+
+    debug('Added ' + name + ' -> ' + dbName  + '/' + collectionName);
   });
 };

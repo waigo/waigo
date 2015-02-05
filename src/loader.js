@@ -53,7 +53,6 @@ loader.__files = null;
  */
 var _walk = function(folder, options) {
   options = _.extend({
-    matchFolders: /.+/ig,
     matchFiles: /.+/ig,
     keepExtensions: false,
   }, options);
@@ -65,31 +64,21 @@ var _walk = function(folder, options) {
       followSymlinks: false
     });
 
-    walker.on('directory', function (dir, stat, stop) {
-      // remove root folder path and trailing slash to get subpath, e.g. config
-      var subPath = dir.substr(folder.length + 1);
-
-      if (!subPath.match(options.matchFolders)) {
-        stop();
-      }
-    });
-
     walker.on('file', function(file, stat) {
-      if (!file.match(options.matchFiles)) {
+      var dirname = path.dirname(file),
+        filename = path.join(path.relative(folder, dirname), path.basename(file));
+
+      if (!filename.match(options.matchFiles)) {
         return;
       }
 
-      // /x/y/z/abc.js -> /x/y/z
-      var dirname = path.dirname(file);
-
       // strip extension from filename?
       if (!options.keepExtensions) {
-        file = path.basename(file, path.extname(file));
+        var extname = path.extname(filename),
+          filename = filename.substr(0, filename.length - extname.length);
       }
       
-      var moduleName = path.join(path.relative(folder, dirname), file);
-
-      files[moduleName] = path.join(dirname, file);
+      files[filename] = file;
     });  
 
     walker.on('end', function() {
@@ -190,15 +179,19 @@ loader.init = function*(options) {
     var sourceName = scanOrder[i],
       moduleMap = {};
 
+    debug('Scanning for files in: ' + sourceName);
+
     _.extend(moduleMap, yield _walk(sourcePaths[sourceName], {
-        matchFolders: /^(?!cli\/)(.+)$/i,
-        matchFiles: /^(.+?\.js)$/i,
+        // only want JS files, but not any from cli/ or views/
+        matchFiles: /^(?!(cli|views)\/)(.+?\.js)$/i,
       })
     );
 
     _.extend(moduleMap, yield _walk(sourcePaths[sourceName], {
-        matchFolders: /^views\/(.+)$/i,
-        keepExtensions: true
+        // only want files from views/
+        matchFiles: /^views\/(.+?)$/i,
+        // may have many view templates with name but different extensions
+        keepExtensions: true,
       })
     );
 
@@ -240,7 +233,7 @@ loader.init = function*(options) {
       }
     }
 
-    debug('Path "' + moduleName + '" will be loaded from source "' + moduleConfig._load + '"');
+    debug('File "' + moduleName + '" will be loaded from source "' + moduleConfig._load + '"');
   });
 };
 
@@ -339,12 +332,14 @@ loader.getFilesInFolder = function(folder) {
     throw new Error('Please initialise Waigo first');
   }
 
-  return 
+  var ret = 
     _(_.keys(loader.__files))
       .filter(function(filePath) {
         return 0 === filePath.indexOf(folder);
       })
       .value();
+
+  return ret;
 };
 
 

@@ -43,7 +43,7 @@ exports.create = function*(dbConfig) {
     return url;
   });
 
-  var db = yield Robe.connect(Mongorito, mongoUrls);
+  var db = yield Robe.connect(mongoUrls);
 
   _connections.push(db);
 
