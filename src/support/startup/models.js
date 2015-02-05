@@ -34,6 +34,6 @@ module.exports = function*(app) {
     
     debug('adding ' + name + ' for ' + dbName  + '/' + collectionName);
 
-    app.models[name] = app.dbs[dbName].collection('collectionName', modelInfo);
+    app.models[name] = app.dbs[dbName].collection(collectionName, modelInfo);
   });
 };
