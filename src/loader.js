@@ -31,25 +31,31 @@ loader._ = _;
 
 
 /** 
- * Internal module loading configuration. Do not access or manipulate this yourself. This is exposed purely for testing purposes.
+ * Internal file loading configuration. Do not access or manipulate this yourself. This is exposed purely for testing purposes.
  * @private
  */
-loader.__modules = null;
+loader.__files = null;
+
 
 
 
 /**
- * Walk given folder and its subfolders and return all `.js` files.
+ * Walk given folder and its subfolders and return all files.
  *
+ * @param {String} folder Root folder.
  * @param {Object} [options] Additional options.
- * @param {Array} [options.excludeFolders] Sub-folders to exclude in the search, relative to the root folder.
+ * @param {String} [options.matchFolders] Filter sub-folders by this regex.
+ * @param {String} [options.matchFiles] Filter files by this regex.
+ * @param {String} [options.keepExtensions] If enabled then file names will keep their extensions.
  * 
  * @return {Promise}
  * @private
  */
 var _walk = function(folder, options) {
   options = _.extend({
-    excludeFolders: []
+    matchFolders: /.+/ig,
+    matchFiles: /.+/ig,
+    keepExtensions: false,
   }, options);
 
   return new Q(function(resolve, reject) {
@@ -63,24 +69,27 @@ var _walk = function(folder, options) {
       // remove root folder path and trailing slash to get subpath, e.g. config
       var subPath = dir.substr(folder.length + 1);
 
-      // skip excluded folders
-      if (0 <= _.indexOf(options.excludeFolders, subPath)) {
+      if (!subPath.match(options.matchFolders)) {
         stop();
       }
     });
 
     walker.on('file', function(file, stat) {
-      var extName = path.extname(file);
-      if ('.js' !== extName) {
+      if (!file.match(options.matchFiles)) {
         return;
       }
 
-      // /x/y/z/abc.js -> /x/y/z/abc
-      var dirname = path.dirname(file),
-        baseName = path.basename(file, extName),
-        moduleName = path.join(path.relative(folder, dirname), baseName);
+      // /x/y/z/abc.js -> /x/y/z
+      var dirname = path.dirname(file);
 
-      files[moduleName] = path.join(dirname, baseName);
+      // strip extension from filename?
+      if (!options.keepExtensions) {
+        file = path.basename(file, path.extname(file));
+      }
+      
+      var moduleName = path.join(path.relative(folder, dirname), file);
+
+      files[moduleName] = path.join(dirname, file);
     });  
 
     walker.on('end', function() {
@@ -94,13 +103,13 @@ var _walk = function(folder, options) {
 
 
 /**
- * Initialise the Waigo module file loader.
+ * Initialise the Waigo file loader.
  *
  * This scans the folder trees of the core framework, plugins and your
  * application to map out what's available and to ensure that there are no
- * instances of any given module file being provided by two or more plugins.
- * For more information on how Waigo decides where to load modules from see
- * the `load()` method.
+ * instances of any given module file or view being provided by two or more 
+ * plugins. For more information on how Waigo decides where to load files 
+ * from see the `load()` and `getModulePath()` methods.
  *
  * If `options.plugins` is provided then those named plugins get loaded. If
  * not then the remaining options are used to first work out which plugins to
@@ -112,11 +121,11 @@ var _walk = function(folder, options) {
  * @param {Object} [options.plugins] Plugin loading configuration.
  * @param {Array} [options.plugins.names] Plugins to load. If omitted then other options are used to load plugins.
  * @param {Array} [options.plugins.glob] Regexes specifying plugin naming conventions. Default is `waigo-*`.
- * @param {String|Object} [options.plugins.config] JSON config containing names of plugins to load. If a string is given then it assumed to be the path of a Javasript file. Default is to load `package.json`.
+ * @param {String|Object} [options.plugins.config] JSON config containing names of plugins to load. If a string is given then it assumed to be the path of a script which exports configuration. Default is to load `package.json`.
  * @param {Array} [options.plugins.configKey] Names of keys in JSON config whose values contain names of plugins. Default is `dependencies, devDependencies, peerDependencies`.
  */
 loader.init = function*(options) {
-  if (loader.__modules) {
+  if (loader.__files) {
     debug('Waigo already initialised. Re-initialising...');
   }
 
@@ -161,9 +170,10 @@ loader.init = function*(options) {
   
   debug('Plugins to load: ' + options.plugins.names.join(', '));
 
-  // scan all folder trees and build up the available modules...
-  loader.__modules = {};
+  // reset cache
+  loader.__files = {};
 
+  // what paths will we search?
   var sourcePaths = {
     waigo: waigoFolder,
     app: appFolder
@@ -175,26 +185,34 @@ loader.init = function*(options) {
 
   var scanOrder = ['waigo'].concat(options.plugins.names, 'app');
 
+  // start scanning
   for (var i = 0; i < scanOrder.length; ++i) {
     var sourceName = scanOrder[i],
-      moduleMap = yield _walk(sourcePaths[sourceName], {
-        excludeFolders: [
-          'cli/data',
-          'views'
-        ]
-      });
+      moduleMap = {};
+
+    _.extend(moduleMap, yield _walk(sourcePaths[sourceName], {
+        matchFolders: /^(?!cli\/)(.+)$/i,
+        matchFiles: /^(.+?\.js)$/i,
+      })
+    );
+
+    _.extend(moduleMap, yield _walk(sourcePaths[sourceName], {
+        matchFolders: /^views\/(.+)$/i,
+        keepExtensions: true
+      })
+    );
 
     /*jshint -W083 */
     _.each(moduleMap, function(modulePath, moduleName) {
-      loader.__modules[moduleName] = loader.__modules[moduleName] || { 
+      loader.__files[moduleName] = loader.__files[moduleName] || { 
         sources: {} 
       };
-      loader.__modules[moduleName].sources[sourceName] = modulePath;
+      loader.__files[moduleName].sources[sourceName] = modulePath;
     });
   }
 
   // now go through the list of available modules and ensure that there are no ambiguities
-  _.each(loader.__modules, function(moduleConfig, moduleName) {
+  _.each(loader.__files, function(moduleConfig, moduleName) {
     var sourceNames = Object.keys(moduleConfig.sources);
 
     // if there is an app implementation then that's the one to use
@@ -214,7 +232,7 @@ loader.init = function*(options) {
 
       // if more than one plugin then we have a problem
       if (1 < pluginSources.length) {
-        throw new Error('Module "' + moduleName + '" has more than one plugin implementation to choose from: ' + pluginSources.join(', '));
+        throw new Error('Path "' + moduleName + '" has more than one plugin implementation to choose from: ' + pluginSources.join(', '));
       } 
       // else the one available plugin is the source
       else {
@@ -222,7 +240,7 @@ loader.init = function*(options) {
       }
     }
 
-    debug('Module "' + moduleName + '" will be loaded from source "' + moduleConfig._load + '"');
+    debug('Path "' + moduleName + '" will be loaded from source "' + moduleConfig._load + '"');
   });
 };
 
@@ -233,15 +251,15 @@ loader.init = function*(options) {
 
 
 /**
- * Load a Waigo module file.
+ * Load a Waigo file.
  *
  * Names to load are specified in the form: `[npm_module_name:]<module_file_path>`
  *
  * If `npm_module_name:` is not given then Waigo works out the which version
- * of the module file to load according to the following priority order: **App >
+ * of the file to load according to the following priority order: **App >
  * plugins > core framework**.
  *
- * Thus an app can completely override any of the framework's built-in module
+ * Thus an app can completely override any of the framework's built-in
  * files.
  *
  * For example, when a call to load the `support/errors` module is made Waigo
@@ -260,70 +278,73 @@ loader.init = function*(options) {
  * version provided the core Waigo framework then `waigo:support/errors`
  * should be used.
  * 
- * @param {string} moduleFileName Module file name in the supported format (see above).
- * @return {Object} contents of loaded module.
- * @throws Error if there was an error loading the module.
+ * @param {string} fileName File name in the supported format (see above).
+ * @return {Object} contents of loaded file.
+ * @throws Error if there was an error loading the file.
  */
-loader.load = function(moduleName) {
-  if (!loader.__modules) {
+loader.load = function(fileName) {
+  if (!loader.__files) {
     throw new Error('Please initialise Waigo first');
   }
 
   // get source to load from
-  var sanitizedModuleName = moduleName,
+  var sanitizedFileName = fileName,
     source = null;
 
-  var sepPos = moduleName.indexOf(':')
+  var sepPos = fileName.indexOf(':')
   if (-1 < sepPos) {
-    source = moduleName.substr(0, sepPos);
-    sanitizedModuleName = moduleName.substr(sepPos + 1);
+    source = fileName.substr(0, sepPos);
+    sanitizedFileName = fileName.substr(sepPos + 1);
   }
 
-  if (!loader.__modules[sanitizedModuleName]) {
-    throw new Error('Module not found: ' + sanitizedModuleName);
+  if (!loader.__files[sanitizedFileName]) {
+    throw new Error('File not found: ' + sanitizedFileName);
   }
 
   // if no source then use default
   if (!source) {
-    source = loader.__modules[sanitizedModuleName]._load;
+    source = loader.__files[sanitizedFileName]._load;
   }
 
-  if (!loader.__modules[sanitizedModuleName].sources[source]) {
-    throw new Error('Module source not found: ' + source);
+  if (!loader.__files[sanitizedFileName].sources[source]) {
+    throw new Error('File source not found: ' + source);
   }
 
-  debug('Loading module "' + sanitizedModuleName + '" from source "' + source + '"');
+  debug('Loading file "' + sanitizedFileName + '" from source "' + source + '"');
 
-  return require(loader.__modules[sanitizedModuleName].sources[source]);
+  return require(loader.__files[sanitizedFileName].sources[source]);
 };
 
 
 
 
 /**
- * Get names of all Waigo module files under a particular path.
+ * Get names of all files under a particular foder.
  *
- * This will look through the initialised module list for all modules files 
- * which reside under the given path (items in sub folders are ignored) 
- * and then return their names. Module files provided by both plugins and the 
+ * This will look through the initialised file list for all files 
+ * which reside under the given folder (items in sub-folders are ignored) 
+ * and then return their names. Files provided by both plugins and the 
  * app itself will also be included.
  *
- * This is useful in situations where a particular path holds a number of 
- * related module files and you wish to see which ones are 
+ * This is useful in situations where a particular folder holds a number of 
+ * related files and you wish to see which ones are 
  * available.
  *
- * @param {string} path Path to check under.
- * @return {Array} List of module file names (without the file extension).
+ * @param {String} folder Folder to check under, relative to application folder.
+ * @return {Array} List of file names.
  * @throws Error if there was an error.
  */
-loader.getModulesInPath = function(path) {
-  if (!loader.__modules) {
+loader.getFilesInFolder = function(folder) {
+  if (!loader.__files) {
     throw new Error('Please initialise Waigo first');
   }
 
-  return _.filter(_.keys(loader.__modules), function(moduleFilePath) {
-    return 0 === moduleFilePath.indexOf(path);
-  });
+  return 
+    _(_.keys(loader.__files))
+      .filter(function(filePath) {
+        return 0 === filePath.indexOf(folder);
+      })
+      .value();
 };
 
 

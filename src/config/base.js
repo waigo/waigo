@@ -150,8 +150,6 @@ module.exports = function(config) {
         // List of enabled formats along with options to pass to each formatter. */
         formats: {
           html: {
-            // Folder relative to application root folder, in which to look for view templates. */
-            folder: 'views',
             // Default view template filename extension when not explicitly provided. */
             ext: 'jade',
             // Map file extension to rendering engine

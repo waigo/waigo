@@ -18,7 +18,7 @@ var _ = require('lodash'),
  * @return {Object} Object with render method.
  */
 exports.create = function(config) {
-  var render = views(path.join(waigo.getAppFolder(), config.folder), {
+  var render = views(path.join(waigo.getAppFolder(), 'views'), {
     ext: config.ext,
     map: config.engine || null
   });

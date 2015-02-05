@@ -41,7 +41,8 @@ module.exports = (grunt) ->
           '<%= config.src %>/*.js'
           '<%= config.src %>/**/*.js'
           '<%= config.src %>/**/**/*.js' 
-          '<%= config.src %>/**/**/**/*.js' 
+          '<%= config.src %>/**/**/**/*.js'
+          '<%= config.src %>/**/**/**/**/*.js' 
         ].join(' ')
 
 

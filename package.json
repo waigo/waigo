@@ -10,6 +10,7 @@
     "bluebird": "^2.3.4",
     "co": "^3.1.0",
     "co-body": "0.0.1",
+    "co-render": "0.0.1",
     "co-views": "~0.2.x",
     "commander": "~2.2.0",
     "debug": "~0.7.x",
@@ -28,12 +29,12 @@
     "moment": "~2.4.x",
     "pluralize": "^1.1.0",
     "raw-body": "~1.1.x",
+    "robe": "^0.5.0",
     "shelljs": "~0.3.0",
     "simple-mongo-schema": "^0.2.0",
     "then-fs": "~1.0.6",
     "underscore.string": "~2.3.x",
-    "validator": "~3.4.x",
-    "winston": "~0.7.x"
+    "validator": "~3.4.x"
   },
   "devDependencies": {
     "chai": "~1.8.1",

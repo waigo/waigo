@@ -2,7 +2,7 @@
 
 
 var _ = require('lodash'),
-  debug = require('debug')('waigo-app'),
+  debug = require('debug')('waigo-application'),
   koa = require('koa'),
   log4js = require('log4js'),
   path = require('path'),
