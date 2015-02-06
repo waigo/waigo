@@ -1,10 +1,10 @@
 "use strict";
 
 
-var _ = require('lodash'),
-  debug = require('debug')('waigo-config'),
+var debug = require('debug')('waigo-config'),
   fs = require('fs'),
-  waigo = require('../../');
+  waigo = require('../../'),
+  _ = waigo._;
 
 
 /**

@@ -1,7 +1,8 @@
 "use strict";
 
 
-var _ = require('lodash');
+var waigo = require('../../'),
+  _ = waigo._;
 
 
 

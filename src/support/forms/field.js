@@ -1,8 +1,8 @@
 
 "use strict";
 
-var _ = require('lodash'),
-  waigo = require('../../../');
+var waigo = require('../../../'),
+  _ = waigo._;
 
 
 var errors = waigo.load('support/errors'),

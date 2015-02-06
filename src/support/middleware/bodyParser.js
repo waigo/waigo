@@ -1,10 +1,10 @@
 "use strict";
 
 
-var _ = require('lodash'),
-  bodyParser = require('co-body'),
+var bodyParser = require('co-body'),
   path = require('path'),
-  waigo = require('../../../');
+  waigo = require('../../../'),
+  _ = waigo._;
 
 
 /**

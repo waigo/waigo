@@ -46,6 +46,13 @@ module.exports = function(config) {
   };
 
 
+  /**
+   * Static resources folder (relative to app folder)
+   */
+  config.staticResources = {
+    folder; 'public/build'
+  };
+
 
   /**
    * The steps to execute as part of the application startup process.
@@ -53,6 +60,7 @@ module.exports = function(config) {
    * Each of these corresponds to a module file under the `support/startup` path.
    */
   config.startupSteps = [
+    'staticResources',
     'database',
     'models',
     'middleware',
@@ -120,7 +128,7 @@ module.exports = function(config) {
       },
       staticResources: {
         // relative to app folder
-        folder: '../public',
+        folder: config.staticResources.folder,
         // see support/middleware/staticResources for options
         options: {}
       },

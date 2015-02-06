@@ -1,11 +1,11 @@
 "use strict";
 
 
-var _ = require('lodash'),
-  util = require('util');
+var util = require('util');
 
 
 var waigo = require('../../'),
+  _ = waigo._,
   viewObjects = waigo.load('support/viewObjects');
 
 

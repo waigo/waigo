@@ -1,10 +1,10 @@
 "use strict";
 
 
-var _ = require('lodash'),
-  debug = require('debug')('waigo-render-html'),
+var debug = require('debug')('waigo-render-html'),
   path = require('path'),
-  waigo = require('../../../');
+  waigo = require('../../../'),
+  _ = waigo._;
 
 var errors = waigo.load('support/errors');
 

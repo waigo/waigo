@@ -1,14 +1,14 @@
 "use strict";
 
 
-var _ = require('lodash'),
-  debug = require('debug')('waigo-application'),
+var debug = require('debug')('waigo-application'),
   koa = require('koa'),
   log4js = require('log4js'),
   path = require('path'),
   Q = require('bluebird'),
   moment = require('moment'),
-  waigo = require('../');
+  waigo = require('../'),
+  _ = waigo._;
 
 // underscore mixins
 _.str = require('underscore.string');

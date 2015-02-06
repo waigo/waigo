@@ -1,14 +1,14 @@
 "use strict";
 
 
-var _ = require('lodash'),
-  debug = require('debug')('waigo-cli'),
+var debug = require('debug')('waigo-cli'),
   path = require('path'),
   Q = require('bluebird'),
   shell = require('shelljs');
 
 
-var waigo = require('../../');
+var waigo = require('../../'),
+  _ = waigo._;
 
 
 shell.execAsync = Q.promisify(shell.exec, shell);

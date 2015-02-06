@@ -2,11 +2,11 @@
 
 
 
-var _ = require('lodash'),
-  debug = require('debug')('waigo-startup-models'),
+var debug = require('debug')('waigo-startup-models'),
   path = require('path'),
   Robe = require('Robe'),
-  waigo = require('../../../');
+  waigo = require('../../../'),
+  _ = waigo._;
 
 
 

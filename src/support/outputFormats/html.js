@@ -1,11 +1,11 @@
 "use strict";
 
 
-var _ = require('lodash'),
-  debug = require('debug')('waigo-render-html'),
+var debug = require('debug')('waigo-render-html'),
   path = require('path'),
   render = require('co-render'),
-  waigo = require('../../../');
+  waigo = require('../../../'),
+  _ = waigo._;
 
 
 /**

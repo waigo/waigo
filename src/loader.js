@@ -37,6 +37,12 @@ loader._ = _;
 loader.__files = null;
 
 
+/** 
+ * Internal paths to file sources. Do not access or manipulate this yourself. This is exposed purely for testing purposes.
+ * @private
+ */
+loader.__sourcePaths = null;
+
 
 
 /**
@@ -163,7 +169,7 @@ loader.init = function*(options) {
   loader.__files = {};
 
   // what paths will we search?
-  var sourcePaths = {
+  var sourcePaths = loader.__sourcePaths = {
     waigo: waigoFolder,
     app: appFolder
   };
@@ -202,6 +208,9 @@ loader.init = function*(options) {
       };
       loader.__files[moduleName].sources[sourceName] = modulePath;
     });
+
+    // copy static resources into our build folder
+    
   }
 
   // now go through the list of available modules and ensure that there are no ambiguities
@@ -322,6 +331,25 @@ loader.getPath = function(fileName) {
   debug('File "' + fileName + '" points to "' + sanitizedFileName + '" from source "' + source + '"');
 
   return loader.__files[sanitizedFileName].sources[source];
+};
+
+
+
+
+
+/**
+ * Get file sources.
+ *
+ * This will return key-value pairs, where the key is the name of the source and 
+ * the value is that path to the `src` folder for that source.
+ *
+ * When calling `waigo.load()` and/or `waigo.getPath()` is is this list which 
+ * tells Waigo where to look for files.
+ *
+ * @return {Object}
+ */
+loader.getSources = function() {
+  return loader.__sourcePaths;
 };
 
 

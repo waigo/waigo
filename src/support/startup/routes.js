@@ -1,9 +1,9 @@
 "use strict";
 
 
-var _ = require('lodash'),
-  debug = require('debug')('waigo-startup-routes'),
-  waigo = require('../../../');
+var debug = require('debug')('waigo-startup-routes'),
+  waigo = require('../../../'),
+  _ = waigo._;
 
 
 /**

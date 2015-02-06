@@ -1,8 +1,8 @@
 "use strict";
 
-var _ = require('lodash'),
-  util = require('util'),
-  waigo = require('../../../../');
+var util = require('util'),
+  waigo = require('../../../../'),
+  _ = waigo._;
 
 
 var Field = waigo.load('support/forms/field').Field;

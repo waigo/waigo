@@ -1,11 +1,11 @@
 "use strict";
 
 
-var _ = require('lodash'),
-  debug = require('debug')('waigo-routemapper'),
+var debug = require('debug')('waigo-routemapper'),
   route = require('koa-trie-router'),
   util = require('util'),
-  waigo = require('../../');
+  waigo = require('../../'),
+  _ = waigo._;
 
 
 var errors = waigo.load('support/errors'),

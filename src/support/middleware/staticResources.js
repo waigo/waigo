@@ -1,9 +1,9 @@
 "use strict";
 
 
-var _ = require('lodash'),
-  path = require('path'),
-  waigo = require('../../../');
+var path = require('path'),
+  waigo = require('../../../'),
+  _ = waigo._;
 
 
 
