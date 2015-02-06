@@ -25,16 +25,19 @@ folders.static =
 folders.static.src.stylus = path.join(folders.static.src.root, 'stylus')
 folders.static.build.css = path.join(folders.static.build.root, 'css')
 
+folders.static.src.img = path.join(folders.static.src.root, 'img')
+folders.static.build.img = path.join(folders.static.build.root, 'img')
+
 files =
   src:
+    img: path.join(folders.static.src.img, '**', '*.*')
     stylus: path.join(folders.static.src.stylus, '**', '*.styl')
 
 
 gulp.task 'css', ->
   gulp.src files.src.stylus
     .pipe stylus({
-      use: [ nib(), rupture() ],
-      compress: true
+      use: [ nib(), rupture() ]
     })
     .pipe prefix()
     .pipe concat('style.css')
@@ -42,7 +45,15 @@ gulp.task 'css', ->
     .pipe gulp.dest(folders.static.build.css)
 
 
-gulp.task 'dev', ->
+gulp.task 'img', ->
+  gulp.src files.src.img
+    .pipe gulp.dest(folders.static.build.img)
+
+
+gulp.task 'static', ['css', 'img']
+
+
+gulp.task 'dev', ['static'], ->
   nodemon({ 
     script: 'start-app.js'
     ext: 'jade js styl'
@@ -54,10 +65,7 @@ gulp.task 'dev', ->
       'src/cli/*'
     ]
   })
-    .on('change', ['css'])
-    .on('restart', ->
-      console.log('App restarted!')
-    )
+    .on('change', ['static'])
 
 
 

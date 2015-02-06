@@ -51,8 +51,8 @@
  * For the above configuration an instance of the `bodyParser` middleware will 
  * get initialized for this route with the request body size limit set to `1KB`.
  */
-module.exports = {
-  
+module.exports = { 
+  'GET /': [
+    'index.main'
+  ],
 };
-
-

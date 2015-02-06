@@ -2,6 +2,7 @@
 
 
 var _ = require('lodash'),
+  debug = require('debug')('waigo-render-html'),
   path = require('path'),
   waigo = require('../../../');
 
@@ -17,6 +18,8 @@ var errors = waigo.load('support/errors');
 exports.create = function() {
   return {
     render: function*(view, locals) {
+      debug('View', view);
+
       locals = locals || {};
 
       if (!_.isPlainObject(locals)) {
@@ -29,6 +32,8 @@ exports.create = function() {
 
 
     redirect: function*(url) {
+      debug('Redirect', url);
+      
       this.type = 'json';
       this.status = 200;
       this.body = {

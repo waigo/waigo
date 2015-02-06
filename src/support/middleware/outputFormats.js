@@ -1,6 +1,6 @@
 "use strict";
 
-var views = require('co-views'),
+var debug = require('debug')('waigo-middleware-outputformat'),
   waigo = require('../../../');
 
 var errors = waigo.load('support/errors'),
@@ -35,7 +35,7 @@ module.exports = function(options) {
     enabledFormats[format] = waigo.load('support/outputFormats/' + format).create(options.formats[format]);
   }
 
-  return function* setoutputFormat(next) {
+  return function* setOutputFormat(next) {
     var ctx = this;
 
     var requestedFormat = (this.query[options.paramName] || options.default).toLowerCase();
@@ -47,8 +47,14 @@ module.exports = function(options) {
 
     this.request.outputFormat = requestedFormat;
 
+    debug('Output format', requestedFormat);
+
     // attach renderer
     this.render = function*(view, locals) {
+      locals = locals || {};
+      
+      debug('Render', view);
+
       // get yieldables
       var localsViewObjects = yield viewObjects.toViewObjectYieldable(ctx, locals);
 
@@ -58,6 +64,8 @@ module.exports = function(options) {
 
     // redirect method
     this.redirect = function*(url) {
+      debug('Redirect', url);
+
       // call actual rendering method
       yield enabledFormats[requestedFormat].redirect.call(ctx, url);
     };

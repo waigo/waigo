@@ -12,11 +12,9 @@
  * @param  {Object} config Configuration object to modify.
  */
 module.exports = function(config) {
-  
   config.middleware.options.errorHandler = {
     showStack: true
   }
 
   config.logging.minLevel = 'DEBUG';
-
 };

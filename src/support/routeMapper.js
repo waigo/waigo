@@ -2,6 +2,7 @@
 
 
 var _ = require('lodash'),
+  debug = require('debug')('waigo-routemapper'),
   route = require('koa-trie-router'),
   util = require('util'),
   waigo = require('../../');
@@ -49,10 +50,14 @@ var parseMethodUrl = function(str) {
  * @throws RouteError if there are any problems.
  */
 exports.map = function(app, routes) {
+  var logger = app.logger.create('RouteMapper');
+
   var controllers = app.controllers = {},
     possibleMappings = [];
 
   _.each(routes, function(middleware, urlPath) {
+    logger.debug('Route', urlPath);
+
     if (!_.isArray(middleware)) {
       middleware = [middleware];
     }
@@ -61,16 +66,19 @@ exports.map = function(app, routes) {
 
     // load all middleware
     mapping.resolvedMiddleware = _.map(middleware, function(ref) {
-      // if reference is of form 'moduleName.methodName' then it's a controller reference
+      logger.debug('Middleware', ref);
+
+      // if reference is of form 'moduleName.xx.yy' then it's a controller reference
       var dotPos = ('string' === typeof ref) && ref.indexOf('.');
       if (0 < dotPos) {
         var tokens = ref.split('.'),
-          controllerName = tokens[0],
-          methodName = tokens[1];
+          controllerPath = tokens,
+          methodName = tokens.pop(),
+          controllerName = controllerPath.join('.');
 
         // load controller if not already done so
         if (!controllers[controllerName]) {
-          controllers[controllerName] = waigo.load('controllers/' + controllerName);
+          controllers[controllerName] = waigo.load('controllers/' + controllerPath.join('/'));
         }
 
         if (!_.isFunction(controllers[controllerName][methodName])) {

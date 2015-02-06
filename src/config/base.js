@@ -152,6 +152,8 @@ module.exports = function(config) {
           html: {
             // Default view template filename extension when not explicitly provided. */
             ext: 'jade',
+            // Whether compiled templates should be cached in memory (not all template engines honour this)
+            cache: true,
             // Map file extension to rendering engine
             engine: {
               'jade': 'jade'

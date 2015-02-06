@@ -1,8 +1,8 @@
 "use strict";
 
 
-
-var debug = require('debug')('waigo-startup-routes'),
+var _ = require('lodash'),
+  debug = require('debug')('waigo-startup-routes'),
   waigo = require('../../../');
 
 
@@ -16,8 +16,20 @@ var debug = require('debug')('waigo-startup-routes'),
  */
 module.exports = function*(app) {
   debug('Setting up routes');
+
   require('koa-trie-router')(app);
-  app.routes = waigo.load('routes');
+
+  var routeFiles = waigo.getFilesInFolder('routes');
+
+  app.routes = {};
+
+  _.each(routeFiles, function(routeFile) {
+    debug('Loading ' + routeFile);
+
+    _.extend(app.routes, waigo.load(routeFile));
+  });
+
   waigo.load('support/routeMapper').map(app, app.routes);
+
   app.use(app.router);
 };

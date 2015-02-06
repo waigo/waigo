@@ -2,6 +2,7 @@
 
 
 var _ = require('lodash'),
+  debug = require('debug')('waigo-config'),
   fs = require('fs'),
   waigo = require('../../');
 
@@ -49,6 +50,8 @@ module.exports = function() {
     mode: process.env.NODE_ENV || 'development',
     user: process.env.USER
   };
+
+  debug('Config mode, user', config.mode, config.user);
 
   // base
   var fn = loadConfigModule('base');

@@ -246,6 +246,23 @@ loader.init = function*(options) {
 /**
  * Load a Waigo file.
  *
+ * See `loader.getPath()` for more info.
+ * 
+ * @param {string} fileName File name in the supported format (see above).
+ * @return {Object} contents of loaded file.
+ * @throws Error if there was an error loading the file.
+ */
+loader.load = function(fileName) {
+  return require(loader.getPath(fileName));
+};
+
+
+
+
+
+/**
+ * Get path to a Waigo file.
+ *
  * Names to load are specified in the form: `[npm_module_name:]<module_file_path>`
  *
  * If `npm_module_name:` is not given then Waigo works out the which version
@@ -271,11 +288,10 @@ loader.init = function*(options) {
  * version provided the core Waigo framework then `waigo:support/errors`
  * should be used.
  * 
- * @param {string} fileName File name in the supported format (see above).
- * @return {Object} contents of loaded file.
- * @throws Error if there was an error loading the file.
+ * @param {String} fileName File name in the supported format (see above).
+ * @return {String} Full path to file.
  */
-loader.load = function(fileName) {
+loader.getPath = function(fileName) {
   if (!loader.__files) {
     throw new Error('Please initialise Waigo first');
   }
@@ -303,9 +319,9 @@ loader.load = function(fileName) {
     throw new Error('File source not found: ' + source);
   }
 
-  debug('Loading file "' + sanitizedFileName + '" from source "' + source + '"');
+  debug('File "' + fileName + '" points to "' + sanitizedFileName + '" from source "' + source + '"');
 
-  return require(loader.__files[sanitizedFileName].sources[source]);
+  return loader.__files[sanitizedFileName].sources[source];
 };
 
 
