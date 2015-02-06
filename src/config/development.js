@@ -13,7 +13,7 @@
  */
 module.exports = function(config) {
   
-  config.middleware.config.errorHandler = {
+  config.middleware.options.errorHandler = {
     showStack: true
   }
 

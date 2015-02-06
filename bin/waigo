@@ -23,7 +23,7 @@ var pathToWaigoCli = path.join(__dirname, 'waigo-cli');
 // (we'll assume that the CLI is always run in the project root folder, where 
 // node_modules also resides)
 var pathToLocalWaigoCli = 
-  path.join(process.cwd(), 'node_modules', 'waigo', 'bin', 'waigo-co');
+  path.join(process.cwd(), 'node_modules', 'waigo', 'bin', 'waigo-cli');
 
 if (shell.test('-f', pathToLocalWaigoCli)) {
   pathToWaigoCli = pathToLocalWaigoCli;

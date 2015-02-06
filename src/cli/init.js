@@ -30,10 +30,8 @@ util.inherits(Command, AbstractCommand);
  * Run this command.
  */
 Command.prototype.run = function*() {
-  yield this.installPkgs('waigo', 'co');
-  yield this.copyFile(path.join(dataFolder, 'routes.js'), 'src/routes.js');
-  yield this.copyFile(path.join(dataFolder, 'main.controller.js'), 'src/controllers/main.js');
-  yield this.copyFile(path.join(dataFolder, 'index.jade'), 'src/views/index.jade');
+  yield this.installPkgs('waigo');
   yield this.copyFile(path.join(dataFolder, 'start-app.js'), 'start-app.js');
+  yield this.copyFile(path.join(dataFolder, 'README.md'), 'src/README.md');
 };
 

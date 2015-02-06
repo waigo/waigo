@@ -14,6 +14,7 @@ Vagrantfile
 
 # build
 docs/api/*
+public/_plugins
 
 # test
 test/data/app

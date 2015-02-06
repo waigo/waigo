@@ -113,7 +113,7 @@ module.exports = function(config) {
       'sessions',
       'outputFormats'
     ],
-    config: {
+    options: {
       errorHandler: {
         // whether to show stack traces in error output.
         showStack: false
