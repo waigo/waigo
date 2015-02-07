@@ -17,22 +17,25 @@ reportError = (err) ->
 folders = {}
 folders.src = path.join(__dirname, 'src') 
 folders.public = path.join(__dirname, 'public') 
-folders.static = 
+folders.assets = 
   src:
     root: path.join(folders.src, 'assets')
   build:
     root: path.join(folders.public)
 
-folders.static.src.stylus = path.join(folders.static.src.root, 'stylus')
-folders.static.build.css = path.join(folders.static.build.root, 'css')
+folders.assets.src.stylus = path.join(folders.assets.src.root, 'stylus')
+folders.assets.build.css = path.join(folders.assets.build.root, 'css')
 
-folders.static.src.img = path.join(folders.static.src.root, 'img')
-folders.static.build.img = path.join(folders.static.build.root, 'img')
+folders.assets.src.img = path.join(folders.assets.src.root, 'img')
+folders.assets.build.img = path.join(folders.assets.build.root, 'img')
 
 files =
   src:
-    img: path.join(folders.static.src.img, '**', '*.*')
-    stylus: path.join(folders.static.src.stylus, '**', '*.styl')
+    img: path.join(folders.assets.src.img, '**', '*.*')
+    stylus: path.join(folders.assets.src.stylus, '**', '*.styl')
+files.watch =
+  img: files.src.img
+  stylus: files.src.stylus
 
 
 gulp.task 'css', ->
@@ -43,30 +46,32 @@ gulp.task 'css', ->
     .pipe prefix()
     .pipe concat('style.css')
     .pipe minifyCss()
-    .pipe gulp.dest(folders.static.build.css)
+    .pipe gulp.dest(folders.assets.build.css)
 
 
 gulp.task 'img', ->
   gulp.src files.src.img
-    .pipe gulp.dest(folders.static.build.img)
+    .pipe gulp.dest(folders.assets.build.img)
 
 
-gulp.task 'static', ['css', 'img']
+gulp.task 'assets', ['css', 'img']
 
+gulp.task 'dev', ['assets'], ->
+  gulp.watch files.watch.img, ['img']
+  gulp.watch files.watch.stylus, ['css']
 
-gulp.task 'dev', ['static'], ->
   nodemon({ 
     script: 'start-app.js'
-    ext: 'jade js styl'
+    ext: 'js'
     ignore: [
       'docs/*'
       'bin/*'
+      'public/*'
       'node_modules/*'
       'test/*'
       'src/cli/*'
     ]
   })
-    .on('change', ['static'])
 
 
 

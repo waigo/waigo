@@ -5,18 +5,32 @@ html
     meta(name="viewport", content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no")
 
     // icons & favicons
-    link(rel="shortcut icon", href="/waigo/img/logo_114x114.png")
+    link(rel="shortcut icon", href="/_gen/waigo/img/logo_114x114.png")
 
     //if IE
-      link(rel="shortcut icon", href="/waigo/img/logo_32x32.ico")
+      link(rel="shortcut icon", href="/_gen/waigo/img/logo_32x32.ico")
     // set for IE10 win
     meta(name="msapplication-TileColor", content="#000")
-    meta(name="msapplication-TileImage", content="/waigo/img/logo_144x144.png")
+    meta(name="msapplication-TileImage", content="/_gen/waigo/img/logo_144x144.png")
 
     // styles
-    link(rel="stylesheet", href="/waigo/css/style.css")
+    link(rel="stylesheet", href="/_gen/waigo/css/style.css")
 
     title Welcome to Waigo!
 
   body
-    p Welcome to Waigo!
+    header
+      span.brand Waigo
+    main
+      section.welcome
+        h1 Welcome!
+        :markdown
+          If this is text is inside a box with rounded corners then your new Waigo app is running correctly!
+
+          Replace this page by creating a template: `views/index.jade`.
+      section.next
+        :markdown
+          Next steps:
+
+          * Log into the [administration](/admin) section
+          * Read the [documentation](http://waigojs.com)
