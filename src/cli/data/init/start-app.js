@@ -5,11 +5,17 @@
  * @fileOverview Executable script to bootstrap your app.
  */
 
-// get node version
-var nodeVersion = process.versions.node;
+// check if ES6 enabled (works for Node 0.11.x and 0.12.x)
+var es6Enabled = false;
+try {
+  require('vm').runInNewContext('var a = function*() {};');
+  es6Enabled = true;
+} catch (err) {
+  es6Enabled = false;
+}
 
-// if node >= v0.12.0 OR ES6 enabled
-if (nodeVersion >= '0.12.0' || 'function' === typeof Map) {
+// if ES6 enabled
+if (es6Enabled) {
   require('waigo')._bootstrap(function(err) {
     if (err) {
       console.error(err.stack);

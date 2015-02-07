@@ -23,9 +23,9 @@ var path = require('path'),
 module.exports = function*(app) {
   var logger = app.logger.create('StaticResources');
   
-  var destFolder = path.join(waigo.getAppFolder(), app.config.staticResources.folder, '__');
+  var tmpFolder = path.join(shell.tempdir(), 'waigo-app-' + Date.now());
 
-  logger.debug('Copy static resources into', destFolder);
+  logger.debug('Copy static resources into', tmpFolder);
 
   var sources = waigo.getSources();
 
@@ -35,13 +35,21 @@ module.exports = function*(app) {
       continue;
     }
 
-    let src = path.join(sources[key], 'public', 'build', '*'),
-      dst = path.join(destFolder, key);
+    let src = path.join(sources[key], '..', 'public', '*'),
+      dst = path.join(tmpFolder, key);
 
-    logger.debug('Copying ' + src + ' -> ' + dst);
+    logger.debug('Copying ' + src + ' -> ' + tmpFolder);
 
-    shell.cp('-R', src, dst);
+    shell.mkdir('-p', dst);
+    shell.cp('-Rf', src, dst);
   }
+
+  var destFolder = 
+    path.join(waigo.getAppFolder(), app.config.staticResources.folder, '_gen');
+
+  logger.debug('Copy ' + tmpFolder + ' -> ' + destFolder);
+  shell.mkdir('-p', destFolder);
+  shell.cp('-Rf', path.join(tmpFolder, '*'), destFolder);
 };
 
 

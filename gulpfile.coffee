@@ -16,11 +16,12 @@ reportError = (err) ->
 
 folders = {}
 folders.src = path.join(__dirname, 'src') 
+folders.public = path.join(__dirname, 'public') 
 folders.static = 
   src:
-    root: path.join(folders.src, 'public', 'src')
+    root: path.join(folders.src, 'assets')
   build:
-    root: path.join(folders.src, 'public', 'build')
+    root: path.join(folders.public)
 
 folders.static.src.stylus = path.join(folders.static.src.root, 'stylus')
 folders.static.build.css = path.join(folders.static.build.root, 'css')

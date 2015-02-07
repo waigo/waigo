@@ -50,7 +50,7 @@ module.exports = function(config) {
    * Static resources folder (relative to app folder)
    */
   config.staticResources = {
-    folder; 'public/build'
+    folder: '../public'
   };
 
 
