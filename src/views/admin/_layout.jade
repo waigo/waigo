@@ -5,112 +5,56 @@ html
     meta(name="viewport", content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no")
 
     // icons & favicons
-    link(rel="shortcut icon", href="/admin/img/logo_114x114.png")
+    link(rel="shortcut icon", href=staticUrl('waigo:/img/logo_114x114.png'))
 
     //if IE
-      link(rel="shortcut icon", href="/admin/img/logo_32x32.ico")
+      link(rel="shortcut icon", href=staticUrl('waigo:/img/logo_32x32.ico'))
     // set for IE10 win
     meta(name="msapplication-TileColor", content="#000")
-    meta(name="msapplication-TileImage", content="/admin/img/logo_144x144.png")
+    meta(name="msapplication-TileImage", content=staticUrl('waigo:/img/logo_144x144.png'))
 
     // styles
-    link(rel="stylesheet", href="/admin/css/style.css")
+    link(rel="stylesheet", href=staticUrl('waigo:/lib/semantic.min.css'))
+    link(rel="stylesheet", href=staticUrl('waigo:/css/style.css'))
 
-    title Waigo admin
+    title Welcome to Waigo!
 
-  body
-    
-    header
-      .container-fluid
-        a(href="/", rel="home")
-          h1.brand Remote<span class="code">Code</span>r
-        nav
-          .social
-            +twitterLink()
-            +rssLink()
-          .toggle-menu(my-expander, me-show-icon="'angle-double-down'", me-hide-icon="'angle-double-up'" me-content-element="'nav ul.nav'", me-expanded="false", me-delay="0")
-          ul.nav.navbar-nav
-            - liClass = (nav === 'jobs' ? 'active' : '')
-            li(class=liClass)
-              a(href="/") Jobs
-            - liClass = (nav === 'post_job' ? 'active' : '')
-            li(class=liClass)
-              a(href="/post") Post a job
-            - liClass = (nav === 'coders' ? 'active' : '')
-            li(class=liClass)
-              a(href="/coders") Coders
-            - liClass = (nav === 'blog' ? 'active' : '')
-            li(class=liClass)
-              a(href="/blog") Blog
-            - liClass = (nav === 'about' ? 'active' : '')
-            li(class=liClass)
-              a(href="/about") About
-            li.visible-xs
-              hr
+  body#admin
 
-            if !user
-              li.profile
-                a(ng-click="login()", data-toggle="modal", data-target="#loginModal")
-                  span Login
-            else
-              li.profile.hidden-xs
-                a#dLabel1(data-toggle="dropdown", aria-haspopup="true", aria-expanded="false")
-                  i.fa.fa-user
-                  span.caret
-                ul.pull-right.dropdown-menu(role="menu", aria-labelledby="dLabel1")
-                  li
-                    a(href="/account") My account
-                  li
-                    a(href="/logout") Logout
+    nav.ui.vertical.inverted.sidebar.menu.left#admin_popout_menu
+      .item
+        .ui.small.inverted.header Globals
+        .menu
+          a.item(href="/admin/routes") Routes
+          a.item(href="/admin/log") Log
 
-              li.visible-xs
-                a(href="/account")
-                  span My account
-              li.visible-xs
-                a(href="/logout")
-                  span Logout
+    header.ui.fixed.inverted.main.menu
+      .container
+        a.admin.menu.item
+          i.content.icon
+        .title.item
+          b Admin Dashboard
+        .right.menu
+          a.popup.icon.home.item(href="/")
+            i.alternate.home.icon
 
-            li.visible-xs
-              hr                  
-            li.visible-xs
-              +twitterLink('Twitter')
-            li.visible-xs
-              +rssLink('RSS')
+    .pusher
+      main.container
+        .ui.grid
+          .three.wide.column#admin_menu
+            nav.ui.inverted.segment
+              .item
+                .ui.small.inverted.header Globals
+                .menu
+                  a.item(href="/admin/routes") Routes
+                  a.item(href="/admin/log") Log
+          .thirteen.wide.column#admin_content
+            block content
 
 
-    if alertMsg
-      .topLevelAlert
-        +info(true)
-          p #{ alertMsg }
-
-    section#precontent
-      block precontent
-
-    main
-      block content
-
-
-    +modal('loginModal')
-      +loginForm()
-
-    #userAlerts
-
-    footer
-      ul
-        li
-          a(href="/terms-and-conditions") Terms
-        li
-          a(href="/privacy-policy") Privacy
-        li
-          a(href="/about") About
-        li
-          +twitterLink()
-        li
-          +facebookLink()
-        li
-          +rssLink()
-
-    block scripts
-
-    script(type="text/javascript", src="/js/app.js", defer, async)
-
+    script(type="text/javascript", src=staticUrl('waigo:/lib/jquery-2.1.3.min.js'))
+    script(type="text/javascript", src=staticUrl('waigo:/lib/semantic.min.js'))
+    script(type="text/javascript").
+      $('header a.admin.menu').click(function() {
+        $('nav.menu.sidebar').sidebar('toggle');
+      });

@@ -1,18 +1,32 @@
 @import 'rupture'
 
-.container
-  width 850px
-  margin 0 auto
-  +below(998px)
-    width auto
+$tabletWidth = 992px //  same as semantic-ui
 
 i + span
   margin-left 0.5em
 
-header .title.item
-  font-size 2em
+header
+  .title.item
+    font-size 2em
 
 main.container
+  max-width 100%
   padding 1em
   margin-top 50px
-  
+
+
+/* admin */
+
+#admin
+  #admin_menu
+    +below($tabletWidth)
+      display none
+  #admin_content
+    +below($tabletWidth)
+      width 100% !important
+  header
+    a.admin.menu.item
+      display none
+      cursor pointer
+      +below($tabletWidth)
+        display inline-block
