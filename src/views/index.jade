@@ -30,19 +30,24 @@ html
             i.alternate.settings.icon
             span Admin
 
-    main
-      .container
-        section.welcome
-          h1 Welcome!
-          :markdown
-            If this is text is inside a box with rounded corners then your new Waigo app is running correctly!
 
-            Replace this page by creating a template: `views/index.jade`.
+    main.container
 
-        section.next
-          p Next steps
-          a(href="/admin") Admin section
-          p Read the <a href="http://waigojs.com">documentation</a>
+      h1.ui.header Welcome!
+
+      section.ui.segment
+        :markdown
+          If this is text is inside a box with rounded corners then your new Waigo app is running correctly!
+
+          Replace this page by creating a template: `views/index.jade`.
+
+      a.ui.primary.button(href="admin")
+        i.icon.settings
+        span View admin dashboard
+
+      a.ui.tiny.button(href="http://waigojs.com")
+        i.icon.help
+        span Read documentation
 
 
 
