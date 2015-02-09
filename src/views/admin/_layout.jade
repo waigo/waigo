@@ -1,3 +1,5 @@
+include ./_mixins
+
 doctype html
 html
   head
@@ -17,16 +19,12 @@ html
     link(rel="stylesheet", href=staticUrl('waigo:/lib/semantic.min.css'))
     link(rel="stylesheet", href=staticUrl('waigo:/css/style.css'))
 
-    title Welcome to Waigo!
+    title Admin dashboard
 
   body#admin
 
     nav.ui.vertical.inverted.sidebar.menu.left#admin_popout_menu
-      .item
-        .ui.small.inverted.header Globals
-        .menu
-          a.item(href="/admin/routes") Routes
-          a.item(href="/admin/log") Log
+      +adminMenu()
 
     header.ui.fixed.inverted.main.menu
       .container
@@ -43,11 +41,7 @@ html
         .ui.grid
           .three.wide.column#admin_menu
             nav.ui.inverted.segment
-              .item
-                .ui.small.inverted.header Globals
-                .menu
-                  a.item(href="/admin/routes") Routes
-                  a.item(href="/admin/log") Log
+              +adminMenu(true)
           .thirteen.wide.column#admin_content
             block content
 
