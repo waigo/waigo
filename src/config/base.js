@@ -60,11 +60,12 @@ module.exports = function(config) {
    * Each of these corresponds to a module file under the `support/startup` path.
    */
   config.startupSteps = [
-    'staticResources',
     'database',
     'models',
     'middleware',
     'routes',
+    'templateHelpers',
+    'staticResources',
     'listener'
   ];
 

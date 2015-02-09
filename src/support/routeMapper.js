@@ -116,3 +116,5 @@ exports.map = function(app, routes) {
     route[mapping.method.toLowerCase()].apply(route, mapping.resolvedMiddleware);
   });
 };
+
+

@@ -5,32 +5,47 @@ html
     meta(name="viewport", content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no")
 
     // icons & favicons
-    link(rel="shortcut icon", href="/_gen/waigo/img/logo_114x114.png")
+    link(rel="shortcut icon", href=staticUrl('waigo:/img/logo_114x114.png'))
 
     //if IE
-      link(rel="shortcut icon", href="/_gen/waigo/img/logo_32x32.ico")
+      link(rel="shortcut icon", href=staticUrl('waigo:/img/logo_32x32.ico'))
     // set for IE10 win
     meta(name="msapplication-TileColor", content="#000")
-    meta(name="msapplication-TileImage", content="/_gen/waigo/img/logo_144x144.png")
+    meta(name="msapplication-TileImage", content=staticUrl('waigo:/img/logo_144x144.png'))
 
     // styles
-    link(rel="stylesheet", href="/_gen/waigo/css/style.css")
+    link(rel="stylesheet", href=staticUrl('waigo:/semantic-ui/semantic.min.css'))
+    link(rel="stylesheet", href=staticUrl('waigo:/css/style.css'))
 
     title Welcome to Waigo!
 
   body
-    header
-      span.brand Waigo
+
+    header.ui.fixed.inverted.main.menu
+      .container
+        .title.item
+          b Waigo
+        .right.menu
+          a.popup.icon.settings.item(href="/admin")
+            i.alternate.settings.icon
+            span Admin
+
     main
-      section.welcome
-        h1 Welcome!
-        :markdown
-          If this is text is inside a box with rounded corners then your new Waigo app is running correctly!
+      .container
+        section.welcome
+          h1 Welcome!
+          :markdown
+            If this is text is inside a box with rounded corners then your new Waigo app is running correctly!
 
-          Replace this page by creating a template: `views/index.jade`.
-      section.next
-        :markdown
-          Next steps:
+            Replace this page by creating a template: `views/index.jade`.
 
-          * Log into the [administration](/admin) section
-          * Read the [documentation](http://waigojs.com)
+        section.next
+          p Next steps
+          a(href="/admin") Admin section
+          p Read the <a href="http://waigojs.com">documentation</a>
+
+
+
+
+
+    script(type="text/javascript", src=staticUrl('waigo:/semantic-ui/semantic.min.js'))

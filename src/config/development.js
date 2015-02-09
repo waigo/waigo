@@ -16,5 +16,7 @@ module.exports = function(config) {
     showStack: true
   }
 
+  config.middleware.options.outputFormats.formats.html.cache = false;
+
   config.logging.minLevel = 'DEBUG';
 };

@@ -1,52 +1,13 @@
-@import 'nib'
 @import 'rupture'
 
-@import './_variables'
+.container
+  width 850px
+  margin 0 auto
+  +below(998px)
+    width auto
 
+i + span
+  margin-left 0.5em
 
-global-reset()
-
-html
-  font-size 14px
-
-body
-  background-color #fff
-  color #000
-  font-family $body-font
-
-header
-  background-color #000
-  width 100%
-  color #ccc
-  padding 0.7em 0.5em
-  
-  .brand
-    display inline-block
-    font-size 280%
-
-main
-  code
-    font-family monospace
-    
-  ul
-    list-style disc
-
-  p
-    margin 1em 0
-    
-  h1
-    font-size 200%
-    font-weight bold
-    margin 0 0 0.5em 0
-
-  section
-    text-align center
-    width 50%
-    margin 2em auto
-    border-radius 10px
-    background-color #efefef
-    border 1px solid #ccc
-    padding 1.5em
-    font-size 150%
-    +below(768px)
-      width 70%
+header .title.item
+  font-size 2em

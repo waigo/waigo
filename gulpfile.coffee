@@ -21,7 +21,7 @@ folders.assets =
   src:
     root: path.join(folders.src, 'assets')
   build:
-    root: path.join(folders.public)
+    root: folders.public
 
 folders.assets.src.stylus = path.join(folders.assets.src.root, 'stylus')
 folders.assets.build.css = path.join(folders.assets.build.root, 'css')
