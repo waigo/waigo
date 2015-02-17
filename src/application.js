@@ -13,6 +13,7 @@ var debug = require('debug')('waigo-application'),
 // underscore mixins
 _.str = require('underscore.string');
 _.str.pluralize = require('pluralize');
+_.str.uuid = require('node-uuid');
 _.mixin(waigo.load('support/underscore'));
 
 

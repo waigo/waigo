@@ -13,29 +13,112 @@ var errors = waigo.load('support/errors'),
 
 
 
+
+
 /**
- * Parse a route http method and URL string.
- *
- * @param str {String} in the form "(httpMethod) (url)", e.g. "GET /index"
- *
- * @return {Object} object with form `{ method: (httpMethod), url: (url) }`.
- *
- * @throws RouteError if route URL is invalid or using an unsupported HTTP method.
+ * Load and initialise given middleware module.
+ * 
+ * @param  {Object|String} middleware Name of middleware module file or object of form `{ id: <module file mame>, ...}`.
+ * 
+ * @return {Function}
  */
-var parseMethodUrl = function(str) {
-  var tokens = _.str.clean(str).split(' ');
-  if (2 !== tokens.length) {
-    throw new RouteError('Invalid route URL format: ' + str);
+var loadMiddleware = function(middleware) {
+  let middlewareName = middleware,
+    middlewareOptions = {};
+
+  // if reference is an object then it's a middleware reference with initialisation options
+  if (_.isPlainObject(middleware)) {
+    middlewareName = middleware.id;
+    _.extend(middlewareOptions, middleware);
+  } else {
+    // if reference is of form 'moduleName.xx.yy' then it's a controller reference
+    if (0 < middleware.indexOf('.')) {
+      return loadController(middleware);
+    }
   }
-  var result = {
-    method: tokens[0],
-    url: '/' + _.str.ltrim(tokens[1], '/')
-  };
-  if (-1 === _.indexOf(['GET', 'POST', 'DEL', 'DELETE', 'PUT', 'OPTIONS', 'HEAD'], result.method)) {
-    throw new RouteError('Unsupported route HTTP method: ' + result.method);
-  }
-  return result;
+
+  return waigo.load('support/middleware/' + middlewareName)(middlewareOptions);
 };
+
+
+
+/**
+ * Load given controller.method
+ * 
+ * @param  {String} controller String of form `<controller path>.<method name>`.
+ * 
+ * @return {Function}
+ */
+var loadController = function(controller) {
+  var tokens = controller.split('.'),
+    controllerPath = tokens,
+    methodName = tokens.pop(),
+    controllerName = controllerPath.join('.');
+
+  var mod = waigo.load('controllers/' + controllerPath.join('/'));
+
+  if (!_.isFunction(mod[methodName])) {
+    throw new RouteError('Unable to find method "' + methodName + '" on controller "' + controllerName + '"');
+  }
+
+  return mod[methodName];
+};
+
+
+
+
+/**
+ * Build routes from given configuration config node.
+ * 
+ * @param  {Object} urlPath URL path of this node (relative to parent URL path).
+ * @param  {Object} node Config node.
+ * @param  {Object} parentConfig parent node config. 
+ * @param  {Object} parentConfig.urlPath URL path of parent node.
+ * @param  {Object} parentConfig.middleware Common middleware for parent node.
+ * @return {Array} List of route mappings.
+ */
+var buildRoutes = function(logger, urlPath, node, parentConfig) {
+  urlPath = parentConfig.urlPath + urlPath;
+
+  logger.debug('Route', urlPath);
+
+  // load common middleware
+  var middleware = parentConfig.middleware.concat(
+    _.map(node.middleware || [], loadMiddleware)
+  );
+
+  var mappings = [];
+
+  // iterate through each possible method
+  _.each(['GET', 'POST', 'DEL', 'DELETE', 'PUT', 'OPTIONS', 'HEAD'], function(m) {
+    if (node[m]) {
+      var routeMiddleware = _.isArray(node[m]) ? node[m] : [node[m]];
+
+      mappings.push({
+        method: m,
+        url: urlPath,
+        resolvedMiddleware: middleware.concat(
+          _.map(routeMiddleware, function(rm) {
+            return loadMiddleware(rm);
+          })
+        )
+      });
+    }
+  });
+
+  // go through children
+  _.each(node.sub || {}, function(subNode, subUrlPath) {
+    mappings = mappings.concat(
+      buildRoutes(logger, subUrlPath, subNode, {
+        urlPath: urlPath,
+        middleware: middleware,
+      })
+    );
+  });
+
+  return mappings;
+};
+
 
 
 /**
@@ -52,57 +135,16 @@ var parseMethodUrl = function(str) {
 exports.map = function(app, routes) {
   var logger = app.logger.create('RouteMapper');
 
-  var controllers = app.controllers = {},
-    possibleMappings = [];
+  var possibleMappings = [];
 
-  _.each(routes, function(middleware, urlPath) {
-    logger.debug('Route', urlPath);
-
-    if (!_.isArray(middleware)) {
-      middleware = [middleware];
-    }
-
-    var mapping = parseMethodUrl(urlPath);
-
-    // load all middleware
-    mapping.resolvedMiddleware = _.map(middleware, function(ref) {
-      logger.debug('Middleware', ref);
-
-      // if reference is of form 'moduleName.xx.yy' then it's a controller reference
-      var dotPos = ('string' === typeof ref) && ref.indexOf('.');
-      if (0 < dotPos) {
-        var tokens = ref.split('.'),
-          controllerPath = tokens,
-          methodName = tokens.pop(),
-          controllerName = controllerPath.join('.');
-
-        // load controller if not already done so
-        if (!controllers[controllerName]) {
-          controllers[controllerName] = waigo.load('controllers/' + controllerPath.join('/'));
-        }
-
-        if (!_.isFunction(controllers[controllerName][methodName])) {
-          throw new RouteError('Unable to find method "' + methodName + '" on controller "' + controllerName + '"');
-        }
-
-        return controllers[controllerName][methodName];
-      }
-      // else it's a middleware reference
-      else {
-        let middlewareName = ref,
-          middlewareOptions = {};
-
-        // if reference is an object then it's a middleware reference with initialisation options
-        if (_.isPlainObject(ref)) {
-          middlewareName = ref.id;
-          _.extend(middlewareOptions, ref);
-        }
-
-        return waigo.load('support/middleware/' + middlewareName)(middlewareOptions);
-      }
-    });
-
-    possibleMappings.push(mapping);
+  // build mappings
+  _.each(routes, function(node, urlPath) {
+    possibleMappings = possibleMappings.concat(
+      buildRoutes(logger, urlPath, node, {
+        urlPath: '',
+        middleware: [],
+      })
+    );
   });
 
   // now order by path (specific to general)

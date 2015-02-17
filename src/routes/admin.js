@@ -1,8 +1,16 @@
  module.exports = { 
-  'GET /admin': [
-    'admin.index.main'
-  ],
-  'GET /admin/routes': [
-    'admin.routes.index'
-  ],
+  '/admin': {
+    pre: [
+      { id: 'checkUserRole', role: 'admin' },
+    ],
+
+    GET: 'admin.index.main',
+
+    sub: {
+      '/routes': {
+        GET: 'admin.routes.index'
+      }
+    }
+  }
  };
+

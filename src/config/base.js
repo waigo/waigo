@@ -1,5 +1,9 @@
 "use strict";
 
+var waigo = require('../../'),
+  _ = waigo._;
+
+
 
 /**
  * # Base configuration
@@ -134,8 +138,12 @@ module.exports = function(config) {
         options: {}
       },
       sessions: {
-        // cookie signing keys - these are used for signing cookies (using Keygrip) and should be customised for your app
-        keys: ['use', 'your', 'own'],
+        // cookie signing keys
+        keys: [
+          _.str.uuid.v4(),
+          _.str.uuid.v4(),
+          _.str.uuid.v4(),
+        ],
         // session cookie name
         name: 'waigo',
         // session storage
