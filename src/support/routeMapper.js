@@ -84,7 +84,7 @@ var buildRoutes = function(logger, urlPath, node, parentConfig) {
 
   // load common middleware
   var middleware = parentConfig.middleware.concat(
-    _.map(node.middleware || [], loadMiddleware)
+    _.map(node.pre || [], loadMiddleware)
   );
 
   var mappings = [];

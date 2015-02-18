@@ -10,28 +10,27 @@ var waigo = require('../../../'),
 
 /**
  * Render given error back to client.
- * @param context {Object} request context.
  * @param config {Object} error handler config.
  * @param err {Error} the error
  * @return {*}
  * @private
  */
-var render = function*(context, config, err) {
+var render = function*(config, err) {
+  this.status = err.status || 500;
+
+  var error = yield errors[viewObjects.methodName].call(null, context, err);
+
+  if (config.showStack) {
+    error.stack = err.stack.split("\n");
+  }
+
   try {
-    context.status = err.status || 500;
+    yield this.render('error', error);
 
-    context.body = yield errors[viewObjects.methodName].call(null, context, err);
-
-    context.type = 'json';
-
-    if (config.showStack) {
-      context.body.stack = err.stack.split("\n");
-    }
-    if (context.app.logger) {
-      context.app.logger.error(err.stack);
-    }
   } catch (err) {
     context.app.emit('error', err);
+    this.type = 'json';
+    this.body = error;
   }
 };
 
@@ -57,7 +56,10 @@ module.exports = function(options) {
     try {
       yield next;
     } catch (err) {
-      yield render(this, options, err);
+      this.app.logger.error(err.stack);
+
+      // render error page
+      yield render.call(this, options, err);
     }
   }
 };

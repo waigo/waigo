@@ -1,53 +1,26 @@
-doctype html
-html
-  head
-    meta(charset="utf-8")
-    meta(name="viewport", content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no")
+extends _layout
 
-    // icons & favicons
-    link(rel="shortcut icon", href=staticUrl('waigo:/img/logo_114x114.png'))
+block title
+  Welcome to Waigo!
 
-    //if IE
-      link(rel="shortcut icon", href=staticUrl('waigo:/img/logo_32x32.ico'))
-    // set for IE10 win
-    meta(name="msapplication-TileColor", content="#000")
-    meta(name="msapplication-TileImage", content=staticUrl('waigo:/img/logo_144x144.png'))
+block topbar_rightmenu
+  a.popup.icon.settings.item(href="/admin")
+    i.alternate.settings.icon
 
-    // styles
-    link(rel="stylesheet", href=staticUrl('waigo:/lib/semantic.min.css'))
-    link(rel="stylesheet", href=staticUrl('waigo:/css/style.css'))
+block main_content
+  h1.ui.header Welcome!
 
-    title Welcome to Waigo!
+  section.ui.segment
+    :markdown
+      If this is text is inside a box with rounded corners then your new Waigo app is running correctly!
 
-  body
+      Replace this page by creating a template: `views/index.jade`.
 
-    header.ui.fixed.inverted.main.menu
-      .container
-        .title.item
-          b Waigo
-        .right.menu
-          a.popup.icon.settings.item(href="/admin")
-            i.alternate.settings.icon
+  a.ui.primary.button(href="admin")
+    i.icon.settings
+    span View admin dashboard
 
-    main.container
+  a.ui.tiny.button(href="http://waigojs.com")
+    i.icon.help
+    span Read documentation
 
-      h1.ui.header Welcome!
-
-      section.ui.segment
-        :markdown
-          If this is text is inside a box with rounded corners then your new Waigo app is running correctly!
-
-          Replace this page by creating a template: `views/index.jade`.
-
-      a.ui.primary.button(href="admin")
-        i.icon.settings
-        span View admin dashboard
-
-      a.ui.tiny.button(href="http://waigojs.com")
-        i.icon.help
-        span Read documentation
-
-
-
-    script(type="text/javascript", src=staticUrl('waigo:/lib/jquery-2.1.3.min.js'))
-    script(type="text/javascript", src=staticUrl('waigo:/lib/semantic.min.js'))

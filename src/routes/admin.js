@@ -1,7 +1,8 @@
  module.exports = { 
   '/admin': {
+
     pre: [
-      { id: 'checkUserRole', role: 'admin' },
+      { id: 'assertUser', role: ['admin'] },
     ],
 
     GET: 'admin.index.main',
