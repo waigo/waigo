@@ -18,7 +18,12 @@ var waigo = require('../../../'),
 var render = function*(config, err) {
   this.status = err.status || 500;
 
-  var error = yield errors[viewObjects.methodName].call(null, context, err);
+  var error = yield errors[viewObjects.methodName].call(null, this, err);
+  error.status = this.status;
+  error.request = {
+    method: this.request.method,
+    url: this.request.url,
+  };
 
   if (config.showStack) {
     error.stack = err.stack.split("\n");
@@ -26,11 +31,11 @@ var render = function*(config, err) {
 
   try {
     yield this.render('error', error);
-
   } catch (err) {
-    context.app.emit('error', err);
+    this.app.emit('error', err);
+
     this.type = 'json';
-    this.body = error;
+    this.body = err;
   }
 };
 

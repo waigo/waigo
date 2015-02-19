@@ -1,0 +1,18 @@
+extends _layout
+
+block title
+  title Error #{status}
+
+block main_content
+  h1.ui.header #{status} - #{type}
+
+  section.ui.segment
+    p 
+      strong #{request.method} #{request.url}
+
+    div #{msg}
+
+    if stack
+      pre #{stack.join("\n")}
+
+

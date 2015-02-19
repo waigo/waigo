@@ -17,8 +17,8 @@ html
     link(rel="stylesheet", href=staticUrl('waigo:/lib/semantic.min.css'))
     link(rel="stylesheet", href=staticUrl('waigo:/css/style.css'))
 
-    title
-      block title
+    block title
+      title Waigo
 
   body
 
@@ -28,6 +28,9 @@ html
           b Waigo
         .right.menu
           block topbar_rightmenu
+            a.popup.icon.home.item(href="/")
+              i.alternate.home.icon
+
 
     main.container
       block main_content

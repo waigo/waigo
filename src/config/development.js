@@ -14,7 +14,7 @@
 module.exports = function(config) {
   config.middleware.options.errorHandler = {
     showStack: true
-  }
+  };
 
   config.middleware.options.outputFormats.formats.html.cache = false;
 
