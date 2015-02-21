@@ -17,19 +17,18 @@ main.container
 
 /* admin */
 
-#admin
-  #admin_menu
+#admin_menu
+  +below($tabletWidth)
+    display none
+#admin_content
+  +below($tabletWidth)
+    width 100% !important
+header
+  a.admin.menu.item
+    display none
+    cursor pointer
     +below($tabletWidth)
-      display none
-  #admin_content
-    +below($tabletWidth)
-      width 100% !important
-  header
-    a.admin.menu.item
-      display none
-      cursor pointer
-      +below($tabletWidth)
-        display inline-block
+      display inline-block
 
 /* login */
 

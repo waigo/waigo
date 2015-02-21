@@ -145,12 +145,14 @@ module.exports = {
       }
 
       var sepPos = passAuth.token.indexOf('-'),
-        salt = storedHash.substr(0, sepPos),
-        hash = storedHash.substr(sepPos + 1);
+        salt = passAuth.token.substr(0, sepPos),
+        hash = passAuth.token.substr(sepPos + 1);
       
-      var generatedHash = yield this.generatePasswordHash(password, salt);
+      var generatedHash = yield this.__col.generatePasswordHash(
+        password, salt
+      );
 
-      return generatedHash === storedHash;
+      return generatedHash === passAuth.token;
     },
     /**
      * Log the user into given context.

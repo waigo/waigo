@@ -23,7 +23,9 @@ module.exports = function*(app) {
 
   app.models = {};
 
-  _.each(modelModuleFiles, function(modulePath) {
+  for (let _i in modelModuleFiles) {
+    let modulePath = modelModuleFiles[_i];
+
     debug('Loading ' + modulePath);
 
     var moduleFileName = path.basename(modulePath, path.extname(modulePath));
@@ -41,8 +43,15 @@ module.exports = function*(app) {
     };
     modelInfo.docMethods = _.extend(docMethods, modelInfo.docMethods);
 
-    app.models[name] = app.dbs[dbName].collection(collectionName, modelInfo);
+    // create model instance
+    let Model = app.dbs[dbName].collection(collectionName, modelInfo);
+    app.models[name] = Model;
 
-    debug('Added ' + name + ' -> ' + dbName  + '/' + collectionName);
-  });
+    app.logger.debug('Added model', name, dbName  + '/' + collectionName);
+
+    // ensure indexes are created
+    debug('Ensure indexes', dbName, collectionName);
+
+    yield Model.ensureIndexes();
+  }
 };

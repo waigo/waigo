@@ -9,6 +9,9 @@ module.exports = {
     '/login': {
       GET: 'user.login',
       POST: 'user.login_submit',
+    },
+    '/logout': {
+      GET: 'user.logout'
     }
   }
 };

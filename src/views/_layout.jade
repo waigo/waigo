@@ -22,20 +22,28 @@ html
 
   body
 
-    header.ui.fixed.inverted.main.menu
-      .container
-        .title.item
-          b Waigo
-        .right.menu
-          block topbar_rightmenu
-            a.popup.icon.home.item(href="/")
-              i.alternate.home.icon
+    block pre_header
+
+    block header
+      header.ui.fixed.inverted.main.menu
+        .container
+          block topbar_leftmenu
+          .title.item
+            block topbar_title
+              b Waigo
+          .right.menu
+            block topbar_rightmenu
+              a.popup.icon.home.item(href="/", title="Homepage")
+                i.alternate.home.icon
             if currentUser
-              span Logged in
+              a.popup.icon.sign.out.item(href="/user/logout", title="Logout")
+                i.alternate.sign.out.icon
 
 
-    main.container
-      block main_content
+    .pusher
+      main.container
+        block main_content
 
     script(type="text/javascript", src=staticUrl('waigo:/lib/jquery-2.1.3.min.js'))
     script(type="text/javascript", src=staticUrl('waigo:/lib/semantic.min.js'))
+    block scripts

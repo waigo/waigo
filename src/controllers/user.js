@@ -5,6 +5,12 @@
  */
 
 
+exports.logout = function*() {
+  delete this.session.user;
+
+  yield this.redirect('/');
+};
+
 
 exports.login = function*() {
   var reason = this.request.query.r || null;

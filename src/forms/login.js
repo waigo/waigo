@@ -47,14 +47,15 @@ module.exports = {
         ]
       }, {
         fields: {
-          _id: 1
+          _id: 1,
+          auth: 1,
         }
       });
 
       // check user and password
       if (!user 
           || !(yield user.isPasswordCorrect(this.fields.password.value)) ) {
-        throw new RuntimeError('Incorrect username or password', 400);
+        throw new RuntimeError('Incorrect username or password', 400, this.fields.email.value);
       }
 
       // log the user in

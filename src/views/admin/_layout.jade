@@ -1,54 +1,34 @@
-include ./_mixins
+extends ../_layout
 
-doctype html
-html
-  head
-    meta(charset="utf-8")
-    meta(name="viewport", content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no")
+include ../_mixins
+include _mixins
 
-    // icons & favicons
-    link(rel="shortcut icon", href=staticUrl('waigo:/img/logo_114x114.png'))
 
-    //if IE
-      link(rel="shortcut icon", href=staticUrl('waigo:/img/logo_32x32.ico'))
-    // set for IE10 win
-    meta(name="msapplication-TileColor", content="#000")
-    meta(name="msapplication-TileImage", content=staticUrl('waigo:/img/logo_144x144.png'))
+block title
+  title Admin dashboard
 
-    // styles
-    link(rel="stylesheet", href=staticUrl('waigo:/lib/semantic.min.css'))
-    link(rel="stylesheet", href=staticUrl('waigo:/css/style.css'))
-
-    title Admin dashboard
-
-  body#admin
-
+block topbar_leftmenu
+  a.admin.menu.item
+    i.content.icon
+  
+block pre_header
     nav.ui.vertical.inverted.sidebar.menu.left#admin_popout_menu
       +adminMenu()
 
-    header.ui.fixed.inverted.main.menu
-      .container
-        a.admin.menu.item
-          i.content.icon
-        .title.item
-          b Admin Dashboard
-        .right.menu
-          a.popup.icon.home.item(href="/")
-            i.alternate.home.icon
-
-    .pusher
-      main.container
-        .ui.grid
-          .three.wide.column#admin_menu
-            nav.ui.inverted.segment
-              +adminMenu(true)
-          .thirteen.wide.column#admin_content
-            block content
+block topbar_title
+  b Admin dashboard
 
 
-    script(type="text/javascript", src=staticUrl('waigo:/lib/jquery-2.1.3.min.js'))
-    script(type="text/javascript", src=staticUrl('waigo:/lib/semantic.min.js'))
-    script(type="text/javascript").
-      $('header a.admin.menu').click(function() {
-        $('nav.menu.sidebar').sidebar('toggle');
-      });
+block main_content
+  .ui.grid
+    .three.wide.column#admin_menu
+      nav.ui.inverted.segment
+        +adminMenu(true)
+    .thirteen.wide.column#admin_content
+      block admin_content
+
+block scripts
+  script(type="text/javascript").
+    $('header a.admin.menu').click(function() {
+      $('nav.menu.sidebar').sidebar('toggle');
+    });
