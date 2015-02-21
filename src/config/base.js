@@ -124,7 +124,7 @@ module.exports = function(config) {
       'errorHandler',
       'staticResources',
       'sessions',
-      'outputFormats'
+      'outputFormats',
     ],
     options: {
       errorHandler: {

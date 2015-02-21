@@ -13,7 +13,9 @@ module.exports = function*(app) {
   // Form
   app.form = waigo.load('support/forms/form');
   // template helpers
-  app.locals = {};
+  app.locals = {
+    _: _
+  };
 };
 
 

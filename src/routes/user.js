@@ -2,9 +2,13 @@
 
 module.exports = { 
   '/user': {
+    '/register': {
+      GET: 'user.register',
+      POST: 'user.register_submit'
+    },
     '/login': {
       GET: 'user.login',
-      POST: 'user.loginSubmit',
+      POST: 'user.login_submit',
     }
   }
 };

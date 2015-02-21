@@ -30,7 +30,7 @@ var errors = waigo.load('support/errors'),
 
 
 /** A field validation error. */
-var FieldValidationError = exports.FieldValidationError = errors.define('FieldValidationError', errors.MultipleError);
+var FieldValidationError = exports.FieldValidationError = errors.define('FieldValidationError');
 
   
 /** A field sanitization error. */
@@ -173,16 +173,14 @@ Field.prototype.isDirty = function() {
  * @throws FieldValidationError If validation fails.
  */
 Field.prototype.validate = function*() {
-  var errors = null;
+  var errors = [];
 
   // if value is undefined and field is not required then nothing to do
   if (undefined === this.value || null === this.value || '' === this.value) {
     if (!this.config.required) {
       return;
     } else {
-      errors = {
-        required: new Error('Must be set')
-      };
+      errors.push('Must be set');
     }
   } else {
     for (let idx in this.validators) {
@@ -191,16 +189,12 @@ Field.prototype.validate = function*() {
       try {
         yield validator.fn(this, this.value);
       } catch (err) {
-        if (!errors) {
-          errors = {};
-        }
-
-        errors[validator.id] = err;
+        errors.push(err.message);
       }
     }    
   }
 
-  if (errors) {
+  if (0 < errors.length) {
     throw new FieldValidationError('Field validation failed', 400, errors);
   }
 };

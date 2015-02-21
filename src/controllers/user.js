@@ -7,14 +7,15 @@
 
 
 exports.login = function*() {
-  var reason = this.request.query.r || null,
-    postLoginUrl = this.request.query.u || '/';
+  var reason = this.request.query.r || null;
 
-  this.app.logger.debug('Login', reason, postLoginUrl);
-
-  var form = this.app.form.create('login', {
+  var form = yield this.app.form.create('login', {
     context: this
   });
+  form.fields.postLoginUrl.value = this.request.query.u || '/';
+
+  this.app.logger.debug('Login', reason, 
+      form.fields.postLoginUrl.value);
 
   yield this.render('user/login', {
     reason: reason,
@@ -24,17 +25,17 @@ exports.login = function*() {
 
 
 
-exports.loginSubmit = function*() {
-  var form = this.app.form.create('login', {
+exports.login_submit = function*() {
+  this.app.logger.debug('Logging in');
+
+  var form = yield this.app.form.create('login', {
     context: this,
     submitted: true
   });
 
   try {
-    // validate and process form
-    form.process();
+    yield form.process();
 
-    // redirect to post-login url
     yield this.redirect(form.fields.postLoginUrl.value);
   } catch (err) {
     yield this.render('user/login', {
@@ -44,5 +45,56 @@ exports.loginSubmit = function*() {
   };
 };
 
+
+
+var doesAdminUserExist = function*() {
+  return !!(yield this.app.models.User.findOne({
+    roles: {
+      $in: ['admin']
+    }
+  }));
+};
+
+
+
+exports.register = function*() {
+  var form = yield this.app.form.create('register', {
+    context: this
+  });
+
+  this.app.logger.debug('Register');
+
+  var willCreateAdminUser = yield doesAdminUserExist.call(this);
+
+  yield this.render('user/register', {
+    form: form,
+    willCreateAdminUser: willCreateAdminUser,
+  });
+};
+
+
+
+exports.register_submit = function*() {
+  this.app.logger.debug('Registering admin user');
+
+  var form = yield this.app.form.create('register', {
+    context: this,
+    submitted: true,
+  });
+
+  var willCreateAdminUser = yield doesAdminUserExist.call(this);
+
+  try {
+    yield form.process();
+
+    yield this.redirect('/');
+  } catch (err) {
+    yield this.render('user/register', {
+      error: err,
+      form: form,
+      willCreateAdminUser: willCreateAdminUser,
+    });
+  }
+};
 
 

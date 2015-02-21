@@ -6,8 +6,12 @@ block title
   title Login
 
 block main_content
-  h1.ui.header Login
+  #login
+    h1.ui.header Login
 
-  if reason
-    +msg('error', reason, 'Please login to gain access.')
+    if reason
+      +msg('error', reason, 'Please login to gain access.')
 
+    +form(form, error)
+
+    a.signup(href="/user/register") Not yet registered? Sign up.

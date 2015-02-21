@@ -98,6 +98,14 @@ var buildRoutes = function(logger, urlPath, node, parentConfig) {
     if (node[m]) {
       var routeMiddleware = _.isArray(node[m]) ? node[m] : [node[m]];
 
+      // auto-process request bodies for POST and PUT requests
+      if ('POST' === m || 'PUT' === m) {
+        routeMiddleware.unshift({
+          id: 'bodyParser',
+          limit: '16mb'
+        });
+      }
+
       mappings.push({
         method: m,
         url: urlPath,

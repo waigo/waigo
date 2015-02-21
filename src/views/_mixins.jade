@@ -1,7 +1,36 @@
-mixin msg(type, header, description)
-  if type == 'error'
-    .ui.icon.error.message
-      i.attention.circle.icon
+mixin msg(type, header, description, options)
+  if (_.get(options, 'compact'))
+    div(class="ui compact message " + type) #{header}
+  else
+    div(class="ui message " + type)
+      if ('error' == type)
+        i.warning.sign.icon
+      else if ('info' == type)
+        i.info.circle.icon
       .content
-        .header= header
-        p= description
+        .header #{header}
+        if description
+          p #{description}
+
+
+
+mixin form(form, error)
+  form(method=(form.method || 'post'), class="ui form " + (error ? 'error' : ''))
+    if error
+      +msg('error', error.msg)
+    - each fieldName in form.order
+      - var field = form.fields[fieldName]
+      - var errors = _.get(error, 'errors.' + fieldName + '.data', [])
+      - var value = field.value || ''
+      - var placeholder = field.placeholder || field.label
+      .field
+        if (field.type == 'text' || field.type == 'password')
+          label #{field.label}
+          - each errorMsg in errors
+            +msg('error', errorMsg, null, { compact: true })
+          input(name=field.name, type=field.type, value=value, placeholder=placeholder)
+        else if (field.type == 'hidden')
+          input(name=field.name, type="hidden", value=value)
+    input.ui.submit.button(type="submit", value="Submit")
+
+

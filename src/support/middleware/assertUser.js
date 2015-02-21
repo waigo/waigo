@@ -29,10 +29,13 @@ module.exports = function(options) {
         throw new Error('You must be logged in to access this content.');
       }
 
+      // needs specific role?
       if (options.role) {
         var userRoles = _.get(user, 'roles', []);
 
-        if (0 === _.intersection(userRoles, options.role).length) {
+        // if doesn't have required role AND is not an admin then puke
+        if (0 > userRoles.indexOf('admin') && 
+              0 === _.intersection(userRoles, options.role).length) {
           throw new Error('You must have one of the following roles to access this content: ' + options.role.join(', '));
         }
       }

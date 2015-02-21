@@ -1,7 +1,8 @@
 "use strict";
 
 
-var waigo = require('../../../'),
+var compose = require('generator-compose'),
+  waigo = require('../../../'),
   _ = waigo._;
 
 
@@ -35,7 +36,7 @@ FormValidationError.prototype.toViewObject = function*(ctx) {
       ret.fields[id] = [];
 
       for (let feId in fieldErrors) {
-        ret.fields[id].push(fieldErrors[feId].msg)
+        ret.fields[id].push(fieldErrors[feId].msg);
       }
     }
 
@@ -56,6 +57,9 @@ var cache = {};
  * and set at any time, thus allowing you to share state between `Form` instances 
  * as well as quickly restore a `Form` to a previously set state.
  *
+ * Constructing a form using this function rather than the `Form` constructor will 
+ * also ensure that the `postCreation` hooks get run.
+ * 
  * @param {Object|String|Form} config form configuration,  name of a form, or an existing `Form`.
  * @param {Object} [options] Additional options.
  * @param {Object} [options.context] The current request context.
@@ -76,7 +80,7 @@ exports.create = function*(config, options) {
 
   var f = new Form(config, options);
 
-  yield f.runHooks('postCreation');
+  yield f.runHook('postCreation');
 
   return f;
 };
@@ -120,7 +124,7 @@ var Form = function(config, options) {
     this._fields[def.name] = Field.new(this, def);
   }
 
-  this.ctx = options.context;
+  this.context = options.context;
   this.state = _.extend({}, options.state);
   this.isSubmitted = !!options.submitted;
 };
@@ -235,21 +239,23 @@ Form.prototype.validate = function*() {
   }
 
   if (errors) {
-    throw new FormValidationError('Form validation failed', 400, errors);
+    throw new FormValidationError('Please correct the errors in the form.', 400, errors);
   }
 };
 
 
 
 /**
- * Process this form.
+ * Process this submitted form.
  *
- * This will first validate the form's field values and then perform 
- * post-validation processing if validation succeeds.
+ * This will insert values from the current context request body and run 
+ * all sanitization and validation. If validation succeeds then post-validation
+ * hooks will be run.
  */
 Form.prototype.process = function*() {
+  yield this.setValues(this.context.request.body);
   yield this.validate();
-  yield this.runHooks('postValidation');
+  yield this.runHook('postValidation');
 };
 
 

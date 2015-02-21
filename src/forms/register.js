@@ -31,31 +31,22 @@ module.exports = {
   ],
   method: 'POST',
   postValidation: [
-    function* updateUserLoginTimestamp(next) {
+    function* createUser(next) {
       var User = this.context.app.models.User;
 
-      // load user
-      var user = yield User.findOne({
-        $or: [
-          {
-            username: this.fields.email.value,
-          },
-          {
-            'emails.email': this.fields.email.value,
-          }
-        ]
-      }, {
-        fields: {
-          _id: 1
+      // check if there's an admin user
+      var adminUserExists = !!(yield User.findOne({
+        roles: {
+          $in: ['admin']
         }
+      }));
+
+      var user = yield User.create({
+        email: this.fields.email.value,
+        password: this.field.password.value,
+        roles: (adminUserExists ? [] : ['admin'])
       });
 
-      // if user not found then incorrect credentials
-      if (!user) {
-        throw new Error('Incorrect username or password');
-      }
-
-      // log the user in
       yield user.login(this.context);
 
       yield next;
