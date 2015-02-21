@@ -1,0 +1,13 @@
+extends ../_layout
+
+include ../_mixins
+
+block title
+  title Login
+
+block main_content
+  h1.ui.header Login
+
+  if reason
+    +msg('error', reason, 'Please login to gain access.')
+

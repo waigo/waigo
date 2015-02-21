@@ -2,15 +2,17 @@
   '/admin': {
 
     pre: [
-      { id: 'assertUser', role: ['admin'] },
+      { 
+        id: 'assertUser', 
+        role: ['admin'],
+        redirectToLogin: true,
+      },
     ],
 
     GET: 'admin.index.main',
 
-    sub: {
-      '/routes': {
-        GET: 'admin.routes.index'
-      }
+    '/routes': {
+      GET: 'admin.routes.index'
     }
   }
  };

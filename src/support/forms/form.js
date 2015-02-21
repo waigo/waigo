@@ -44,6 +44,10 @@ FormValidationError.prototype.toViewObject = function*(ctx) {
 };
 
 
+// the form spec cache
+var cache = {};
+
+
 
 /**
  * Construct a form.
@@ -52,15 +56,59 @@ FormValidationError.prototype.toViewObject = function*(ctx) {
  * and set at any time, thus allowing you to share state between `Form` instances 
  * as well as quickly restore a `Form` to a previously set state.
  *
- * @param {Object} ctx Current request context.
- * @param {Object|Form} config form configuration or an existing `Form` instance.
- * @param {Object} [state] The internal state to set for this form.
+ * @param {Object|String|Form} config form configuration,  name of a form, or an existing `Form`.
+ * @param {Object} [options] Additional options.
+ * @param {Object} [options.context] The current request context.
+ * @param {Object} [options.state] The internal state to set for this form.
+ * @param {Boolean} [options.submitted] Form instance is being created to handle a submission.
+ */
+exports.create = function*(config, options) {
+  if (_.isString(config)) {
+    var cachedSpec = cache[config];
+
+    if (!cachedSpec) {
+      cache[config]  = cachedSpec = waigo.load('forms/' + config);
+      cachedSpec.id = config;
+    }
+
+    config = cachedSpec;    
+  }
+
+  var f = new Form(config, options);
+
+  yield f.runHooks('postCreation');
+
+  return f;
+};
+
+
+
+
+/**
+ * Construct a form.
+ *
+ * Form field values get stored in an internal state object which can be retrieved 
+ * and set at any time, thus allowing you to share state between `Form` instances 
+ * as well as quickly restore a `Form` to a previously set state.
+ *
+ * @param {Object|Form} config form configuration,  name of a form, or an existing `Form`.
+ * @param {Object} [options] Additional options.
+ * @param {Object} [options.context] The current request context.
+ * @param {Object} [options.state] The internal state to set for this form.
+ * @param {Boolean} [options.submitted] Form instance is being created to handle a submission.
+ * 
  * @constructor
  */
-var Form = exports.Form = function(config, state) {
+var Form = function(config, options) {
+  options = _.extend({
+    context: null,
+    state: null,
+    submitted: false,
+  }, options);
+
   if (config instanceof Form) {
     // passed-in state overrides existing form's state
-    state = state || config.state;  
+    options.state = options.state || config.state;  
     config = config.config;
   }
 
@@ -72,7 +120,9 @@ var Form = exports.Form = function(config, state) {
     this._fields[def.name] = Field.new(this, def);
   }
 
-  this.state = _.extend({}, state);
+  this.ctx = options.context;
+  this.state = _.extend({}, options.state);
+  this.isSubmitted = !!options.submitted;
 };
 
 
@@ -191,6 +241,30 @@ Form.prototype.validate = function*() {
 
 
 
+/**
+ * Process this form.
+ *
+ * This will first validate the form's field values and then perform 
+ * post-validation processing if validation succeeds.
+ */
+Form.prototype.process = function*() {
+  yield this.validate();
+  yield this.runHooks('postValidation');
+};
+
+
+
+
+/**
+ * Run hooks.
+ *
+ * @param {String} hookName Hooks to run.
+ */
+Form.prototype.runHook = function*(hookName) {
+  yield compose(this.config[hookName] || []).call(this);
+};
+
+
 
 
 /**
@@ -213,8 +287,9 @@ Form.prototype[viewObjects.methodName] = function*(ctx) {
 
   var ret = {
     fields: fieldViewObjects,
-    order: fieldOrder
-  }
+    order: fieldOrder,
+    method: this.config.method,
+  };
 
   if (this.config.id) {
     ret.id = this.config.id
@@ -222,41 +297,6 @@ Form.prototype[viewObjects.methodName] = function*(ctx) {
 
   return ret;
 };
-
-
-
-// the form spec cache
-var cache = {};
-
-
-/** 
- * Create an instance of the given form.
- *
- * Although you can create and use `Form` objects directly it is better to use 
- * this static method as it handles the loading of form configuration from 
- * the `forms` module file path.
- * 
- * An optional initial internal state can also be provided. This is useful to 
- * e.g. restore the from and its fields to a previous state. If not provided 
- * then the form will be set to the default internal state of a newly 
- * constructed instance.
- *
- * @param {String} id The id of the form to load.
- * @param {Object} [state] The internal state to set for this form.
- * 
- * @return {Form}
- */
-Form.new = function(id, state) {
-  var cachedSpec = cache[id];
-
-  if (!cachedSpec) {
-    cache[id]  = cachedSpec = waigo.load('forms/' + id);
-    cachedSpec.id = id;
-  }
-
-  return new Form(cachedSpec, state);
-};
-
 
 
 

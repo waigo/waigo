@@ -36,7 +36,8 @@ module.exports = function(options) {
   }
 
   return function* setOutputFormat(next) {
-    var ctx = this;
+    var ctx = this,
+      logger = this.app.logger;
 
     var requestedFormat = (this.query[options.paramName] || options.default).toLowerCase();
 
@@ -47,13 +48,13 @@ module.exports = function(options) {
 
     this.request.outputFormat = requestedFormat;
 
-    debug('Output format', requestedFormat);
+    logger.debug('Output format', requestedFormat);
 
     // attach renderer
     this.render = function*(view, locals) {
       locals = locals || {};
       
-      debug('Render', view);
+      logger.debug('Render', view);
 
       // get yieldables
       var localsViewObjects = yield viewObjects.toViewObjectYieldable(ctx, locals);
@@ -64,7 +65,7 @@ module.exports = function(options) {
 
     // redirect method
     this.redirect = function*(url) {
-      debug('Redirect', url);
+      logger.debug('Redirect', url);
 
       // call actual rendering method
       yield enabledFormats[requestedFormat].redirect.call(ctx, url);

@@ -1,0 +1,7 @@
+mixin msg(type, header, description)
+  if type == 'error'
+    .ui.icon.error.message
+      i.attention.circle.icon
+      .content
+        .header= header
+        p= description

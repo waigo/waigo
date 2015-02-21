@@ -37,7 +37,7 @@ exports.create = function() {
       this.type = 'json';
       this.status = 200;
       this.body = {
-        redirectTo: url
+        redirectTo: url,
       };
     },
   };

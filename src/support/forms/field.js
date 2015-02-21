@@ -217,20 +217,10 @@ Field.prototype.validate = function*() {
  * @return {Object}
  */
 Field.prototype[viewObjects.methodName] = function*(ctx) {
-  var r = {
-    type: this.config.type,
-    name: this.name,
-    label: this.config.label,
-    helpText: this.config.helpText,
+  return _.extend({}, this.config, {
     value: this.value,
-    originalValue: this.originalValue
-  };
-
-  if (this.config.meta) {
-    r.meta = this.config.meta;
-  }
-
-  return r;
+    originalValue: this.originalValue,
+  });
 };
 
 

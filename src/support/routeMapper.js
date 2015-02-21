@@ -82,10 +82,14 @@ var buildRoutes = function(logger, urlPath, node, parentConfig) {
 
   logger.debug('Route', urlPath);
 
+  // make a shallow copy (so that we can delete keys from it)
+  node = _.extend({}, node);
+
   // load common middleware
   var middleware = parentConfig.middleware.concat(
     _.map(node.pre || [], loadMiddleware)
   );
+  delete node.pre;
 
   var mappings = [];
 
@@ -104,10 +108,12 @@ var buildRoutes = function(logger, urlPath, node, parentConfig) {
         )
       });
     }
+
+    delete node[m];
   });
 
   // go through children
-  _.each(node.sub || {}, function(subNode, subUrlPath) {
+  _.each(node || {}, function(subNode, subUrlPath) {
     mappings = mappings.concat(
       buildRoutes(logger, subUrlPath, subNode, {
         urlPath: urlPath,

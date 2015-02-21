@@ -68,7 +68,7 @@ module.exports = function(config) {
     'models',
     'middleware',
     'routes',
-    'templateHelpers',
+    'helpers',
     'staticResources',
     'listener'
   ];
