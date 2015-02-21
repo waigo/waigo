@@ -68,7 +68,7 @@ module.exports = function(config) {
     'models',
     'middleware',
     'routes',
-    'helpers',
+    'globalHelpers',
     'staticResources',
     'listener'
   ];
@@ -125,6 +125,7 @@ module.exports = function(config) {
       'staticResources',
       'sessions',
       'outputFormats',
+      'contextHelpers',
     ],
     options: {
       errorHandler: {

@@ -2,7 +2,8 @@
 
 
 var waigo = require('../../'),
-  _ = waigo._;
+  _ = waigo._,
+  RuntimeError = waigo.load('support/errors').RuntimeError;
 
 
 module.exports = {
@@ -31,7 +32,7 @@ module.exports = {
   ],
   method: 'POST',
   postValidation: [
-    function* updateUserLoginTimestamp(next) {
+    function* checkUserCredentials(next) {
       var User = this.context.app.models.User;
 
       // load user
@@ -50,9 +51,10 @@ module.exports = {
         }
       });
 
-      // if user not found then incorrect credentials
-      if (!user) {
-        throw new Error('Incorrect username or password');
+      // check user and password
+      if (!user 
+          || !(yield user.isPasswordCorrect(this.fields.password.value)) ) {
+        throw new RuntimeError('Incorrect username or password', 400);
       }
 
       // log the user in

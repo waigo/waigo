@@ -2,7 +2,7 @@ mixin msg(type, header, description, options)
   if (_.get(options, 'compact'))
     div(class="ui compact message " + type) #{header}
   else
-    div(class="ui message " + type)
+    div(class="ui icon message " + type)
       if ('error' == type)
         i.warning.sign.icon
       else if ('info' == type)

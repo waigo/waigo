@@ -10,7 +10,7 @@ module.exports = {
     {
       name: 'email',
       type: 'text',
-      label: 'Email address / Username',
+      label: 'Email address',
       required: true,
       sanitizers: [ 'trim' ],
       validators: [ 'notEmpty', 'isEmailAddress' ],
@@ -23,28 +23,23 @@ module.exports = {
       sanitizers: [ 'trim' ],
       validators: [ 'notEmpty' ],
     },
-    {
-      // where to take take user once logged-in
-      name: 'postLoginUrl',
-      type: 'hidden',
-    },
   ],
   method: 'POST',
   postValidation: [
     function* createUser(next) {
-      var User = this.context.app.models.User;
+      var app = this.context.app,
+        User = app.models.User;
 
       // check if there's an admin user
-      var adminUserExists = !!(yield User.findOne({
-        roles: {
-          $in: ['admin']
-        }
-      }));
+      var adminUserExists = !!(yield User.findAdminUser()),
+        roles = (adminUserExists ? [] : ['admin']);
 
-      var user = yield User.create({
+      app.logger.info('Registering user', this.fields.email.value, roles);
+
+      var user = yield User.register({
         email: this.fields.email.value,
-        password: this.field.password.value,
-        roles: (adminUserExists ? [] : ['admin'])
+        password: this.fields.password.value,
+        roles: roles
       });
 
       yield user.login(this.context);

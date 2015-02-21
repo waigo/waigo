@@ -38,6 +38,10 @@ exports.login_submit = function*() {
 
     yield this.redirect(form.fields.postLoginUrl.value);
   } catch (err) {
+    if (!(err instanceof this.app.form.FormValidationError)) {
+      this.app.logger.error(err);
+    }
+
     yield this.render('user/login', {
       error: err,
       form: form,
@@ -45,15 +49,6 @@ exports.login_submit = function*() {
   };
 };
 
-
-
-var doesAdminUserExist = function*() {
-  return !!(yield this.app.models.User.findOne({
-    roles: {
-      $in: ['admin']
-    }
-  }));
-};
 
 
 
@@ -64,37 +59,42 @@ exports.register = function*() {
 
   this.app.logger.debug('Register');
 
-  var willCreateAdminUser = yield doesAdminUserExist.call(this);
+  var adminUserExists = 
+    !!(yield this.app.models.User.findAdminUser());
 
   yield this.render('user/register', {
     form: form,
-    willCreateAdminUser: willCreateAdminUser,
+    willCreateAdminUser: !adminUserExists,
   });
 };
 
 
 
 exports.register_submit = function*() {
-  this.app.logger.debug('Registering admin user');
+  this.app.logger.debug('Registering user');
 
   var form = yield this.app.form.create('register', {
     context: this,
     submitted: true,
   });
 
-  var willCreateAdminUser = yield doesAdminUserExist.call(this);
+  var adminUserExists = 
+    !!(yield this.app.models.User.findAdminUser());
 
   try {
     yield form.process();
 
     yield this.redirect('/');
   } catch (err) {
+    if (!(err instanceof this.app.form.FormValidationError)) {
+      this.app.logger.error(err);
+    }
+
     yield this.render('user/register', {
       error: err,
       form: form,
-      willCreateAdminUser: willCreateAdminUser,
+      willCreateAdminUser: !adminUserExists,
     });
   }
 };
-
 
