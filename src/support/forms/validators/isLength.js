@@ -16,7 +16,7 @@ var validator = require('validator');
 module.exports = function(options) {
   options = options || {};
 
-  return function*(field, value) {
+  return function*(context, field, value) {
     options.min = options.min || 0;
     options.max = options.max || 10000000;
 

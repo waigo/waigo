@@ -228,7 +228,7 @@ Form.prototype.validate = function*() {
     let field = fields[fieldName];
 
     try {
-      yield field.validate();
+      yield field.validate(this.context);
     } catch (err) {
       if (!errors) {
         errors = {};

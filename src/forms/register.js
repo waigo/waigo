@@ -13,7 +13,7 @@ module.exports = {
       label: 'Email address',
       required: true,
       sanitizers: [ 'trim' ],
-      validators: [ 'notEmpty', 'isEmailAddress' ],
+      validators: [ 'notEmpty', 'isEmailAddress', 'emailAddressNotInUse' ],
     },
     {
       name: 'password',

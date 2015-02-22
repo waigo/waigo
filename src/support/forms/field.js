@@ -170,9 +170,11 @@ Field.prototype.isDirty = function() {
 /**
  * Validate this field's value.
  *
+ * @param {Object} [context] Client koa request context.
+ *
  * @throws FieldValidationError If validation fails.
  */
-Field.prototype.validate = function*() {
+Field.prototype.validate = function*(context) {
   var errors = [];
 
   // if value is undefined and field is not required then nothing to do
@@ -187,7 +189,7 @@ Field.prototype.validate = function*() {
       let validator = this.validators[idx];
 
       try {
-        yield validator.fn(this, this.value);
+        yield validator.fn(context, this, this.value);
       } catch (err) {
         errors.push(err.message);
       }
