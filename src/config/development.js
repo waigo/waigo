@@ -1,6 +1,10 @@
 "use strict";
 
 
+var waigo = require('../../'),
+  _ = waigo._;
+
+
 
 /**
  * # Development mode configuration
@@ -12,11 +16,7 @@
  * @param  {Object} config Configuration object to modify.
  */
 module.exports = function(config) {
-  config.middleware.options.errorHandler = {
-    showStack: true
-  };
-
-  config.middleware.options.outputFormats.formats.html.cache = false;
-
+  config.middleware.ALL.errorHandler.showStack = true;
+  config.middleware.ALL.outputFormats.formats.html.cache = false;
   config.logging.minLevel = 'DEBUG';
 };

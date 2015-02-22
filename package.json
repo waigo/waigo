@@ -21,6 +21,7 @@
     "jade": "~1.3.x",
     "koa": "~0.5.x",
     "koa-compose": "^2.3.0",
+    "koa-csrf": "^2.1.3",
     "koa-session-store": "~1.x.x",
     "koa-static": "~1.4.x",
     "koa-trie-router": "~1.0.x",

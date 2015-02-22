@@ -13,6 +13,8 @@ var bodyParser = require('co-body'),
  * This middleware uses [co-body](https://github.com/visionmedia/co-body) to 
  * parse request POST bodies. Once parsed the request body parameters are 
  * available in `this.request.body`.
+ *
+ * If `csrf` middleware is enabled is set then this validates the csrf.
  * 
  * @param {Object} options Configuration options for `co-body`.
  * @param {String} [options.limit] The maximum allowed size of a request body.
@@ -22,6 +24,11 @@ var bodyParser = require('co-body'),
 var fn = module.exports = function(options) {
   return function*(next) {
     this.request.body = yield fn._bodyParser(this, options);
+
+    if (this.assertCSRF) {
+      yield this.assertCSRF(this.request.body);
+    }
+
     yield next;
   };
 };

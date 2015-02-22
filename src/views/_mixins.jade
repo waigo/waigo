@@ -16,6 +16,8 @@ mixin msg(type, header, description, options)
 
 mixin form(form, error)
   form(method=(form.method || 'post'), class="ui form " + (error ? 'error' : ''))
+    if form.csrf
+      input(type="hidden", name="_csrf", value=form.csrf)
     if error
       +msg('error', error.msg)
     - each fieldName in form.order

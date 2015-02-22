@@ -13,28 +13,31 @@ var errors = waigo.load('support/errors'),
 
 
 
+var methods = ['GET', 'POST', 'DEL', 'DELETE', 'PUT', 'OPTIONS', 'HEAD'];
+
+
+
 
 
 /**
  * Load and initialise given middleware module.
  * 
- * @param  {Object|String} middleware Name of middleware module file or object of form `{ id: <module file mame>, ...}`.
+ * @param  {Object|String} middlewareName Name of middleware module file or object representing combined name and options: `{ id: <middleware mame>, ...}`.
+ * @param  {Object} [middlewareOptions] Middleware options.
  * 
  * @return {Function}
  */
-var loadMiddleware = function(middleware) {
-  let middlewareName = middleware,
-    middlewareOptions = {};
-
-  // if reference is an object then it's a middleware reference with initialisation options
-  if (_.isPlainObject(middleware)) {
-    middlewareName = middleware.id;
-    _.extend(middlewareOptions, middleware);
+var loadMiddleware = function(middlewareName, middlewareOptions) {
+  if (_.isPlainObject(middlewareName)) {
+    middlewareOptions = _.omit(middlewareName, 'id');
+    middlewareName = middlewareName.id;
   } else {
     // if reference is of form 'moduleName.xx.yy' then it's a controller reference
-    if (0 < middleware.indexOf('.')) {
-      return loadController(middleware);
+    if (0 < middlewareName.indexOf('.')) {
+      return loadController(middlewareName);
     }
+
+    middlewareOptions = middlewareOptions || {};
   }
 
   return waigo.load('support/middleware/' + middlewareName)(middlewareOptions);
@@ -74,10 +77,10 @@ var loadController = function(controller) {
  * @param  {Object} node Config node.
  * @param  {Object} parentConfig parent node config. 
  * @param  {Object} parentConfig.urlPath URL path of parent node.
- * @param  {Object} parentConfig.middleware Common middleware for parent node.
+ * @param  {Object} parentConfig.preMiddleware Resolved pre-middleware for all routes in this node.
  * @return {Array} List of route mappings.
  */
-var buildRoutes = function(logger, urlPath, node, parentConfig) {
+var buildRoutes = function(logger, commonMiddleware, urlPath, node, parentConfig) {
   urlPath = parentConfig.urlPath + urlPath;
 
   logger.debug('Route', urlPath);
@@ -85,8 +88,8 @@ var buildRoutes = function(logger, urlPath, node, parentConfig) {
   // make a shallow copy (so that we can delete keys from it)
   node = _.extend({}, node);
 
-  // load common middleware
-  var middleware = parentConfig.middleware.concat(
+  // load parent middleware
+  var resolvedPreMiddleware = parentConfig.preMiddleware.concat(
     _.map(node.pre || [], loadMiddleware)
   );
   delete node.pre;
@@ -94,22 +97,15 @@ var buildRoutes = function(logger, urlPath, node, parentConfig) {
   var mappings = [];
 
   // iterate through each possible method
-  _.each(['GET', 'POST', 'DEL', 'DELETE', 'PUT', 'OPTIONS', 'HEAD'], function(m) {
+  _.each(methods  , function(m) {
     if (node[m]) {
       var routeMiddleware = _.isArray(node[m]) ? node[m] : [node[m]];
-
-      // auto-process request bodies for POST and PUT requests
-      if ('POST' === m || 'PUT' === m) {
-        routeMiddleware.unshift({
-          id: 'bodyParser',
-          limit: '16mb'
-        });
-      }
 
       mappings.push({
         method: m,
         url: urlPath,
-        resolvedMiddleware: middleware.concat(
+        resolvedMiddleware: commonMiddleware[m].concat(
+          resolvedPreMiddleware, 
           _.map(routeMiddleware, function(rm) {
             return loadMiddleware(rm);
           })
@@ -123,15 +119,31 @@ var buildRoutes = function(logger, urlPath, node, parentConfig) {
   // go through children
   _.each(node || {}, function(subNode, subUrlPath) {
     mappings = mappings.concat(
-      buildRoutes(logger, subUrlPath, subNode, {
+      buildRoutes(logger, commonMiddleware, subUrlPath, subNode, {
         urlPath: urlPath,
-        middleware: middleware,
+        preMiddleware: resolvedPreMiddleware,
       })
     );
   });
 
   return mappings;
 };
+
+
+/**
+ * Load middleware specified in config object.
+ * @return {Array}
+ */
+var loadCommonMiddleware = function(middleware) {
+  middleware = middleware || {};
+
+  return _.map(middleware._order, function(m) {
+    debug('Setting up middleware', m);
+    
+    return loadMiddleware(m, middleware[m]);
+  });
+};
+
 
 
 
@@ -151,12 +163,21 @@ exports.map = function(app, routes) {
 
   var possibleMappings = [];
 
+  // resolve middleware for different HTTP methods
+  var commonMiddleware = {};
+  _.each(methods, function(method) {
+    logger.info('Setting up HTTP method middleware', method);
+
+    commonMiddleware[method] = 
+      loadCommonMiddleware(app.config.middleware[method]);
+  });
+
   // build mappings
   _.each(routes, function(node, urlPath) {
     possibleMappings = possibleMappings.concat(
-      buildRoutes(logger, urlPath, node, {
+      buildRoutes(logger, commonMiddleware, urlPath, node, {
         urlPath: '',
-        middleware: [],
+        preMiddleware: [],
       })
     );
   });

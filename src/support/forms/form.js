@@ -2,6 +2,7 @@
 
 
 var compose = require('generator-compose'),
+  debug = require('debug')('waigo-form'),
   waigo = require('../../../'),
   _ = waigo._;
 
@@ -127,6 +128,13 @@ var Form = function(config, options) {
   this.context = options.context;
   this.state = _.extend({}, options.state);
   this.isSubmitted = !!options.submitted;
+
+  // CSRF enabled?
+  if (!!this.context.assertCSRF) {
+    this._fields.__csrf = Field.new(this, {
+      type: 'csrf'
+    });
+  }
 };
 
 
@@ -299,6 +307,13 @@ Form.prototype[viewObjects.methodName] = function*(ctx) {
 
   if (this.config.id) {
     ret.id = this.config.id
+  }
+
+  // Add CSRF token if it exists
+  var csrf = ctx.csrf;
+  if (csrf) {
+    debug('CSRF', csrf, this.config.id)
+    ret.csrf = csrf;
   }
 
   return ret;
