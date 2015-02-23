@@ -28,9 +28,8 @@ var Select = exports.Field = function(form, config) {
   Select.super_.apply(this, _.toArray(arguments));
 
   // default validator
-  this.validators.unshift({
-    id: 'validOption',
-    fn: function*(field, val) {
+  this._addValidator(
+    function*(context, field, val) {
       var options = yield field.getOptions();
 
       if (!_.isArray(val)) {
@@ -49,8 +48,7 @@ var Select = exports.Field = function(form, config) {
         throw new Error('Must be ' + str + ': ' + _.values(options).join(', '));
       }
     }
-  });
-
+  );
 };
 util.inherits(Select, Field);
 

@@ -61,7 +61,7 @@ module.exports = function(options) {
     try {
       yield next;
     } catch (err) {
-      this.app.logger.error(err.stack);
+      this.app.emit('error', err.stack);
 
       // render error page
       yield render.call(this, options, err);

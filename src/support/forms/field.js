@@ -38,6 +38,7 @@ var FieldSanitizationError = exports.FieldSanitizationError = errors.define('Fie
 
 
 
+
 /**
  * A form field.
  * 
@@ -46,38 +47,67 @@ var FieldSanitizationError = exports.FieldSanitizationError = errors.define('Fie
  * @constructor
  */
 var Field = exports.Field = function(form, config) {
+  var self = this;
+
   this.form = form;
   this.config = config;
 
-  this.sanitizers = _.map(config.sanitizers || [], function(def) {
-    var id = def,
-      options = {};
+  this.sanitizers = [];
+  this.validators = [];
 
-    if (_.isObject(def)) {
-      id = def.id;
-      options = def;
-    }
-
-    return {
-      id: id,
-      fn: waigo.load('support/forms/sanitizers/' + id)(options)
-    };
+  _.each(config.sanitizers || [], function(def) {
+    self._addSanitizer(def);
   });
 
-  this.validators = _.map(config.validators || [], function(def) {
-    var id = def,
-      options = {};
-
-    if (_.isObject(def)) {
-      id = def.id;
-      options = def;
-    }
-
-    return {
-      id: id,
-      fn: waigo.load('support/forms/validators/' + id)(options)
-    };
+  _.each(config.validators || [], function(def) {
+    self._addValidator(def);
   });
+};
+
+
+/**
+ * Add a validator
+ * @param {String|Object|GeneratorFunction} def 
+ */
+Field.prototype._addValidator = function(def) {
+  if (_.isFunction(def)) {
+    return this.validators.push(def);
+  }
+
+  var options = {};
+
+  if (def.id) {
+    options = _.omit(def, 'id');
+    def = def.id;
+  }
+
+
+  this.validators.push(
+    waigo.load('support/forms/validators/' + def)(options)
+  );
+};
+
+
+/**
+ * Add a sanitizer
+ * @param {String|Object|GeneratorFunction} def 
+ */
+Field.prototype._addSanitizer = function(def) {
+  if (_.isFunction(def)) {
+    return this.sanitizers.push(def);
+  }
+
+  var options = {};
+
+  if (def.id) {
+    options = _.omit(def, 'id');
+    def = def.id;
+  }
+
+
+  this.validators.push(
+    waigo.load('support/forms/sanitizers/' + def)(options)
+  );
 };
 
 
@@ -102,7 +132,7 @@ Object.defineProperty(Field.prototype, 'name', {
  */
 Object.defineProperty(Field.prototype, 'originalValue', {
   get: function() {
-    return this.form.state[this.name].originalValue;
+    return _.get(this.form.state, this.name + '.originalValue');
   },
   set: function(value) {
     this.form.state[this.name].originalValue = value;
@@ -117,7 +147,7 @@ Object.defineProperty(Field.prototype, 'originalValue', {
  */
 Object.defineProperty(Field.prototype, 'value', {
   get: function() {
-    return this.form.state[this.name].value;
+    return _.get(this.form.state, this.name + '.value');
   },
   set: function(value) {
     this.form.state[this.name].value = value;
@@ -139,7 +169,7 @@ Object.defineProperty(Field.prototype, 'value', {
  */
 Field.prototype.setSanitizedValue = function*(val) {
   for (let idx in this.sanitizers) {
-    let sanitizerFn = this.sanitizers[idx].fn;
+    let sanitizerFn = this.sanitizers[idx];
 
     try {
       val = yield sanitizerFn(this, val);
@@ -186,10 +216,10 @@ Field.prototype.validate = function*(context) {
     }
   } else {
     for (let idx in this.validators) {
-      let validator = this.validators[idx];
+      let validatorFn = this.validators[idx];
 
       try {
-        yield validator.fn(context, this, this.value);
+        yield validatorFn(context, this, this.value);
       } catch (err) {
         errors.push(err.message);
       }

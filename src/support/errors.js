@@ -84,9 +84,8 @@ RuntimeError.prototype[viewObjects.methodName] = function*(ctx) {
  * @param {Number} status HTTP return status code to set.
  */
 var MultipleError = exports.MultipleError = function(msg, status, errors) {
-  RuntimeError.call(this, msg || 'Multiple errors occurred', status);
+  RuntimeError.call(this, msg || 'Multiple errors occurred', status, errors);
   this.name = 'MultipleError';
-  this.errors = errors || {};
   Error.captureStackTrace(this, MultipleError);
 };
 util.inherits(MultipleError, RuntimeError);
@@ -109,8 +108,10 @@ MultipleError.prototype[viewObjects.methodName] = function*(ctx) {
 
   ret.errors = {};
 
-  for (var id in this.errors) {
-    ret.errors[id] = yield this.errors[id][viewObjects.methodName](ctx);
+  for (let id in this.data) {
+    let fn = this.data[id][viewObjects.methodName];
+
+    ret.errors[id] = (fn ? yield fn(ctx) : this.data[id]);
   }
 
   return ret;

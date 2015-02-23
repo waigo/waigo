@@ -37,7 +37,7 @@ module.exports = function(options) {
 
   return function* setOutputFormat(next) {
     var ctx = this,
-      logger = this.app.logger;
+      logger = this.app.logger.create('OutputFormats');
 
     var requestedFormat = (this.query[options.paramName] || options.default).toLowerCase();
 

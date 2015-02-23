@@ -11,15 +11,19 @@ mixin msg(type, header, description, options)
         .header #{header}
         if description
           p #{description}
+        block
 
 
 
 mixin form(form, error)
   form(method=(form.method || 'post'), class="ui form " + (error ? 'error' : ''))
-    if form.csrf
-      input(type="hidden", name="_csrf", value=form.csrf)
     if error
       +msg('error', error.msg)
+        if error.errors
+          ul
+          - each fieldErrors, fieldName in error.errors
+            - each fieldError in fieldErrors
+              li #{form.fields[fieldName].label || fieldName}: #{fieldError}
     - each fieldName in form.order
       - var field = form.fields[fieldName]
       - var errors = _.get(error, 'errors.' + fieldName + '.data', [])

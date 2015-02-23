@@ -100,7 +100,6 @@ exports.create = function*(config, options) {
  * @param {Object} [options] Additional options.
  * @param {Object} [options.context] The current request context.
  * @param {Object} [options.state] The internal state to set for this form.
- * @param {Boolean} [options.submitted] Form instance is being created to handle a submission.
  * 
  * @constructor
  */
@@ -117,24 +116,31 @@ var Form = function(config, options) {
     config = config.config;
   }
 
-  this.config = config;
+  this.config = _.extend({}, config);
 
+  this.context = options.context;
+  this.logger = this.context.app.logger.create('Form[' + this.config.id + ']');
+
+  // CSRF enabled?
+  if (!!this.context.assertCSRF) {
+    this.logger.debug('Adding CSRF field');
+
+    this.config.fields.push({
+      name: '__csrf',
+      label: 'CSRF',
+      type: 'csrf'
+    });
+  }
+
+  // setup fields
   this._fields = {};
   for (let idx in this.config.fields) {
     let def = this.config.fields[idx];
     this._fields[def.name] = Field.new(this, def);
   }
 
-  this.context = options.context;
+  // initial state
   this.state = _.extend({}, options.state);
-  this.isSubmitted = !!options.submitted;
-
-  // CSRF enabled?
-  if (!!this.context.assertCSRF) {
-    this._fields.__csrf = Field.new(this, {
-      type: 'csrf'
-    });
-  }
 };
 
 
@@ -242,7 +248,7 @@ Form.prototype.validate = function*() {
         errors = {};
       }
 
-      errors[fieldName] = err;
+      errors[fieldName] = err.data;
     }
   }
 
@@ -291,12 +297,11 @@ Form.prototype[viewObjects.methodName] = function*(ctx) {
     fieldViewObjects = {},
     fieldOrder = [];
 
-  for (let idx in this.config.fields) {
-    let def = this.config.fields[idx],
-      field = fields[def.name];
+  for (let fieldName in fields) {
+    let field = fields[fieldName];
       
-    fieldViewObjects[def.name] = yield field[viewObjects.methodName](ctx);
-    fieldOrder.push(def.name);
+    fieldViewObjects[fieldName] = yield field[viewObjects.methodName](ctx);
+    fieldOrder.push(fieldName);
   }
 
   var ret = {
@@ -307,13 +312,6 @@ Form.prototype[viewObjects.methodName] = function*(ctx) {
 
   if (this.config.id) {
     ret.id = this.config.id
-  }
-
-  // Add CSRF token if it exists
-  var csrf = ctx.csrf;
-  if (csrf) {
-    debug('CSRF', csrf, this.config.id)
-    ret.csrf = csrf;
   }
 
   return ret;

@@ -35,14 +35,13 @@ exports.login_submit = function*() {
   this.app.logger.debug('Logging in');
 
   var form = yield this.app.form.create('login', {
-    context: this,
-    submitted: true
+    context: this
   });
 
   try {
     yield form.process();
 
-    yield this.redirect(form.fields.postLoginUrl.value);
+    yield this.redirect(form.fields.postLoginUrl.value || '/');
   } catch (err) {
     if (!(err instanceof this.app.form.FormValidationError)) {
       this.app.logger.error(err);
@@ -51,7 +50,7 @@ exports.login_submit = function*() {
     yield this.render('user/login', {
       error: err,
       form: form,
-    })
+    });
   };
 };
 

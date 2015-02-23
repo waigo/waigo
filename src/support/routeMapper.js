@@ -184,11 +184,11 @@ exports.map = function(app, routes) {
 
   // now order by path (specific to general)
   // put the routes into order (specific to general)
-  var orderedMappings = _.sortBy(possibleMappings, function(mapping) {
-    return mapping.url;
+  var orderedMappings = possibleMappings.sort(function(a, b) {
+    return a.url < b.url;
   });
 
-  _.each(orderedMappings.reverse(), function(mapping) {
+  _.each(orderedMappings, function(mapping) {
     var route = app.route(mapping.url);
     route[mapping.method.toLowerCase()].apply(route, mapping.resolvedMiddleware);
   });

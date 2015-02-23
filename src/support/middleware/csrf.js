@@ -4,8 +4,6 @@
 var csrf = require('koa-csrf');
 
 
-var noop = function*() {};
-
 
 /**
  * Build middleware for CSRF protection.
@@ -22,7 +20,9 @@ var noop = function*() {};
 module.exports = function() {
   return csrf({
     // nullify middleware option
-    middleware: function*() {}
+    middleware: function*(next) {
+      yield* next;
+    }
   });
 };
 

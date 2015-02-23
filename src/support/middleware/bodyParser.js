@@ -25,10 +25,6 @@ var fn = module.exports = function(options) {
   return function*(next) {
     this.request.body = yield fn._bodyParser(this, options);
 
-    if (this.assertCSRF) {
-      yield this.assertCSRF(this.request.body);
-    }
-
     yield next;
   };
 };
