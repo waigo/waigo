@@ -159,7 +159,7 @@ module.exports = {
      * @param {Object} context waigo client request context.
      */
     login: function*(context) {
-      context.app.logger.debug('Logging in user', this._id, this.username);
+      context.app.logger.debug('Logging in user', this._id);
 
       context.session.user = {
         _id: this._id,

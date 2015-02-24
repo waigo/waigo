@@ -1,5 +1,8 @@
 "use strict";
 
+var cluster = require('cluster');
+
+
 var waigo = require('../../'),
   _ = waigo._;
 
@@ -44,7 +47,13 @@ module.exports = function(config) {
     appenders: [
       {
         type: 'console',
-        layout: 'coloured'
+        layout: {
+          type: 'pattern',
+          pattern: '(%h-%z) %[[%d] [%p] [%c]%] - %m',
+          tokens: {
+            workerId: cluster.worker.id
+          }
+        }
       }
     ],
   };

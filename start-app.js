@@ -5,6 +5,43 @@
  * @fileOverview Executable script to bootstrap your app.
  */
 
+
+
+function spawnNodeCluster() {
+  var cluster = require('cluster');
+
+  var numWorkers = parseInt(process.env.NODE_WORKERS || 0) 
+    || require('os').cpus().length;
+
+  var _log = function(workerId, msg) {
+    console.log('[worker' + workerId + '] ' + msg);
+  };
+
+  if (cluster.isMaster) {
+    cluster.on('exit', function(worker, code, signal) {
+      _log(worker.id, 'exited: ' + code + ', ' + signal);
+
+      cluster.fork(); // restart
+    });
+
+    // fork workers
+    for (var i = 0; i < numWorkers; i++) {
+      cluster.fork();
+    }
+  } else if (cluster.isWorker) {
+    _log(cluster.worker.id, 'started, pid: ' + cluster.worker.process.pid);
+
+    require('./')._bootstrap(function(err) {
+      if (err) {
+        console.error(err.stack);
+      }
+    });
+  }
+}
+
+
+
+
 // check if ES6 enabled (works for Node 0.11.x and 0.12.x)
 var es6Enabled = false;
 try {
@@ -16,11 +53,7 @@ try {
 
 // if ES6 enabled
 if (es6Enabled) {
-  require('./')._bootstrap(function(err) {
-    if (err) {
-      console.error(err.stack);
-    }
-  });
+  spawnNodeCluster();
 }
 // else run this script again with the --harmony flag
 else {
@@ -36,6 +69,3 @@ else {
     process.exit(code);
   });
 }
-
-
-

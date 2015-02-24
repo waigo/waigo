@@ -75,7 +75,7 @@ var _staticUrl = function(logger, resourcePath) {
     owner =  (0 <= pos) ? resourcePath.substr(0, pos) : '',
     theUrl = (0 <= pos) ? resourcePath.substr(pos+1) : resourcePath;
 
-  logger.debug('Static resource: ' + resourcePath + ' -> owner:' + owner + ', url:' + theUrl);
+  logger.trace('Static resource: ' + resourcePath + ' -> owner:' + owner + ', url:' + theUrl);
 
   if (
     /* app */ 
@@ -88,6 +88,7 @@ var _staticUrl = function(logger, resourcePath) {
     return path.join('/_gen', owner, theUrl);
   }
 };
+
 
 
 

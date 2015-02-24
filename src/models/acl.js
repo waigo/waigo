@@ -10,7 +10,7 @@ module.exports = {
     access: { 
       type: String, 
       required: true, 
-      enum: ['read', 'write', 'execute'],
+      enum: ['read', 'write'],
     },
     permission: { 
       type: String, 
