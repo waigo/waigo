@@ -6,8 +6,10 @@ prefix = require('gulp-autoprefixer')
 minifyCss = require('gulp-minify-css')
 concat = require('gulp-concat')
 stylus = require('gulp-stylus')
+filter = require('gulp-filter')
 nib = require('nib')
 rupture = require('rupture')
+uglify = require('gulp-uglify')
 
 
 reportError = (err) ->
@@ -29,13 +31,29 @@ folders.assets.build.css = path.join(folders.assets.build.root, 'css')
 folders.assets.src.img = path.join(folders.assets.src.root, 'img')
 folders.assets.build.img = path.join(folders.assets.build.root, 'img')
 
+
+folders.assets.src.js = path.join(folders.assets.src.root, 'js')
+folders.assets.build.js = path.join(folders.assets.build.root, 'js')
+
 files =
   src:
     img: path.join(folders.assets.src.img, '**', '*.*')
     stylus: path.join(folders.assets.src.stylus, '**', '*.styl')
+    js: path.join(folders.assets.src.js, '**', '*.js')
 files.watch =
   img: files.src.img
   stylus: files.src.stylus
+  js: files.src.js
+
+gulp.task 'js-admin', ->
+  gulp.src files.src.js
+    .pipe filter(path.join('admin/**/*.js'))
+    .pipe uglify()
+    .pipe concat('admin.js')
+    .pipe gulp.dest(folders.assets.build.js)
+
+
+gulp.task 'js', ['js-admin']
 
 
 gulp.task 'css', ->
@@ -54,11 +72,12 @@ gulp.task 'img', ->
     .pipe gulp.dest(folders.assets.build.img)
 
 
-gulp.task 'assets', ['css', 'img']
+gulp.task 'assets', ['css', 'img', 'js']
 
 gulp.task 'dev', ['assets'], ->
   gulp.watch files.watch.img, ['img']
   gulp.watch files.watch.stylus, ['css']
+  gulp.watch files.watch.js, ['js']
 
   nodemon({ 
     script: 'start-app.js'
