@@ -32,22 +32,24 @@ module.exports = function(options) {
         throw new RuntimeError('You must be logged in to access this content.', 403);
       }
 
-      // needs specific role?
-      if (options.role) {
-        var storedUser = yield this.app.models.User.findOne({
-          _id: _.get(user, '_id')
-        }, {
-          fields: {
-            roles: 1
+      // load user
+      var storedUser = yield this.app.models.User.findOne({
+        _id: _.get(user, '_id')
+      }, {
+        fields: {
+          roles: 1
+        }        
+      });
+      var userRoles = _.get(storedUser, 'roles', []);
+
+      // if user is not an admin
+      if (0 > userRoles.indexOf('admin')) {
+        // needs specific role?
+        if (options.role) {
+          // if doesn't have required role then puke
+          if (0 === _.intersection(userRoles, options.role).length) {
+            throw new RuntimeError('You must have one of the following roles to access this content: ' + options.role.join(', '), 403);
           }
-        });
-
-        var userRoles = _.get(storedUser, 'roles', []);
-
-        // if doesn't have required role AND is not an admin then puke
-        if (0 > userRoles.indexOf('admin') && 
-              0 === _.intersection(userRoles, options.role).length) {
-          throw new RuntimeError('You must have one of the following roles to access this content: ' + options.role.join(', '), 403);
         }
       }
     } catch (err) {

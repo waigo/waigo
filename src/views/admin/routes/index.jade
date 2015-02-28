@@ -1,4 +1,9 @@
 extends ../_layout
 
 block admin_content
-  p Routes here!
+  ul
+    - each route in routes
+      li
+        span.method #{route.method}
+        span.url #{route.url}
+

@@ -188,6 +188,9 @@ exports.map = function(app, routes) {
     return a.url < b.url;
   });
 
+  // save on app, so that we can access later
+  app.routeMappings = orderedMappings;
+
   _.each(orderedMappings, function(mapping) {
     var route = app.route(mapping.url);
     route[mapping.method.toLowerCase()].apply(route, mapping.resolvedMiddleware);
