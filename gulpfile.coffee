@@ -19,7 +19,6 @@ reportError = (err) ->
   gutil.log err
 
 
-
 debugBuild = if args.debug then true else false
  
 
@@ -100,8 +99,6 @@ gulp.task 'img', ->
 gulp.task 'assets', ['css', 'img', 'js']
 
 gulp.task 'dev', ['assets'], ->
-  debugBuild = true
-
   gulp.watch files.watch.img, ['img']
   gulp.watch files.watch.stylus, ['css']
   gulp.watch files.watch.js, ['js']
@@ -116,6 +113,7 @@ gulp.task 'dev', ['assets'], ->
       'node_modules/*'
       'test/*'
       'src/cli/*'
+      'src/assets/*'
     ]
   })
 

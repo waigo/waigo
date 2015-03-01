@@ -28,6 +28,7 @@ block main_content
       block admin_content
 
 block scripts
+  script(type="text/javascript", src="/js/admin.js")
   script(type="text/javascript").
     $('header a.admin.menu').click(function() {
       $('nav.menu.sidebar').sidebar('toggle');
