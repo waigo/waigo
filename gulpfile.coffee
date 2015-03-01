@@ -10,10 +10,27 @@ filter = require('gulp-filter')
 nib = require('nib')
 rupture = require('rupture')
 uglify = require('gulp-uglify')
+webpack = require('gulp-webpack-build')
+gulpIf = require('gulp-if')
+args = require('yargs').argv
 
 
 reportError = (err) ->
   gutil.log err
+
+
+
+debugBuild = if args.debug then true else false
+ 
+
+webpackOptions =
+  debug: debugBuild
+  devtool: '#source-map'
+  watchDelay: 200
+
+webpackConfig =
+  useMemoryFs: true
+  # progress: true
 
 
 folders = {}
@@ -45,15 +62,23 @@ files.watch =
   stylus: files.src.stylus
   js: files.src.js
 
-gulp.task 'js-admin', ->
-  gulp.src files.src.js
-    .pipe filter(path.join('admin/**/*.js'))
-    .pipe uglify()
-    .pipe concat('admin.js')
+
+
+gulp.task 'js', ->
+  gulp.src(path.join(__dirname, webpack.config.CONFIG_FILENAME))
+    .pipe webpack.configure(webpackConfig)
+    .pipe webpack.overrides(webpackOptions)
+    .pipe webpack.compile()
+    .pipe webpack.format({
+        version: false,
+        timings: true
+    })
+    .pipe webpack.failAfter({
+        errors: true,
+        warnings: true
+    })
+    .pipe gulpIf(!debugBuild, uglify())
     .pipe gulp.dest(folders.assets.build.js)
-
-
-gulp.task 'js', ['js-admin']
 
 
 gulp.task 'css', ->
@@ -63,7 +88,7 @@ gulp.task 'css', ->
     })
     .pipe prefix()
     .pipe concat('style.css')
-    .pipe minifyCss()
+    .pipe gulpIf(!debugBuild, minifyCss())
     .pipe gulp.dest(folders.assets.build.css)
 
 
@@ -75,6 +100,8 @@ gulp.task 'img', ->
 gulp.task 'assets', ['css', 'img', 'js']
 
 gulp.task 'dev', ['assets'], ->
+  debugBuild = true
+
   gulp.watch files.watch.img, ['img']
   gulp.watch files.watch.stylus, ['css']
   gulp.watch files.watch.js, ['js']
