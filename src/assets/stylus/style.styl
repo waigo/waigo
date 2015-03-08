@@ -1,6 +1,6 @@
 @import 'rupture'
+@import 'settings'
 
-$tabletWidth = 992px //  same as semantic-ui
 
 i + span
   margin-left 0.5em
@@ -17,18 +17,7 @@ main.container
 
 /* admin */
 
-#admin_menu
-  +below($tabletWidth)
-    display none
-#admin_content
-  +below($tabletWidth)
-    width 100% !important
-header
-  a.admin.menu.item
-    display none
-    cursor pointer
-    +below($tabletWidth)
-      display inline-block
+@import './_admin'
 
 /* login */
 

@@ -73,8 +73,8 @@ gulp.task 'js', ->
         timings: true
     })
     .pipe webpack.failAfter({
-        errors: true,
-        warnings: true
+        errors: false,
+        warnings: false,
     })
     .pipe gulpIf(!debugBuild, uglify())
     .pipe gulp.dest(folders.assets.build.js)

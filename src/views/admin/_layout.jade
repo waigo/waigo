@@ -1,7 +1,5 @@
 extends ../_layout
-
 include ../_mixins
-include _mixins
 
 
 block title
@@ -11,21 +9,8 @@ block topbar_leftmenu
   a.admin.menu.item
     i.content.icon
   
-block pre_header
-    nav.ui.vertical.inverted.sidebar.menu.left#admin_popout_menu
-      +adminMenu()
-
 block topbar_title
   b Admin dashboard
-
-
-block main_content
-  .ui.grid
-    .three.wide.column#admin_menu
-      nav.ui.inverted.segment
-        +adminMenu(true)
-    .thirteen.wide.column#admin_content
-      block admin_content
 
 block scripts
   script(type="text/javascript", src="/js/admin.js")
