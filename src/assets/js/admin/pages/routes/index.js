@@ -1,5 +1,11 @@
 var React = require('react');
 
+var Router = require('react-router'),
+  Link = Router.Link;
+
+var RenderUtils = require('../../utils/renderUtils');
+
+
 module.exports = React.createClass({
   getInitialState: function() {
     return {
@@ -35,12 +41,18 @@ module.exports = React.createClass({
         return true;
         
       }).map(function(r) {
+        var rParams = {
+          key: encodeURIComponent(r.key)
+        };
+
         return (
           <div className="item" key={r.key}>
             <div className="content">
               <div className="header">
-                <span className="method">{r.method.toUpperCase()}</span>
-                <span className="url">{r.url}</span>
+                <Link to='route' params={rParams} className="item">
+                  <span className="method">{r.method.toUpperCase()}</span>
+                  <span className="url">{r.url}</span>
+                </Link>
               </div>
             </div>
           </div>
@@ -69,11 +81,9 @@ module.exports = React.createClass({
 
 
   render: function() { 
-    var error = (this.state.error ? <div className="error">{this.state.error}</div> : '');
-    
     return (
       <div className="page-routes">
-        {error}
+        {RenderUtils.buildError(this.state.error)}
         {this._buildRoutesList()}
       </div>
     );
