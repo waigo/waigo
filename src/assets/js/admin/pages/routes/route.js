@@ -27,9 +27,12 @@ module.exports = React.createClass({
 
     var qryStr = this.refs.queryString.getDOMNode().value || '';
 
-    var requestBody = JSON.parse(
-      this.refs.requestBody.getDOMNode().value || '{}'
-    );
+    var requestBody = {};
+    if (this.refs.requestBody) {
+      requestBody = JSON.parse(
+        this.refs.requestBody.getDOMNode().value || '{}'
+      );
+    }
 
     this.setState({
       result: null,

@@ -8,6 +8,7 @@ module.exports = React.createClass({
       <ul className="nav nav-pills nav-stacked">
         <li role="presentation"><Link to="home">Dashboard</Link></li>
         <li role="presentation"><Link to="routes">Routes</Link></li>
+        <li role="presentation"><Link to="data">Data</Link></li>
       </ul>
     );
   },
