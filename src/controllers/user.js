@@ -50,6 +50,8 @@ exports.login_submit = function*() {
     yield this.render('user/login', {
       error: err,
       form: form,
+    }, {
+      status: 400
     });
   };
 };
@@ -99,6 +101,8 @@ exports.register_submit = function*() {
       error: err,
       form: form,
       willCreateAdminUser: !adminUserExists,
+    }, {
+      status: 400
     });
   }
 };

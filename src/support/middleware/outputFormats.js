@@ -51,10 +51,16 @@ module.exports = function(options) {
     logger.debug('Output format', requestedFormat);
 
     // attach renderer
-    this.render = function*(view, locals) {
+    this.render = function*(view, locals, options) {
       locals = locals || {};
+      options = options || {};
       
       logger.debug('Render', view);
+
+      // set status code
+      if (options.status) {
+        this.status = options.status;
+      }
 
       // get yieldables
       var localsViewObjects = yield viewObjects.toViewObjectYieldable(ctx, locals);
