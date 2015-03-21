@@ -47,6 +47,7 @@ folders.assets.build.css = path.join(folders.assets.build.root, 'css')
 folders.assets.src.img = path.join(folders.assets.src.root, 'img')
 folders.assets.build.img = path.join(folders.assets.build.root, 'img')
 
+folders.assets.build.fonts = path.join(folders.assets.build.root, 'fonts')
 
 folders.assets.src.js = path.join(folders.assets.src.root, 'js')
 folders.assets.build.js = path.join(folders.assets.build.root, 'js')
@@ -54,16 +55,16 @@ folders.assets.build.js = path.join(folders.assets.build.root, 'js')
 files =
   src:
     img: path.join(folders.assets.src.img, '**', '*.*')
-    stylus: path.join(folders.assets.src.stylus, '**', '*.styl')
+    stylus: path.join(folders.assets.src.stylus, '**', 'style.styl')
     js: path.join(folders.assets.src.js, '**', '*.js')
 files.watch =
   img: files.src.img
-  stylus: files.src.stylus
+  stylus: path.join(folders.assets.src.stylus, '**', '*.styl')
   js: files.src.js
 
 
 
-gulp.task 'js', ->
+gulp.task 'js-admin', ->
   gulp.src(path.join(__dirname, webpack.config.CONFIG_FILENAME))
     .pipe webpack.configure(webpackConfig)
     .pipe webpack.overrides(webpackOptions)
@@ -78,6 +79,26 @@ gulp.task 'js', ->
     })
     .pipe gulpIf(!debugBuild, uglify())
     .pipe gulp.dest(folders.assets.build.js)
+
+
+gulp.task 'js-vendor', ->
+  gulp.src [
+    'node_modules/bootstrap-styl/js/transition.js'
+    'node_modules/bootstrap-styl/js/collapse.js'
+  ]
+    .pipe concat('vendor.js')
+    .pipe gulpIf(!debugBuild, uglify())
+    .pipe gulp.dest(folders.assets.build.js)
+
+
+gulp.task 'js', ['js-admin', 'js-vendor']
+
+
+gulp.task 'fonts', ->
+  gulp.src [
+    'node_modules/font-awesome-stylus/fonts/*.*'
+  ]
+    .pipe gulp.dest(folders.assets.build.fonts)
 
 
 gulp.task 'css', ->
@@ -96,7 +117,7 @@ gulp.task 'img', ->
     .pipe gulp.dest(folders.assets.build.img)
 
 
-gulp.task 'assets', ['css', 'img', 'js']
+gulp.task 'assets', ['css', 'img', 'js', 'fonts']
 
 gulp.task 'dev', ['assets'], ->
   gulp.watch files.watch.img, ['img']
@@ -118,4 +139,5 @@ gulp.task 'dev', ['assets'], ->
   })
 
 
+gulp.task 'default', ['dev']
 

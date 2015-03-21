@@ -5,10 +5,10 @@ var React = require('react'),
 module.exports = React.createClass({
   _buildAdminMenu: function(addListClasses) {
     return (
-      <div className={addListClasses ? 'ui inverted relaxed divided list' : ''}>
-        <Link to="home" className="item">Dashboard</Link>
-        <Link to="routes" className="item">Routes</Link>
-      </div>
+      <ul className="nav nav-pills nav-stacked">
+        <li role="presentation"><Link to="home">Dashboard</Link></li>
+        <li role="presentation"><Link to="routes">Routes</Link></li>
+      </ul>
     );
   },
 
@@ -18,16 +18,13 @@ module.exports = React.createClass({
 
     return (
       <div {...this.props}>
-        <nav id="admin_popout_menu" className="ui vertical inverted sidebar menu left">
-          {AdminMenuTop}
-        </nav>
-        <div className="ui grid">
-          <div id="admin_menu" className="three wide column">
-            <nav className="ui inverted segment">
+        <div className="row">
+          <div id="admin_menu" className="col-md-3">
+            <nav>
               {AdminMenuPage}
             </nav>
           </div>
-          <div id="admin_content" className="thirteen wide column">
+          <div id="admin_content" className="col-md-9">
             {this.props.children}
           </div>
         </div>

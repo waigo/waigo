@@ -1,16 +1,14 @@
-@import 'settings'
-
 #admin_menu
-  +below($tabletWidth)
+  +below($screen-md)
     display none
 #admin_content
-  +below($tabletWidth)
+  +below($screen-md)
     width 100% !important
 header
   a.admin.menu.item
     display none
     cursor pointer
-    +below($tabletWidth)
+    +below($screen-md)
       display inline-block
 
 
@@ -18,16 +16,20 @@ header
 #admin_content
   // /routes
   .page-routes
-    input.list-filter
+
+    .list-filter
       width 100%
       
-    .item
+    .list-group-item
+      padding 0
+      
       a
         display block
+        padding 0.9em
 
         span.method
           display inline-block
-          width 5%
+          min-width 5%
           margin-right 1em
           
         span.url

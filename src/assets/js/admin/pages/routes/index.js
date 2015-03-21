@@ -46,30 +46,28 @@ module.exports = React.createClass({
         };
 
         return (
-          <div className="item" key={r.key}>
-            <div className="content">
-              <div className="header">
-                <Link to='route' params={rParams} className="item">
-                  <span className="method">{r.method.toUpperCase()}</span>
-                  <span className="url">{r.url}</span>
-                </Link>
-              </div>
-            </div>
-          </div>
+          <li className="list-group-item" key={r.key}>
+            <Link to='route' params={rParams} className="item">
+              <span className="method">{r.method.toUpperCase()}</span>
+              <span className="url">{r.url}</span>
+            </Link>
+          </li>
         );
       });
 
 
       return (
         <div>
-          <input 
-            className="list-filter" 
-            type="text" 
-            onChange={this._onFilterChange}
-            onKeyUp={this._onFilterChange}
-            onKeyDown={this._onFilterChange}
-            placeholder="Filter..." />
-          <div className="ui divided list">{routes}</div>
+          <div className="form-group">
+            <input 
+              className="form-control"
+              type="text" 
+              onChange={this._onFilterChange}
+              onKeyUp={this._onFilterChange}
+              onKeyDown={this._onFilterChange}
+              placeholder="Filter..." />
+          </div>
+          <ul className="list-group">{routes}</ul>
         </div>
       );
     } else {

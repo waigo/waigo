@@ -4,9 +4,9 @@ block title
   title Error #{status}
 
 block main_content
-  h1.ui.header #{status} - #{type}
+  h1 #{status} - #{type}
 
-  section.ui.segment
+  section.well
     p 
       strong #{request.method} #{request.url}
 

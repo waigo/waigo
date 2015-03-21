@@ -5,16 +5,5 @@ include ../_mixins
 block title
   title Admin dashboard
 
-block topbar_leftmenu
-  a.admin.menu.item
-    i.content.icon
-  
-block topbar_title
-  b Admin dashboard
-
 block scripts
-  script(type="text/javascript", src="/js/admin.js")
-  script(type="text/javascript").
-    $('header a.admin.menu').click(function() {
-      $('nav.menu.sidebar').sidebar('toggle');
-    });
+  script(type="text/javascript", src=staticUrl("/js/admin.js"))

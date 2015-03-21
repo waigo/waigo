@@ -14,7 +14,7 @@ module.exports = {
       label: 'Email address / Username',
       required: true,
       sanitizers: [ 'trim' ],
-      validators: [ 'notEmpty', 'isEmailAddress' ],
+      validators: [ 'notEmpty' ],
     },
     {
       name: 'password',

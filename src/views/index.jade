@@ -8,19 +8,20 @@ block topbar_rightmenu
     i.alternate.settings.icon
 
 block main_content
-  h1.ui.header Welcome!
+  #home
+    h1 Welcome!
 
-  section.ui.segment
-    :markdown
-      If this is text is inside a box with rounded corners then your new Waigo app is running correctly!
+    section.well
+      :markdown
+        If this is text is inside a box with rounded corners then your new Waigo app is running correctly!
 
-      Replace this page by creating a template: `views/index.jade`.
+        Replace this page by creating a template: `views/index.jade`.
 
-  a.ui.primary.button(href="admin")
-    i.icon.settings
-    span View admin dashboard
+    a.btn.btn-primary(href="/admin")
+      i.icon.settings
+      span View admin dashboard
 
-  a.ui.tiny.button(href="http://waigojs.com")
-    i.icon.help
-    span Read documentation
+    a.btn.btn-primary(href="http://waigojs.com")
+      i.icon.help
+      span Read documentation
 
