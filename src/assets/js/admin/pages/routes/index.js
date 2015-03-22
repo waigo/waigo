@@ -3,117 +3,44 @@ var React = require('react');
 var Router = require('react-router'),
   Link = Router.Link;
 
-var RenderUtils = require('../../utils/renderUtils');
+var FilterList = require('../../components/filterList'),
+  RenderUtils = require('../../utils/renderUtils');
 
 
 module.exports = React.createClass({
-  getInitialState: function() {
-    return {
-      routes: [],
-      filter: '',
-      loaded: false,
-      error: null,
-    };
-  },
-
-
-  _onFilterChange: function(e) {
-    this.setState({
-      filter: $(e.target).val()
-    });
-  },
-
-  _buildRoutesList: function() {
-    if (this.state.loaded) {
-      var routes = [];
-
-      // 'one of these' --> ['one', 'of', 'these']
-      var filter = this.state.filter.toLowerCase().split(' ');
-
-      var routes = this.state.routes.filter(function(r) {
-        // ensure every filter keyword is matched
-        for (var i=0; i<filter.length; ++i) {
-          if (0 > r.key.indexOf(filter[i])) {
-            return false;
-          }
-        }
-
-        return true;
-        
-      }).map(function(r) {
-        var rParams = {
-          key: encodeURIComponent(r.key)
-        };
-
-        return (
-          <li className="list-group-item" key={r.key}>
-            <Link to='route' params={rParams} className="item">
-              <span className="method">{r.method.toUpperCase()}</span>
-              <span className="url">{r.url}</span>
-            </Link>
-          </li>
-        );
-      });
-
-
-      return (
-        <div>
-          <div className="form-group">
-            <input 
-              className="form-control"
-              type="text" 
-              onChange={this._onFilterChange}
-              onKeyUp={this._onFilterChange}
-              onKeyDown={this._onFilterChange}
-              placeholder="Filter..." />
-          </div>
-          <ul className="list-group">{routes}</ul>
-        </div>
-      );
-    } else {
-      return (
-        <div className="loading">Loading...</div>
-      )
-    }
-  },
-
 
   render: function() { 
     return (
       <div className="page-routes">
-        {RenderUtils.buildError(this.state.error)}
-        {this._buildRoutesList()}
+        <FilterList
+          ajaxUrl='/admin/routes?format=json'
+          ajaxResponseDataMapper={this._mapAjaxData}
+          itemDisplayNameFormatter={this._getItemDisplayName}
+          itemRoute="route" />
       </div>
     );
   },
 
+  _mapAjaxData: function(data) {
+    data = data || {};
 
-  componentDidMount: function() {
-    var self = this;
+    return (data.routes || []).map(function(r) {
+      // GET /example/path  -- >  get/example/path
+      r.key = r.method.toLowerCase() + r.url.toLowerCase();
 
-    $.getJSON('/admin/routes?format=json')
-      .done(function(data){        
-        if (self.isMounted()) {
-          self.setState({
-            routes: data.routes.map(function(r) {
-              // GET /example/path  -- >  get/example/path
-              r.key = r.method.toLowerCase() + r.url.toLowerCase();
-
-              return r;
-            })
-          });
-        }
-      })
-      .fail(function(err) {
-        self.setState({
-          error: err.toString()
-        });
-      })
-      .always(function() {
-        self.setState({
-          loaded: true
-        });
-      })
-    ;
+      return r;
+    });
   },
+
+
+  _getItemDisplayName: function(item) {
+    return (
+      <span>
+        <span className="method">{item.method.toUpperCase()}</span>
+        <span className="url">{item.url}</span>
+      </span>
+    );
+  },
+
+
 });

@@ -4,6 +4,7 @@ var waigo = require('../../../'),
   _ = waigo._;
 
 
+
 exports.index = function*() {
   var routes = this.app.routeMappings;
 

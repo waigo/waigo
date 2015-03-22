@@ -13,7 +13,11 @@
 
     '/routes': {
       GET: 'admin.routes.index'
-    }
+    },
+
+    '/models': {
+      GET: 'admin.models.index'
+    },
   }
  };
 
