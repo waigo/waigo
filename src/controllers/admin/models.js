@@ -22,18 +22,13 @@ exports.columns = function*() {
     schema = _.get(model, 'options.schema', {}),
     columnNames = _.get(model, 'options.admin.listView', []);
 
-  var columns = [
-    {
-      name: '_id',
-      type: 'String'
-    }
-  ].concat(columnNames.map(function(c) {
+  var columns = columnNames.map(function(c) {
     return {
       name: c,
       // if we can't get figure out column type then assume it's a string
       type: _.get(schema[c], 'type', String),
     }
-  }));
+  });
 
   yield this.render('/admin/models/columns', {
     columns: columns
@@ -51,13 +46,11 @@ exports.rows = function*() {
     columnNames = _.get(model, 'options.admin.listView');
 
   // [a,b,c] => {a:1, b:1, c:1}
-  var fieldsToInclude = {
-    _id: 1
-  };
-
+  var fieldsToInclude = {};
   _.each(columnNames, function(c) {
     fieldsToInclude[c] = 1;
   });
+  fieldsToInclude._id = 1;  // always include _id field
 
   // get data
   var rows = yield model.find({}, {
