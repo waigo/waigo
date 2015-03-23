@@ -20,6 +20,8 @@ reportError = (err) ->
 
 
 debugBuild = if args.debug then true else false
+if debugBuild
+  console.log 'DEBUG mode'
  
 
 webpackOptions =
@@ -30,6 +32,9 @@ webpackOptions =
 webpackConfig =
   useMemoryFs: true
   # progress: true
+
+
+dontExitOnError = false
 
 
 folders = {}
@@ -54,9 +59,9 @@ folders.assets.build.js = path.join(folders.assets.build.root, 'js')
 
 files =
   src:
-    img: path.join(folders.assets.src.img, '**', '*.*')
-    stylus: path.join(folders.assets.src.stylus, '**', 'style.styl')
-    js: path.join(folders.assets.src.js, '**', '*.js')
+    img: path.join(folders.assets.src.img, '**', '**', '**', '**', '*.*')
+    stylus: path.join(folders.assets.src.stylus, '**', '**', '**', '**', 'style.styl')
+    js: path.join(folders.assets.src.js, '**', '**', '**', '**', '*.js')
 files.watch =
   img: files.src.img
   stylus: path.join(folders.assets.src.stylus, '**', '*.styl')
@@ -74,7 +79,7 @@ gulp.task 'js-admin', ->
         timings: true
     })
     .pipe webpack.failAfter({
-        errors: false,
+        errors: !dontExitOnError,
         warnings: false,
     })
     .pipe gulpIf(!debugBuild, uglify())
@@ -83,6 +88,7 @@ gulp.task 'js-admin', ->
 
 gulp.task 'js-vendor', ->
   gulp.src [
+    'node_modules/lodash/lodash.js'
     'node_modules/bootstrap-styl/js/transition.js'
     'node_modules/bootstrap-styl/js/collapse.js'
   ]
@@ -120,6 +126,8 @@ gulp.task 'img', ->
 gulp.task 'assets', ['css', 'img', 'js', 'fonts']
 
 gulp.task 'dev', ['assets'], ->
+  dontExitOnError = true
+
   gulp.watch files.watch.img, ['img']
   gulp.watch files.watch.stylus, ['css']
   gulp.watch files.watch.js, ['js']

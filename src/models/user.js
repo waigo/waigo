@@ -31,12 +31,42 @@ var AuthSchema = {
 
 module.exports = {
   schema: {
-    username: { type: String, required: true },
-    profile: { type: ProfileSchema, required: true },
-    emails: { type: [EmailSchema], required: true },
-    auth: { type: [AuthSchema], required: true },
-    roles: { type: [String], required: true },
-    lastLogin: { type: Date, required: false },
+    username: { 
+      type: String, 
+      required: true,
+      admin: {
+        listView: true
+      },      
+    },
+    profile: { 
+      type: ProfileSchema, 
+      required: true,
+    },
+    emails: { 
+      type: [EmailSchema],
+      required: true,
+      admin: {
+        listView: true
+      },
+    },
+    auth: { 
+      type: [AuthSchema], 
+      required: true,
+    },
+    roles: { 
+      type: [String], 
+      required: true,
+      admin: {
+        listView: true
+      },
+    },
+    lastLogin: { 
+      type: Date, 
+      required: false,
+    },
+  },
+  admin: {
+    listView: ['username', 'emails', 'roles', 'lastLogin']
   },
   indexes: [
     // username

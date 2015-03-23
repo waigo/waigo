@@ -1,143 +1,139 @@
 var React = require('react');
-
 var Router = require('react-router');
+var Link = Router.Link;
 
-var RenderUtils = require('../../utils/renderUtils');
-  
+var RenderUtils = require('../../utils/renderUtils'),
+  GuardedStateMixin = require('../../mixins/guardedState');
+
 
 module.exports = React.createClass({
-  mixins: [Router.State],
+  mixins: [Router.State, GuardedStateMixin],
 
   getInitialState: function() {
-    var key = decodeURIComponent(this.getParams().key),
-      slashPos = key.indexOf('/'),
-      method = key.substr(0, slashPos).toUpperCase(),
-      url = key.substr(slashPos+1);
-
     return {
-      url: url,
-      method: method,
+      modelName: decodeURIComponent(this.getParams().key),
+      loading: true,
+      error: null,
     };
-  },
-
-  onSubmit: function(e) {
-    e.preventDefault();
-
-    var self = this;
-
-    var qryStr = this.refs.queryString.getDOMNode().value || '';
-
-    var requestBody = {};
-    if (this.refs.requestBody) {
-      requestBody = JSON.parse(
-        this.refs.requestBody.getDOMNode().value || '{}'
-      );
-    }
-
-    this.setState({
-      result: null,
-      running: true,
-    });
-
-    $.ajax({
-      async: true,
-      timeout: 5000,
-      cache: false,
-      url: this.state.url + (qryStr ? '?' + qryStr : ''),
-      method: this.state.method,
-      dataType: 'text',
-      data: requestBody,
-    })
-      .done(function gotResult() {
-        self.setState({
-          result: {
-            xhr: arguments[2],
-          }
-        });
-      })
-      .fail(function gotError() {
-        self.setState({
-          result: {
-            xhr: arguments[0],
-          }
-        });
-      })
-      .always(function allDone() {
-        self.setState({
-          running: false
-        });
-      });
-  },
-
-
-  _buildResult: function() {
-    if (this.state.result) {
-      var xhr = this.state.result.xhr;
-
-      var data = xhr.responseText,
-        resultType = (400 <= xhr.status ? 'error' : 'success');
-
-      var label = 'label label-' + ('error' === resultType ? 'danger': 'info');
-
-      return (
-        <div>
-          <p className="meta">
-            <span className={label}>{xhr.status} {xhr.statusText}</span>
-            <span className={label}>{xhr.getResponseHeader('Content-Type')}</span>
-            <span className={label}>{xhr.getResponseHeader('Content-Length')} bytes</span>
-          </p>
-          <pre className={resultType}>
-            {data}
-          </pre>
-        </div>
-      );
-    } else {
-      if (this.state.running) {
-        return (
-          <div className="loading">Request in progress...</div>
-        );
-      } else {
-        return '';
-      }
-    }
-  },
-
-
-  _buildRequestForm: function() {
-    var body = '';
-    if ('POST' === this.state.method || 'PUT' === this.state.method) {
-      body = (
-        <div className="form-group">
-          <label>Body (must be valid JSON)</label>
-          <textarea className="form-control" ref="requestBody" rows="5"></textarea>
-        </div>
-      );
-    }
-
-    return (
-      <form onSubmit={this.onSubmit}>
-        <div className="form-group">
-          <label>Query string</label>
-          <input className="form-control" type="text" ref="queryString" placeholder="a=1&b=2..." />
-        </div>
-        {{body}}
-        <input className="btn btn-primary" type="submit" value="Run" />
-      </form>
-    );
   },
 
 
   render: function() {
-    var error = (this.state.error ? <div className="error">{this.state.error}</div> : '');
-    
+    var result = null;
+
+    if (!this.state.columns) {
+      result = (
+        <div className="loading">Loading structure...</div>
+      );
+    } else {
+      result = this._buildTable();
+    }
+
     return (
-      <div className="page-route">
-        <h3>{this.state.method} {this.state.url}</h3>
-        {this._buildRequestForm()}
-        <div className="result">
-          {this._buildResult()}
-        </div>
+      <div>
+        {this.state.error ? RenderUtils.buildError(this.state.error) : ''}
+        {result}
       </div>
+    )
+  },
+
+
+
+  _buildTable: function() {
+    var columns = this.state.columns,
+      rows = this.state.rows || [];
+
+    var header = columns.map( c => (<th>{c.name}</th>) );
+
+    var body = null;
+    if (this.state.loading) {
+      body = (<tr><td className="loading">Loading</td></tr>);
+    } else {
+      body = rows.map(function(row) {
+        var values = columns.map(function(col) {
+          var v = row[col.name];
+
+          // for now make everything a string
+          if ('object' === typeof v) {
+            v = JSON.stringify(v);
+          }
+
+          return (<td>{v}</td>);
+        });
+
+        return (<tr>{values}</tr>);
+      });
+    }
+
+    return (
+      <table>
+        <thead><tr>{header}</tr></thead>
+        <tbody>{body}</tbody>
+      </table>
     );
   },
+
+
+  _fetchRows: function() {
+    var self = this;
+
+    this.setState({
+      loading: true
+    });
+
+    var columnNames = _.pluck(this.state.columns, 'name');
+
+    $.ajax({
+      url: '/admin/model/rows',
+      data: {
+        format: 'json',
+        name: this.state.modelName,
+        columns: columnNames,
+      }
+    })
+      .done(function(data){        
+        self.setStateIfMounted({
+          rows: data.rows
+        });
+      })
+      .fail(function(xhr) {
+        self.setStateIfMounted({
+          error: xhr
+        });
+      })
+      .always(function() {
+        self.setStateIfMounted({
+          loading: false
+        });
+      })
+    ;
+  },
+
+
+  componentDidMount: function() {
+    var self = this;
+
+    $.ajax({
+      url: '/admin/model/columns',
+      data: {
+        format: 'json',
+        name: this.state.modelName,
+      }
+    })
+      .done(function(data) {
+        self.setStateIfMounted({
+          columns: data.columns
+        });
+
+        self._fetchRows();
+      })
+      .fail(function(xhr) {
+        self.setStateIfMounted({
+          error: xhr
+        });
+      });
+    ;
+  },
+
 });
+

@@ -2,15 +2,20 @@ var React = require('react');
 var Router = require('react-router');
 var Link = Router.Link;
 
-var RenderUtils = require('../utils/renderUtils');
+var RenderUtils = require('../utils/renderUtils'),  
+  GuardedStateMixin = require('../mixins/guardedState');
+
 
 
 module.exports = React.createClass({
+  mixins: [GuardedStateMixin],
+
 
   getInitialState: function() {
     return {
       items: [],
       filter: '',
+      loading: true,
       error: null,
     };
   },
@@ -98,19 +103,17 @@ module.exports = React.createClass({
 
     $.getJSON(self.props.ajaxUrl)
       .done(function(data){        
-        if (self.isMounted()) {
-          self.setState({
-            items: self.props.ajaxResponseDataMapper(data)
-          });
-        }
+        self.setStateIfMounted({
+          items: self.props.ajaxResponseDataMapper(data)
+        });
       })
-      .fail(function(err) {
-        self.setState({
-          error: err.toString()
+      .fail(function(xhr) {
+        self.setStateIfMounted({
+          error: xhr
         });
       })
       .always(function() {
-        self.setState({
+        self.setStateIfMounted({
           loaded: true
         });
       })

@@ -24,10 +24,27 @@ var methodName = exports.methodName = 'toViewObject';
  */
 var toViewObjectYieldable = exports.toViewObjectYieldable = function(ctx, inputObject) {
   if (inputObject) {
+    // if it's one of our model schema types
+    // (see https://github.com/hiddentao/simple-mongo-schema)
+    switch (inputObject) {
+      case String:
+        return 'String';
+      case Boolean:
+        return 'Boolean';
+      case Number:
+        return 'Number';
+      case Date:
+        return 'Date';
+      case Object:
+        return 'Object';
+      case Array:
+        return 'Array';
+    }
+
     // has view object method
     if (inputObject[methodName]) {
       return inputObject[methodName].call(inputObject, ctx);
-    } 
+    }
     // is an array
     else if (_.isArray(inputObject)) {
       // recursive call on all children

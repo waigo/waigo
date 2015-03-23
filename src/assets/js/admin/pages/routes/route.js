@@ -2,11 +2,12 @@ var React = require('react');
 
 var Router = require('react-router');
 
-var RenderUtils = require('../../utils/renderUtils');
+var RenderUtils = require('../../utils/renderUtils'),
+  GuardedStateMixin = require('../../mixins/guardedState');
   
 
 module.exports = React.createClass({
-  mixins: [Router.State],
+  mixins: [Router.State, GuardedStateMixin],
 
   getInitialState: function() {
     var key = decodeURIComponent(this.getParams().key),
@@ -49,21 +50,21 @@ module.exports = React.createClass({
       data: requestBody,
     })
       .done(function gotResult() {
-        self.setState({
+        self.setStateIfMounted({
           result: {
             xhr: arguments[2],
           }
         });
       })
-      .fail(function gotError() {
-        self.setState({
+      .fail(function gotError(xhr) {
+        self.setStateIfMounted({
           result: {
-            xhr: arguments[0],
+            xhr: xhr
           }
         });
       })
       .always(function allDone() {
-        self.setState({
+        self.setStateIfMounted({
           running: false
         });
       });

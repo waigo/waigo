@@ -18,6 +18,15 @@
     '/models': {
       GET: 'admin.models.index'
     },
+
+    '/model': {
+      '/columns': {
+        GET: 'admin.models.columns'
+      },
+      '/rows': {
+        GET: 'admin.models.rows'
+      },
+    },
   }
  };
 

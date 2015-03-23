@@ -5,7 +5,7 @@ module.exports = {
   schema: {
     resource: { 
       type: String, 
-      required: true 
+      required: true,
     },
     access: { 
       type: String, 
@@ -25,7 +25,13 @@ module.exports = {
     entity: {
       type: String,
       required: true,
+      admin: {
+        listView: true
+      },
     }
+  },
+  admin: {
+    listView: ['resource', 'access', 'permission', 'entityType', 'entity']
   },
   methods: {
     /**

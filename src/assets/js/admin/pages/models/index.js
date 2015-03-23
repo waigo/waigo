@@ -8,7 +8,6 @@ var FilterList = require('../../components/filterList'),
 
 
 module.exports = React.createClass({
-
   render: function() { 
     return (
       <div className="page-routes">
@@ -16,7 +15,7 @@ module.exports = React.createClass({
           ajaxUrl='/admin/models?format=json'
           ajaxResponseDataMapper={this._mapAjaxData}
           itemDisplayNameFormatter={this._getItemDisplayName}
-          itemRoute="route" />
+          itemRoute="model" />
       </div>
     );
   },
@@ -26,7 +25,7 @@ module.exports = React.createClass({
 
     return (data.models || []).map(function(r) {
       return {
-        key: r.toLowerCase(),
+        key: r,
         name: r,
       };
     });
