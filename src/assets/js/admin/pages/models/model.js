@@ -7,11 +7,15 @@ var RenderUtils = require('../../utils/renderUtils'),
 
 
 module.exports = React.createClass({
-  mixins: [Router.State, GuardedStateMixin],
+  contextTypes: {
+    router: React.PropTypes.func
+  },
+
+  mixins: [GuardedStateMixin],
 
   getInitialState: function() {
     return {
-      modelName: decodeURIComponent(this.getParams().key),
+      modelName: decodeURIComponent(this.context.router.getCurrentParams().key),
       loading: true,
       error: null,
     };
@@ -30,7 +34,7 @@ module.exports = React.createClass({
     }
 
     return (
-      <div>
+      <div className="page-model">
         {this.state.error ? RenderUtils.buildError(this.state.error) : ''}
         {result}
       </div>
@@ -38,8 +42,20 @@ module.exports = React.createClass({
   },
 
 
+  _onRowClick: function(e) {
+    e.preventDefault();
+
+    this.context.router.transitionTo('modelRow', {
+      key: this.context.router.getCurrentParams().key,
+      id: e.currentTarget.id
+    });
+  },
+
+
 
   _buildTable: function() {
+    var self = this;
+
     var columns = this.state.columns,
       rows = this.state.rows || [];
 
@@ -51,17 +67,39 @@ module.exports = React.createClass({
     } else {
       body = rows.map(function(row) {
         var values = columns.map(function(col) {
-          var v = row[col.name];
+          
+          var value = row[col.name],
+            flipValue = null;
 
-          // for now make everything a string
-          if ('object' === typeof v) {
-            v = JSON.stringify(v);
+          // if value is a date
+          if ('Date' === col.type) {
+            flipValue = value;
+            value = moment(value).fromNow();
+          }
+          // else if value is an array
+          else if (_.isArray(value)) {
+            // extract sub key
+            if (col.subKey) {
+              value = _.pluck(value, col.subKey);
+            }
+
+            // construct list
+            value = _.map(value, function(v) {
+              return (<li key={v}>{v}</li>);
+            });
+
+            value = (<ul>{value}</ul>);
+
+          }
+          // stringify objects
+          else if (_.isObject(value)) {
+            value = JSON.stringify(value);
           }
 
-          return (<td>{v}</td>);
+          return (<td key={col.name} dataFlipValue={flipValue}>{value}</td>);
         });
 
-        return (<tr>{values}</tr>);
+        return (<tr id={row._id} key={row._id} onClick={self._onRowClick}>{values}</tr>);
       });
     }
 

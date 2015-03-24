@@ -10,7 +10,7 @@ var FilterList = require('../../components/filterList'),
 module.exports = React.createClass({
   render: function() { 
     return (
-      <div className="page-routes">
+      <div className="page-models">
         <FilterList
           ajaxUrl='/admin/models?format=json'
           ajaxResponseDataMapper={this._mapAjaxData}

@@ -89,6 +89,7 @@ gulp.task 'js-admin', ->
 gulp.task 'js-vendor', ->
   gulp.src [
     'node_modules/lodash/lodash.js'
+    'node_modules/moment/moment.js'
     'node_modules/bootstrap-styl/js/transition.js'
     'node_modules/bootstrap-styl/js/collapse.js'
   ]

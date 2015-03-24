@@ -26,6 +26,9 @@
       '/rows': {
         GET: 'admin.models.rows'
       },
+      '/doc': {
+        GET: 'admin.models.doc'
+      },
     },
   }
  };

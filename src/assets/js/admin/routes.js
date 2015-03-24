@@ -11,6 +11,7 @@ var Routes = require('./pages/routes/index');
 var Route = require('./pages/routes/route');
 var Models = require('./pages/models/index');
 var Model = require('./pages/models/model');
+var ModelRow = require('./pages/models/row');
 
 module.exports = (
   <Route handler={App}>
@@ -19,5 +20,6 @@ module.exports = (
     <Route name="route" path="/route/:key" handler={Route} />
     <Route name="models" path="/models" handler={Models} />
     <Route name="model" path="/model/:key" handler={Model} />
+    <Route name="modelRow" path="/modelRow/:key/:id" handler={ModelRow} />
   </Route>
 );

@@ -66,7 +66,17 @@ module.exports = {
     },
   },
   admin: {
-    listView: ['username', 'emails', 'roles', 'lastLogin']
+    listView: [
+      'username',
+      {
+        name: 'emails',
+        subKey: 'email'
+      },
+      {
+        name: 'roles',
+      },
+      'lastLogin'
+    ]
   },
   indexes: [
     // username

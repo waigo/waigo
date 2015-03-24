@@ -7,10 +7,14 @@ var RenderUtils = require('../../utils/renderUtils'),
   
 
 module.exports = React.createClass({
-  mixins: [Router.State, GuardedStateMixin],
+  contextTypes: {
+    router: React.PropTypes.func
+  },
+
+  mixins: [GuardedStateMixin],
 
   getInitialState: function() {
-    var key = decodeURIComponent(this.getParams().key),
+    var key = decodeURIComponent(this.context.router.getCurrentParams().key),
       slashPos = key.indexOf('/'),
       method = key.substr(0, slashPos).toUpperCase(),
       url = key.substr(slashPos+1);
@@ -26,12 +30,12 @@ module.exports = React.createClass({
 
     var self = this;
 
-    var qryStr = this.refs.queryString.getDOMNode().value || '';
+    var qryStr = React.findDOMNode(this.refs.queryString).value || '';
 
     var requestBody = {};
     if (this.refs.requestBody) {
       requestBody = JSON.parse(
-        this.refs.requestBody.getDOMNode().value || '{}'
+        React.findDOMNode(this.refs.requestBody).value || '{}'
       );
     }
 

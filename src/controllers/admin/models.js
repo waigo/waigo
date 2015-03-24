@@ -20,14 +20,19 @@ exports.columns = function*() {
   // iterate through schema
   var model = this.app.models[modelName],
     schema = _.get(model, 'options.schema', {}),
-    columnNames = _.get(model, 'options.admin.listView', []);
+    listViewColumns = _.get(model, 'options.admin.listView', []);
 
-  var columns = columnNames.map(function(c) {
-    return {
-      name: c,
-      // if we can't get figure out column type then assume it's a string
-      type: _.get(schema[c], 'type', String),
+  // return columns as array of objects, each object defining column properties
+  var columns = listViewColumns.map(function(c) {
+    if (!c.name) {
+      c = {
+        name: c
+      }
     }
+
+    c.type = _.get(schema[c.name], 'type', String);
+
+    return c;
   });
 
   yield this.render('/admin/models/columns', {
@@ -43,12 +48,14 @@ exports.rows = function*() {
   this.app.logger.debug('get rows', modelName);
 
   var model = this.app.models[modelName],
-    columnNames = _.get(model, 'options.admin.listView');
+    listViewColumns = _.get(model, 'options.admin.listView');
 
   // [a,b,c] => {a:1, b:1, c:1}
   var fieldsToInclude = {};
-  _.each(columnNames, function(c) {
-    fieldsToInclude[c] = 1;
+  _.each(listViewColumns, function(c) {
+    var name = c.name || c;
+
+    fieldsToInclude[name] = 1;
   });
   fieldsToInclude._id = 1;  // always include _id field
 
@@ -64,6 +71,27 @@ exports.rows = function*() {
     rows: rows
   });
 };
+
+
+
+exports.doc = function*() {
+  var modelName = this.request.query.name,
+    rowId = this.request.query.id;
+
+  this.app.logger.debug('get doc', modelName, rowId);
+
+  var model = this.app.models[modelName];
+
+  // get data
+  var row = yield model.findOne({
+    _id: rowId
+  });
+
+  yield this.render('/admin/models/doc', {
+    doc: row
+  });
+};
+
 
 
 
