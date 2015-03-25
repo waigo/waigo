@@ -19,7 +19,6 @@ module.exports = React.createClass({
     return {
       modelName: decodeURIComponent(params.key),
       id: decodeURIComponent(params.id),
-      loading: true,
       error: null,
     };
   },
@@ -45,13 +44,72 @@ module.exports = React.createClass({
   },
 
 
+  _onEdit: function(e) {
+    this.setState({
+      edit: this._getLatestEdit()
+    });
+  },
+
+
+  _getLatestEdit: function() {
+    return React.findDOMNode(this.refs.editInput).value;
+  },
+
+
+  _onSubmit: function() {
+    var self = this;
+
+    this.setState({
+      submitting: true
+    });
+
+    $.ajax({
+      method: 'PUT',
+      url: `/admin/model/doc?format=json&name=${this.state.modelName}&id=${this.state.id}`,
+      data: {
+        doc: JSON.parse(this._getLatestEdit())
+      }
+    })
+      .fail(function(xhr) {
+        self.setStateIfMounted({
+          error: xhr
+        });
+      })
+      .always(function() {
+        self.setStateIfMounted({
+          submitting: false
+        });
+      })
+    ;
+  },
+
+
   _buildEditingForm: function() {
-    var data = JSON.stringify(this.state.data);
+    var data = this.state.edit || JSON.stringify(this.state.data);
+
+    // button disabled if invalid value
+    var isDisabled = '';
+    try {
+      // disallow bad JSON
+      var parsed = JSON.parse(data);
+
+      // disallow empty data
+      if (!_.keys(parsed).length) {
+        throw new Error();
+      }
+    } catch (e) {
+      isDisabled = 'disabled';
+    }
 
     return (
       <div>
-        <textarea rows="20">{data}</textarea>
-        <button className="btn btn-primary">Update</button>
+        <textarea rows="20" 
+          ref="editInput"
+          onKeyPress={this._onEdit}
+          onChange={this._onEdit}
+          >{data}</textarea>
+        <button className="btn btn-primary" disabled={isDisabled} 
+          onClick={this._onSubmit}>Update</button>
       </div>
     );
   },
@@ -69,8 +127,13 @@ module.exports = React.createClass({
       }
     })
       .done(function(data) {
+        var doc = data.doc;
+
+        // remove id attribute
+        delete doc._id;
+
         self.setStateIfMounted({
-          data: data.doc
+          data: doc
         });
       })
       .fail(function(xhr) {

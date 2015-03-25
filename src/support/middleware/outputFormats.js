@@ -1,7 +1,8 @@
 "use strict";
 
 var debug = require('debug')('waigo-middleware-outputformat'),
-  waigo = require('../../../');
+  waigo = require('../../../'),
+  _ = waigo._;
 
 var errors = waigo.load('support/errors'),
   viewObjects = waigo.load('support/viewObjects');
@@ -39,7 +40,10 @@ module.exports = function(options) {
     var ctx = this,
       logger = this.app.logger.create('OutputFormats');
 
-    var requestedFormat = (this.query[options.paramName] || options.default).toLowerCase();
+    var requestedFormat = (
+      _.get(this.query, options.paramName) ||
+      options.default
+    ).toLowerCase();
 
     // check format is valid
     if (requestedFormat && !enabledFormats[requestedFormat]) {

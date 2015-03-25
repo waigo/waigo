@@ -27,7 +27,8 @@
         GET: 'admin.models.rows'
       },
       '/doc': {
-        GET: 'admin.models.doc'
+        GET: 'admin.models.doc',
+        PUT: 'admin.models.docUpdate'
       },
     },
   }

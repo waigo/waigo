@@ -96,3 +96,25 @@ exports.doc = function*() {
 
 
 
+exports.docUpdate = function*() {
+  var modelName = this.request.query.name,
+    rowId = this.request.query.id;
+
+  var doc = this.request.body.doc;
+
+  this.app.logger.debug('update doc', modelName, rowId);
+
+  var model = this.app.models[modelName];
+
+  // update data
+  yield model.update({
+    _id: rowId
+  }, doc);
+
+  this.body = {
+    success: true
+  };
+};
+
+
+
