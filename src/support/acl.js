@@ -88,9 +88,6 @@ ACL.prototype.reload = function*() {
     roles = this.roles = {};
 
   data.forEach(function(doc){
-
-    console.log(_.keys(doc[0]));
-
     // resource perspective
     res[doc.resource] = 
       res[doc.resource] || {};
