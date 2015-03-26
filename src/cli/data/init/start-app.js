@@ -40,6 +40,11 @@ function spawnNodeCluster() {
 }
 
 
+// if node <0.11 then no can do
+var semver = require('semver');
+if (semver.lt(process.version, '0.11.2')) {
+  throw new Error('Node v0.11.2+ required');
+}
 
 
 // check if ES6 enabled (works for Node 0.11.x and 0.12.x)

@@ -16,6 +16,7 @@ var waigo = require('../../../'),
  * @private
  */
 var render = function*(config, err) {
+  console.log(err);
   this.status = err.status || 500;
 
   var error = yield errors[viewObjects.methodName].call(null, this, err);
@@ -58,6 +59,9 @@ module.exports = function(options) {
   }, options);
 
   return function*(next) {
+    // convenient throw method
+    this.throw = _throw;
+
     try {
       yield next;
     } catch (err) {
@@ -68,3 +72,27 @@ module.exports = function(options) {
     }
   }
 };
+
+
+/**
+ * Throw an error
+ * @param  {Class} [errorClass] Error class. Default is `RuntimeError`.
+ * @param  {Any} ...       Additional arguments get passed to error class constructor.
+ * @throws Error
+ */
+var _throw = function() {
+  var args = Array.prototype.slice.call(arguments),
+    ErrorClass = args[0];
+
+  if (_.isObject(ErrorClass)) {
+    args.shift();
+  } else {
+    ErrorClass = errors.RuntimeError;
+  }
+
+  args.unshift(null);   // the thisArt for the .bind() call
+
+  throw new (Function.prototype.bind.apply(ErrorClass, args));
+};
+
+

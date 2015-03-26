@@ -29,6 +29,11 @@ module.exports = function() {
       });
     }
 
+    // convenient accessors
+    this.logger = this.app.logger;
+    this.models = this.app.models;
+    this.form = this.app.form;
+
     yield next;
   }
 };

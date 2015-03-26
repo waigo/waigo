@@ -15,10 +15,10 @@ exports.index = function*() {
 exports.columns = function*() {
   var modelName = this.request.query.name;
 
-  this.app.logger.debug('get columns', modelName);
+  this.logger.debug('get columns', modelName);
 
   // iterate through schema
-  var model = this.app.models[modelName],
+  var model = this.models[modelName],
     schema = _.get(model, 'options.schema', {}),
     listViewColumns = _.get(model, 'options.admin.listView', []);
 
@@ -45,9 +45,9 @@ exports.columns = function*() {
 exports.rows = function*() {
   var modelName = this.request.query.name;
 
-  this.app.logger.debug('get rows', modelName);
+  this.logger.debug('get rows', modelName);
 
-  var model = this.app.models[modelName],
+  var model = this.models[modelName],
     listViewColumns = _.get(model, 'options.admin.listView');
 
   // [a,b,c] => {a:1, b:1, c:1}
@@ -78,9 +78,9 @@ exports.doc = function*() {
   var modelName = this.request.query.name,
     rowId = this.request.query.id;
 
-  this.app.logger.debug('get doc', modelName, rowId);
+  this.logger.debug('get doc', modelName, rowId);
 
-  var model = this.app.models[modelName];
+  var model = this.models[modelName];
 
   // get data
   var row = yield model.findOne({
@@ -100,11 +100,20 @@ exports.docUpdate = function*() {
   var modelName = this.request.query.name,
     rowId = this.request.query.id;
 
+  this.logger.debug('update doc', modelName, rowId);
+
   var doc = this.request.body.doc;
 
-  this.app.logger.debug('update doc', modelName, rowId);
+  if (_.isEmpty(doc)) {
+    this.throw('Cannot update to an empty document', 403);
+  }
 
-  var model = this.app.models[modelName];
+  // don't allow _id to be updated
+  if (doc._id) {
+    this.throw('Cannot update _id', 403);
+  }
+
+  var model = this.models[modelName];
 
   // update data
   yield model.update({

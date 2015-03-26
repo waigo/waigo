@@ -34,9 +34,9 @@ Error.prototype[viewObjects.methodName] = function*(ctx) {
  * Use this in preference to `Error` where possible as it provides for more 
  * descriptive output. 
  *
- * @param {String} msg Error message.
- * @param {Number} status HTTP return status code to set (used by the [error handler middleware](middleware/errorHandler.js.html))
- * @param {Object} data Additional data pertaining to this error.
+ * @param {String} [msg] Error message.
+ * @param {Number} [status] HTTP return status code to set. Default is 500.
+ * @param {Object} [data] Additional data pertaining to this error.
  */
 var RuntimeError = exports.RuntimeError = function(msg, status, data) {
   Error.call(this);
