@@ -210,6 +210,54 @@ module.exports = {
       this.lastLogin = new Date();
       yield this.save();
     },
+    /**
+     * Get whether user can read given resource.
+     *
+     * @param {String} resource      The resource the user wishes to access.
+     * 
+     * @return {Boolean} true if access is possible, false if not.
+     */
+    canRead: function*(resource) {
+      var app = waigo.load('application').app;
+
+      return app.acl.can(resource, this, 'read');
+    },
+    /**
+     * Get whether user can write given resource.
+     *
+     * @param {String} resource      The resource the user wishes to access.
+     * 
+     * @return {Boolean} true if access is possible, false if not.
+     */
+    canWrite: function*(resource) {
+      var app = waigo.load('application').app;
+
+      return app.acl.can(resource, this, 'write');
+    },
+    /**
+     * Assert that user can read given resource.
+     *
+     * @param {String} resource      The resource the user wishes to access.
+     * 
+     * @return {Boolean} true if access is possible, false if not.
+     */
+    assertCanRead: function*(resource) {
+      var app = waigo.load('application').app;
+
+      return app.acl.assert(resource, this, 'read');
+    },
+    /**
+     * Assert that user can write given resource.
+     *
+     * @param {String} resource      The resource the user wishes to access.
+     * 
+     * @return {Boolean} true if access is possible, false if not.
+     */
+    assertCanWrite: function*(resource) {
+      var app = waigo.load('application').app;
+
+      return app.acl.assert(resource, this, 'write');
+    }
   },
 };
 

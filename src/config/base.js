@@ -75,6 +75,7 @@ module.exports = function(config) {
   config.startupSteps = [
     'database',
     'models',
+    'acl',
     'middleware',
     'routes',
     'globalHelpers',

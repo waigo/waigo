@@ -24,13 +24,16 @@ module.exports = function() {
     this.locals = this.locals || {};
 
     if (this.session.user) {
-      this.locals.currentUser = yield this.app.models.User.findOne({
-        _id: this.session.user._id
-      });
+      this.currentUser = this.locals.currentUser = 
+        yield this.app.models.User.findOne({
+          _id: this.session.user._id
+        })
+      ;
     }
 
     // convenient accessors
     this.logger = this.app.logger;
+    this.acl = this.app.acl;
     this.models = this.app.models;
     this.form = this.app.form;
 
