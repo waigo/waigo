@@ -7,11 +7,6 @@ module.exports = {
       type: String, 
       required: true,
     },
-    access: { 
-      type: String, 
-      required: true, 
-      enum: ['read', 'write'],
-    },
     entityType: {
       type: String,
       required: true,
@@ -26,7 +21,7 @@ module.exports = {
     }
   },
   admin: {
-    listView: ['resource', 'access', 'entityType', 'entity']
+    listView: ['resource', 'entityType', 'entity']
   },
 };
 

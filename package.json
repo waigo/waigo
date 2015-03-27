@@ -32,13 +32,13 @@
     "node-uuid": "^1.4.2",
     "pluralize": "^1.1.0",
     "raw-body": "~1.1.x",
-    "robe": "^0.7.0",
+    "robe": "^0.8.0",
+    "semver": "~4.3.1",
     "shelljs": "~0.3.0",
     "simple-mongo-schema": "^0.2.0",
     "then-fs": "~1.0.6",
     "underscore.string": "~2.3.x",
-    "validator": "~3.4.x",
-    "semver": "~4.3.1"
+    "validator": "~3.4.x"
   },
   "devDependencies": {
     "babel-core": "^4.6.3",
