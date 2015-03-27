@@ -24,6 +24,8 @@ module.exports = function() {
     this.locals = this.locals || {};
 
     if (this.session.user) {
+      this.app.logger.debug('Current user', this.session.user);
+
       this.currentUser = this.locals.currentUser = 
         yield this.app.models.User.findOne({
           _id: this.session.user._id

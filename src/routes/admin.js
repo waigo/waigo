@@ -4,7 +4,6 @@
     pre: [
       { 
         id: 'assertUser', 
-        role: ['admin'],
         redirectToLogin: true,
       },
     ],
@@ -12,14 +11,35 @@
     GET: 'admin.index.main',
 
     '/routes': {
+      pre: [
+        { 
+          id: 'assertUser', 
+          canAccess: 'admin',
+        },
+      ],
+
       GET: 'admin.routes.index'
     },
 
     '/models': {
+      pre: [
+        { 
+          id: 'assertUser', 
+          canAccess: 'admin',
+        },
+      ],
+
       GET: 'admin.models.index'
     },
 
     '/model': {
+      pre: [
+        { 
+          id: 'assertUser', 
+          canAccess: 'admin',
+        },
+      ],
+
       '/columns': {
         GET: 'admin.models.columns'
       },

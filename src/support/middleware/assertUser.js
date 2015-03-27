@@ -4,8 +4,7 @@ var querystring = require('querystring');
 
 
 var waigo = require('../../../'),
-  _ = waigo._,
-  RuntimeError = waigo.load('support/errors').RuntimeError;
+  _ = waigo._;
 
 
 
@@ -13,43 +12,27 @@ var waigo = require('../../../'),
 /**
  * Build middleware to assert properties regarding the current user.
  *
- * Should be preceded by middleware: `session`, `outputFormats`.
+ * Should be preceded by middleware: `session`, `outputFormats`, `contextHelpers`.
+ *
+ * By default it checks that the user is logged in. Note that admin users will 
+ * bypass checks and always have access to everything.
  * 
  * @param {Object} [options] Configuration options.
- * @param {Boolean} [options.loggedIn] User must be logged in.
- * @param {Array} [options.role] User must have one of the following roles.
+ * @param {Array} [options.canAccess] User must be allowed to access this resource.
  *
  * @return {Function}
  */
 module.exports = function(options) {
   return function*(next) {
     try {
-      var user = this.session.user;
+      if (!this.currentUser) {
+        this.throw('You must be logged in to access this content.', 403);
+      } else {
+        // if user is not an admin
+        if (0 > _.get(this.currentUser, 'roles', []).indexOf('admin')) {
 
-      this.app.logger.debug('Session user', user);
-
-      if (options.loggedIn && !user) {
-        throw new RuntimeError('You must be logged in to access this content.', 403);
-      }
-
-      // load user
-      var storedUser = yield this.app.models.User.findOne({
-        _id: _.get(user, '_id')
-      }, {
-        fields: {
-          roles: 1
-        }        
-      });
-      var userRoles = _.get(storedUser, 'roles', []);
-
-      // if user is not an admin
-      if (0 > userRoles.indexOf('admin')) {
-        // needs specific role?
-        if (options.role) {
-          // if doesn't have required role then puke
-          if (0 === _.intersection(userRoles, options.role).length) {
-            throw new RuntimeError('You must have one of the following roles to access this content: ' + options.role.join(', '), 403);
-          }
+          // need specific access?
+          options.canAccess && this.currentUser.assertAccess(options.canAccess);
         }
       }
     } catch (err) {
