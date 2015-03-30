@@ -39,7 +39,9 @@ dontExitOnError = false
 
 folders = {}
 folders.src = path.join(__dirname, 'src') 
+
 folders.public = path.join(__dirname, 'public') 
+
 folders.assets = 
   src:
     root: path.join(folders.src, 'assets')
@@ -56,6 +58,13 @@ folders.assets.build.fonts = path.join(folders.assets.build.root, 'fonts')
 
 folders.assets.src.js = path.join(folders.assets.src.root, 'js')
 folders.assets.build.js = path.join(folders.assets.build.root, 'js')
+
+folders.assets.lib = 
+  root: path.join(folders.public, 'lib')
+
+folders.assets.lib.materialize = path.join(folders.assets.lib.root, 'materialize', 'dist') 
+
+
 
 files =
   src:
@@ -90,8 +99,8 @@ gulp.task 'js-vendor', ->
   gulp.src [
     'node_modules/lodash/lodash.js'
     'node_modules/moment/moment.js'
-    'node_modules/bootstrap-styl/js/transition.js'
-    'node_modules/bootstrap-styl/js/collapse.js'
+    path.join(folders.assets.lib.root, 'jquery-2.1.3.min.js')
+    path.join(folders.assets.lib.materialize, 'js', 'materialize.js')
   ]
     .pipe concat('vendor.js')
     .pipe gulpIf(!debugBuild, uglify())
@@ -104,11 +113,12 @@ gulp.task 'js', ['js-admin', 'js-vendor']
 gulp.task 'fonts', ->
   gulp.src [
     'node_modules/font-awesome-stylus/fonts/*.*'
+    path.join(folders.assets.lib.materialize, 'font', '**')
   ]
     .pipe gulp.dest(folders.assets.build.fonts)
 
 
-gulp.task 'css', ->
+gulp.task 'stylus', ->
   gulp.src files.src.stylus
     .pipe stylus({
       use: [ nib(), rupture() ]
@@ -117,6 +127,14 @@ gulp.task 'css', ->
     .pipe concat('style.css')
     .pipe gulpIf(!debugBuild, minifyCss())
     .pipe gulp.dest(folders.assets.build.css)
+
+
+gulp.task 'materialize-css', ->
+  gulp.src( path.join(folders.assets.lib.materialize, 'css', 'materialize.css') )
+    .pipe gulp.dest(folders.assets.build.css)
+
+
+gulp.task 'css', ['stylus', 'materialize-css']
 
 
 gulp.task 'img', ->
@@ -130,7 +148,7 @@ gulp.task 'dev', ['assets'], ->
   dontExitOnError = true
 
   gulp.watch files.watch.img, ['img']
-  gulp.watch files.watch.stylus, ['css']
+  gulp.watch files.watch.stylus, ['stylus']
   gulp.watch files.watch.js, ['js']
 
   nodemon({ 
