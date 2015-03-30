@@ -25,17 +25,20 @@ html
 
     block header
       header
-        nav
-          .nav-wrapper
-            a.brand-logo(href="/") Waigo
-            ul#nav-mobile.right.hide-on-med-and-down
-              li
-                a(href="/admin", title="Admin")
-                  i.fa.fa-gears
-              if currentUser
+        .navbar-fixed
+          nav
+            .nav-wrapper
+              a.brand-logo(href="/") Waigo
+              a.button-collapse(href="#", data-activates="mobile-menu")
+                i.mdi-navigation-menu
+              ul#nav-mobile.right.hide-on-med-and-down
                 li
-                  a(href="/user/logout", title="Logout")
-                    i.fa.fa-sign-out
+                  a(href="/admin", title="Admin")
+                    i.fa.fa-gears
+                if currentUser
+                  li
+                    a(href="/user/logout", title="Logout")
+                      i.fa.fa-sign-out
 
     main.container
       block main_content

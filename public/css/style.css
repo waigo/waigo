@@ -1666,17 +1666,53 @@
 i + span {
   margin-left: 0.5em;
 }
-.msg h3.panel-title {
-  font-size: 120%;
+.msg .panel {
+  border-radius: 5px;
+  margin: 1em 0 2em;
+}
+.msg .panel.error {
+  border: 1px solid #e53935;
+  background-color: #ffcdd2;
+  color: #000;
+}
+.msg .panel.error .panel-title {
+  background-color: #e53935;
+}
+.msg .panel.info {
+  border: 1px solid #1e88e5;
+  background-color: #bbdefb;
+  color: #000;
+}
+.msg .panel.info .panel-title {
+  background-color: #1e88e5;
+}
+.msg .panel.compact {
+  margin: 0;
+}
+.msg .panel.compact .panel-title {
+  font-size: 100%;
+}
+.msg .panel .panel-title {
+  padding: 0.5em;
+  font-size: 140%;
+  color: #fff;
+}
+.msg .panel .panel-body {
+  padding: 0 1em;
+}
+.msg .panel .panel-body p.description {
+  margin-bottom: 0;
+}
+form button[type=submit] {
+  margin-top: 2em;
 }
 a.btn + a.btn {
   margin-left: 1em;
 }
-header .title.item {
-  font-size: 2em;
+header nav .brand-logo {
+  margin-left: 0.2em;
 }
 main.container {
-  padding: 1em;
   margin-top: 50px;
 }
 @media only screen and (max-width: 992px) {
