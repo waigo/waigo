@@ -1,47 +1,47 @@
-#admin_menu
-  +below($screen-md)
-    display none
-#admin_content
-  +below($screen-md)
-    width 100% !important
-header
-  a.admin.menu.item
-    display none
-    cursor pointer
-    +below($screen-md)
-      display inline-block
+// #admin_menu
+//   +below($screen-md)
+//     display none
+// #admin_content
+//   +below($screen-md)
+//     width 100% !important
+
+// header
+//   a.admin.menu.item
+//     display none
+//     cursor pointer
+//     +below($screen-md)
+//       display inline-block
 
 
-
-#admin_content
+main#admin_container
+  padding-top 1em
   
-  // /routes
-  .page-routes
+  #admin_content
+    
+    // /routes
+    .page-routes
 
-    .list-filter
-      width 100%
-      
-    .list-group-item
-      padding 0
-      
-      a
-        display block
-        padding 0.9em
-
-        span.method
-          display inline-block
-          min-width 5%
-          margin-right 1em
-          
-        span.url
-          display inline-block
-          
-  .page-route
-    .result
-      margin-top 1em
-      .meta
-        .label
-          font-size 120%
-          margin-right 0.5em
+      .collection-item
+        padding 0
         
-      
+        a
+          display block
+          padding 0.9em
+
+          span.method
+            display inline-block
+            min-width 5%
+            margin-right 1em
+            
+          span.url
+            display inline-block
+            
+    .page-route
+      .result
+        margin-top 1em
+        .meta
+          .label
+            font-size 120%
+            margin-right 0.5em
+          
+        

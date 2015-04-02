@@ -3,29 +3,45 @@ var React = require('react'),
   Link = Router.Link;
 
 module.exports = React.createClass({
-  _buildAdminMenu: function(addListClasses) {
-    return (
-      <ul className="nav nav-pills nav-stacked">
-        <li role="presentation"><Link to="home">Dashboard</Link></li>
-        <li role="presentation"><Link to="routes">Routes</Link></li>
-        <li role="presentation"><Link to="models">Data</Link></li>
-      </ul>
-    );
-  },
-
   render: function() {
-    var AdminMenuTop = this._buildAdminMenu(false),
-      AdminMenuPage = this._buildAdminMenu(true);
+    var routes = {
+      'home': {
+        label: 'Dashboard',
+      },
+      'routes': {
+        label: 'Routes',
+        subRoutes: ['route'],
+      },
+      'models': {
+        label: 'Data',
+        subRoutes: ['model', 'modelRow'],
+      }
+    };
+
+    var activeRoutes = _(this.props.routes).pluck('name').compact().value();
+
+    var links = _.map(routes, function(meta, routeName) {
+      var itemClass = 'collection-item';
+
+      var matchRoutes = [routeName].concat(meta.subRoutes || []);
+      if (_.intersection(activeRoutes, matchRoutes).length) {
+        itemClass += ' active'
+      }
+
+      return (<Link to={routeName} className={itemClass}>{meta.label}</Link>);
+    });
 
     return (
-      <div {...this.props}>
-        <div id="admin_menu" className="col-md-3">
+      <div {...this.props} className="row">
+        <div id="admin_menu" className="col s2">
+          <div className="collection">
+            {links}
+          </div>
         </div>
-        <div id="admin_content" className="col-md-9">
+        <div id="admin_content" className="col s10">
           {this.props.children}
         </div>
       </div>
     );
   }
 });
-

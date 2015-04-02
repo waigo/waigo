@@ -16,10 +16,10 @@ var ModelRow = require('./pages/models/row');
 module.exports = (
   <Route handler={App}>
     <DefaultRoute name="home" handler={Home} />
+    <Route name="route" path="/routes/:key" handler={Route} />
     <Route name="routes" path="/routes" handler={Routes} />
-    <Route name="route" path="/route/:key" handler={Route} />
+    <Route name="modelRow" path="/models/:key/:id" handler={ModelRow} />
+    <Route name="model" path="/models/:key" handler={Model} />
     <Route name="models" path="/models" handler={Models} />
-    <Route name="model" path="/model/:key" handler={Model} />
-    <Route name="modelRow" path="/modelRow/:key/:id" handler={ModelRow} />
   </Route>
 );

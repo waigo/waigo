@@ -53,7 +53,7 @@ module.exports = React.createClass({
         var itemDisplay = self.props.itemDisplayNameFormatter(item);
 
         return (
-          <li className="list-group-item" key={item.key}>
+          <li className="collection-item" key={item.key}>
             <Link to={self.props.itemRoute} params={rParams} className="item">
               {itemDisplay}
             </Link>
@@ -73,7 +73,7 @@ module.exports = React.createClass({
               onKeyDown={this._onFilterChange}
               placeholder="Filter..." />
           </div>
-          <ul className="list-group">{items}</ul>
+          <ul className="collection">{items}</ul>
         </div>
       );
     } else {
@@ -86,7 +86,7 @@ module.exports = React.createClass({
 
   render: function() {
     return (
-      <div>
+      <div className="collection-filter">
         {RenderUtils.buildError(this.state.error)}
         {this._buildItemList()}
       </div>

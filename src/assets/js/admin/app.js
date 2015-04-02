@@ -6,7 +6,7 @@ var Layout = require('./layout/layout.js');
 module.exports = React.createClass({
   render: function() {
     return (
-      <Layout>
+      <Layout {...this.props}>
         <RouteHandler {...this.props}/>
       </Layout>
     );
