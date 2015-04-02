@@ -19,15 +19,10 @@ module.exports = React.createClass({
 
     return (
       <div {...this.props}>
-        <div className="row">
-          <div id="admin_menu" className="col-md-3">
-            <nav>
-              {AdminMenuPage}
-            </nav>
-          </div>
-          <div id="admin_content" className="col-md-9">
-            {this.props.children}
-          </div>
+        <div id="admin_menu" className="col-md-3">
+        </div>
+        <div id="admin_content" className="col-md-9">
+          {this.props.children}
         </div>
       </div>
     );

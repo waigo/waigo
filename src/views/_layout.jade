@@ -40,8 +40,9 @@ html
                     a(href="/user/logout", title="Logout")
                       i.fa.fa-sign-out
 
-    main.container
-      block main_content
+    block main_content_container
+      main.container
+        block main_content
 
     script(type="text/javascript", src=staticUrl('waigo:/js/vendor.js'))
     block scripts
