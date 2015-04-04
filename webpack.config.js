@@ -7,9 +7,8 @@ module.exports = {
   devtool: 'inline-source-map',
   module: {
     loaders: [{
-      test: /\.js$/,
+      test: /\.jsx?$/,
       loader: 'jsx-loader!babel-loader?experimental&optional=runtime',
-      exclude: /node_modules/
     }],
   },
 };

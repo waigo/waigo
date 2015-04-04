@@ -1,5 +1,6 @@
 path = require('path')
 
+es = require('event-stream')
 gulp = require('gulp')
 nodemon = require('gulp-nodemon')
 prefix = require('gulp-autoprefixer')
@@ -96,15 +97,28 @@ gulp.task 'js-admin', ->
 
 
 gulp.task 'js-vendor', ->
-  gulp.src [
-    'node_modules/lodash/lodash.js'
-    'node_modules/moment/moment.js'
+  v1 = gulp.src [
     path.join(folders.assets.lib.root, 'jquery-2.1.3.min.js')
     path.join(folders.assets.lib.materialize, 'js', 'materialize.js')
+  ]
+    .pipe concat('common.js')
+    .pipe gulpIf(!debugBuild, uglify())
+    .pipe gulp.dest(folders.assets.build.js)
+
+  v2 = gulp.src [
+    'node_modules/lodash/lodash.js'
+    'node_modules/moment/moment.js'
+    path.join(folders.assets.lib.root, 'ace', 'ace.js')
+    path.join(folders.assets.lib.root, 'ace', 'mode-json.js')
+    path.join(folders.assets.lib.root, 'ace', 'theme-clouds.js')
   ]
     .pipe concat('vendor.js')
     .pipe gulpIf(!debugBuild, uglify())
     .pipe gulp.dest(folders.assets.build.js)
+
+  es.merge v1, v2
+
+
 
 
 gulp.task 'js', ['js-admin', 'js-vendor']
@@ -138,7 +152,10 @@ gulp.task 'css', ['stylus', 'materialize-css']
 
 
 gulp.task 'img', ->
-  gulp.src files.src.img
+  gulp.src [
+    files.src.img,
+    "#{__dirname}/node_modules/jsoneditor/dist/img/*"
+  ]
     .pipe gulp.dest(folders.assets.build.img)
 
 
