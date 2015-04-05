@@ -1,3 +1,0 @@
-[submodule "public/lib/materialize"]
-	path = public/lib/materialize
-	url = https://github.com/waigo/materialize.git
