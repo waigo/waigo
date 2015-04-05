@@ -63,7 +63,7 @@ folders.assets.build.js = path.join(folders.assets.build.root, 'js')
 folders.assets.lib = 
   root: path.join(folders.public, 'lib')
 
-folders.assets.lib.materialize = path.join(folders.assets.lib.root, 'materialize', 'dist') 
+folders.assets.lib.materialize = path.join(folders.assets.lib.root, 'materialize') 
 
 
 
