@@ -3,12 +3,12 @@ var React = require('react');
 module.exports = {
   buildError: function(err) {
     if (err) {
+      console.error(err);
+
       var lines = [];
 
       // is XHR object?
       if (undefined !== err.status && undefined !== err.statusText) {
-        console.log(err);
-
         // XHR error
         var errorMsg = `Error (${err.status}) - ${err.statusText}`;
 

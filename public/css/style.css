@@ -1706,6 +1706,16 @@ i + span {
 form button[type=submit] {
   margin-top: 2em;
 }
+.label {
+  padding: 0 6px;
+  text-align: center;
+  font-size: 1rem;
+  line-height: inherit;
+  color: #757575;
+  display: inline-block;
+  border-radius: 10px;
+  color: #fff;
+}
 a.btn + a.btn {
   margin-left: 1em;
 }
@@ -1736,16 +1746,20 @@ main#admin_container #admin_content .page-routes .collection-item a span.url {
 main#admin_container #admin_content .page-route h2 {
   margin-top: 0;
   margin-bottom: 0.1em;
-  font-size: 230%;
+  font-size: 2rem;
 }
 main#admin_container #admin_content .page-route input[type=submit] {
   margin-top: 1em;
 }
 main#admin_container #admin_content .page-route .result {
+  margin-top: 2em;
+  border-top: 1px solid #efefef;
+}
+main#admin_container #admin_content .page-route .result pre {
   margin-top: 1em;
+  max-height: 400px;
 }
 main#admin_container #admin_content .page-route .result .meta .label {
-  font-size: 120%;
   margin-right: 0.5em;
 }
 #login .signup {

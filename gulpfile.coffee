@@ -102,6 +102,7 @@ gulp.task 'js-vendor', ->
     'node_modules/moment/moment.js'
     path.join(folders.assets.lib.root, 'jquery-2.1.3.min.js')
     path.join(folders.assets.lib.materialize, 'js', 'materialize.js')
+    path.join(folders.assets.lib.root, 'prism', 'prism.js')
   ]
     .pipe concat('common.js')
     .pipe gulpIf(!debugBuild, uglify())
@@ -119,9 +120,8 @@ gulp.task 'js-vendor', ->
   es.merge v1, v2
 
 
-
-
 gulp.task 'js', ['js-admin', 'js-vendor']
+
 
 
 gulp.task 'fonts', ->
@@ -143,12 +143,15 @@ gulp.task 'stylus', ->
     .pipe gulp.dest(folders.assets.build.css)
 
 
-gulp.task 'materialize-css', ->
-  gulp.src( path.join(folders.assets.lib.materialize, 'css', 'materialize.css') )
+gulp.task 'vendor-css', ->
+  gulp.src [
+    path.join(folders.assets.lib.materialize, 'css', 'materialize.css') 
+    path.join(folders.assets.lib.root, 'prism', 'prism.css') 
+  ]
     .pipe gulp.dest(folders.assets.build.css)
 
 
-gulp.task 'css', ['stylus', 'materialize-css']
+gulp.task 'css', ['stylus', 'vendor-css']
 
 
 gulp.task 'img', ->

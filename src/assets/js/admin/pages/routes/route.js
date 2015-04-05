@@ -3,6 +3,7 @@ var React = require('react');
 var Router = require('react-router');
 
 var JsonEditor  = require('../../components/jsonEditor'),
+  CodeView = require('../../components/codeView'),
   RenderUtils = require('../../utils/renderUtils'),
   GuardedStateMixin = require('../../mixins/guardedState');
   
@@ -73,6 +74,23 @@ module.exports = React.createClass({
   },
 
 
+  _mimeToCodeLanguage: function(mime) {
+
+    resultLanguage = 'language-';
+
+    if (mime.indexOf('json')) {
+      resultLanguage += 'javascript';
+    }
+    else if (mime.indexOf('html') || mime.indexOf('xml')) {
+      resultLanguage += 'xml';
+    }
+    else {
+      resultLanguage += 'none';
+    }
+
+  },
+
+
   _buildResult: function() {
     if (this.state.result) {
       var xhr = this.state.result.xhr;
@@ -80,18 +98,18 @@ module.exports = React.createClass({
       var data = xhr.responseText,
         resultType = (400 <= xhr.status ? 'error' : 'success');
 
-      var label = 'label label-' + ('error' === resultType ? 'danger': 'info');
+      var mime = xhr.getResponseHeader('Content-Type');
+
+      var label = 'label ' + ('error' === resultType ? 'red': 'blue');
 
       return (
-        <div>
+        <div className={resultType}>
           <p className="meta">
             <span className={label}>{xhr.status} {xhr.statusText}</span>
-            <span className={label}>{xhr.getResponseHeader('Content-Type')}</span>
+            <span className={label}>{mime}</span>
             <span className={label}>{xhr.getResponseHeader('Content-Length')} bytes</span>
           </p>
-          <pre className={resultType}>
-            {data}
-          </pre>
+          <CodeView mime={mime} code={data} />
         </div>
       );
     } else {
@@ -114,6 +132,7 @@ module.exports = React.createClass({
       });      
     } catch (err) {
       this.setState({
+        reqQuery: {},
         canSubmit: false
       });
     }
@@ -128,6 +147,7 @@ module.exports = React.createClass({
       });      
     } catch (err) {
       this.setState({
+        reqBody: {},
         canSubmit: false
       });
     }
@@ -142,7 +162,7 @@ module.exports = React.createClass({
 
       body = (
         <div className="form-group">
-          <label>Request body (JSON)</label>
+          <label>Form body (JSON)</label>
           <JsonEditor 
             name="bodyEditor" 
             ref="bodyEditor" 
@@ -166,7 +186,7 @@ module.exports = React.createClass({
     return (
       <form onSubmit={this.onSubmit}>
         <div className="form-group">
-          <label>URL query string: <strong>{urlQryStr}</strong></label>
+          <label>Query string (JSON): <strong>{urlQryStr}</strong></label>
           <JsonEditor 
             name="qsEditor" 
             ref="qsEditor" 
