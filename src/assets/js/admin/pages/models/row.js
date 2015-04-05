@@ -2,7 +2,10 @@ var React = require('react');
 var Router = require('react-router');
 var Link = Router.Link;
 
-var RenderUtils = require('../../utils/renderUtils'),
+var Loader = require('../../components/loader'),
+  SubmitBtn = require('../../components/submitButton'),
+  JsonEditor  = require('../../components/jsonEditor'),
+  RenderUtils = require('../../utils/renderUtils'),
   GuardedStateMixin = require('../../mixins/guardedState');
 
 
@@ -24,21 +27,13 @@ module.exports = React.createClass({
   },
 
   render: function() { 
-    var result = null;
-
-    if (undefined === this.state.data) {
-      result = (
-        <div className="loading">Loading data...</div>
-      );
-    } else {
-      result = this._buildEditingForm();
-    }
+    var editingForm = this._buildEditingForm();
 
     return (
       <div className="page-modelRow">
-        <h4 className="title">{this.state.modelName}/{this.state.id}</h4>
+        <h2 className="title">{this.state.modelName}/{this.state.id}</h2>
         {RenderUtils.buildError(this.state.error)}
-        {result}
+        {editingForm}
       </div>
     );
   },
@@ -56,7 +51,9 @@ module.exports = React.createClass({
   },
 
 
-  _onSubmit: function() {
+  _onSubmit: function(e) {
+    e.preventDefault();
+
     var self = this;
 
     this.setState({
@@ -67,9 +64,12 @@ module.exports = React.createClass({
       method: 'PUT',
       url: `/admin/model/doc?format=json&name=${this.state.modelName}&id=${this.state.id}`,
       data: {
-        doc: JSON.parse(this._getLatestEdit())
+        doc: this.state.json
       }
     })
+      .then(function() {
+        Materialize.toast('Update successful', 2000, 'rounded');
+      })
       .fail(function(xhr) {
         self.setStateIfMounted({
           error: xhr
@@ -84,33 +84,43 @@ module.exports = React.createClass({
   },
 
 
-  _buildEditingForm: function() {
-    var data = this.state.edit || JSON.stringify(this.state.data);
 
-    // button disabled if invalid value
-    var isDisabled = '';
+  _onDataChange: function(data) {
     try {
-      // disallow bad JSON
-      var parsed = JSON.parse(data);
+      var json = JSON.parse(data);
 
-      // disallow empty data
-      if (!_.keys(parsed).length) {
+      // must not be empty object
+      if (!json || !_.keys(json)) {
         throw new Error();
       }
-    } catch (e) {
-      isDisabled = 'disabled';
+
+      this.setState({
+        json: json
+      });
+    } catch (err) {
+      this.setState({
+        json: null
+      });
+    }
+  },
+
+
+  _buildEditingForm: function() {
+    var json = this.state.json;
+
+    if (undefined === json) {
+      return (<Loader text="Loading data" />);
     }
 
     return (
-      <div>
-        <textarea rows="20" 
-          ref="editInput"
-          onKeyPress={this._onEdit}
-          onChange={this._onEdit}
-          >{data}</textarea>
-        <button className="btn btn-primary" disabled={isDisabled} 
-          onClick={this._onSubmit}>Update</button>
-      </div>
+      <form onSubmit={this._onSubmit}>
+        <JsonEditor 
+          name="docEditor" 
+          onChange={this._onDataChange}
+          value={JSON.stringify(json, null, 2)}
+          height="400px" />
+        <SubmitBtn label="Update" disabled={!json} />
+      </form>
     );
   },
 
@@ -133,7 +143,7 @@ module.exports = React.createClass({
         delete doc._id;
 
         self.setStateIfMounted({
-          data: doc
+          json: doc
         });
       })
       .fail(function(xhr) {

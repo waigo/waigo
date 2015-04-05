@@ -17,10 +17,18 @@ main#admin_container
   padding-top 1em
   
   #admin_content
+
+    h2
+      margin-top 0
+      margin-bottom 0.1em
+      font-size 2rem
+
+    input[type=submit]
+      margin-top 1em
+
     
     // /routes
     .page-routes
-
       .collection-item
         padding 0
         
@@ -37,12 +45,6 @@ main#admin_container
             display inline-block
             
     .page-route
-      h2
-        margin-top 0
-        margin-bottom 0.1em
-        font-size 2rem
-      input[type=submit]
-        margin-top 1em
       .result
         margin-top 2em
         border-top 1px solid #efefef
@@ -52,5 +54,9 @@ main#admin_container
         .meta
           .label
             margin-right 0.5em
+            
+    .page-model
+      tr
+        cursor pointer
           
         

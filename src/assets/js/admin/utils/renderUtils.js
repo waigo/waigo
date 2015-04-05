@@ -34,7 +34,17 @@ module.exports = {
         lines = (<strong>{err}</strong>);
       }
 
-      return <div className="alert alert-danger">{lines}</div>
+      return(
+        <div className="msg">
+          <div className="panel error">
+            <div className="panel-heading">
+              <div className="panel-title">{lines.shift()}</div>
+            </div>
+            <div className="panel-body">{lines}</div>
+          </div>
+        </div>
+      );
+
     } else {
       return '';
     }

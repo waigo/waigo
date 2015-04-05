@@ -2,7 +2,9 @@ var React = require('react');
 
 var Router = require('react-router');
 
-var JsonEditor  = require('../../components/jsonEditor'),
+var Loader = require('../../components/loader'),
+  SubmitBtn = require('../../components/submitButton'),
+  JsonEditor  = require('../../components/jsonEditor'),
   CodeView = require('../../components/codeView'),
   RenderUtils = require('../../utils/renderUtils'),
   GuardedStateMixin = require('../../mixins/guardedState');
@@ -26,7 +28,6 @@ module.exports = React.createClass({
       method: method,
       reqQuery: {},
       reqBody: {},
-      canSubmit: true,
     };
   },
 
@@ -103,19 +104,21 @@ module.exports = React.createClass({
       var label = 'label ' + ('error' === resultType ? 'red': 'blue');
 
       return (
-        <div className={resultType}>
-          <p className="meta">
-            <span className={label}>{xhr.status} {xhr.statusText}</span>
-            <span className={label}>{mime}</span>
-            <span className={label}>{xhr.getResponseHeader('Content-Length')} bytes</span>
-          </p>
-          <CodeView mime={mime} code={data} />
+        <div className="result">
+          <div className={resultType}>
+            <p className="meta">
+              <span className={label}>{xhr.status} {xhr.statusText}</span>
+              <span className={label}>{mime}</span>
+              <span className={label}>{xhr.getResponseHeader('Content-Length')} bytes</span>
+            </p>
+            <CodeView mime={mime} code={data} />
+          </div>
         </div>
       );
     } else {
       if (this.state.running) {
         return (
-          <div className="loading">Request in progress...</div>
+          <Loader text="Request in progress" />
         );
       } else {
         return '';
@@ -173,13 +176,6 @@ module.exports = React.createClass({
       );
     }
 
-    var submitBtn;
-    if (this.state.canSubmit) {
-      submitBtn = <input className="btn btn-primary" type="submit" value="Run" />
-    } else {
-      submitBtn = <input className="btn btn-primary" type="submit" value="Run" disabled="disabled" />
-    }
-
     var qryStrJson = JSON.stringify(this.state.reqQuery),
       urlQryStr = $.param(this.state.reqQuery);
 
@@ -194,7 +190,7 @@ module.exports = React.createClass({
             value={qryStrJson} />
         </div>
         {{body}}
-        {{submitBtn}}
+        <SubmitBtn label="Run" disabled={!this.state.canSubmit} />
       </form>
     );
   },
@@ -207,9 +203,7 @@ module.exports = React.createClass({
       <div className="page-route">
         <h2>{this.state.method} {this.state.url}</h2>
         {this._buildRequestForm()}
-        <div className="result">
-          {this._buildResult()}
-        </div>
+        {this._buildResult()}
       </div>
     );
   },

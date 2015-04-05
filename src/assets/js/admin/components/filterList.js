@@ -2,7 +2,8 @@ var React = require('react');
 var Router = require('react-router');
 var Link = Router.Link;
 
-var RenderUtils = require('../utils/renderUtils'),  
+var Loader = require('./loader'),
+  RenderUtils = require('../utils/renderUtils'),  
   GuardedStateMixin = require('../mixins/guardedState');
 
 
@@ -78,7 +79,7 @@ module.exports = React.createClass({
       );
     } else {
       return (
-        <div className="loading">Loading...</div>
+        <Loader />
       )
     }
   },

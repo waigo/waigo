@@ -1703,6 +1703,9 @@ i + span {
 .msg .panel .panel-body p.description {
   margin-bottom: 0;
 }
+.loader {
+  margin: 1em 0;
+}
 form button[type=submit] {
   margin-top: 2em;
 }
@@ -1728,6 +1731,14 @@ main.container {
 main#admin_container {
   padding-top: 1em;
 }
+main#admin_container #admin_content h2 {
+  margin-top: 0;
+  margin-bottom: 0.1em;
+  font-size: 2rem;
+}
+main#admin_container #admin_content input[type=submit] {
+  margin-top: 1em;
+}
 main#admin_container #admin_content .page-routes .collection-item {
   padding: 0;
 }
@@ -1743,14 +1754,6 @@ main#admin_container #admin_content .page-routes .collection-item a span.method 
 main#admin_container #admin_content .page-routes .collection-item a span.url {
   display: inline-block;
 }
-main#admin_container #admin_content .page-route h2 {
-  margin-top: 0;
-  margin-bottom: 0.1em;
-  font-size: 2rem;
-}
-main#admin_container #admin_content .page-route input[type=submit] {
-  margin-top: 1em;
-}
 main#admin_container #admin_content .page-route .result {
   margin-top: 2em;
   border-top: 1px solid #efefef;
@@ -1761,6 +1764,9 @@ main#admin_container #admin_content .page-route .result pre {
 }
 main#admin_container #admin_content .page-route .result .meta .label {
   margin-right: 0.5em;
+}
+main#admin_container #admin_content .page-model tr {
+  cursor: pointer;
 }
 #login .signup {
   display: block;

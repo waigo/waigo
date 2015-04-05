@@ -2,7 +2,8 @@ var React = require('react');
 var Router = require('react-router');
 var Link = Router.Link;
 
-var RenderUtils = require('../../utils/renderUtils'),
+var Loader = require('../../components/loader'),
+  RenderUtils = require('../../utils/renderUtils'),
   GuardedStateMixin = require('../../mixins/guardedState');
 
 
@@ -27,7 +28,7 @@ module.exports = React.createClass({
 
     if (!this.state.columns) {
       result = (
-        <div className="loading">Loading structure...</div>
+        <Loader text="Loading structure" />
       );
     } else {
       result = this._buildTable();
@@ -35,7 +36,8 @@ module.exports = React.createClass({
 
     return (
       <div className="page-model">
-        {this.state.error ? RenderUtils.buildError(this.state.error) : ''}
+        <h2>Collection: {this.state.modelName}</h2>
+        {RenderUtils.buildError(this.state.error)}
         {result}
       </div>
     )
@@ -63,7 +65,7 @@ module.exports = React.createClass({
 
     var body = null;
     if (this.state.loading) {
-      body = (<tr><td className="loading">Loading</td></tr>);
+      body = (<tr><td><Loader /></td></tr>);
     } else {
       body = rows.map(function(row) {
         var values = columns.map(function(col) {
@@ -104,7 +106,7 @@ module.exports = React.createClass({
     }
 
     return (
-      <table>
+      <table className="hoverable bordered">
         <thead><tr>{header}</tr></thead>
         <tbody>{body}</tbody>
       </table>
