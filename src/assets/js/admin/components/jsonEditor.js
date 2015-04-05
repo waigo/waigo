@@ -20,7 +20,7 @@ module.exports = React.createClass({
   },
   getDefaultProps: function() {
     return {
-      name   : 'json-editor' + parseInt(Math.random() * 361323),
+      name   : 'json-editor',
       height : '100px',
       width  : '500px',
       value  : '{}',

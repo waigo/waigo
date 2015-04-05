@@ -34,9 +34,8 @@ module.exports = React.createClass({
 
     var self = this;
 
-    var qryStr = $.param(JSON.parse(this.refs.qsEditor.getValue())  || {});
-
-    var body = JSON.parse(this.refs.bodyEditor.getValue()) || {};
+    var qryStr = $.param(this.state.reqQuery),
+      body = this.state.reqBody;
 
     this.setState({
       result: null,
@@ -69,8 +68,6 @@ module.exports = React.createClass({
       .always(function allDone() {
         self.setStateIfMounted({
           running: false,
-          reqQuery: qryStr,
-          reqBody: body,
         });
       });
   },
@@ -109,16 +106,49 @@ module.exports = React.createClass({
   },
 
 
+  _onQueryStringChange: function(val) {
+    try {
+      this.setState({
+        reqQuery: JSON.parse(val),
+        canSubmit: true,
+      });      
+    } catch (err) {
+      this.setState({
+        canSubmit: false
+      });
+    }
+  },
+
+
+  _onBodyChange: function(val) {
+    try {
+      this.setState({
+        reqBody: JSON.parse(val),
+        canSubmit: true,
+      });      
+    } catch (err) {
+      this.setState({
+        canSubmit: false
+      });
+    }
+  },
+
+
 
   _buildRequestForm: function() {
     var body = '';
     if ('POST' === this.state.method || 'PUT' === this.state.method) {
-      var bodyStr = JSON.stringify(this.state.reqBody);
+      var bodyJson = JSON.stringify(this.state.reqBody);
 
       body = (
         <div className="form-group">
           <label>Request body (JSON)</label>
-          <JsonEditor ref="bodyEditor" value={bodyStr} height="200px" />
+          <JsonEditor 
+            name="bodyEditor" 
+            ref="bodyEditor" 
+            onChange={this._onBodyChange}
+            value={bodyJson} 
+            height="200px" />
         </div>
       );
     }
@@ -130,13 +160,18 @@ module.exports = React.createClass({
       submitBtn = <input className="btn btn-primary" type="submit" value="Run" disabled="disabled" />
     }
 
-    var qryStr = JSON.stringify(this.state.reqQuery);
+    var qryStrJson = JSON.stringify(this.state.reqQuery),
+      urlQryStr = $.param(this.state.reqQuery);
 
     return (
       <form onSubmit={this.onSubmit}>
         <div className="form-group">
-          <label>URL query string (JSON)</label>
-          <JsonEditor ref="qsEditor" value={qryStr} />
+          <label>URL query string: <strong>{urlQryStr}</strong></label>
+          <JsonEditor 
+            name="qsEditor" 
+            ref="qsEditor" 
+            onChange={this._onQueryStringChange}
+            value={qryStrJson} />
         </div>
         {{body}}
         {{submitBtn}}
@@ -150,7 +185,7 @@ module.exports = React.createClass({
 
     return (
       <div className="page-route">
-        <h3>{this.state.method} {this.state.url}</h3>
+        <h2>{this.state.method} {this.state.url}</h2>
         {this._buildRequestForm()}
         <div className="result">
           {this._buildResult()}

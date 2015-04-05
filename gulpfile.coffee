@@ -55,7 +55,7 @@ folders.assets.build.css = path.join(folders.assets.build.root, 'css')
 folders.assets.src.img = path.join(folders.assets.src.root, 'img')
 folders.assets.build.img = path.join(folders.assets.build.root, 'img')
 
-folders.assets.build.fonts = path.join(folders.assets.build.root, 'fonts')
+folders.assets.build.fonts = path.join(folders.assets.build.root, 'font')
 
 folders.assets.src.js = path.join(folders.assets.src.root, 'js')
 folders.assets.build.js = path.join(folders.assets.build.root, 'js')
@@ -98,6 +98,8 @@ gulp.task 'js-admin', ->
 
 gulp.task 'js-vendor', ->
   v1 = gulp.src [
+    'node_modules/lodash/lodash.js'
+    'node_modules/moment/moment.js'
     path.join(folders.assets.lib.root, 'jquery-2.1.3.min.js')
     path.join(folders.assets.lib.materialize, 'js', 'materialize.js')
   ]
@@ -106,13 +108,11 @@ gulp.task 'js-vendor', ->
     .pipe gulp.dest(folders.assets.build.js)
 
   v2 = gulp.src [
-    'node_modules/lodash/lodash.js'
-    'node_modules/moment/moment.js'
     path.join(folders.assets.lib.root, 'ace', 'ace.js')
     path.join(folders.assets.lib.root, 'ace', 'mode-json.js')
     path.join(folders.assets.lib.root, 'ace', 'theme-clouds.js')
   ]
-    .pipe concat('vendor.js')
+    .pipe concat('ace.js')
     .pipe gulpIf(!debugBuild, uglify())
     .pipe gulp.dest(folders.assets.build.js)
 
