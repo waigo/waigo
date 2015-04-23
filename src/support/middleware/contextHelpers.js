@@ -1,10 +1,10 @@
 "use strict";
 
-
 /**
  * @fileOverview Setup context-level convenient accessors and template helpers
  */
 
+var URL = require('url');
 
 var waigo = require('../../../'),
   _ = waigo._;
@@ -33,6 +33,9 @@ module.exports = function() {
       ;
     }
 
+    // template helpers
+    this.locals.matchesCurrentUrl = _.bind(exports.matchesCurrentUrl, this);
+
     // convenient accessors
     this.logger = this.app.logger;
     this.acl = this.app.acl;
@@ -42,3 +45,17 @@ module.exports = function() {
     yield next;
   }
 };
+
+
+/** 
+ * Get whether given URL path matches current URL path.
+ * @param  {String} urlPath URL path.
+ * @return {Boolean}  true if so; false otherwise.
+ */
+exports.matchesCurrentUrl = function(urlPath) {
+  var parsedURL = URL.parse(this.request.url);
+
+  return (0 === pathname.indexOf(urlPath));
+};
+
+

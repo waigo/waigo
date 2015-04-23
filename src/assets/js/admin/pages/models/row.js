@@ -2,11 +2,11 @@ var React = require('react');
 var Router = require('react-router');
 var Link = Router.Link;
 
-var Loader = require('../../components/loader'),
-  SubmitBtn = require('../../components/submitButton'),
-  JsonEditor  = require('../../components/jsonEditor'),
-  RenderUtils = require('../../utils/renderUtils'),
-  GuardedStateMixin = require('../../mixins/guardedState');
+var Loader = require('../components/loader'),
+  SubmitBtn = require('../components/submitButton'),
+  JsonEditor  = require('../components/jsonEditor'),
+  RenderUtils = require('../utils/renderUtils'),
+  GuardedStateMixin = require('../mixins/guardedState');
 
 
 module.exports = React.createClass({
@@ -62,7 +62,7 @@ module.exports = React.createClass({
 
     $.ajax({
       method: 'PUT',
-      url: `/admin/model/doc?format=json&name=${this.state.modelName}&id=${this.state.id}`,
+      url: `/admin/models/model/doc?format=json&name=${this.state.modelName}&id=${this.state.id}`,
       data: {
         doc: this.state.json
       }
@@ -129,7 +129,7 @@ module.exports = React.createClass({
     var self = this;
 
     $.ajax({
-      url: '/admin/model/doc',
+      url: '/admin/models/model/doc',
       data: {
         format: 'json',
         name: this.state.modelName,

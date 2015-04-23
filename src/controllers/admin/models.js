@@ -4,11 +4,13 @@ var waigo = require('../../../'),
   _ = waigo._;
 
 
+
 exports.index = function*() {
-  yield this.render('admin/models/index', {
+  yield this.render('admin/models/list', {
     models: _.keys(this.app.models),
   });
 };
+
 
 
 

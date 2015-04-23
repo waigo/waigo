@@ -5,10 +5,16 @@ include ../_mixins
 block title
   title Admin dashboard
 
-block scripts
-  script(type="text/javascript", src=staticUrl('waigo:/js/ace.js'))
-  script(type="text/javascript", src=staticUrl("/js/admin.js"))
 
 block main_content_container
   main#admin_container
-    block main_content
+    .row
+      #admin_menu.col.s2
+        .collection
+          - each item in menu
+            - var className = 'collection-item ' + (matchesCurrentUrl(item.path) ? 'active': '');
+            a(class=className, href=item.path) #{item.label}
+      #admin_content.col.s10
+        block main_content
+
+

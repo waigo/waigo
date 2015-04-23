@@ -2,9 +2,9 @@ var React = require('react');
 var Router = require('react-router');
 var Link = Router.Link;
 
-var Loader = require('../../components/loader'),
-  RenderUtils = require('../../utils/renderUtils'),
-  GuardedStateMixin = require('../../mixins/guardedState');
+var Loader = require('../components/loader'),
+  RenderUtils = require('../utils/renderUtils'),
+  GuardedStateMixin = require('../mixins/guardedState');
 
 
 module.exports = React.createClass({
@@ -124,7 +124,7 @@ module.exports = React.createClass({
     var columnNames = _.pluck(this.state.columns, 'name');
 
     $.ajax({
-      url: '/admin/model/rows',
+      url: '/admin/models/model/rows',
       data: {
         format: 'json',
         name: this.state.modelName,
@@ -154,7 +154,7 @@ module.exports = React.createClass({
     var self = this;
 
     $.ajax({
-      url: '/admin/model/columns',
+      url: '/admin/models/model/columns',
       data: {
         format: 'json',
         name: this.state.modelName,

@@ -8,9 +8,11 @@ var waigo = require('../../../'),
 exports.index = function*() {
   var routes = this.app.routeMappings;
 
-  yield this.render('admin/routes/index', {
+  yield this.render('admin/routes', {
     routes: _.map(routes, function(route) {
       return _.pick(route, 'method', 'url');
     })
   });
 };
+
+

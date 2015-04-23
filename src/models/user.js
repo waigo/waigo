@@ -225,7 +225,7 @@ module.exports = {
     /**
      * Assert that user can access given resource.
      *
-     * @param {String} resource      The resource the user wishes to access.
+     * @param {String} resource The resource the user wishes to access.
      *
      * @throws {Error} If not allowed to access.
      */

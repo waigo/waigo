@@ -1,6 +1,5 @@
  module.exports = { 
   '/admin': {
-
     pre: [
       { 
         id: 'assertUser', 
@@ -29,28 +28,22 @@
         },
       ],
 
-      GET: 'admin.models.index'
-    },
+      GET: 'admin.models.index',
 
-    '/model': {
-      pre: [
-        { 
-          id: 'assertUser', 
-          canAccess: 'admin',
+      '/model': {
+        '/columns': {
+          GET: 'admin.models.columns'
         },
-      ],
-
-      '/columns': {
-        GET: 'admin.models.columns'
-      },
-      '/rows': {
-        GET: 'admin.models.rows'
-      },
-      '/doc': {
-        GET: 'admin.models.doc',
-        PUT: 'admin.models.docUpdate'
-      },
+        '/rows': {
+          GET: 'admin.models.rows'
+        },
+        '/doc': {
+          GET: 'admin.models.doc',
+          PUT: 'admin.models.docUpdate'
+        },
+      },      
     },
+
   }
  };
 

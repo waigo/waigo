@@ -198,6 +198,7 @@ module.exports = function(config) {
     }
   };
 
+  // POST/PUT routes should get parsed request bodies
   config.middleware.POST = config.middleware.PUT = {
     _order: [
       'bodyParser',
@@ -208,4 +209,22 @@ module.exports = function(config) {
     },
   };
 
+
+  // admin menu
+  config.adminMenu = [
+    {
+      label: 'Dashboard',
+      path: '/admin',
+    },
+    {
+      label: 'Routes',
+      path: '/admin/routes',
+    },
+    {
+      label: 'Data',
+      path: '/admin/models',
+    },
+  ];
+
 };
+
