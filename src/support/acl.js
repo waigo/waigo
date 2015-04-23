@@ -1,6 +1,7 @@
 "use strict";
 
-var debug = require('debug')('waigo-acl');
+var co = require('co'),
+  debug = require('debug')('waigo-acl');
 
 var waigo = require('../../'),
   _ = waigo._,
@@ -52,9 +53,29 @@ ACL.prototype.init = function*() {
       entity: 'admin'
     });
   }
+
+  // get notified of ACL updates
+  yield this.app.models.Acl.addWatcher(_.bind(this.onAclUpdated, this));
 };
 
 
+
+/**
+ * Callback for collection watcher.
+ */
+ACL.prototype.onAclUpdated = function() {
+  var self = this;
+
+  self.app.logger.info('Detected ACL rules change');
+
+  co(this.reload())
+    .catch(function(err) {
+      self.app.logger.error('Error reloading ACL', err.stack);
+    });
+};
+
+
+  
 
 /**
  * Reload the ACL from the database.

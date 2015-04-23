@@ -44,7 +44,7 @@ exports.login_submit = function*() {
     yield this.redirect(form.fields.postLoginUrl.value || '/');
   } catch (err) {
     if (!(err instanceof this.form.FormValidationError)) {
-      this.logger.error(err);
+      this.logger.error(err.stack);
     }
 
     yield this.render('user/login', {
@@ -94,7 +94,7 @@ exports.register_submit = function*() {
     yield this.redirect('/');
   } catch (err) {
     if (!(err instanceof this.form.FormValidationError)) {
-      this.logger.error(err);
+      this.logger.error(err.stack);
     }
 
     yield this.render('user/register', {

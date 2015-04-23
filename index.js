@@ -5,9 +5,11 @@ var waigo = module.exports = require('./src/loader');
 
 /**
  * Bootstrap your application.
+ *
+ * @return {Promise}
  */
-waigo._bootstrap = function(cb) {
-  co(function*() {
+waigo._bootstrap = function() {
+  return co(function*() {
     /*
     Initialise the framework.
 
@@ -24,7 +26,6 @@ waigo._bootstrap = function(cb) {
     the middleware and kicks off the HTTP listener.
      */
     yield waigo.load('application').start();
-
-  })(cb);
+  });
 };
 

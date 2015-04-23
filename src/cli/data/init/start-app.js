@@ -31,11 +31,10 @@ function spawnNodeCluster() {
   } else if (cluster.isWorker) {
     _log(cluster.worker.id, 'started, pid: ' + cluster.worker.process.pid);
 
-    require('waigo')._bootstrap(function(err) {
-      if (err) {
+    require('waigo')._bootstrap()
+      .catch(function(err) {
         console.error(err.stack);
-      }
-    });
+      });
   }
 }
 

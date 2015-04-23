@@ -24,6 +24,9 @@ Quick overview:
 
 # Development 
 
+We recommend using **Node 0.12.0+** for Waigo. You will also need to have a 
+MongoDB replica set running at `127.0.0.1:27017`.
+
 While developing the framework run the server using:
 
 ```bash
