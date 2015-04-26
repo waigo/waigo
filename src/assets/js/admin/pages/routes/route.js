@@ -75,23 +75,6 @@ module.exports = React.createClass({
   },
 
 
-  _mimeToCodeLanguage: function(mime) {
-
-    resultLanguage = 'language-';
-
-    if (mime.indexOf('json')) {
-      resultLanguage += 'javascript';
-    }
-    else if (mime.indexOf('html') || mime.indexOf('xml')) {
-      resultLanguage += 'xml';
-    }
-    else {
-      resultLanguage += 'none';
-    }
-
-  },
-
-
   _buildResult: function() {
     if (this.state.result) {
       var xhr = this.state.result.xhr;
@@ -169,7 +152,7 @@ module.exports = React.createClass({
           <JsonEditor 
             onChange={this._onBodyChange}
             value={bodyJson} 
-            height="200px" />
+            height="300px" />
         </div>
       );
     }
@@ -183,6 +166,7 @@ module.exports = React.createClass({
           <label>Query string (JSON): <strong>{urlQryStr}</strong></label>
           <JsonEditor 
             onChange={this._onQueryStringChange}
+            height="100px"
             value={qryStrJson} />
         </div>
         {{body}}

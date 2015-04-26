@@ -83,7 +83,7 @@ module.exports = React.createClass({
           else if (Array.isArray(value)) {
             // extract sub key
             if (col.subKey) {
-              value = _.pluck(value, subKey);
+              value = _.pluck(value, col.subKey);
             }
 
             // construct list

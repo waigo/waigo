@@ -15,7 +15,7 @@ module.exports = React.createClass({
   getDefaultProps: function() {
     return {
       height : '100px',
-      width  : '500px',
+      width  : '700px',
       value  : '{}',
       fontSize   : 13,
       onChange   : null,
@@ -75,7 +75,19 @@ module.exports = React.createClass({
       width: this.props.width,
       height: this.props.height,
       fontSize: this.props.fontSize,
+      overflowY: 'scroll'
     };
+
+    // split value up into multiple lines, ensuring we honour spacing
+    var value = (this.props.value + "\n").split("\n").map(function(l) {
+      var spacing = [];
+
+      for (var i=0; l.length>i && ' ' === l[i]; i++) {
+        spacing.push(<span>&nbsp;</span>)
+      }
+
+      return (<div>{spacing}{l}</div>);
+    });
 
     return (<div contentEditable="true" 
       ref="editorDiv"
@@ -83,7 +95,7 @@ module.exports = React.createClass({
       onInput={this.onInput}
       onKeyDown={this.onKeyDown}
       onBlur={this.onBlur}
-      style={divStyle}>{this.props.value}</div>
+      style={divStyle}>{value}</div>
     );
   }
 });
