@@ -90,7 +90,7 @@ module.exports = React.createClass({
       var json = JSON.parse(data);
 
       // must not be empty object
-      if (!json || !_.keys(json)) {
+      if (!json || !Object.keys(json).length) {
         throw new Error();
       }
 

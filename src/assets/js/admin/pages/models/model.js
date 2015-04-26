@@ -2,7 +2,8 @@ var React = require('react');
 var Router = require('react-router');
 var Link = Router.Link;
 
-var Loader = require('../../components/loader'),
+var _ = require('../../utils/lodash'),
+  Loader = require('../../components/loader'),
   RenderUtils = require('../../utils/renderUtils'),
   GuardedStateMixin = require('../../mixins/guardedState');
 
@@ -76,17 +77,17 @@ module.exports = React.createClass({
           // if value is a date
           if ('Date' === col.type) {
             flipValue = value;
-            value = moment(value).fromNow();
+            value = new Date(value).toString();
           }
           // else if value is an array
-          else if (_.isArray(value)) {
+          else if (Array.isArray(value)) {
             // extract sub key
             if (col.subKey) {
-              value = _.pluck(value, col.subKey);
+              value = _.pluck(value, subKey);
             }
 
             // construct list
-            value = _.map(value, function(v) {
+            value = value.map(function(v) {
               return (<li key={v}>{v}</li>);
             });
 
@@ -94,7 +95,7 @@ module.exports = React.createClass({
 
           }
           // stringify objects
-          else if (_.isObject(value)) {
+          else if ('object' === typeof value) {
             value = JSON.stringify(value);
           }
 

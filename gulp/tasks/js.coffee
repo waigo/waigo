@@ -1,4 +1,4 @@
 module.exports = ->
   return {
-    deps: ['js-admin', 'js-vendor']
+    deps: ['js-common', 'js-admin']
   }

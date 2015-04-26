@@ -18,12 +18,9 @@ buildWebpackConfig = (paths, options = {}) ->
 
   entries =
     vendor: [
+      'prism'
       'react'
       'react-router'
-      # 'moment'
-      # 'lodash'
-      # 'jquery'
-      # 'prism'
     ]
 
   _.each adminJsFiles, (f) ->

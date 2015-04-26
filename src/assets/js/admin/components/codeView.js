@@ -1,4 +1,5 @@
 var React = require('react');
+var Prism = require('prism');
 
 
 module.exports = React.createClass({

@@ -39,7 +39,7 @@ module.exports = React.createClass({
       var items = this.state.items.filter(function(item) {
         // ensure every filter keyword is matched
         for (var i=0; i<filter.length; ++i) {
-          if (0 > item.key.indexOf(filter[i])) {
+          if (0 > item.key.toLowerCase().indexOf(filter[i].toLowerCase())) {
             return false;
           }
         }
