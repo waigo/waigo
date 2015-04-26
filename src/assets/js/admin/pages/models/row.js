@@ -115,7 +115,6 @@ module.exports = React.createClass({
     return (
       <form onSubmit={this._onSubmit}>
         <JsonEditor 
-          name="docEditor" 
           onChange={this._onDataChange}
           value={JSON.stringify(json, null, 2)}
           height="400px" />

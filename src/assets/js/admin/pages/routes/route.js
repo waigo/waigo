@@ -161,14 +161,12 @@ module.exports = React.createClass({
   _buildRequestForm: function() {
     var body = '';
     if ('POST' === this.state.method || 'PUT' === this.state.method) {
-      var bodyJson = JSON.stringify(this.state.reqBody);
+      var bodyJson = JSON.stringify(this.state.reqBody, null, 2);
 
       body = (
         <div className="form-group">
           <label>Form body (JSON)</label>
           <JsonEditor 
-            name="bodyEditor" 
-            ref="bodyEditor" 
             onChange={this._onBodyChange}
             value={bodyJson} 
             height="200px" />
@@ -176,7 +174,7 @@ module.exports = React.createClass({
       );
     }
 
-    var qryStrJson = JSON.stringify(this.state.reqQuery),
+    var qryStrJson = JSON.stringify(this.state.reqQuery, null, 2),
       urlQryStr = $.param(this.state.reqQuery);
 
     return (
@@ -184,8 +182,6 @@ module.exports = React.createClass({
         <div className="form-group">
           <label>Query string (JSON): <strong>{urlQryStr}</strong></label>
           <JsonEditor 
-            name="qsEditor" 
-            ref="qsEditor" 
             onChange={this._onQueryStringChange}
             value={qryStrJson} />
         </div>

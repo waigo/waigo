@@ -1772,6 +1772,8 @@ main#admin_container #admin_content .page-model tr {
   display: block;
   margin-top: 3em;
 }
-.ace_editor {
+.json-editor {
   border: 1px solid #ccc;
+  font-family: monospace;
+  font-weight: normal;
 }
