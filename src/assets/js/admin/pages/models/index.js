@@ -3,8 +3,8 @@ var React = require('react');
 var Router = require('react-router'),
   Link = Router.Link;
 
-var FilterList = require('../components/filterList'),
-  RenderUtils = require('../utils/renderUtils');
+var FilterList = require('../../components/filterList'),
+  RenderUtils = require('../../utils/renderUtils');
 
 
 module.exports = React.createClass({

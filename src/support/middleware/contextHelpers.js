@@ -53,9 +53,10 @@ module.exports = function() {
  * @return {Boolean}  true if so; false otherwise.
  */
 exports.matchesCurrentUrl = function(urlPath) {
-  var parsedURL = URL.parse(this.request.url);
+  var parsedURL = URL.parse(this.request.url),
+    parsedPath = URL.parse(urlPath);
 
-  return (0 === pathname.indexOf(urlPath));
+  return (parsedURL.pathname === parsedPath.pathname);
 };
 
 

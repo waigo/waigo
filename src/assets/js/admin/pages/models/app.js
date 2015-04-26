@@ -1,6 +1,7 @@
 var React = require('react');
 var Router = require('react-router');
 var DefaultRoute = Router.DefaultRoute;
+var RouteHandler = Router.RouteHandler;
 var Route = Router.Route;
 
 var Models = require('./index');

@@ -2,12 +2,12 @@ var React = require('react');
 
 var Router = require('react-router');
 
-var Loader = require('../components/loader'),
-  SubmitBtn = require('../components/submitButton'),
-  JsonEditor  = require('../components/jsonEditor'),
-  CodeView = require('../components/codeView'),
-  RenderUtils = require('../utils/renderUtils'),
-  GuardedStateMixin = require('../mixins/guardedState');
+var Loader = require('../../components/loader'),
+  SubmitBtn = require('../../components/submitButton'),
+  JsonEditor  = require('../../components/jsonEditor'),
+  CodeView = require('../../components/codeView'),
+  RenderUtils = require('../../utils/renderUtils'),
+  GuardedStateMixin = require('../../mixins/guardedState');
   
 
 module.exports = React.createClass({
@@ -21,7 +21,7 @@ module.exports = React.createClass({
     var key = decodeURIComponent(this.context.router.getCurrentParams().key),
       slashPos = key.indexOf('/'),
       method = key.substr(0, slashPos).toUpperCase(),
-      url = key.substr(slashPos+1);
+      url = key.substr(slashPos);
 
     return {
       url: url,
