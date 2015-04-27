@@ -6,6 +6,7 @@ webpack = require 'gulp-webpack-build'
 CommonsChunkPlugin = require("webpack/lib/optimize/CommonsChunkPlugin")
 
 gulp = require 'gulp'
+gutil = require 'gulp-util'
 gulpIf = require 'gulp-if'
 uglify = require 'gulp-uglify'
 
@@ -18,6 +19,8 @@ buildWebpackConfig = (paths, options = {}) ->
 
   entries =
     vendor: [
+      'clockmaker'
+      'pagination'
       'prism'
       'react'
       'react-router'
@@ -75,6 +78,7 @@ module.exports = (paths, options = {}) ->
           errors: !options.dontExitOnError,
           warnings: false,
       })
+      .on('error', gutil.log)
       .pipe gulpIf(!options.debugBuild, uglify())
       .pipe gulp.dest(paths.assets.build.js)
 

@@ -113,7 +113,7 @@ module.exports = React.createClass({
   _onQueryStringChange: function(val) {
     try {
       this.setState({
-        reqQuery: JSON.parse(val),
+        reqQuery: val.length ? JSON.parse(val) : {},
         canSubmit: true,
       });      
     } catch (err) {
@@ -128,7 +128,7 @@ module.exports = React.createClass({
   _onBodyChange: function(val) {
     try {
       this.setState({
-        reqBody: JSON.parse(val),
+        reqBody: val.length ? JSON.parse(val) : {},
         canSubmit: true,
       });      
     } catch (err) {

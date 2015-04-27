@@ -2,9 +2,14 @@ var React = require('react');
 var Router = require('react-router');
 var Link = Router.Link;
 
+var Timer = require('clockmaker').Timer;
+
 var _ = require('../../utils/lodash'),
   Loader = require('../../components/loader'),
   RenderUtils = require('../../utils/renderUtils'),
+  JsonEditor  = require('../../components/jsonEditor'),
+  Pagination = require('../../components/pagination'),
+  SubmitButton = require('../../components/submitButton'),
   GuardedStateMixin = require('../../mixins/guardedState');
 
 
@@ -20,28 +25,11 @@ module.exports = React.createClass({
       modelName: decodeURIComponent(this.context.router.getCurrentParams().key),
       loading: true,
       error: null,
+      limit: 10,
+      filter: {},
+      sort: {},
+      page: 1,
     };
-  },
-
-
-  render: function() {
-    var result = null;
-
-    if (!this.state.columns) {
-      result = (
-        <Loader text="Loading structure" />
-      );
-    } else {
-      result = this._buildTable();
-    }
-
-    return (
-      <div className="page-model">
-        <h2>Collection: {this.state.modelName}</h2>
-        {RenderUtils.buildError(this.state.error)}
-        {result}
-      </div>
-    )
   },
 
 
@@ -54,6 +42,98 @@ module.exports = React.createClass({
     });
   },
 
+  _onLimitChange: function(e) {
+    try {
+      this.setState({
+        limit: parseInt(e.currentTarget.value)
+      });      
+    } catch (err) {
+      this.setState({
+        limit: null
+      });            
+    }
+  },
+
+  _onFilterChange: function(val) {
+    try {
+      this.setState({
+        filter: JSON.parse(val),
+      });
+    } catch (err) {
+      this.setState({
+        filter: null,
+      });
+    }
+  },
+
+  _onSortChange: function(val) {
+    try {
+      this.setState({
+        sort: JSON.parse(val),
+      });
+    } catch (err) {
+      this.setState({
+        sort: null,
+      });
+    }
+  },
+
+  _isQueryValid: function() {
+    return (null !== this.state.filter 
+      && null !== this.state.sort
+      && null !== this.state.limit
+      );
+  },
+
+  _buildTableFilter: function() {
+    var isQueryValid = this._isQueryValid();
+
+    var canRefreshResults = this.state.filter 
+      && this.state.limit
+      && this.state.sort;
+
+    return (
+      <div className="row">
+        <div className="col s12 m7">
+          <ul className="model-filters collapsible" ref="querySettings">
+            <li>
+              <div className="collapsible-header active">
+                <i className="fa fa-gear"></i>
+                <span>Query settings</span>
+              </div>
+              <div className="collapsible-body">
+                <form onSubmit={this._submitSettingsForm}>
+                  <div className="filter">
+                    <label>Filter:</label>
+                    <JsonEditor 
+                      value="{}"
+                      onChange={this._onFilterChange}
+                      height="100px"
+                      width="200px" />
+                  </div>
+                  <div className="filter">
+                    <label>Sort:</label>
+                    <JsonEditor 
+                      value="{}"
+                      onChange={this._onSortChange}
+                      height="100px"
+                      width="200px" />
+                  </div>
+                  <div className="filter">
+                    <label>Limit:</label>
+                    <input type="text" value="10" onChange={this._onLimitChange} />
+                  </div>
+                  <div className="action">
+                    <SubmitButton label="Apply" disabled={!canRefreshResults} />
+                  </div>
+                </form>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    );
+  },
 
 
   _buildTable: function() {
@@ -106,54 +186,65 @@ module.exports = React.createClass({
       });
     }
 
+    var tableFilter = this._buildTableFilter();
+
     return (
-      <table className="hoverable bordered">
-        <thead><tr>{header}</tr></thead>
-        <tbody>{body}</tbody>
-      </table>
+      <div>
+        {tableFilter}
+        <Pagination 
+          currentPage={this.state.page}
+          resultsPerPage={this.state.limit}
+          totalResults={this.state.totalRows}
+          onSelectPage={this._onSelectPage} />
+        <table className="hoverable bordered">
+          <thead><tr>{header}</tr></thead>
+          <tbody>{body}</tbody>
+        </table>
+      </div>
     );
   },
 
 
-  _fetchRows: function() {
-    var self = this;
 
-    this.setState({
-      loading: true
-    });
 
-    var columnNames = _.pluck(this.state.columns, 'name');
+  render: function() {
+    var result = null;
 
-    $.ajax({
-      url: '/admin/models/model/rows',
-      data: {
-        format: 'json',
-        name: this.state.modelName,
-        columns: columnNames,
-      }
-    })
-      .done(function(data){        
-        self.setStateIfMounted({
-          rows: data.rows
-        });
-      })
-      .fail(function(xhr) {
-        self.setStateIfMounted({
-          error: xhr
-        });
-      })
-      .always(function() {
-        self.setStateIfMounted({
-          loading: false
-        });
-      })
-    ;
+    if (!this.state.columns) {
+      result = (
+        <Loader text="Loading structure" />
+      );
+    } else {
+      result = this._buildTable();
+    }
+
+    return (
+      <div className="page-model">
+        <h2>Collection: {this.state.modelName}</h2>
+        {RenderUtils.buildError(this.state.error)}
+        {result}
+      </div>
+    )
   },
+
+
+
+  componentDidUpdate: function() {
+    if (!this.state.querySettingsInitialised) {
+      $(React.findDOMNode(this.refs.querySettings)).collapsible();
+
+      this.setState({
+        querySettingsInitialised: true
+      });
+    }
+  },
+
 
 
   componentDidMount: function() {
     var self = this;
 
+    // fetch column info
     $.ajax({
       url: '/admin/models/model/columns',
       data: {
@@ -175,6 +266,81 @@ module.exports = React.createClass({
       });
     ;
   },
+
+
+  _submitSettingsForm: function(e) {
+    e.preventDefault();
+
+    // reset page
+    this.setState({
+      page: 1
+    });
+
+    this._fetchRows();
+  },
+
+
+  _onSelectPage: function(newPage) {
+    this.setState({
+      page: newPage
+    });
+
+    this._fetchRows();
+  },
+
+
+  _fetchRows: function() {
+    var self = this;
+
+    // give time for values to propagate
+    if (self._fetchRowsTimer) {
+      self._fetchRowsTimer.stop();
+    }
+
+    self._fetchRowsTimer = Timer(function() {
+
+      self.setState({
+        loading: true,
+        error: null,
+      });
+
+      var columnNames = _.pluck(self.state.columns, 'name');
+
+      // fetch collection rows
+      $.ajax({
+        url: '/admin/models/model/rows?format=json',
+        method: 'POST',
+        data: {
+          name: self.state.modelName,
+          filter: JSON.stringify(self.state.filter),
+          sort: JSON.stringify(self.state.sort),
+          perPage: self.state.limit,
+          page: self.state.page,
+        }
+      })
+        .done(function(data){        
+          self.setStateIfMounted({
+            totalRows: data.count,
+            rows: data.rows,
+          });
+        })
+        .fail(function(xhr) {
+          self.setStateIfMounted({
+            error: xhr
+          });
+        })
+        .always(function() {
+          self.setStateIfMounted({
+            loading: false
+          });
+        })
+      ;
+
+    }, 200).start();
+
+  },
+
+
 
 });
 

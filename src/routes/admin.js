@@ -35,7 +35,7 @@
           GET: 'admin.models.columns'
         },
         '/rows': {
-          GET: 'admin.models.rows'
+          POST: 'admin.models.rows'
         },
         '/doc': {
           GET: 'admin.models.doc',

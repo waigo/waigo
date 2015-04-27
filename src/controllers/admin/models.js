@@ -46,12 +46,20 @@ exports.columns = function*() {
 
 
 exports.rows = function*() {
-  var modelName = this.request.query.name;
+  var modelName = this.request.body.name,
+    filter = JSON.parse(this.request.body.filter),
+    sort = JSON.parse(this.request.body.sort),
+    limit = parseInt(this.request.body.perPage),
+    page = parseInt(this.request.body.page);
 
   this.logger.debug('get rows', modelName);
 
   var model = this.models[modelName],
     listViewColumns = _.get(model, 'options.admin.listView');
+
+  if (!model) {
+    this.throw('Unable to find model', 404);
+  }
 
   // [a,b,c] => {a:1, b:1, c:1}
   var fieldsToInclude = {};
@@ -62,15 +70,19 @@ exports.rows = function*() {
   });
   fieldsToInclude._id = 1;  // always include _id field
 
+  // get count
+  var count = yield model.count(filter);
+
   // get data
-  var rows = yield model.find({}, {
+  var rows = yield model.find(filter, {
     fields: fieldsToInclude,
-    sort: {
-      _id: 1,
-    },
+    sort: sort,
+    limit: limit,
+    skip: ((page - 1) * limit),
   });
 
   yield this.render('/admin/models/rows', {
+    count: count,
     rows: rows
   });
 };

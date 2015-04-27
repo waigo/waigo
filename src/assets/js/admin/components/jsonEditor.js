@@ -65,7 +65,9 @@ module.exports = React.createClass({
       this.props.onLoad();
     }
 
-    this.props.onChange(this.props.value);
+    if (this.props.onChange) {
+      this.props.onChange(this.props.value);
+    }
   },
   shouldComponentUpdate: function(nextProps, nextState) {
     return false;

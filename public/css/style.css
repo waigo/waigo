@@ -1765,6 +1765,15 @@ main#admin_container #admin_content .page-route .result pre {
 main#admin_container #admin_content .page-route .result .meta .label {
   margin-right: 0.5em;
 }
+main#admin_container #admin_content .page-model .model-filters .filter {
+  display: inline-block;
+  vertical-align: top;
+  padding: 0.5em;
+}
+main#admin_container #admin_content .page-model .model-filters .action {
+  text-align: right;
+  padding: 0.5em;
+}
 main#admin_container #admin_content .page-model tr {
   cursor: pointer;
 }
