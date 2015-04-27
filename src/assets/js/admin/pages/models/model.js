@@ -191,6 +191,7 @@ module.exports = React.createClass({
     return (
       <div>
         {tableFilter}
+        {RenderUtils.buildError(this.state.error)}
         <Pagination 
           currentPage={this.state.page}
           resultsPerPage={this.state.limit}
@@ -212,7 +213,10 @@ module.exports = React.createClass({
 
     if (!this.state.columns) {
       result = (
-        <Loader text="Loading structure" />
+        <div>
+          <Loader text="Loading structure" />
+          {RenderUtils.buildError(this.state.error)}
+        </div>
       );
     } else {
       result = this._buildTable();
@@ -221,7 +225,6 @@ module.exports = React.createClass({
     return (
       <div className="page-model">
         <h2>Collection: {this.state.modelName}</h2>
-        {RenderUtils.buildError(this.state.error)}
         {result}
       </div>
     )
