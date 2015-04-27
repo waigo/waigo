@@ -3,8 +3,9 @@ var Router = require('react-router');
 var Link = Router.Link;
 
 var Loader = require('../../components/loader'),
-  SubmitBtn = require('../../components/submitButton'),
+  Button = require('../../components/button'),
   JsonEditor  = require('../../components/jsonEditor'),
+  Modal = require('../../components/modal'),
   RenderUtils = require('../../utils/renderUtils'),
   GuardedStateMixin = require('../../mixins/guardedState');
 
@@ -36,18 +37,6 @@ module.exports = React.createClass({
         {editingForm}
       </div>
     );
-  },
-
-
-  _onEdit: function(e) {
-    this.setState({
-      edit: this._getLatestEdit()
-    });
-  },
-
-
-  _getLatestEdit: function() {
-    return React.findDOMNode(this.refs.editInput).value;
   },
 
 
@@ -84,6 +73,10 @@ module.exports = React.createClass({
   },
 
 
+  _onDelete: function(e) {
+    this.refs.deleteModal.open();
+  },
+
 
   _onDataChange: function(data) {
     try {
@@ -113,13 +106,19 @@ module.exports = React.createClass({
     }
 
     return (
-      <form onSubmit={this._onSubmit}>
+      <div>
         <JsonEditor 
           onChange={this._onDataChange}
           value={JSON.stringify(json, null, 2)}
           height="400px" />
-        <SubmitBtn label="Update" disabled={!json} />
-      </form>
+        <div className="actions">
+          <Button label="Update" disabled={!json} onClick={this._onSubmit} />
+          <Button label="Delete" disabled={!json} color="red" onClick={this._onDelete} />
+          <Modal ref="deleteModal" id="deleteDocModal">
+            <span>test</span>
+          </Modal>
+        </div>
+      </div>
     );
   },
 

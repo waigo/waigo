@@ -9,6 +9,7 @@ var _ = require('../../utils/lodash'),
   RenderUtils = require('../../utils/renderUtils'),
   JsonEditor  = require('../../components/jsonEditor'),
   Pagination = require('../../components/pagination'),
+  Button = require('../../components/button'),
   SubmitButton = require('../../components/submitButton'),
   GuardedStateMixin = require('../../mixins/guardedState');
 
@@ -25,7 +26,7 @@ module.exports = React.createClass({
       modelName: decodeURIComponent(this.context.router.getCurrentParams().key),
       loading: true,
       error: null,
-      limit: 10,
+      perPage: 10,
       filter: {},
       sort: {},
       page: 1,
@@ -45,11 +46,11 @@ module.exports = React.createClass({
   _onLimitChange: function(e) {
     try {
       this.setState({
-        limit: parseInt(e.currentTarget.value)
+        perPage: parseInt(e.currentTarget.value)
       });      
     } catch (err) {
       this.setState({
-        limit: null
+        perPage: null
       });            
     }
   },
@@ -81,7 +82,7 @@ module.exports = React.createClass({
   _isQueryValid: function() {
     return (null !== this.state.filter 
       && null !== this.state.sort
-      && null !== this.state.limit
+      && null !== this.state.perPage
       );
   },
 
@@ -89,7 +90,7 @@ module.exports = React.createClass({
     var isQueryValid = this._isQueryValid();
 
     var canRefreshResults = this.state.filter 
-      && this.state.limit
+      && this.state.perPage
       && this.state.sort;
 
     return (
@@ -120,7 +121,7 @@ module.exports = React.createClass({
                       width="200px" />
                   </div>
                   <div className="filter">
-                    <label>Limit:</label>
+                    <label>Per page:</label>
                     <input type="text" value="10" onChange={this._onLimitChange} />
                   </div>
                   <div className="action">
@@ -194,13 +195,14 @@ module.exports = React.createClass({
         {RenderUtils.buildError(this.state.error)}
         <Pagination 
           currentPage={this.state.page}
-          resultsPerPage={this.state.limit}
+          resultsPerPage={this.state.perPage}
           totalResults={this.state.totalRows}
           onSelectPage={this._onSelectPage} />
         <table className="hoverable bordered">
           <thead><tr>{header}</tr></thead>
           <tbody>{body}</tbody>
         </table>
+        <Button icon="plus-circle" label="Add" className="add-button" />
       </div>
     );
   },
@@ -317,7 +319,7 @@ module.exports = React.createClass({
           name: self.state.modelName,
           filter: JSON.stringify(self.state.filter),
           sort: JSON.stringify(self.state.sort),
-          perPage: self.state.limit,
+          perPage: self.state.perPage,
           page: self.state.page,
         }
       })

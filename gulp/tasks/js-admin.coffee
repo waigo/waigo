@@ -1,6 +1,7 @@
 _ = require 'lodash'
 Q = require 'bluebird'
 path = require 'path'
+fs = require 'fs'
 recursiveReadDir = require 'readdirrsync'
 webpack = require 'gulp-webpack-build'
 CommonsChunkPlugin = require("webpack/lib/optimize/CommonsChunkPlugin")
@@ -78,7 +79,9 @@ module.exports = (paths, options = {}) ->
           errors: !options.dontExitOnError,
           warnings: false,
       })
-      .on('error', gutil.log)
+      .on('error', (err) ->
+        gutil.log(err.stack)
+      )
       .pipe gulpIf(!options.debugBuild, uglify())
       .pipe gulp.dest(paths.assets.build.js)
 

@@ -1765,6 +1765,17 @@ main#admin_container #admin_content .page-route .result pre {
 main#admin_container #admin_content .page-route .result .meta .label {
   margin-right: 0.5em;
 }
+main#admin_container #admin_content .page-modelRow .actions {
+  margin-top: 1em;
+}
+main#admin_container #admin_content .page-modelRow .actions .btn,
+main#admin_container #admin_content .page-modelRow .actions .modal-wrapper {
+  display: inline-block;
+  margin-right: 0.5em;
+}
+main#admin_container #admin_content .page-model .add-button {
+  margin-top: 2em;
+}
 main#admin_container #admin_content .page-model .model-filters .filter {
   display: inline-block;
   vertical-align: top;
