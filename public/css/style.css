@@ -1771,7 +1771,7 @@ main#admin_container #admin_content .page-model .model-filters .filter {
   padding: 0.5em;
 }
 main#admin_container #admin_content .page-model .model-filters .action {
-  text-align: right;
+  text-align: center;
   padding: 0.5em;
 }
 main#admin_container #admin_content .page-model tr {

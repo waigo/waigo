@@ -7,6 +7,7 @@ module.exports = React.createClass({
     currentPage : React.PropTypes.number,
     resultsPerPage: React.PropTypes.number,
     totalResults: React.PropTypes.number,
+    pageLinks: React.PropTypes.number,
     onSelectPage: React.PropTypes.func,
   },
 
@@ -15,6 +16,7 @@ module.exports = React.createClass({
       currentPage : 1,
       resultsPerPage: 1,
       totalResults: 1,
+      pageLinks: 10,
       onSelectPage: null,
     };
   },
@@ -46,6 +48,7 @@ module.exports = React.createClass({
 
     var p = new pagination.SearchPaginator({
       prelink:'/', 
+      pageLinks: this.props.pageLinks,
       current: this.props.currentPage, 
       rowsPerPage: this.props.resultsPerPage, 
       totalResult: this.props.totalResults,
