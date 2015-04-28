@@ -43,6 +43,16 @@ module.exports = React.createClass({
     });
   },
 
+
+  _onAddClick: function(e) {
+    this.context.router.transitionTo('modelRow', {
+      key: this.context.router.getCurrentParams().key,
+      id: 'new'
+    });
+  },
+
+
+
   _onLimitChange: function(e) {
     try {
       this.setState({
@@ -202,7 +212,7 @@ module.exports = React.createClass({
           <thead><tr>{header}</tr></thead>
           <tbody>{body}</tbody>
         </table>
-        <Button icon="plus-circle" label="Add" className="add-button" />
+        <Button icon="plus-circle" label="Add" className="add-button" onClick={this._onAddClick} />
       </div>
     );
   },

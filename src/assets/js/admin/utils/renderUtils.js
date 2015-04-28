@@ -29,6 +29,20 @@ module.exports = {
           else if (json.msg) {
             lines.push(<p>{json.msg}</p>);
           }
+
+          // add any other remaining data
+          if (json.details) {
+            for (var k in json.details) {
+              lines.push(<p><strong>{k}</strong></p>);
+
+              var detailsJSON = 
+                JSON.stringify(json.details[k], null, 2).split("\n");
+
+              detailsJSON.forEach(function(d) {
+                lines.push(<pre>{d}</pre>);
+              });
+            }
+          }
         }
       } else {
         lines = (<strong>{err}</strong>);

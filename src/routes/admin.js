@@ -39,7 +39,9 @@
         },
         '/doc': {
           GET: 'admin.models.doc',
-          PUT: 'admin.models.docUpdate'
+          POST: 'admin.models.docCreate',
+          PUT: 'admin.models.docUpdate',
+          DEL: 'admin.models.docDelete',
         },
       },      
     },

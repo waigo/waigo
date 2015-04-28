@@ -5,30 +5,29 @@ module.exports = React.createClass({
   propTypes: {
     id: React.PropTypes.string,
     actions: React.PropTypes.array,
+    onAction: React.PropTypes.func,
+    onOpen: React.PropTypes.func,
   },
 
   getDefaultProps: function() {
     return {
       id: 'modal' + Math.random().toString(36).substr(2, 5),
-      actions: [
-        {
-          label: 'ok',
-          onClick: this.close,
-        }
-      ],
+      actions: [ 'ok' ],
+      onAction: this.close,
+      onOpen: null,
     };
   },
 
   render: function() {
     var self = this;
 
-    var actions = this.props.actions.map(function(a, index) {
+    var actions = this.props.actions.reverse().map(function(a, index) {
       return (
         <a 
           href="#!" 
           onClick={self._onClickAction}
           className="modal-action modal-close waves-effect waves-green btn-flat"
-          data-index={index}>{a.label}</a>
+          data-index={index}>{a}</a>
       );
     });
 
@@ -50,14 +49,16 @@ module.exports = React.createClass({
 
     var actionIndex = e.currentTarget.dataset.index;
 
-    if (this.props.actions[actionIndex].onClick) {
-      this.props.actions[actionIndex].onClick(e);
+    if (this.props.onAction) {
+      this.props.onAction(this.props.actions[actionIndex]);
     }
   },
 
 
   open: function() {
-    $(React.findDOMNode(this.refs.modalElem)).openModal();
+    $(React.findDOMNode(this.refs.modalElem)).openModal({
+      open: this.props.onOpen
+    });
   },
 
   close: function() {

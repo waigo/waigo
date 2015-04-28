@@ -20,10 +20,18 @@ var waigo = require('../../'),
  * @return {Object} Plain object.
  */
 Error.prototype[viewObjects.methodName] = function*(ctx) {
-  return {
+  var ret = {
     type: this.name || 'Error',
-    msg: this.message
+    msg: this.message,
+    details: {},
   };
+
+  // add additional data
+  for (let k in this) {
+    ret.details[k] = this[k];
+  }
+
+  return ret;
 };
 
 
@@ -60,11 +68,8 @@ RuntimeError.prototype[viewObjects.methodName] = function*(ctx) {
   var ret = {
     type: this.name,
     msg: this.message,
+    details: this.data,
   };
-
-  if (this.data) {
-    ret.data = this.data;
-  }
 
   return ret;
 };
@@ -103,15 +108,14 @@ util.inherits(MultipleError, RuntimeError);
 MultipleError.prototype[viewObjects.methodName] = function*(ctx) {
   var ret = {
     type: this.name,
-    msg: this.message
+    msg: this.message,
+    details: {},
   };
-
-  ret.errors = {};
 
   for (let id in this.data) {
     let fn = this.data[id][viewObjects.methodName];
 
-    ret.errors[id] = (fn ? yield fn(ctx) : this.data[id]);
+    ret.details[id] = (fn ? yield fn(ctx) : this.data[id]);
   }
 
   return ret;
@@ -143,31 +147,5 @@ exports.define = function(newClassName, baseClass) {
   util.inherits(newErrorClass, (baseClass));
   return newErrorClass;
 };
-
-
-
-
-
-/**
- * Convert given error into a view object representation.
- *
- * @param {Object} ctx Request context.
- * @param {Error} err An error object.
- * 
- * @return {Object} A plain object.
- */
-exports[viewObjects.methodName] = function*(ctx, err) {
-  if (err[viewObjects.methodName]) {
-    return yield err[viewObjects.methodName].call(err, ctx);
-  } else {
-    return {
-      type: err.name || 'Error',
-      msg: err.message
-    }
-  }
-};
-
-
-
 
 

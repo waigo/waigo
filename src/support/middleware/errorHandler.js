@@ -16,10 +16,10 @@ var waigo = require('../../../'),
  * @private
  */
 var render = function*(config, err) {
-  console.log(err);
   this.status = err.status || 500;
 
-  var error = yield errors[viewObjects.methodName].call(null, this, err);
+  var error = yield err[viewObjects.methodName].call(err, this);
+
   error.status = this.status;
   error.request = {
     method: this.request.method,

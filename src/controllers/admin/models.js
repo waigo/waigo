@@ -110,6 +110,35 @@ exports.doc = function*() {
 
 
 
+exports.docCreate = function*() {
+  var modelName = this.request.query.name;
+
+  this.logger.debug('create doc', modelName);
+
+  var doc = JSON.parse(this.request.body.doc);
+
+  if (_.isEmpty(doc)) {
+    this.throw('Cannot create an empty document', 403);
+  }
+
+  // don't allow _id to be updated
+  if (doc._id) {
+    this.throw('Cannot override _id', 403);
+  }
+
+  var model = this.models[modelName];
+
+  // update data
+  var newDoc = yield model.insert(doc);
+
+  this.body = {
+    _id: newDoc._id,
+  };
+};
+
+
+
+
 
 exports.docUpdate = function*() {
   var modelName = this.request.query.name,
@@ -117,7 +146,7 @@ exports.docUpdate = function*() {
 
   this.logger.debug('update doc', modelName, rowId);
 
-  var doc = this.request.body.doc;
+  var doc = JSON.parse(this.request.body.doc);
 
   if (_.isEmpty(doc)) {
     this.throw('Cannot update to an empty document', 403);
@@ -134,6 +163,27 @@ exports.docUpdate = function*() {
   yield model.update({
     _id: rowId
   }, doc);
+
+  this.body = {
+    success: true
+  };
+};
+
+
+
+
+exports.docDelete = function*() {
+  var modelName = this.request.query.name,
+    rowId = this.request.query.id;
+
+  this.logger.debug('delete doc', modelName, rowId);
+
+  var model = this.models[modelName];
+
+  // delete data
+  yield model.remove({
+    _id: rowId
+  });
 
   this.body = {
     success: true

@@ -15,9 +15,6 @@ module.exports = {
     entity: {
       type: String,
       required: true,
-      admin: {
-        listView: true
-      },
     }
   },
   admin: {

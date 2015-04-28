@@ -34,9 +34,6 @@ module.exports = {
     username: { 
       type: String, 
       required: true,
-      admin: {
-        listView: true
-      },      
     },
     profile: { 
       type: ProfileSchema, 
@@ -45,9 +42,6 @@ module.exports = {
     emails: { 
       type: [EmailSchema],
       required: true,
-      admin: {
-        listView: true
-      },
     },
     auth: { 
       type: [AuthSchema], 
@@ -55,10 +49,7 @@ module.exports = {
     },
     roles: { 
       type: [String], 
-      required: true,
-      admin: {
-        listView: true
-      },
+      required: false,
     },
     lastLogin: { 
       type: Date, 
