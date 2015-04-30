@@ -75,6 +75,7 @@ module.exports = function(config) {
   config.startupSteps = [
     'database',
     'models',
+    'activityRecorder',
     'acl',
     'middleware',
     'routes',
@@ -223,6 +224,14 @@ module.exports = function(config) {
     {
       label: 'Data',
       path: '/admin/models',
+    },
+    {
+      label: 'Emails',
+      path: '/admin/emails',
+    },
+    {
+      label: 'Logs',
+      path: '/admin/logs',
     },
   ];
 

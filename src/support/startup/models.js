@@ -41,6 +41,14 @@ module.exports = function*(app) {
     docMethods[viewObjects.methodName] = function*(ctx) {
       return this.toJSON();
     };
+
+    // add method to record to activity log
+    docMethods.record = function*() {
+      if (app.record) {
+        yield app.record.apply(app, arguments);
+      }
+    };
+
     modelInfo.docMethods = _.extend(docMethods, modelInfo.docMethods);
 
     // create model instance

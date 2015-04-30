@@ -156,6 +156,9 @@ module.exports = {
         throw new UserError('Error creating new user: ' + properties.email);
       }
 
+      // log activity
+      yield this.record('register', user);
+
       return user;
     },
   },

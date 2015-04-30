@@ -46,6 +46,16 @@
       },      
     },
 
+    '/emails': {
+      pre: [
+        { 
+          id: 'assertUser', 
+          canAccess: 'send-emails',
+        },
+      ],
+
+      GET: 'admin.emails.index',
+    },
   }
  };
 
