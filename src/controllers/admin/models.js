@@ -133,6 +133,12 @@ exports.docCreate = function*() {
   // update data
   var newDoc = yield model.insert(doc);
 
+  // record activity
+  yield this.app.record('insert_doc', this.currentUser, {
+    model: modelName,
+    _id: newDoc._id
+  });
+
   this.body = {
     doc: JSON.stringify(newDoc)
   };
@@ -166,6 +172,12 @@ exports.docUpdate = function*() {
     _id: rowId
   }, doc);
 
+  // record activity
+  yield this.app.record('update_doc', this.currentUser, {
+    model: modelName,
+    _id: doc._id
+  });
+
   this.body = {
     success: true
   };
@@ -184,6 +196,12 @@ exports.docDelete = function*() {
 
   // delete data
   yield model.remove({
+    _id: rowId
+  });
+
+  // record activity
+  yield this.app.record('delete_doc', this.currentUser, {
+    model: modelName,
     _id: rowId
   });
 

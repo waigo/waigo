@@ -43,7 +43,7 @@ module.exports = {
     },
   },
   admin: {
-    listView: ['published', 'verb', 'state', 'actor']
+    listView: ['verb', 'actor', 'published']
   },
   indexes: [
     {

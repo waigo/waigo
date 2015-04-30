@@ -28,13 +28,15 @@ module.exports = function*(app) {
    * @return {Activity} the created activity object
    */
   app.record = function*(verb, actor, details) {
+    app.logger.debug('Recording activity', verb, actor, details);
+
     if (!actor._id) {
       actor = {
         displayName: actor
       }
     } else {
       actor = {
-        _id: actor._id,
+        _id: '' + actor._id,
         displayName: actor.username,
       }
     }

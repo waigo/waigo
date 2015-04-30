@@ -36,7 +36,7 @@ module.exports = function*(app) {
       dbName = modelInfo.db || 'main',
       collectionName = modelInfo.collection || _.str.pluralize(name).toLowerCase();
     
-    // add view object docMethod (but can be overridden for each method)
+    // add view object docMethod (but can be overridden for each model)
     var docMethods = {};
     docMethods[viewObjects.methodName] = function*(ctx) {
       return this.toJSON();
