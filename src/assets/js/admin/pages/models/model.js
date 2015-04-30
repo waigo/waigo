@@ -108,7 +108,7 @@ module.exports = React.createClass({
         <div className="col s12 m7">
           <ul className="model-filters collapsible" ref="querySettings">
             <li>
-              <div className="collapsible-header active">
+              <div className="collapsible-header">
                 <i className="fa fa-gear"></i>
                 <span>Query settings</span>
               </div>
@@ -117,7 +117,7 @@ module.exports = React.createClass({
                   <div className="filter">
                     <label>Filter:</label>
                     <JsonEditor 
-                      value="{}"
+                      value={{}}
                       onChange={this._onFilterChange}
                       height="100px"
                       width="200px" />
@@ -125,7 +125,7 @@ module.exports = React.createClass({
                   <div className="filter">
                     <label>Sort:</label>
                     <JsonEditor 
-                      value="{}"
+                      value={{}}
                       onChange={this._onSortChange}
                       height="100px"
                       width="200px" />
@@ -212,7 +212,6 @@ module.exports = React.createClass({
           <thead><tr>{header}</tr></thead>
           <tbody>{body}</tbody>
         </table>
-        <Button icon="plus-circle" label="Add" className="add-button" onClick={this._onAddClick} />
       </div>
     );
   },
@@ -236,7 +235,11 @@ module.exports = React.createClass({
 
     return (
       <div className="page-model">
-        <h2>Collection: {this.state.modelName}</h2>
+        <Button icon="plus-circle" label="Add" className="add-button" onClick={this._onAddClick} />
+        <h2>
+          <Link to="models">Collection</Link>
+          <span> / {this.state.modelName}</span>
+        </h2>
         {result}
       </div>
     )

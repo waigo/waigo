@@ -103,7 +103,7 @@ exports.doc = function*() {
   });
 
   yield this.render('/admin/models/doc', {
-    doc: row
+    doc: JSON.stringify(row)
   });
 };
 
@@ -128,11 +128,13 @@ exports.docCreate = function*() {
 
   var model = this.models[modelName];
 
+  doc = model.schema.typeify(doc);
+
   // update data
   var newDoc = yield model.insert(doc);
 
   this.body = {
-    _id: newDoc._id,
+    doc: JSON.stringify(newDoc)
   };
 };
 
@@ -153,11 +155,11 @@ exports.docUpdate = function*() {
   }
 
   // don't allow _id to be updated
-  if (doc._id) {
-    this.throw('Cannot update _id', 403);
-  }
+  delete doc._id;
 
   var model = this.models[modelName];
+
+  doc = model.schema.typeify(doc);
 
   // update data
   yield model.update({

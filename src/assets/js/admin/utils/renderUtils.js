@@ -20,15 +20,15 @@ module.exports = {
           lines.push(<p />);
 
           // got stack too?
-          if (json.stack) {
-            lines = lines.concat(
-              json.stack.map(v => <p>{v}</p>)
-            );
-          }
-          // just got msg
-          else if (json.msg) {
+          // if (json.stack) {
+          //   lines = lines.concat(
+          //     json.stack.map(v => <p>{v}</p>)
+          //   );
+          // }
+          // // just got msg
+          // else if (json.msg) {
             lines.push(<p>{json.msg}</p>);
-          }
+          // }
 
           // add any other remaining data
           if (json.details) {

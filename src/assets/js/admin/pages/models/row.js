@@ -32,7 +32,12 @@ module.exports = React.createClass({
 
     return (
       <div className="page-modelRow">
-        <h2 className="title">{this.state.modelName}/{this.state.id}</h2>
+        <h2 className="title">
+          <Link to="model" params={{key: this.state.modelName}}>
+            {this.state.modelName}
+          </Link>
+          <span> / {this.state.id}</span>
+        </h2>
         {RenderUtils.buildError(this.state.error)}
         {editingForm}
       </div>
@@ -41,42 +46,8 @@ module.exports = React.createClass({
 
 
   componentDidMount: function() {
-    var self = this;
-
-    // if creating a new item then no need to fetch data to start with
-    if ('new' === this.state.id) {
-      return this.setState({
-        json: {}
-      });
-    }
-
-    $.ajax({
-      url: '/admin/models/model/doc',
-      data: {
-        format: 'json',
-        name: this.state.modelName,
-        id: this.state.id,
-      }
-    })
-      .done(function(data) {
-        var doc = data.doc;
-
-        // remove id attribute
-        delete doc._id;
-
-        self.setStateIfMounted({
-          json: doc
-        });
-      })
-      .fail(function(xhr) {
-        self.setStateIfMounted({
-          error: xhr
-        });
-      });
-    ;
+    this._load();
   },
-
-
 
 
   _buildEditingForm: function() {
@@ -101,8 +72,9 @@ module.exports = React.createClass({
       <div>
         <JsonEditor 
           onChange={this._onDataChange}
-          value={JSON.stringify(json, null, 2)}
-          height="400px" />
+          value={json}
+          height="400px" 
+          ref="editor" />
         <div className="actions">
           <Button label={saveBtnLabel} disabled={!json} onClick={this._save} />
           {deleteButton}
@@ -140,11 +112,49 @@ module.exports = React.createClass({
   },
 
 
+  _load: function() {
+    var self = this;
+
+    // if creating a new item then no need to fetch data to start with
+    if ('new' === this.state.id) {
+      return this.setState({
+        json: {}
+      });
+    }
+
+    $.ajax({
+      url: '/admin/models/model/doc',
+      data: {
+        format: 'json',
+        name: this.state.modelName,
+        id: this.state.id,
+      }
+    })
+      .done(function(data) {
+        var doc = JSON.parse(data.doc);
+
+        // remove id attribute
+        delete doc._id;
+
+        self.setStateIfMounted({
+          json: doc
+        });
+      })
+      .fail(function(xhr) {
+        self.setStateIfMounted({
+          error: xhr
+        });
+      });
+    ;
+  },
+
+
   _update: function() {
     var self = this;
 
     this.setState({
-      submitting: true
+      submitting: true,
+      error: null
     });
 
     $.ajax({
@@ -175,7 +185,8 @@ module.exports = React.createClass({
     var self = this;
 
     this.setState({
-      submitting: true
+      submitting: true,
+      error: null
     });
 
     $.ajax({
@@ -185,12 +196,18 @@ module.exports = React.createClass({
         doc: this.state.json
       }
     })
-      .then(function(result) {
+      .then(function(data) {
         Materialize.toast('Create successful', 2000, 'rounded');
 
+        var doc = JSON.parse(data.doc),
+          id = doc._id;
+
+        delete doc._id;
+
         self.setStateIfMounted({
-          id: result._id
-        })
+          id: id,
+          json: doc,
+        });
       })
       .fail(function(xhr) {
         self.setStateIfMounted({
@@ -221,7 +238,8 @@ module.exports = React.createClass({
     var self = this;
 
     this.setState({
-      submitting: true
+      submitting: true,
+      error: null,
     });
 
     $.ajax({
@@ -231,7 +249,9 @@ module.exports = React.createClass({
       .then(function() {
         Materialize.toast('Delete successful', 2000, 'rounded');
 
-
+        self.context.router.transitionTo('model', {
+          key: self.context.router.getCurrentParams().key,
+        });
       })
       .fail(function(xhr) {
         self.setStateIfMounted({
@@ -253,7 +273,7 @@ module.exports = React.createClass({
 
 
   _onDeleteModalAction: function(action) {
-    if ('Yes' === action.toLowerCase()) {
+    if ('yes' === action.toLowerCase()) {
       this._delete();
     }
   },

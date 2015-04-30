@@ -22,10 +22,10 @@ module.exports = React.createClass({
       onLoad     : null,
     };
   },
-  _execCommand: function(command) {
-    document.execCommand('styleWithCSS', true, null);
-    document.execCommand(command, true, null);
-  },
+  // _execCommand: function(command) {
+  //   document.execCommand('styleWithCSS', true, null);
+  //   document.execCommand(command, true, null);
+  // },
   onKeyDown: function(e) {
     var self = this;
 
@@ -66,7 +66,7 @@ module.exports = React.createClass({
     }
 
     if (this.props.onChange) {
-      this.props.onChange(this.props.value);
+      this.props.onChange( JSON.stringify(this.props.value) );
     }
   },
   shouldComponentUpdate: function(nextProps, nextState) {
@@ -81,15 +81,17 @@ module.exports = React.createClass({
     };
 
     // split value up into multiple lines, ensuring we honour spacing
-    var value = (this.props.value + "\n").split("\n").map(function(l) {
-      var spacing = [];
+    var value = (JSON.stringify(this.props.value, null, 2) + "\n")
+      .split("\n")
+      .map(function(l) {
+        var spacing = [];
 
-      for (var i=0; l.length>i && ' ' === l[i]; i++) {
-        spacing.push(<span>&nbsp;</span>)
-      }
+        for (var i=0; l.length>i && ' ' === l[i]; i++) {
+          spacing.push(<span>&nbsp;</span>)
+        }
 
-      return (<div>{spacing}{l}</div>);
-    });
+        return (<div>{spacing}{l}</div>);
+      });
 
     return (<div contentEditable="true" 
       ref="editorDiv"

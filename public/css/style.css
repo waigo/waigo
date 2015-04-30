@@ -1774,7 +1774,8 @@ main#admin_container #admin_content .page-modelRow .actions .modal-wrapper {
   margin-right: 0.5em;
 }
 main#admin_container #admin_content .page-model .add-button {
-  margin-top: 2em;
+  float: right;
+  margin: 1em;
 }
 main#admin_container #admin_content .page-model .model-filters .filter {
   display: inline-block;

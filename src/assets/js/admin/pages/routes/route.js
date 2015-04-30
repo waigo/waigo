@@ -144,21 +144,18 @@ module.exports = React.createClass({
   _buildRequestForm: function() {
     var body = '';
     if ('POST' === this.state.method || 'PUT' === this.state.method) {
-      var bodyJson = JSON.stringify(this.state.reqBody, null, 2);
-
       body = (
         <div className="form-group">
           <label>Form body (JSON)</label>
           <JsonEditor 
             onChange={this._onBodyChange}
-            value={bodyJson} 
+            value={this.state.reqBody} 
             height="300px" />
         </div>
       );
     }
 
-    var qryStrJson = JSON.stringify(this.state.reqQuery, null, 2),
-      urlQryStr = $.param(this.state.reqQuery);
+    var urlQryStr = $.param(this.state.reqQuery);
 
     return (
       <form onSubmit={this.onSubmit}>
@@ -167,7 +164,7 @@ module.exports = React.createClass({
           <JsonEditor 
             onChange={this._onQueryStringChange}
             height="100px"
-            value={qryStrJson} />
+            value={this.state.reqQuery} />
         </div>
         {{body}}
         <SubmitBtn label="Run" disabled={!this.state.canSubmit} />
