@@ -30,6 +30,9 @@ module.exports = React.createClass({
       filter: {},
       sort: {},
       page: 1,
+      newFilter: {},
+      newSort: {},
+      newPerPage: 10,
     };
   },
 
@@ -53,14 +56,20 @@ module.exports = React.createClass({
 
 
 
-  _onLimitChange: function(e) {
+  _onPerPageChange: function(e) {
     try {
+      var num = parseInt(e.currentTarget.value);
+
+      if (Number.isNaN(num)) {
+        throw new Error();
+      }
+
       this.setState({
-        perPage: parseInt(e.currentTarget.value)
-      });      
+        newPerPage: num
+      });
     } catch (err) {
       this.setState({
-        perPage: null
+        newPerPage: null
       });            
     }
   },
@@ -68,11 +77,11 @@ module.exports = React.createClass({
   _onFilterChange: function(val) {
     try {
       this.setState({
-        filter: JSON.parse(val),
+        newFilter: JSON.parse(val)
       });
     } catch (err) {
       this.setState({
-        filter: null,
+        newFilter: null
       });
     }
   },
@@ -80,28 +89,24 @@ module.exports = React.createClass({
   _onSortChange: function(val) {
     try {
       this.setState({
-        sort: JSON.parse(val),
+        newSort: JSON.parse(val),
       });
     } catch (err) {
       this.setState({
-        sort: null,
+        newSort: null
       });
     }
   },
 
-  _isQueryValid: function() {
-    return (null !== this.state.filter 
-      && null !== this.state.sort
-      && null !== this.state.perPage
+  _canSubmitSettingsForm: function() {
+    return (null !== this.state.newFilter 
+      && null !== this.state.newSort
+      && null !== this.state.newPerPage
       );
   },
 
   _buildTableFilter: function() {
-    var isQueryValid = this._isQueryValid();
-
-    var canRefreshResults = this.state.filter 
-      && this.state.perPage
-      && this.state.sort;
+    var canSubmit = this._canSubmitSettingsForm();
 
     return (
       <div className="row">
@@ -117,7 +122,7 @@ module.exports = React.createClass({
                   <div className="filter">
                     <label>Filter:</label>
                     <JsonEditor 
-                      value={{}}
+                      value={this.state.newFilter}
                       onChange={this._onFilterChange}
                       height="100px"
                       width="200px" />
@@ -125,17 +130,17 @@ module.exports = React.createClass({
                   <div className="filter">
                     <label>Sort:</label>
                     <JsonEditor 
-                      value={{}}
+                      value={this.state.newSort}
                       onChange={this._onSortChange}
                       height="100px"
                       width="200px" />
                   </div>
                   <div className="filter">
                     <label>Per page:</label>
-                    <input type="text" value="10" onChange={this._onLimitChange} />
+                    <input type="text" value={this.state.newPerPage} onChange={this._onPerPageChange} />
                   </div>
                   <div className="action">
-                    <SubmitButton label="Apply" disabled={!canRefreshResults} />
+                    <SubmitButton label="Apply" disabled={!canSubmit} />
                   </div>
                 </form>
               </div>
@@ -291,6 +296,9 @@ module.exports = React.createClass({
 
     // reset page
     this.setState({
+      filter: this.state.newFilter,
+      sort: this.state.newSort,
+      perPage: this.state.newPerPage,
       page: 1
     });
 
