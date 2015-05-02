@@ -19,4 +19,6 @@ module.exports = function(config) {
   config.middleware.ALL.errorHandler.showStack = true;
   config.middleware.ALL.outputFormats.formats.html.cache = false;
   config.logging.minLevel = 'DEBUG';
+  // emails get printed to console
+  config.mailer.type = 'console';
 };
