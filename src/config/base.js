@@ -81,6 +81,7 @@ module.exports = function(config) {
     'routes',
     'globalHelpers',
     'staticResources',
+    'actionTokens',
     'listener'
   ];
 
@@ -229,11 +230,47 @@ module.exports = function(config) {
       label: 'Emails',
       path: '/admin/emails',
     },
-    {
-      label: 'Logs',
-      path: '/admin/logs',
-    },
   ];
 
+
+  /**
+   * Mailer config.
+   */
+  config.mailer = {
+    from: 'RemoteCoder <scout@remotecoder.io>',
+    smtpOptions: {
+      host: '127.0.0.1',
+      port: 25,
+      secure: false,
+      ignoreTLS: true,
+      tls: {
+        rejectUnauthorized: false
+      },
+      maxConnections: 1,
+      maxMessages: 100,
+      connectionTimeout: 3000,
+      greetingTimeout: 3000,
+      socketTimeout: 3000,
+      debug: true,
+    }
+  };
+
+
+  /**
+   * Action tokens are enrypted one-time strings sent to users (usually in a 
+   * link by email) which represent a particular action to be taken at a future
+   * point in time. 
+   * 
+   * The next time the server recieves the token it can decode it to find out 
+   * what action should be taken for the associated user. 
+   * 
+   * Resetting a user's password is done using action tokens.
+   */
+  config.actionTokens = {
+    // encryption key to prevent tampering 
+    encryptionKey: _.str.uuid.v4(),
+    // default token validity duration from when it was created
+    validForHours: 2,
+  };
 };
 

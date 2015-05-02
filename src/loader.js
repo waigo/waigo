@@ -195,7 +195,7 @@ loader.init = function*(options) {
 
     _.extend(moduleMap, yield _walk(sourcePaths[sourceName], {
         // only want files from views/, but not ones which are prefixed with an underscore
-        matchFiles: /^views\/(.*\/)?(((?!_)[A-Za-z0-9])+\.?\w+)$/i,
+        matchFiles: /^views\/(.*\/)?(((?!_)[A-Za-z0-9_]+)\.?\w+)$/i,
         // may have many view templates with same names but different extensions
         keepExtensions: true,
       })

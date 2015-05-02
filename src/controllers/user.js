@@ -107,3 +107,95 @@ exports.register_submit = function*() {
   }
 };
 
+
+
+exports.forgot_password = function*() {
+  var form = yield this.form.create('forgotPassword', {
+    context: this
+  });
+
+  yield this.render('user/forgot_password', {
+    form: form,
+  });
+};
+
+
+
+
+exports.forgot_password_submit = function*() {
+  var form = yield this.form.create('forgotPassword', {
+    context: this
+  });
+
+  try {
+    yield form.process();
+
+    yield this.showAlert('We have emailed you a link to reset your password.');
+
+    yield this.redirect('/');
+  } catch (err) {
+    if (!(err instanceof this.form.FormValidationError)) {
+      this.logger.error(err.stack);
+    }
+
+    yield this.render('user/forgot_password', {
+      error: err,
+      form: form,
+    }, {
+      status: 400
+    });
+  }
+};
+
+
+
+
+exports.reset_password = function*() {
+  var action = this.app.emailActions.process(
+    this.request.query.c, {
+      type: 'reset_password'
+    }
+  );
+  
+  // log the user in
+  yield action.user.login();
+
+  this.logger.debug('Reset password', user._id);
+
+  var form = yield this.form.create('resetPassword', {
+    context: this
+  });
+
+  yield this.render('user/reset_password', {
+    form: form,
+  });
+};
+
+
+
+exports.reset_password_submit = function*() {
+  this.logger.debug('Resetting password');
+
+  var form = yield this.form.create('resetPassword', {
+    context: this
+  });
+
+  try {
+    yield form.process();
+
+    yield this.showAlert('Your new password has been saved.');
+    yield this.redirect('/');
+
+  } catch (err) {
+    if (!(err instanceof this.form.FormValidationError)) {
+      this.logger.error(err.stack);
+    }
+
+    yield this.render('user/reset_password', {
+      error: err,
+      form: form,
+    }, {
+      status: 400
+    });
+  };
+};

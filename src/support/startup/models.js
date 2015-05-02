@@ -37,13 +37,14 @@ module.exports = function*(app) {
       collectionName = modelInfo.collection || _.str.pluralize(name).toLowerCase();
     
     // add view object docMethod (but can be overridden for each model)
-    var docMethods = {};
+    var colMethods = modelInfo.methods || {},
+      docMethods = {};
     docMethods[viewObjects.methodName] = function*(ctx) {
       return this.toJSON();
     };
 
     // add method to record to activity log
-    docMethods.record = function*() {
+    colMethods.record = docMethods.record = function*() {
       if (app.record) {
         yield app.record.apply(app, arguments);
       }

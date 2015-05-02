@@ -205,6 +205,32 @@ module.exports = {
       yield this.save();
     },
     /**
+     * Update this user's password.
+     * @param {Object} context waigo client request context.
+     * @param {String} newPassword New password.
+     */
+    updatePassword: function*(context, newPassword) {
+      context.app.logger.debug('Update user password', this._id);
+
+      var passAuth = _.find(this.auth, function(a) {
+        return 'password' === a.type;
+      });
+
+      if (!passAuth) {
+        return false;
+      }
+
+      // update password
+      passAuth.token = yield this.generatePasswordHash(newPassword);
+
+      // save
+      this.markChanged('auth');
+      yield this.save();
+
+      // record
+      yield this.record('update_password', this);
+    },
+    /**
      * Get whether user can access given resource.
      *
      * @param {String} resource      The resource the user wishes to access.

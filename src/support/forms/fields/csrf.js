@@ -22,7 +22,6 @@ var CSRF = exports.Field = function() {
   this._addValidator(
     function* checkCSRF(context, field, value) {
       try {
-        console.log(context.session.secret, value);
         context.assertCSRF(value);
       } catch (err) {
         throw new Error('Token check failed');
@@ -41,7 +40,6 @@ CSRF.prototype.toViewObject = function*(ctx) {
 
   ret.type = 'hidden';
   ret.value = ctx.csrf;
-  console.log(ctx._csrf, ctx.session.secret, ret.value);
 
   return ret;
 };

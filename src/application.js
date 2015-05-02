@@ -89,11 +89,11 @@ Application.setupLogger = function*(cfg) {
   app.logger.setLevel(cfg.minLevel);
 
   process.on('uncaughtException', function(err) {
-    app.logger.error('Uncaught exception', err.stack);
+    app.logger.error('Uncaught exception', err.stack ? err.stack : err);
   });
 
   app.on('error', function(err, ctx){
-    app.logger.error(err.stack);
+    app.logger.error(err.stack ? err.stack : err);
   });
 
   // allow easy creation of other-category loggers
@@ -105,6 +105,9 @@ Application.setupLogger = function*(cfg) {
     return logger;
   };
 };
+
+
+
 
 
 

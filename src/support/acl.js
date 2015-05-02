@@ -66,7 +66,7 @@ ACL.prototype.init = function*() {
 ACL.prototype.onAclUpdated = function() {
   var self = this;
 
-  self.app.logger.info('Detected ACL rules change');
+  self.app.logger.info('Detected ACL rules change...reloading');
 
   co(this.reload())
     .catch(function(err) {
@@ -81,7 +81,7 @@ ACL.prototype.onAclUpdated = function() {
  * Reload the ACL from the database.
  */
 ACL.prototype.reload = function*() {
-  this.logger.info('Reloading rules from db');
+  this.logger.debug('Reloading rules from db');
 
   var data = yield this.app.models.Acl.find({}, {
     rawMode: true

@@ -34,13 +34,15 @@ module.exports = function() {
     }
 
     // template helpers
-    this.locals.matchesCurrentUrl = _.bind(exports.matchesCurrentUrl, this);
+    this.locals.matchesCurrentUrl = _.bind(matchesCurrentUrl, this);
 
     // convenient accessors
     this.logger = this.app.logger;
     this.acl = this.app.acl;
     this.models = this.app.models;
     this.form = this.app.form;
+
+    processAlertMessage(this);
 
     yield next;
   }
@@ -52,11 +54,26 @@ module.exports = function() {
  * @param  {String} urlPath URL path.
  * @return {Boolean}  true if so; false otherwise.
  */
-exports.matchesCurrentUrl = function(urlPath) {
+var matchesCurrentUrl = exports.matchesCurrentUrl = function(urlPath) {
   var parsedURL = URL.parse(this.request.url),
     parsedPath = URL.parse(urlPath);
 
   return (parsedURL.pathname === parsedPath.pathname);
 };
+
+
+
+var processAlertMessage = exports.processAlertMessage = function(ctx) {
+  // clear current alert message (and save it for templates)
+  if (ctx.session.alertMsg) {
+    ctx.locals.alertMsg = ctx.session.alertMsg;
+    ctx.session.alertMsg = null;
+  }
+
+  // set alert msg for next page show
+  ctx.showAlert = function*(msg) {
+    ctx.session.alertMsg = msg;
+  };
+}
 
 

@@ -26,7 +26,7 @@ module.exports = {
   ],
   method: 'POST',
   postValidation: [
-    function* createUser(next) {
+    function* createUserAndLogin(next) {
       var app = this.context.app,
         User = app.models.User;
 

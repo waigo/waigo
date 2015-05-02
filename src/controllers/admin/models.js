@@ -175,7 +175,7 @@ exports.docUpdate = function*() {
   // record activity
   yield this.app.record('update_doc', this.currentUser, {
     model: modelName,
-    _id: doc._id
+    _id: rowId
   });
 
   this.body = {

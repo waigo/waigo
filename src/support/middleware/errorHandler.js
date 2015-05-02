@@ -90,7 +90,7 @@ var _throw = function() {
     ErrorClass = errors.RuntimeError;
   }
 
-  args.unshift(null);   // the thisArt for the .bind() call
+  args.unshift(null);   // the this arg for the .bind() call
 
   throw new (Function.prototype.bind.apply(ErrorClass, args));
 };

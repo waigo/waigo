@@ -166,7 +166,7 @@ exports.map = function(app, routes) {
   // resolve middleware for different HTTP methods
   var commonMiddleware = {};
   _.each(methods, function(method) {
-    logger.info('Setting up HTTP method middleware', method);
+    logger.debug('Setting up HTTP method middleware', method);
 
     commonMiddleware[method] = 
       loadCommonMiddleware(app.config.middleware[method]);

@@ -17,6 +17,8 @@ var path = require('path'),
  * Copy all built static resources from plugin and core framework folders into 
  * app's folder. And also setup static resource URL helper.
  *
+ * This must be preceded by `globalHelpers` startup step.
+ *
  * @param {Object} app The application.
  * @param {Object} [app.config.staticResources.folder] Path to static resources folder.
  */
