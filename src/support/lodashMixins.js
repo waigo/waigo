@@ -2,7 +2,6 @@
 
 
 
-
 /**
  * Get a deeply nested object property.
  *
@@ -12,7 +11,7 @@
  *
  * @return {*} Returns value if found; otherwise the fallbackVAlue.
  */
-exports.get = function(obj, path, fallbackValue) {
+var get = exports.get = function(obj, path, fallbackValue) {
   var self = this;  // underscore
 
   if (self.isUndefined(obj) || null === obj) {
@@ -34,3 +33,19 @@ exports.get = function(obj, path, fallbackValue) {
 };
 
 
+
+var str = exports.str = require('underscore.string');
+
+str.pluralize = require('pluralize');
+str.uuid = require('node-uuid');
+
+
+str.emailFormat = function(type, obj) {
+  switch (type) {
+    case 'greet':
+      var name = get(obj, 'profile.displayName') || get(obj, 'username');
+
+      return name ? `Hi ${name}`: 'Hi';
+      break;
+  }
+};
