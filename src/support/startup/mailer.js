@@ -18,34 +18,14 @@ var waigo = require('../../../'),
  * @param {Object} app The application.
  */
 module.exports = function*(app) {
-  
   var mailerConfig = app.config.mailer;
 
+  app.logger.debug('Initializingm mailer: ' + mailerConfig.type);
+
   // load in the mailer implementation
-  var MailerClass = waigo.load('support/mailers/' + mailerConfig.type);
+  var mailer = waigo.load('support/mailers/' + mailerConfig.type);
 
-  
-
-  app.
-
-
-  app.dbs = {};
-
-  var ids = _.keys(app.config.db || {});
-
-  for (let i=0; ids.length > i; ++i) {
-    let id = ids[i],
-      cfg = app.config.db[id];
-
-    app.logger.debug('Setting up database connection: ' + id);
-    
-    var builder = waigo.load('support/db/' + cfg.type);
-
-    app.dbs[id] = yield builder.create(cfg);
-  }
-
-  // for convenience
-  app.db = app.dbs.main;
+  app.mailer = yield mailer.create(app, mailerConfig);
 };
 
 

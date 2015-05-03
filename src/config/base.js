@@ -237,28 +237,25 @@ module.exports = function(config) {
    * Mailer config.
    */
   config.mailer = {
-    // default 'from' address
-    from: 'System <waigo@localhost>',
     // mailer type
     type: 'smtp',
     // options for mailer type
     options: {
-      transport: 'smtp',
-      config: {
-        host: '127.0.0.1',
-        port: 25,
-        secure: false,
-        ignoreTLS: true,
-        tls: {
-          rejectUnauthorized: false
-        },
-        maxConnections: 1,
-        maxMessages: 100,
-        connectionTimeout: 3000,
-        greetingTimeout: 3000,
-        socketTimeout: 3000,
-        debug: false,
-      }
+      // default 'from' address
+      from: 'System <waigo@localhost>',
+      host: '127.0.0.1',
+      port: 25,
+      secure: false,
+      ignoreTLS: true,
+      tls: {
+        rejectUnauthorized: false
+      },
+      maxConnections: 1,
+      maxMessages: 100,
+      connectionTimeout: 3000,
+      greetingTimeout: 3000,
+      socketTimeout: 3000,
+      debug: false,
     }
   };
 
