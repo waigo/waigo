@@ -11,7 +11,7 @@ var waigo = require('../../../'),
   _ = waigo._;
 
 
-var Mailer = waigo.load('support/mailers/base').Mailer;
+var Mailer = waigo.load('support/mailer/base').Mailer;
 
 
 var Console = function(app, config) {
@@ -23,9 +23,9 @@ util.inherits(Console, Mailer);
 
 
 Console.prototype.send = function*(options) {
-  var result = yield Console.super_.prototype.send.call(this, options);
+  var result = yield this._send(options);
 
-  this.logger.info(result);
+  console.log(result);
 };
 
 
@@ -33,7 +33,7 @@ Console.prototype.send = function*(options) {
 exports.create = function*(app, config) {
   var c = new Console(app, config);
   
-  c._initNodeMailer(nodemailerStubTransport());
+  yield c._init(nodemailerStubTransport());
 
   return c;
 };

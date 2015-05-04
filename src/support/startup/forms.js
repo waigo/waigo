@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @fileOverview Setup app-level convenient accessors and template helpers
+ * @fileOverview Setup form stuff.
  */
 
 
@@ -12,10 +12,6 @@ var waigo = require('../../../'),
 module.exports = function*(app) {
   // Form
   app.form = waigo.load('support/forms/form');
-  // template helpers
-  app.locals = {
-    _: _,
-  };
 };
 
 

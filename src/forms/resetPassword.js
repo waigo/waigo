@@ -38,9 +38,15 @@ module.exports = {
       yield next;
     },
     function* emailUser(next) {
-      this.context.app.logger.info('TODO: Email user about password change');
-      // TODO: send email
-      // 
+      var app = this.context.app,
+        user = this.context.currentUser;
+
+      yield app.mailer.send({
+        to: user,
+        subject: 'Your password has been updated',
+        bodyTemplate: 'passwordUpdated',
+      });
+
       yield next;
     },
   ]

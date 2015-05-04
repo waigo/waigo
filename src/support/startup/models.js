@@ -32,9 +32,9 @@ module.exports = function*(app) {
 
     var modelInfo = waigo.load(modulePath);
 
-    var name = modelInfo.className || _.str.capitalize(moduleFileName),
+    var name = modelInfo.className || _.capitalize(moduleFileName),
       dbName = modelInfo.db || 'main',
-      collectionName = modelInfo.collection || _.str.pluralize(name).toLowerCase();
+      collectionName = modelInfo.collection || _.pluralize(name).toLowerCase();
     
     // add view object docMethod (but can be overridden for each model)
     var colMethods = modelInfo.methods || {},

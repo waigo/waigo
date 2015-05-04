@@ -37,7 +37,9 @@ module.exports = {
       }, {
         fields: {
           _id: 1,
-          auth: 1,
+          username: 1,
+          profile: 1,
+          emails: 1,
         }
       });
 
@@ -48,8 +50,21 @@ module.exports = {
       // action
       var token = app.actionTokens.create('reset_password', user);
 
-      // TODO: send email
-      app.logger.info('todo: send email', token)
+      app.logger.debug('Reset password token for ' + user._id , token);
+
+      // send email
+      yield app.mailer.send({
+        to: user,
+        subject: 'Reset your password',
+        bodyTemplate: 'resetPassword',
+        locals: {
+          link: app.routeUrl('reset_password', null, {
+            c: token
+          }, {
+            absolute: true
+          })
+        }
+      });
 
       yield next;
     }

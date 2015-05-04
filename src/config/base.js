@@ -27,7 +27,7 @@ module.exports = function(config) {
 
 
   /**
-   * Base web URL
+   * Base web URL without the trailing slash
    */
   config.baseURL = 'http://localhost:' + config.port;
 
@@ -73,15 +73,17 @@ module.exports = function(config) {
    * Each of these corresponds to a module file under the `support/startup` path.
    */
   config.startupSteps = [
+    'appLocals',
     'database',
     'models',
+    'forms',
     'activityRecorder',
     'acl',
     'middleware',
     'routes',
-    'globalHelpers',
     'staticResources',
     'actionTokens',
+    'mailer',
     'listener'
   ];
 
@@ -155,9 +157,9 @@ module.exports = function(config) {
     sessions: {
       // cookie signing keys
       keys: [
-        _.str.uuid.v4(),
-        _.str.uuid.v4(),
-        _.str.uuid.v4(),
+        _.uuid.v4(),
+        _.uuid.v4(),
+        _.uuid.v4(),
       ],
       // session cookie name
       name: 'waigo',
@@ -237,12 +239,12 @@ module.exports = function(config) {
    * Mailer config.
    */
   config.mailer = {
+    // default 'from' address
+    from: 'System <waigo@localhost>',
     // mailer type
     type: 'smtp',
     // options for mailer type
-    options: {
-      // default 'from' address
-      from: 'System <waigo@localhost>',
+    smtp: {
       host: '127.0.0.1',
       port: 25,
       secure: false,
@@ -272,7 +274,7 @@ module.exports = function(config) {
    */
   config.actionTokens = {
     // encryption key to prevent tampering 
-    encryptionKey: _.str.uuid.v4(),
+    encryptionKey: _.uuid.v4(),
     // default token validity duration from when it was created
     validForHours: 2,
   };

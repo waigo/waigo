@@ -15,6 +15,7 @@ module.exports = {
       POST: 'user.forgot_password_submit',
     },
     '/reset_password': {
+      name: 'reset_password',
       GET: 'user.reset_password',
       POST: 'user.reset_password_submit',
     },

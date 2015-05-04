@@ -10,7 +10,9 @@ var waigo = require('../../../'),
  * @param {Object} app The application.
  */
 module.exports = function*(app) {
-  app.actionTokens = yield waigo.load('support/actionTokens').init(
+  var mod = waigo.load('support/actionTokens');
+
+  app.actionTokens = yield mod.init(
     app, app.config.actionTokens
   );
 };

@@ -1,9 +1,10 @@
 "use strict";
 
-var debug = require('debug')('waigo-actiontokens');
+var debug = require('debug')('waigo-actiontokens'),
+  crypto = require('crypto');
 
 
-var waigo = require('../../../'),
+var waigo = require('../../'),
   _ = waigo._,
   RuntimeError = waigo.load('support/errors').RuntimeError;
 
@@ -19,7 +20,7 @@ var _throw = function(msg, status, data) {
  * Action tokens manager.
  * @constructor
  */
-var ActionTokens = module.exports = function(app, config) {
+var ActionTokens = function(app, config) {
   this.app = app;
   this.config = config;
   this.logger = app.logger.create('ActionTokens');
@@ -44,16 +45,16 @@ var ActionTokens = module.exports = function(app, config) {
  *
  * @return {String} the action token. 
  */
-ActionTokens.prototype.create = function*(type, user, data, options) {
+ActionTokens.prototype.create = function(type, user, data, options) {
   options = _.extend({
-    validForHours: this.config.actionTokens.validForHours
+    validForHours: this.config.validForHours
   }, options);
 
   this.logger.debug('Creating action token: ' + type + ' for user ' + user._id, data);
 
   // every token is uniquely identied by a salt (this is also doubles up as  
   // a factor for more secure encryption)
-  var salt = _.str.uuid.v4();
+  var salt = _.uuid.v4();
 
   var plaintext = JSON.stringify([ 
     Date.now() + (options.validForHours * 1000 * 60 * 60), 
@@ -66,7 +67,7 @@ ActionTokens.prototype.create = function*(type, user, data, options) {
   debug('Encrypt: ' + plaintext);
 
   var cipher = crypto.createCipher(
-    'aes256', this.config.actionTokens.encryptionKey
+    'aes256', this.config.encryptionKey
   );
 
   return cipher.update(plaintext, 'utf8', 'hex') + cipher.final('hex');
@@ -94,7 +95,7 @@ ActionTokens.prototype.process = function*(token, options) {
 
   try {
     var decipher = crypto.createDeciper(
-      'aes256', this.config.actionTokens.encryptionKey
+      'aes256', this.config.encryptionKey
     );
 
     var plaintext = decipher.update(token, 'hex', 'utf8') 
@@ -172,7 +173,10 @@ ActionTokens.prototype.process = function*(token, options) {
  * @return {ActionTokens}
  */
 exports.init = function*() {
-  return new (Function.prototype.bind.apply(ActionTokens, arguments));
+  var args = _.toArray(arguments);
+  args.unshift(null);
+
+  return new (Function.prototype.bind.apply(ActionTokens, args));
 };
 
 

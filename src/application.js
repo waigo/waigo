@@ -11,7 +11,7 @@ var debug = require('debug')('waigo-application'),
   _ = waigo._;
 
 // underscore mixins
-_.mixin(waigo.load('support/lodashMixins'));
+waigo.load('support/lodashMixins')(_);
 
 
 

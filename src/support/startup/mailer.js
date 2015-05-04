@@ -20,10 +20,10 @@ var waigo = require('../../../'),
 module.exports = function*(app) {
   var mailerConfig = app.config.mailer;
 
-  app.logger.debug('Initializingm mailer: ' + mailerConfig.type);
-
   // load in the mailer implementation
-  var mailer = waigo.load('support/mailers/' + mailerConfig.type);
+  var mailer = waigo.load('support/mailer/' + mailerConfig.type);
+
+  app.logger.debug('Initializing mailer: ' + mailerConfig.type);
 
   app.mailer = yield mailer.create(app, mailerConfig);
 };

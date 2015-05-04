@@ -97,12 +97,13 @@ var buildRoutes = function(logger, commonMiddleware, urlPath, node, parentConfig
   var mappings = [];
 
   // iterate through each possible method
-  _.each(methods  , function(m) {
+  _.each(methods , function(m) {
     if (node[m]) {
       var routeMiddleware = _.isArray(node[m]) ? node[m] : [node[m]];
 
       mappings.push({
         method: m,
+        name: node.name || urlPath,
         url: urlPath,
         resolvedMiddleware: commonMiddleware[m].concat(
           resolvedPreMiddleware, 
@@ -115,6 +116,9 @@ var buildRoutes = function(logger, commonMiddleware, urlPath, node, parentConfig
 
     delete node[m];
   });
+
+  // delete name
+  delete node.name;
 
   // go through children
   _.each(node || {}, function(subNode, subUrlPath) {
@@ -188,13 +192,16 @@ exports.map = function(app, routes) {
     return a.url < b.url;
   });
 
-  // save on app, so that we can access later
-  app.routeMappings = orderedMappings;
+  app.routes = {};
 
   // add the handlers to routing
   _.each(orderedMappings, function(mapping) {
     var route = app.route(mapping.url);
+
     route[mapping.method.toLowerCase()].apply(route, mapping.resolvedMiddleware);
+
+    // save to app
+    app.routes[mapping.name] = mapping;
   });
 };
 

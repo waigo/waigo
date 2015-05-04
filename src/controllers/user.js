@@ -151,7 +151,7 @@ exports.forgot_password_submit = function*() {
 
 
 exports.reset_password = function*() {
-  var action = this.app.emailActions.process(
+  var action = yield this.app.actionTokens.process(
     this.request.query.c, {
       type: 'reset_password'
     }
