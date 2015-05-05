@@ -34,6 +34,11 @@ var App = React.createClass({
       users: newUsers
     });
   },
+  clearUsers: function() {
+    this.setState({
+      users: []
+    });
+  },
   render () {
     return (
       <div className="row page-emails">
@@ -46,7 +51,11 @@ var App = React.createClass({
         </div>
         <section className="tab-content">
           <div id="users" className="col s12">
-            <UsersPage users={this.state.users} addUser={this.addUser} />
+            <UsersPage 
+              users={this.state.users} 
+              addUser={this.addUser} 
+              removeUser={this.removeUser}
+              clearUsers={this.clearUsers} />
           </div>
           <div id="templates" className="col s12">
             <TemplatePage />
