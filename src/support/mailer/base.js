@@ -180,7 +180,14 @@ Mailer.prototype._send = function*(mailOptions) {
       self.logger.debug('Content', sendOptions.html);
 
       // send
-      return yield self._nodeMailer.send(sendOptions);
+      var ret = yield self._nodeMailer.send(sendOptions);
+
+      // record
+      yield self.app.record('email', recipient, {
+        subject: sendOptions.subject
+      });
+
+      return ret;
     })();    
   });
 };

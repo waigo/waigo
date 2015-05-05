@@ -52,6 +52,9 @@ module.exports = {
 
       app.logger.debug('Reset password token for ' + user._id , token);
 
+      // record
+      yield app.record('reset_password', user);
+
       // send email
       yield app.mailer.send({
         to: user,

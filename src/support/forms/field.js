@@ -125,6 +125,18 @@ Object.defineProperty(Field.prototype, 'name', {
 
 
 /**
+ * Field friendly label.
+ */
+Object.defineProperty(Field.prototype, 'label', {
+  get: function() {
+    return this.config.label || this.config.name;
+  }
+});
+
+
+
+
+/**
  * Field original value.
  *
  * This is useful if we wish to check whether the field value has changed 

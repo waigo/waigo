@@ -55,7 +55,7 @@ module.exports = {
       // check user and password
       if (!user 
           || !(yield user.isPasswordCorrect(this.fields.password.value)) ) {
-        throw new RuntimeError('Incorrect username or password', 400, this.fields.email.value);
+        throw new RuntimeError('Incorrect username or password', 400);
       }
 
       // log the user in

@@ -27,7 +27,7 @@ var routeUrl = function(app, routeName, urlParams, queryParams, options) {
 
   debug('Generate URL for route ' + routeName);
 
-  var route = app.routes[routeName];
+  var route = app.routes.byName[routeName];
 
   if (!route) {
     throw new Error('No route named: ' + routeName);

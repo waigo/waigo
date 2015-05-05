@@ -24,6 +24,8 @@ var ActionTokens = function(app, config) {
   this.app = app;
   this.config = config;
   this.logger = app.logger.create('ActionTokens');
+
+  this.logger.debug('encryptionKey', this.config.encryptionKey);
 };
 
 
@@ -94,7 +96,7 @@ ActionTokens.prototype.process = function*(token, options) {
   var json = null;
 
   try {
-    var decipher = crypto.createDeciper(
+    var decipher = crypto.createDecipher(
       'aes256', this.config.encryptionKey
     );
 
@@ -105,7 +107,7 @@ ActionTokens.prototype.process = function*(token, options) {
 
     var json = JSON.parse(plaintext);
   } catch (err) {
-    _throw('Error parsing action token', null, {
+    _throw('Error parsing action token', 400, {
       error: err.stack
     });
   }
@@ -116,19 +118,13 @@ ActionTokens.prototype.process = function*(token, options) {
     userId = json[3],
     data = json[4];
 
-  var mod = this.app.actionTokens.modules[type];
-
-  if (!mod) {
-    _throw('Unrecognized action token type: ' + type);
-  }
-
-  if (options.type && type !== options.type) {
-    _throw('Action token type mismatch' + type);
+  if (!_.isEmpty(options.type) && type !== options.type) {
+    _throw('Action token type mismatch' + type), 400;
   }
 
   // check if action still valid
   if (Date.now() > ts) {
-    _throw('This action token has expired.');
+    _throw('This action token has expired.', 403);
   }
 
   var user = yield this.app.models.User.findOne({
@@ -136,7 +132,7 @@ ActionTokens.prototype.process = function*(token, options) {
   });
 
   if (!user) {
-    _throw('Unable to find user information related to action token');
+    _throw('Unable to find user information related to action token', 404);
   }
 
   // check if we've already executed this request before
@@ -145,14 +141,13 @@ ActionTokens.prototype.process = function*(token, options) {
   });
 
   if (activity) {
-    _throw('This action token has already been processed and is no longer valid.');
+    _throw('This action token has already been processed and is no longer valid.', 403);
   }
 
   // record activity
   yield this.app.record('action_token', user, {
     type: type,
     salt: salt,
-    ip: req.ips,
   });
 
   this.logger.debug('Action token processed for ' + user._id, type);

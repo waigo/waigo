@@ -18,33 +18,6 @@ var errors = waigo.load('support/errors'),
 var FormValidationError = exports.FormValidationError = errors.define('FormValidationError', errors.MultipleError);
 
 
-/**
- * Get view object representation of form validation error.
- *
- * This checks the `leanErrors` request flag. If set then the 
- * resulting view object will be simpler to analyse and iterate over.
- */
-FormValidationError.prototype.toViewObject = function*(ctx) {
-  if (!_.get(ctx, 'request.leanErrors')) {
-    return yield errors.MultipleError.prototype[viewObjects.methodName].call(this, ctx);
-  } else {
-    var ret = yield errors.RuntimeError.prototype[viewObjects.methodName].call(this, ctx);
-    ret.fields = {};
-
-    for (let id in this.errors) {
-      let fieldErrors = (yield this.errors[id][viewObjects.methodName](ctx)).errors;
-
-      ret.fields[id] = [];
-
-      for (let feId in fieldErrors) {
-        ret.fields[id].push(fieldErrors[feId].msg);
-      }
-    }
-
-    return ret;
-  }
-};
-
 
 // the form spec cache
 var cache = {};
@@ -248,7 +221,7 @@ Form.prototype.validate = function*() {
         errors = {};
       }
 
-      errors[fieldName] = err.data;
+      errors[fieldName] = err.details;
     }
   }
 

@@ -114,7 +114,7 @@ exports.forgot_password = function*() {
     context: this
   });
 
-  yield this.render('user/forgot_password', {
+  yield this.render('user/forgotPassword', {
     form: form,
   });
 };
@@ -138,7 +138,7 @@ exports.forgot_password_submit = function*() {
       this.logger.error(err.stack);
     }
 
-    yield this.render('user/forgot_password', {
+    yield this.render('user/forgotPassword', {
       error: err,
       form: form,
     }, {
@@ -158,15 +158,15 @@ exports.reset_password = function*() {
   );
   
   // log the user in
-  yield action.user.login();
+  yield action.user.login(this);
 
-  this.logger.debug('Reset password', user._id);
+  this.logger.debug('Reset password', action.user._id);
 
   var form = yield this.form.create('resetPassword', {
     context: this
   });
 
-  yield this.render('user/reset_password', {
+  yield this.render('user/resetPassword', {
     form: form,
   });
 };
@@ -191,7 +191,7 @@ exports.reset_password_submit = function*() {
       this.logger.error(err.stack);
     }
 
-    yield this.render('user/reset_password', {
+    yield this.render('user/resetPassword', {
       error: err,
       form: form,
     }, {

@@ -192,7 +192,10 @@ exports.map = function(app, routes) {
     return a.url < b.url;
   });
 
-  app.routes = {};
+  app.routes = {
+    all: orderedMappings,
+    byName: {}
+  };
 
   // add the handlers to routing
   _.each(orderedMappings, function(mapping) {
@@ -201,7 +204,7 @@ exports.map = function(app, routes) {
     route[mapping.method.toLowerCase()].apply(route, mapping.resolvedMiddleware);
 
     // save to app
-    app.routes[mapping.name] = mapping;
+    app.routes.byName[mapping.name] = mapping;
   });
 };
 

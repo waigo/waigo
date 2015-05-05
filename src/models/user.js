@@ -221,7 +221,7 @@ module.exports = {
       }
 
       // update password
-      passAuth.token = yield this.generatePasswordHash(newPassword);
+      passAuth.token = yield this.__col.generatePasswordHash(newPassword);
 
       // save
       this.markChanged('auth');

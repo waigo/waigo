@@ -21,7 +21,11 @@ module.exports = {
       label: 'Confirm password',
       required: true,
       sanitizers: [ 'trim' ],
-      validators: [ 'notEmpty' ],
+      validators: [{
+        id: 'compareToField',
+        field: 'password',
+        comparison: 'eq',
+      }],
     },
   ],
   method: 'POST',
@@ -33,7 +37,7 @@ module.exports = {
       app.logger.info('Resetting user password', user._id);
 
       // save new password
-      yield user.updatePassword(this.fields.password.value);
+      yield user.updatePassword(this.context, this.fields.password.value);
 
       yield next;
     },

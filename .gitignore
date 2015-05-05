@@ -25,3 +25,6 @@ webpack.config.js
 test/data/app
 test/data/*
 src/cli/__test.js
+
+# config
+src/config/development.*.js

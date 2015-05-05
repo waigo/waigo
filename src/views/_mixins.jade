@@ -18,18 +18,20 @@ mixin form(form, error)
   .row
     form.col.s12(method=(form.method || 'post'), class='col s12 ' + (error ? 'error' : ''))
       if error
-        if error.errors
-          +msg('error', error.msg)
+        +msg('error', error.msg)
+          if error.details
             ul
-              - each fieldErrors, fieldName in error.errors
-                - each fieldError in fieldErrors
-                  li #{form.fields[fieldName].label || fieldName}: #{fieldError}
-        else
-          +msg('error', error.msg)
+              if 'FormValidationError' === error.type
+                - each fieldErrors, fieldName in error.details
+                  - each fieldError in fieldErrors
+                    li #{form.fields[fieldName].label || fieldName}: #{fieldError}
+              else
+                - each detail in error.details
+                  li #{ detail }
       .fields
         - each fieldName in form.order
           - var field = form.fields[fieldName]
-          - var fieldErrors = _.get(error, 'errors.' + fieldName, [])
+          - var fieldErrors = _.get(error, 'details.' + fieldName, [])
           - var value = field.value || ''
           - var placeholder = field.placeholder || field.label
           if (field.type == 'text' || field.type == 'password')

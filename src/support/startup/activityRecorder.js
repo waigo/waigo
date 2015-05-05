@@ -28,7 +28,7 @@ module.exports = function*(app) {
    * @return {Activity} the created activity object
    */
   app.record = function*(verb, actor, details) {
-    app.logger.debug('Recording activity', verb, actor, details);
+    app.logger.debug('Recording activity', verb, actor._id || actor, details);
 
     if (!actor._id) {
       actor = {
@@ -41,12 +41,17 @@ module.exports = function*(app) {
       }
     }
 
-    return yield app.models.Activity.insert({
-      verb: verb,
-      actor: actor,
-      published: new Date(),
-      details: details || null
-    });
+    var qry = {
+     verb: verb,
+     actor: actor,
+     published: new Date(), 
+    }
+
+    if (details) {
+      qry.details = details;
+    }
+
+    return yield app.models.Activity.insert(qry);
   };
 };
 

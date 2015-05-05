@@ -1,7 +1,8 @@
 "use strict";
 
 
-var util = require('util');
+var debug = require('debug')('waigo-errors'),
+  util = require('util');
 
 
 var waigo = require('../../'),
@@ -23,13 +24,12 @@ Error.prototype[viewObjects.methodName] = function*(ctx) {
   var ret = {
     type: this.name || 'Error',
     msg: this.message,
-    details: {},
+    details: null,
   };
 
-  // add additional data
-  for (let k in this) {
-    ret.details[k] = this[k];
-  }
+  ret.details = this.details || this.failures;
+
+  debug(JSON.stringify(ret));
 
   return ret;
 };
@@ -44,14 +44,14 @@ Error.prototype[viewObjects.methodName] = function*(ctx) {
  *
  * @param {String} [msg] Error message.
  * @param {Number} [status] HTTP return status code to set. Default is 500.
- * @param {Object} [data] Additional data pertaining to this error.
+ * @param {Object} [details] Additional details pertaining to this error.
  */
-var RuntimeError = exports.RuntimeError = function(msg, status, data) {
+var RuntimeError = exports.RuntimeError = function(msg, status, details) {
   Error.call(this);
   this.name = 'RuntimeError';
   this.message = msg || 'An error occurred';
   this.status = status || 500;
-  this.data = data || null;
+  this.details = details || null;
   Error.captureStackTrace(this, RuntimeError);
 };
 util.inherits(RuntimeError, Error);
@@ -68,8 +68,11 @@ RuntimeError.prototype[viewObjects.methodName] = function*(ctx) {
   var ret = {
     type: this.name,
     msg: this.message,
-    details: this.data,
   };
+
+  if (this.details) {
+    ret.details = yield viewObjects.toViewObjectYieldable(ctx, this.details);
+  }
 
   return ret;
 };
@@ -112,10 +115,10 @@ MultipleError.prototype[viewObjects.methodName] = function*(ctx) {
     details: {},
   };
 
-  for (let id in this.data) {
-    let fn = this.data[id][viewObjects.methodName];
+  for (let id in this.details) {
+    let fn = this.details[id][viewObjects.methodName];
 
-    ret.details[id] = (fn ? yield fn(ctx) : this.data[id]);
+    ret.details[id] = (fn ? yield fn(ctx) : this.details[id]);
   }
 
   return ret;
