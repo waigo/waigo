@@ -1731,6 +1731,26 @@ header nav .brand-logo {
 main.container {
   margin-top: 50px;
 }
+.json-editor {
+  border: 1px solid #ccc;
+  font-family: monospace;
+  font-weight: normal;
+}
+.model-table .model-filters .filter {
+  display: inline-block;
+  vertical-align: top;
+  padding: 0.5em;
+}
+.model-table .model-filters .action {
+  text-align: center;
+  padding: 0.5em;
+}
+.model-table .body {
+  clear: both;
+}
+.model-table .body tr {
+  cursor: pointer;
+}
 main#admin_container {
   padding-top: 1em;
 }
@@ -1780,24 +1800,10 @@ main#admin_container #admin_content .page-model .add-button {
   float: right;
   margin: 1em;
 }
-main#admin_container #admin_content .page-model .model-filters .filter {
-  display: inline-block;
-  vertical-align: top;
-  padding: 0.5em;
-}
-main#admin_container #admin_content .page-model .model-filters .action {
-  text-align: center;
-  padding: 0.5em;
-}
-main#admin_container #admin_content .page-model tr {
-  cursor: pointer;
+main#admin_container #admin_content .page-emails .tab-content > div {
+  padding-top: 1em;
 }
 #login .signup {
   display: block;
   margin-top: 3em;
-}
-.json-editor {
-  border: 1px solid #ccc;
-  font-family: monospace;
-  font-weight: normal;
 }
