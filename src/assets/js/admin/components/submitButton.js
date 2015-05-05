@@ -15,7 +15,7 @@ module.exports = React.createClass({
   },
 
   render: function() {
-    var classes = 'btn btn-primary waves-effect waves-light';
+    var classes = 'btn btn-primary';// waves-effect waves-light';
 
     if (this.props.disabled) {
       return (

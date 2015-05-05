@@ -1,5 +1,7 @@
 "use strict";
 
+var toObjectID = require('robe/node_modules/mongoskin/lib/helper').toObjectID;
+
 var waigo = require('../../../'),
   _ = waigo._;
 
@@ -48,6 +50,7 @@ exports.columns = function*() {
 exports.rows = function*() {
   var modelName = this.request.body.name,
     filter = JSON.parse(this.request.body.filter),
+    excludeIds = JSON.parse(this.request.body.excludeIds),
     sort = JSON.parse(this.request.body.sort),
     limit = parseInt(this.request.body.perPage),
     page = parseInt(this.request.body.page);
@@ -69,6 +72,21 @@ exports.rows = function*() {
     fieldsToInclude[name] = 1;
   });
   fieldsToInclude._id = 1;  // always include _id field
+
+  // exclude certain ids?
+  if (excludeIds && excludeIds.length) {
+    filter = {
+      $and: [
+        filter, {
+          _id: {
+            $nin: excludeIds.map(function(id) {
+              return toObjectID(id);
+            })
+          }
+        }
+      ]
+    };
+  }
 
   // get count
   var count = yield model.count(filter);

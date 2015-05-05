@@ -19,13 +19,15 @@ module.exports = React.createClass({
     modelName: React.PropTypes.string,
     columns: React.PropTypes.array,
     onRowClick: React.PropTypes.func,
+    excludeRows: React.PropTypes.array,
   },
 
   mixins: [GuardedStateMixin],
 
   getInitialState: function() {
     return {
-      loading: true,
+      loading: true, 
+      shouldFetch: true,  // by default fetch
       error: null,
       perPage: 10,
       filter: {},
@@ -42,6 +44,7 @@ module.exports = React.createClass({
       modelName: null,
       columns: null,
       onRowClick: null,
+      excludeRows: [],
     };
   },
 
@@ -231,6 +234,20 @@ module.exports = React.createClass({
     this._fetchRows();
   },
 
+  componentWillReceiveProps: function() {
+    // fetch after next render
+    this.setState({
+      shouldFetch: true
+    });
+  },
+
+  componentDidUpdate: function() {
+    // need to fetch again
+    if (this.state.shouldFetch) {
+      this._fetchRows();
+    }
+  },
+
 
   _onSelectPage: function(newPage) {
     this.setState({
@@ -267,9 +284,12 @@ module.exports = React.createClass({
     self._fetchRowsTimer = Timer(function() {
 
       self.setState({
+        shouldFetch: false, // turn off fetch flag
         loading: true,
         error: null,
       });
+
+      var excludeIds = self.props.excludeRows.map(er => er._id);
 
       // fetch collection rows
       $.ajax({
@@ -278,6 +298,7 @@ module.exports = React.createClass({
         data: {
           name: self.props.modelName,
           filter: JSON.stringify(self.state.filter),
+          excludeIds: JSON.stringify(excludeIds),
           sort: JSON.stringify(self.state.sort),
           perPage: self.state.perPage,
           page: self.state.page,

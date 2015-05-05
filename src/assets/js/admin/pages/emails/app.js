@@ -1,5 +1,7 @@
 var React = require('react');
 
+var _ = require('../../utils/lodash');
+
 var UsersPage = require('./users');
 var TemplatePage = require('./templates');
 var SendPage = require('./send');
@@ -12,14 +14,24 @@ var App = React.createClass({
       template: '',
     };
   },
-  setUsers: function(users) {
-    this.setState({
-      users: users
+  addUser: function(user) {
+    var existing = _.find(this.state.users, function(u) {
+      return u._id === user._id;
     });
+
+    if (!existing) {
+      this.setState({
+        users: this.state.users.concat([user])
+      });
+    }
   },
-  setTemplate: function(users) {
+  removeUser: function(user) {
+    var newUsers = _.find(this.state.users, function(u) {
+      return u._id !== user._id;
+    });
+
     this.setState({
-      template: template
+      users: newUsers
     });
   },
   render () {
@@ -34,13 +46,13 @@ var App = React.createClass({
         </div>
         <section className="tab-content">
           <div id="users" className="col s12">
-            <UsersPage {...this.props} />
+            <UsersPage users={this.state.users} addUser={this.addUser} />
           </div>
           <div id="templates" className="col s12">
-            <TemplatePage {...this.props} />
+            <TemplatePage />
           </div>
           <div id="send" className="col s12">
-            <SendPage {...this.props} />
+            <SendPage />
           </div>
         </section>
       </div>
