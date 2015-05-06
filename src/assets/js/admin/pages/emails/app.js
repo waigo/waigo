@@ -3,7 +3,6 @@ var React = require('react');
 var _ = require('../../utils/lodash');
 
 var UsersPage = require('./users');
-var TemplatePage = require('./templates');
 var SendPage = require('./send');
 
 
@@ -49,8 +48,7 @@ var App = React.createClass({
         <div className="col s12">
           <ul className="tabs">
             <li className="tab col s3"><a className="active" href="#users"><span class="badge">1.</span> Select users</a></li>
-            <li className="tab col s3"><a href="#templates"><span class="badge">2.</span> Select template</a></li>
-            <li className="tab col s3"><a href="#send"><span class="badge">3.</span> Send</a></li>
+            <li className="tab col s3"><a href="#send"><span class="badge">2.</span> Send</a></li>
           </ul>
         </div>
         <section className="tab-content">
@@ -61,11 +59,9 @@ var App = React.createClass({
               removeUser={this.removeUser}
               clearUsers={this.clearUsers} />
           </div>
-          <div id="templates" className="col s12">
-            <TemplatePage />
-          </div>
           <div id="send" className="col s12">
-            <SendPage />
+            <SendPage 
+              users={this.state.users} />
           </div>
         </section>
       </div>
