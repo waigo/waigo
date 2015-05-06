@@ -9,6 +9,8 @@ module.exports = React.createClass({
     disabled : React.PropTypes.boolean,
     onClick : React.PropTypes.func,
     color : React.PropTypes.string,
+    size: React.PropTypes.string,
+    type: React.PropTypes.string,
   },
 
   getDefaultProps: function() {
@@ -19,6 +21,8 @@ module.exports = React.createClass({
       disabled: false,
       onClick: null,
       color: '',
+      size: 'medium',
+      type: 'button',
     };
   },
 
@@ -30,6 +34,7 @@ module.exports = React.createClass({
 
   render: function() {
     var classes = 'btn btn-primary waves-effect waves-light' 
+      + ' ' + this.props.size
       + ' ' + this.props.className
       + ' ' + this.props.color;
 
@@ -39,14 +44,14 @@ module.exports = React.createClass({
 
     if (this.props.disabled) {
       return (
-        <button className={classes} disabled="disabled">
+        <button className={classes} disabled="disabled" type={this.props.type}>
           {icon}
           <span>{this.props.label}</span>
         </button>
       );
     } else {
       return (
-        <button className={classes} onClick={this._onClick}>
+        <button className={classes} onClick={this._onClick} type={this.props.type}>
           {icon}
           <span>{this.props.label}</span>
         </button>

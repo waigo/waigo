@@ -1,5 +1,6 @@
 var React = require('react');
 
+var Button = require('../../components/button');
 var ModelTable = require('../../components/modelTable');
 
 
@@ -17,23 +18,40 @@ module.exports = React.createClass({
   },
 
   onRowClick: function(user) {
-    if (this.props.addUser) {
-      this.props.addUser(user);
-    }
+    this.props.addUser(user);
   },
 
   render: function() { 
+    var self = this;
+
     var columns = [
       {
         name: 'username'      
       }
     ];
 
-    var users = this.props.users.map(function(user){
-      return (
-        <li className="collection-item">{user.username}</li>
+    var users = (<em>None selected</em>);
+
+    if (this.props.users.length) {
+      users = this.props.users.map(function(user){
+        return (
+          <li className="collection-item">
+            {user.username}
+            <a href="#!" className="secondary-content" 
+                data-id={user._id} onClick={self._onRemoveUser}>
+              <i className="fa fa-remove"></i>
+            </a>
+          </li>
+        );
+      });
+
+      users = (
+        <div>
+          <Button label="Clear all" size="small" onClick={this._onClear} />
+          <ul className="collection">{users}</ul>
+        </div>
       );
-    });
+    }
 
     return (
       <div className="row">
@@ -44,15 +62,24 @@ module.exports = React.createClass({
             excludeRows={this.props.users}
             onRowClick={this.onRowClick} />
         </div>
-        <div className="col s12 m6 offset-m1">
+        <div className="col s12 m6 offset-m1 selected-users">
           <h2>Selected users:</h2>
-          <ul className="collection">
-            {users}
-          </ul>          
+          {users}
         </div>        
       </div>
     );
-  }
+  },
 
+
+  _onRemoveUser: function(e) {
+    e.preventDefault();
+
+    this.props.removeUser(e.currentTarget.dataset.id);
+  },
+
+
+  _onClear: function() {
+    this.props.clearUsers();
+  },
 
 });

@@ -25,9 +25,13 @@ var App = React.createClass({
       });
     }
   },
-  removeUser: function(user) {
-    var newUsers = _.find(this.state.users, function(u) {
-      return u._id !== user._id;
+  removeUser: function(userOrId) {
+    if (userOrId._id) {
+      userOrId = userOrId._id;
+    }
+
+    var newUsers = this.state.users.filter(function(u) {
+      return u._id !== userOrId;
     });
 
     this.setState({
