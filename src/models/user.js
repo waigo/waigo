@@ -164,6 +164,14 @@ module.exports = {
   },
   docMethods: {
     /**
+     * Get whether user has any of  given roles
+     */
+    isOneOf: function() {
+      var roles = _.toArray(arguments);
+      
+      return !!_.intersection( this.roles || [], roles ).length;
+    },
+    /**
      * Check password against hash.
      * @param {String} password
      * @param {String} storedHash

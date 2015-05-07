@@ -229,7 +229,7 @@ module.exports = function(config) {
       path: '/admin/models',
     },
     {
-      label: 'Emails',
+      label: 'Send email',
       path: '/admin/emails',
     },
   ];

@@ -1,5 +1,3 @@
-/** Based on code from https://www.npmjs.com/package/react-ace */
-
 var React = require('react');
 
 
@@ -56,9 +54,6 @@ module.exports = React.createClass({
 
       this.props.onChange(currentContent);
     }      
-  },
-  getValue: function() {
-    return this.editor.getValue();
   },
   componentDidMount: function() {
     if (this.props.onLoad) {

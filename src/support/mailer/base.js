@@ -112,7 +112,6 @@ Mailer.prototype._renderSubject = function*(template, templateVars) {
 
 
 
-
 Mailer.prototype._send = function*(mailOptions) {
   var self = this;
 
@@ -191,5 +190,12 @@ Mailer.prototype._send = function*(mailOptions) {
     })();    
   });
 };
+
+
+
+Mailer.prototype.render = function(mailOptions) {
+  // TODO
+};
+
 
 

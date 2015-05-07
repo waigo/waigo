@@ -29,8 +29,7 @@ module.exports = function(options) {
         this.throw('You must be logged in to access this content.', 403);
       } else {
         // if user is not an admin
-        if (0 > _.get(this.currentUser, 'roles', []).indexOf('admin')) {
-
+        if (!this.currentUser.isOneOf('admin')) {
           // need specific access?
           options.canAccess && this.currentUser.assertAccess(options.canAccess);
         }

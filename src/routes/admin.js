@@ -55,6 +55,10 @@
       ],
 
       GET: 'admin.emails.index',
+
+      '/render': {
+        POST: 'admin.emails.render',
+      },
     },
   }
  };

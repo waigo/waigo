@@ -1703,9 +1703,6 @@ i + span {
 .msg .panel .panel-body p.description {
   margin-bottom: 0;
 }
-.loader {
-  margin: 1em 0;
-}
 form button[type=submit] {
   margin-top: 2em;
 }
@@ -1737,6 +1734,13 @@ header nav .brand-logo {
 }
 main.container {
   margin-top: 50px;
+}
+.loader {
+  margin: 1em 0;
+}
+.loader.inline {
+  display: inline-block;
+  margin: 0 0.5em;
 }
 .json-editor {
   border: 1px solid #ccc;
@@ -1809,6 +1813,18 @@ main#admin_container #admin_content .page-model .add-button {
 }
 main#admin_container #admin_content .page-emails .tab-content > div {
   padding-top: 1em;
+}
+main#admin_container #admin_content .page-emails .preview {
+  border: 1px solid #ccc;
+  height: 400px;
+  overflow: scroll;
+}
+main#admin_container #admin_content .page-emails .tips {
+  font-style: italic;
+}
+main#admin_container #admin_content .page-emails .tips code {
+  font-size: 110%;
+  font-weight: bold;
 }
 #login .signup {
   display: block;
