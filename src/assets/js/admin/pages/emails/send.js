@@ -15,9 +15,12 @@ module.exports = React.createClass({
 
   getInitialState: function() {
     return {
-      template: '',
-      rendered: '',
+      subject: '',
+      body: '',
+      subjectPreview: '',
+      bodyPreview: '',
       loading: false,
+      sending: false,
       error: null,
     };
   },
@@ -41,8 +44,6 @@ module.exports = React.createClass({
       );
     }
 
-    var sendBtnLabel = `Send to ${numUsers} ${1 == numUsers ? 'user' : 'users'}`;
-
     var bracketsSyntax = '{{...}}';
 
     var tips = (
@@ -54,42 +55,84 @@ module.exports = React.createClass({
     );
 
     var loadingAnim = null;
-
     if (this.state.loading) {
       loadingAnim = (<Loader size="small" inline={true} />);
     }
 
     return (
-      <div className="content-send">
+      <form className="content-send">
         {tips}
         <div className="row">
-          <div className="col m6 s12">
+          <div className="col m6 s12 fields">
             <h2>Markdown</h2>
-            <TextEditor height="400px" onChange={this._onTemplateUpdate} />
+            <input type="text" className="subject" onKeyUp={this._onSubjectChange} placeholder="Subject" />
+            <TextEditor height="400px" onChange={this._onBodyChange} />
           </div>
-          <div className="col m6 m-offset1 s12">
+          <div className="col m6 m-offset1 s12 preview">
             <h2>
               <span>Preview</span>
               {loadingAnim}
             </h2>
             {RenderUtils.buildError(this.state.error)}
-            <div className="preview"
-              dangerouslySetInnerHTML={{__html: this.state.rendered}} />
+            <input type="text" readonly value={this.state.subjectPreview} placeholder="Subject preview..." />
+            <div className="body"
+              dangerouslySetInnerHTML={{__html: this.state.bodyPreview}} />
           </div>          
         </div>
-        <Button label={sendBtnLabel} />
+        {this._buildSendButton()}
+      </form>
+    );
+  },
+
+
+  _buildSendButton: function() {
+    var numUsers = this.props.users.length;
+
+    var sendButton = null,
+      sendAnim = null,
+      sendProgress = null,
+      sendBtnLabel = `Send to ${numUsers} ${1 == numUsers ? 'user' : 'users'}`;
+
+    if (this.state.sending) {
+      sendButton = (<Button label={sendBtnLabel} disabled />);
+      sendAnim = (<Loader inline={true} />);
+      sendProgress = (
+        <span className="send-progress" ref="sendProgress">
+          Sending
+        </span>
+      );
+    } else {
+      sendButton = <Button label={sendBtnLabel} onClick={this._onSend} />;
+    }
+
+    return (
+      <div className="send-info">
+        {sendButton}
+        <div className="status-update">
+          {sendAnim}{sendProgress}
+        </div>
       </div>
     );
   },
 
 
-  _onTemplateUpdate: function(text) {
+  _onSubjectChange: function(e) {
     this.setState({
-      template: text
+      subject: e.currentTarget.value
     });
 
     this._fetchPreview();
   },
+
+
+  _onBodyChange: function(text) {
+    this.setState({
+      body: text
+    });
+
+    this._fetchPreview();
+  },
+
 
 
   _fetchPreview: function() {
@@ -117,13 +160,15 @@ module.exports = React.createClass({
         url: '/admin/emails/render?format=json',
         method: 'POST',
         data: {
-          template: self.state.template,
+          subject: self.state.subject,
+          body: self.state.body,
           user: self.props.users[0]._id
         }
       })
         .done(function(data){        
           self.setStateIfMounted({
-            rendered: data.html,
+            subjectPreview: data.subject || '',
+            bodyPreview: data.body || '',
           });
         })
         .fail(function(xhr) {
@@ -141,4 +186,18 @@ module.exports = React.createClass({
     }, 300).start();
   },
 
+
+
+  _onSend: function() {
+    var self = this;
+
+    // if not users don't fetch
+    if (!this.props.users.length) {
+      return;
+    }
+
+    this.setState({
+      sending: true
+    });
+  },
 });

@@ -9,7 +9,8 @@ exports.index = function*() {
 
 
 exports.render = function*() {
-  var template = this.request.body.template,
+  var body = this.request.body.body,
+    subject = this.request.body.subject,
     userId = this.request.body.user;
 
   this.app.logger.debug('Render "send email" template');
@@ -22,9 +23,14 @@ exports.render = function*() {
     this.throw('User not found', 404);
   }
 
-  yield this.render('admin/emails/render', {
-    html: '<p>test</p>',
+  var output = yield this.app.mailer.render({
+    to: user,
+    subject: subject,
+    body: body,
+    allowEmpty: true,
   });
+
+  yield this.render('admin/emails/render', output);
 };
 
 

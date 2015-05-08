@@ -40,7 +40,7 @@ Mailer.prototype._init = function*(transport) {
 
 
 
-Mailer.prototype._renderEmailTemplate = function*(templateName, locals) {
+Mailer.prototype._renderEmailTemplate = function(templateName, locals) {
   var self = this;
 
   this.logger.debug('Rendering template ' + templateName);
@@ -57,7 +57,7 @@ Mailer.prototype._renderEmailTemplate = function*(templateName, locals) {
       }
     });
   });
-}
+};
 
 
 
@@ -99,10 +99,22 @@ Mailer.prototype._renderBodyTemplate = function*(templateName, templateVars) {
 
 
 
-Mailer.prototype._renderSubject = function*(template, templateVars) {
+Mailer.prototype._renderBody = function*(mailOptions, templateVars) {
+  if (mailOptions.bodyTemplate) {
+    return yield this._renderBodyTemplate(mailOptions.bodyTemplate, templateVars);
+  } else {
+    return yield this._renderBodyMarkdown(mailOptions.body, templateVars);
+  }
+};
+
+
+
+
+
+Mailer.prototype._renderSubject = function*(mailOptions, templateVars) {
   debug('Rendering subject');
 
-  var compiled = _.template(template, {
+  var compiled = _.template(mailOptions.subject, {
     interpolate: /{{([\s\S]+?)}}/img
   });
 
@@ -111,17 +123,15 @@ Mailer.prototype._renderSubject = function*(template, templateVars) {
 
 
 
-
-Mailer.prototype._send = function*(mailOptions) {
-  var self = this;
-
+Mailer.prototype._prepareMailOptions = function*(mailOptions) {
   mailOptions = _.extend({
-    from: self.config.from,
+    from: this.config.from,
     subject: null,
     body: null,
     bodyTemplate: null,
     locals: {},
     ctx: {},
+    allowEmpty: false
   }, mailOptions);
 
 
@@ -129,9 +139,12 @@ Mailer.prototype._send = function*(mailOptions) {
     throw new MailerError('Recipients must be set');
   }
 
-  if (_.isEmpty(mailOptions.subject) || 
-      (_.isEmpty(mailOptions.body) && _.isEmpty(mailOptions.bodyTemplate)) ) {
-    throw new MailerError('Subject and body/template must be set');
+  // it not allowed to send empty email
+  if (!mailOptions.allowEmpty) {
+    if (_.isEmpty(mailOptions.subject) || 
+        (_.isEmpty(mailOptions.body) && _.isEmpty(mailOptions.bodyTemplate)) ) {
+      throw new MailerError('Subject and body/template must be set');
+    }    
   }
 
   if (!_.isArray(mailOptions.to)) {
@@ -139,10 +152,19 @@ Mailer.prototype._send = function*(mailOptions) {
   }
 
   // locals common to all recipients
-  var commonLocals = _.extend({}, this.app.locals, mailOptions.ctx.locals, 
+  mailOptions.locals = _.extend({}, this.app.locals, mailOptions.ctx.locals, 
     yield viewObjects.toViewObjectYieldable(mailOptions.ctx, mailOptions.locals)
   );
 
+  return mailOptions;
+};
+
+
+
+Mailer.prototype._send = function*(mailOptions) {
+  var self = this;
+
+  mailOptions = yield this._prepareMailOptions(mailOptions);
 
   return yield _.map(mailOptions.to, function(recipient) {
     return co.wrap(function*() {
@@ -152,20 +174,15 @@ Mailer.prototype._send = function*(mailOptions) {
       self.logger.debug('Email ' + email + ': ' + mailOptions.subject);
 
       // user-specific locals
-      var userLocals = _.extend({}, commonLocals, 
+      var userLocals = _.extend({}, mailOptions.locals, 
         yield viewObjects.toViewObjectYieldable(mailOptions.ctx, {
           recipient: recipient
         })
       );
 
       // render body
-      if (mailOptions.bodyTemplate) {
-        var body = yield self._renderBodyTemplate(mailOptions.bodyTemplate, userLocals);
-      } else {
-        var body = yield self._renderBodyMarkdown(mailOptions.body, userLocals);
-      }
-
-      var subject = yield self._renderSubject(mailOptions.subject, userLocals);
+      var body = yield this._renderBody(mailOptions, userLocals);
+      var subject = yield self._renderSubject(mailOptions, userLocals);
 
       // setup actual options
       var sendOptions = _.extend({
@@ -193,8 +210,27 @@ Mailer.prototype._send = function*(mailOptions) {
 
 
 
-Mailer.prototype.render = function(mailOptions) {
-  // TODO
+
+Mailer.prototype.render = function*(mailOptions) {
+  mailOptions = yield this._prepareMailOptions(mailOptions);
+
+  var recipient = mailOptions.to.pop();
+
+  var email = _.get(recipient, 'emails.0.email', recipient);
+
+  this.logger.debug('Render email ' + email + ': ' + mailOptions.subject);
+
+  // user-specific locals
+  var userLocals = _.extend({}, mailOptions.locals, 
+    yield viewObjects.toViewObjectYieldable(mailOptions.ctx, {
+      recipient: recipient
+    })
+  );
+
+  return {
+    body: yield this._renderBody(mailOptions, userLocals),
+    subject: yield this._renderSubject(mailOptions, userLocals),
+  }
 };
 
 

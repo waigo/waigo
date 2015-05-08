@@ -73,9 +73,20 @@ main#admin_container
       .tab-content > div
         padding-top 1em
       .preview
-        border 1px solid #ccc
-        height 400px
-        overflow scroll
+        & > em
+          display block
+        .body
+          border 1px solid #ccc
+          height 400px
+          overflow scroll
+          padding 0.5em
+          background-color #efefef
+          
+          p:first-child
+            margin-top 0
+      .send-info
+        .status-update
+          margin-top 1em
       .tips
         font-style italic
         code
