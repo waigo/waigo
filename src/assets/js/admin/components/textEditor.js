@@ -54,5 +54,8 @@ module.exports = React.createClass({
         onBlur={this.onBlur}
         style={divStyle}>{value}</textarea>
     );
+  },
+  clear: function() {
+    React.findDOMNode(this.refs.editorDiv).value = '';
   }
 });

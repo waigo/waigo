@@ -59,6 +59,10 @@
       '/render': {
         POST: 'admin.emails.render',
       },
+
+      '/send': {
+        POST: 'admin.emails.send',
+      },
     },
   }
  };

@@ -164,7 +164,7 @@ Mailer.prototype._prepareMailOptions = function*(mailOptions) {
 Mailer.prototype._send = function*(mailOptions) {
   var self = this;
 
-  mailOptions = yield this._prepareMailOptions(mailOptions);
+  mailOptions = yield self._prepareMailOptions(mailOptions);
 
   return yield _.map(mailOptions.to, function(recipient) {
     return co.wrap(function*() {
@@ -181,7 +181,7 @@ Mailer.prototype._send = function*(mailOptions) {
       );
 
       // render body
-      var body = yield this._renderBody(mailOptions, userLocals);
+      var body = yield self._renderBody(mailOptions, userLocals);
       var subject = yield self._renderSubject(mailOptions, userLocals);
 
       // setup actual options

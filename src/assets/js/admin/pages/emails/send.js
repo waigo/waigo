@@ -22,6 +22,7 @@ module.exports = React.createClass({
       loading: false,
       sending: false,
       error: null,
+      sendError: null,
     };
   },
 
@@ -65,8 +66,14 @@ module.exports = React.createClass({
         <div className="row">
           <div className="col m6 s12 fields">
             <h2>Markdown</h2>
-            <input type="text" className="subject" onKeyUp={this._onSubjectChange} placeholder="Subject" />
-            <TextEditor height="400px" onChange={this._onBodyChange} />
+            <input type="text" 
+                className="subject" 
+                onKeyUp={this._onSubjectChange} 
+                placeholder="Subject"
+                ref="subject" />
+            <TextEditor height="400px" 
+                onChange={this._onBodyChange} 
+                ref="body" />
           </div>
           <div className="col m6 m-offset1 s12 preview">
             <h2>
@@ -90,17 +97,11 @@ module.exports = React.createClass({
 
     var sendButton = null,
       sendAnim = null,
-      sendProgress = null,
       sendBtnLabel = `Send to ${numUsers} ${1 == numUsers ? 'user' : 'users'}`;
 
     if (this.state.sending) {
       sendButton = (<Button label={sendBtnLabel} disabled />);
       sendAnim = (<Loader inline={true} />);
-      sendProgress = (
-        <span className="send-progress" ref="sendProgress">
-          Sending
-        </span>
-      );
     } else {
       sendButton = <Button label={sendBtnLabel} onClick={this._onSend} />;
     }
@@ -108,8 +109,9 @@ module.exports = React.createClass({
     return (
       <div className="send-info">
         {sendButton}
-        <div className="status-update">
-          {sendAnim}{sendProgress}
+        <div className="send-result">
+          {sendAnim}
+          {RenderUtils.buildError(this.state.sendError)}
         </div>
       </div>
     );
@@ -197,7 +199,44 @@ module.exports = React.createClass({
     }
 
     this.setState({
-      sending: true
+      sending: true,
+      sendError: null,
     });
+
+    // fetch collection rows
+    $.ajax({
+      url: '/admin/emails/send?format=json',
+      method: 'POST',
+      data: {
+        subject: self.state.subject,
+        body: self.state.body,
+        users: self.props.users.map( v => v._id ),
+      }
+    })
+      .done(function() {
+        Materialize.toast('Email succesfully sent', 2000, 'rounded');
+
+        // clear inputs
+        self.refs.body.clear();
+        React.findDOMNode(self.refs.subject).value = '';
+
+        self.setStateIfMounted({
+          subject: '',
+          body: '',
+          subjectPreview: '',
+          bodyPreview: '',
+        });
+      })
+      .fail(function(xhr) {
+        self.setStateIfMounted({
+          sendError: xhr
+        });
+      })
+      .always(function() {
+        self.setStateIfMounted({
+          sending: false,
+        });
+      })
+    ;
   },
 });

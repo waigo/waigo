@@ -51,11 +51,11 @@ module.exports = React.createClass({
 
 
   _buildEditingForm: function() {
-    var json = this.state.json;
-
-    if (undefined === json) {
+    if (undefined === this.state.jsonStr) {
       return (<Loader text="Loading data" />);
     }
+
+    var json = this.state.jsonStr ? JSON.parse(this.state.jsonStr): null;
 
     var deleteButton = null,
       saveBtnLabel = 'Create';
@@ -92,9 +92,9 @@ module.exports = React.createClass({
 
 
 
-  _onDataChange: function(data) {
+  _onDataChange: function(jsonStr) {
     try {
-      var json = JSON.parse(data);
+      var json = JSON.parse(jsonStr);
 
       // must not be empty object
       if (!json || !Object.keys(json).length) {
@@ -102,11 +102,11 @@ module.exports = React.createClass({
       }
 
       this.setState({
-        json: data
+        jsonStr: jsonStr
       });
     } catch (err) {
       this.setState({
-        json: null
+        jsonStr: null
       });
     }
   },
@@ -118,7 +118,7 @@ module.exports = React.createClass({
     // if creating a new item then no need to fetch data to start with
     if ('new' === this.state.id) {
       return this.setState({
-        json: {}
+        jsonStr: {}
       });
     }
 
@@ -137,7 +137,7 @@ module.exports = React.createClass({
         delete doc._id;
 
         self.setStateIfMounted({
-          json: doc
+          jsonStr: JSON.stringify(doc)
         });
       })
       .fail(function(xhr) {
@@ -161,7 +161,7 @@ module.exports = React.createClass({
       method: 'PUT',
       url: `/admin/models/model/doc?format=json&name=${this.state.modelName}&id=${this.state.id}`,
       data: {
-        doc: this.state.json
+        doc: this.state.jsonStr
       }
     })
       .then(function() {
@@ -193,7 +193,7 @@ module.exports = React.createClass({
       method: 'POST',
       url: `/admin/models/model/doc?format=json&name=${this.state.modelName}`,
       data: {
-        doc: this.state.json
+        doc: this.state.jsonStr
       }
     })
       .then(function(data) {
@@ -206,7 +206,7 @@ module.exports = React.createClass({
 
         self.setStateIfMounted({
           id: id,
-          json: doc,
+          jsonStr: JSON.stringify(doc),
         });
       })
       .fail(function(xhr) {
@@ -277,8 +277,6 @@ module.exports = React.createClass({
       this._delete();
     }
   },
-
-
 
 
 });

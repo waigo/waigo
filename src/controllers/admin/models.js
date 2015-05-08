@@ -1,6 +1,7 @@
 "use strict";
 
-var toObjectID = require('robe/node_modules/mongoskin/lib/helper').toObjectID;
+var toObjectID = require('robe').Utils.toObjectID;
+
 
 var waigo = require('../../../'),
   _ = waigo._;

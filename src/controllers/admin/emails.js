@@ -1,3 +1,8 @@
+"use strict";
+
+
+var toObjectID = require('robe').Utils.toObjectID;
+
 
 
 exports.index = function*() {
@@ -13,7 +18,7 @@ exports.render = function*() {
     subject = this.request.body.subject,
     userId = this.request.body.user;
 
-  this.app.logger.debug('Render "send email" template');
+  this.app.logger.debug('Render email template');
 
   var user = yield this.app.models.User.findOne({
     _id: userId
@@ -31,6 +36,39 @@ exports.render = function*() {
   });
 
   yield this.render('admin/emails/render', output);
+};
+
+
+
+
+exports.send = function*() {
+  var body = this.request.body.body,
+    subject = this.request.body.subject,
+    userIds = this.request.body.users;
+
+  this.app.logger.debug('Send email to users', userIds);
+
+  var users = yield this.app.models.User.find({
+    _id: {
+      $in: userIds.map(function(v) {
+        return toObjectID(v);
+      })
+    }
+  });
+
+  if (users.length !== userIds.length) {
+    this.throw('Some users could not be found', 404);
+  }
+
+  yield this.app.mailer.send({
+    to: users,
+    subject: subject,
+    body: body,
+  });
+
+  yield this.render('admin/emails/send', {
+    result: 'success'
+  });
 };
 
 

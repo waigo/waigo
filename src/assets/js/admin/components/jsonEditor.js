@@ -14,7 +14,7 @@ module.exports = React.createClass({
     return {
       height : '100px',
       width  : '700px',
-      value  : '{}',
+      value  : {},
       fontSize   : 13,
       onChange   : null,
       onLoad     : null,
