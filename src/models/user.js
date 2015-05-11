@@ -169,7 +169,7 @@ module.exports = {
     isOneOf: function() {
       var roles = _.toArray(arguments);
       
-      return !!_.intersection( this.roles || [], roles ).length;
+      return !! (_.intersection(this.roles || [], roles).length);
     },
     /**
      * Check password against hash.
@@ -211,6 +211,30 @@ module.exports = {
       // update last-login timestamp
       this.lastLogin = new Date();
       yield this.save();
+    },
+    /**
+     * Verify an email address.
+     * @param {String} email Email address to verify.
+     */
+    verifyEmail: function*(email) {
+      var theEmail = _.find(this.emails, function(e) {
+        return email === e.email;
+      });
+
+      if (!theEmail) {
+        return false;
+      }
+
+      theEmail.verified = true;
+
+      // save
+      this.markChanged('emails');
+      yield this.save();
+
+      // record
+      yield this.record('verify_email', this, {
+        email: email
+      });
     },
     /**
      * Update this user's password.

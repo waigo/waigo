@@ -5,6 +5,7 @@
         id: 'assertUser', 
         redirectToLogin: true,
       },
+      'admin.index.configureMenu'
     ],
 
     GET: 'admin.index.main',
@@ -50,7 +51,7 @@
       pre: [
         { 
           id: 'assertUser', 
-          canAccess: 'send-emails',
+          canAccess: 'admin',
         },
       ],
 

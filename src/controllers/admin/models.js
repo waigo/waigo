@@ -10,7 +10,6 @@ var waigo = require('../../../'),
 
 exports.index = function*() {
   yield this.render('admin/models', {
-    menu: this.app.config.adminMenu,
     models: _.keys(this.app.models),
   });
 };

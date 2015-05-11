@@ -24,25 +24,30 @@ var waigo = require('../../../'),
  */
 module.exports = function(options) {
   return function*(next) {
+    this.app.logger.debug('assertUser is logged in');
+
     try {
       if (!this.currentUser) {
         this.throw('You must be logged in to access this content.', 403);
       } else {
-        // if user is not an admin
-        if (!this.currentUser.isOneOf('admin')) {
-          // need specific access?
-          options.canAccess && this.currentUser.assertAccess(options.canAccess);
+        // need specific access?
+        if (options.canAccess) {
+          this.app.logger.debug('assertUser can access ' + options.canAccess);
+
+          yield this.currentUser.assertAccess(options.canAccess);
         }
       }
     } catch (err) {
       // should we ask user to login?
       if (options.redirectToLogin) {
+        this.app.logger.debug('redirect to login');
+
         var qryStr = querystring.stringify({
           r: err.message,
           u: this.request.url,
         });
 
-        yield this.redirect('/user/login?' + qryStr);
+        return yield this.redirect('/user/login?' + qryStr);
       }
       // else show error
       else {

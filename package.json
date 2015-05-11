@@ -38,7 +38,7 @@
     "pluralize": "^1.1.0",
     "query-string": "^2.0.0",
     "raw-body": "~1.1.x",
-    "robe": "^0.10.4",
+    "robe": "^0.10.5",
     "semver": "~4.3.1",
     "shelljs": "~0.3.0",
     "then-fs": "~1.0.6",

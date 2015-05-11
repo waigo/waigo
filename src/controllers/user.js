@@ -109,6 +109,30 @@ exports.register_submit = function*() {
 
 
 
+exports.verify_email = function*() {
+  var action = yield this.app.actionTokens.process(
+    this.request.query.c, {
+      type: 'verify_email'
+    }
+  );
+  
+  this.logger.debug('Verify email address', action.user._id, action.data.email);
+
+  // verify email address
+  yield action.user.verifyEmail(action.data.email);
+
+  // log the user in
+  yield action.user.login(this);
+
+  yield this.showAlert('Your email address has been verified.');
+
+  yield this.redirect('/');
+};
+
+
+
+
+
 exports.forgot_password = function*() {
   var form = yield this.form.create('forgotPassword', {
     context: this

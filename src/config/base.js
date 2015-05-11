@@ -223,14 +223,17 @@ module.exports = function(config) {
     {
       label: 'Routes',
       path: '/admin/routes',
+      canAccess: 'admin',
     },
     {
       label: 'Data',
       path: '/admin/models',
+      canAccess: 'admin',
     },
     {
       label: 'Send email',
       path: '/admin/emails',
+      canAccess: 'admin',
     },
   ];
 

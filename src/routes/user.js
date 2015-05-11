@@ -19,6 +19,10 @@ module.exports = {
       GET: 'user.reset_password',
       POST: 'user.reset_password_submit',
     },
+    '/verify_email': {
+      name: 'verify_email',
+      GET: 'user.verify_email',
+    },
     '/logout': {
       GET: 'user.logout'
     },

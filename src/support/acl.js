@@ -129,7 +129,12 @@ ACL.prototype.can = function(resource, user) {
     return true;
   }
 
-  // if one of user's roles has access it's ok 
+  // if user is admin it's ok
+  if (user.isOneOf('admin')) {
+    return true;
+  }
+
+  // if user is admin or one of user's roles has access it's ok 
   let roles = user.roles || [];
 
   for (let i in roles) {
@@ -155,7 +160,7 @@ ACL.prototype.assert = function(resource, user) {
   this.logger.debug('assert', resource, user._id);
 
   if (!this.can(resource, user)) {
-    throw new AclError('User ' + user._id + ' does not have permission to access ' + resource, 403);
+    throw new AclError('User (' + user._id + ') does not have permission to access: ' + resource, 403);
   }
 };
 

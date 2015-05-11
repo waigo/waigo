@@ -9,7 +9,6 @@ exports.index = function*() {
   var routes = this.app.routes.all;
 
   yield this.render('admin/routes', {
-    menu: this.app.config.adminMenu,
     routes: _.map(routes, function(route) {
       return _.pick(route, 'method', 'url');
     })

@@ -1,3 +1,6 @@
+include _mixins
+
+
 doctype html
 html
   head
@@ -43,6 +46,8 @@ html
 
     block main_content_container
       main.container
+        if alertMsg
+          +msg('info', alertMsg)
         block main_content
 
     script(type="text/javascript", src=staticUrl('waigo:/js/common.js'))

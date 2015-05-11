@@ -11,7 +11,7 @@ block main_content_container
     .row
       #admin_menu.col.s2
         .collection
-          - each item in menu
+          - each item in adminMenu
             - var className = 'collection-item ' + (matchesCurrentUrl(item.path) ? 'active': '');
             a(class=className, href=item.path) #{item.label}
       #admin_content.col.s10

@@ -6,9 +6,7 @@ var toObjectID = require('robe').Utils.toObjectID;
 
 
 exports.index = function*() {
-  yield this.render('admin/emails', {
-    menu: this.app.config.adminMenu,
-  });
+  yield this.render('admin/emails');
 };
 
 
