@@ -5,7 +5,7 @@
         id: 'assertUser', 
         redirectToLogin: true,
       },
-      'admin.index.configureMenu'
+      'admin.index.configureMenu',
     ],
 
     GET: 'admin.index.main',

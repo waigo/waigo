@@ -119,13 +119,8 @@ ACL.prototype.reload = function*() {
 ACL.prototype.can = function(resource, user) {
   this.logger.debug('can', resource, user._id);
 
-  // if no entry for resource then all ok
-  if (!_.get(this.res, resource)) {
-    return true;
-  }
-
-  // if user has access then it's ok
-  if (_.get(this.users, user._id + '.' + resource)) {
+  // if resource name is "public" then everyone has access
+  if ('public' === resource) {
     return true;
   }
 
@@ -134,7 +129,17 @@ ACL.prototype.can = function(resource, user) {
     return true;
   }
 
-  // if user is admin or one of user's roles has access it's ok 
+  // if no entry for resource then no one has access
+  if (!_.get(this.res, resource)) {
+    return false;
+  }
+
+  // if user has access it's ok
+  if (_.get(this.users, user._id + '.' + resource)) {
+    return true;
+  }
+
+  // if one of user's roles has access it's ok 
   let roles = user.roles || [];
 
   for (let i in roles) {
