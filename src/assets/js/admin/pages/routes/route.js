@@ -28,6 +28,7 @@ module.exports = React.createClass({
       method: method,
       reqQuery: {},
       reqBody: {},
+      canSubmit: true,
     };
   },
 

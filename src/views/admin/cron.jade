@@ -1,0 +1,9 @@
+extends _layout
+
+block main_content
+  #react-root
+    .loading Loading...
+
+block scripts
+  script(type="text/javascript", src=staticUrl("/js/admin.vendor.js"))
+  script(type="text/javascript", src=staticUrl("/js/admin.cron.js"))

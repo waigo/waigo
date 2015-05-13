@@ -43,6 +43,11 @@ module.exports = function*(app) {
       return this.toJSON();
     };
 
+    // add method to fetch app
+    colMethods.getApp = docMethods.getApp = function() {
+      return app;
+    };
+
     // add method to record to activity log
     colMethods.record = docMethods.record = function*() {
       if (app.record) {

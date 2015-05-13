@@ -65,6 +65,18 @@
         POST: 'admin.emails.send',
       },
     },
+
+    '/cron': {
+      pre: [
+        { 
+          id: 'assertUser', 
+          canAccess: 'admin',
+        },
+      ],
+
+      GET: 'admin.cron.index',
+    },
+
   }
  };
 

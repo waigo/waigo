@@ -23,15 +23,8 @@ module.exports = function() {
   return function*(next) {
     this.locals = this.locals || {};
 
-    if (this.session.user) {
-      this.app.logger.debug('Current user', this.session.user);
-
-      this.currentUser = this.locals.currentUser = 
-        yield this.app.models.User.findOne({
-          _id: this.session.user._id
-        })
-      ;
-    }
+    // current user
+    this.locals.currentUser = this.currentUser;
 
     // template helpers
     this.locals.matchesCurrentUrl = _.bind(matchesCurrentUrl, this);

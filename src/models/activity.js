@@ -9,7 +9,7 @@ var UserSchema = {
   // unique id (if null then by the system)
   _id: {    
     type: String,
-    required: true,
+    required: false,
   },
   // friendly display name
   displayName: {

@@ -97,11 +97,11 @@ module.exports = {
   ],
   methods: {
     /**
-     * Find the first available admin user.
-     * @return {User}
+     * Find all admin users.
+     * @return {Array}
      */
-    findAdminUser: function*() {
-      return yield this.findOne({
+    findAdminUsers: function*() {
+      return yield this.find({
         roles: {
           $in: ['admin']
         }
@@ -201,7 +201,7 @@ module.exports = {
      * @param {Object} context waigo client request context.
      */
     login: function*(context) {
-      context.app.logger.debug('Logging in user', this._id);
+      this.getApp().logger.debug('Logging in user', this._id);
 
       context.session.user = {
         _id: this._id,
@@ -238,11 +238,10 @@ module.exports = {
     },
     /**
      * Update this user's password.
-     * @param {Object} context waigo client request context.
      * @param {String} newPassword New password.
      */
-    updatePassword: function*(context, newPassword) {
-      context.app.logger.debug('Update user password', this._id);
+    updatePassword: function*(newPassword) {
+      this.getApp().logger.debug('Update user password', this._id);
 
       var passAuth = _.find(this.auth, function(a) {
         return 'password' === a.type;
@@ -270,9 +269,7 @@ module.exports = {
      * @return {Boolean} true if access is possible, false if not.
      */
     canAccess: function*(resource) {
-      var app = waigo.load('application').app;
-
-      return app.acl.can(resource, this);
+      return this.getApp().acl.can(resource, this);
     },
     /**
      * Assert that user can access given resource.
@@ -282,9 +279,7 @@ module.exports = {
      * @throws {Error} If not allowed to access.
      */
     assertAccess: function*(resource) {
-      var app = waigo.load('application').app;
-
-      return app.acl.assert(resource, this);
+      return this.getApp().acl.assert(resource, this);
     },
   },
 };

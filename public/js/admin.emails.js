@@ -1,4 +1,4 @@
-webpackJsonp([2],{
+webpackJsonp([0],{
 
 /***/ 0:
 /***/ function(module, exports, __webpack_require__) {
@@ -9,8 +9,8 @@ webpackJsonp([2],{
 	
 	var _ = __webpack_require__(14);
 	
-	var UsersPage = __webpack_require__(26);
-	var SendPage = __webpack_require__(27);
+	var UsersPage = __webpack_require__(21);
+	var SendPage = __webpack_require__(22);
 	
 	var App = React.createClass({
 	  displayName: "App",
@@ -116,7 +116,7 @@ webpackJsonp([2],{
 
 /***/ },
 
-/***/ 26:
+/***/ 21:
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -220,7 +220,7 @@ webpackJsonp([2],{
 
 /***/ },
 
-/***/ 27:
+/***/ 22:
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";

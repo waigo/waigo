@@ -1,0 +1,7 @@
+p The following users signed up last month (#{month}):
+
+if users.length
+  - each user in users
+    p #{user.displayName} (#{user._id})
+else
+  p No users signed up

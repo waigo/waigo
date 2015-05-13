@@ -84,6 +84,7 @@ module.exports = function(config) {
     'staticResources',
     'actionTokens',
     'mailer',
+    'cron',
     'listener'
   ];
 
@@ -142,6 +143,7 @@ module.exports = function(config) {
       'staticResources',
       'sessions',
       'outputFormats',
+      'currentUser',
       'contextHelpers',
       'csrf',
     ],
@@ -233,6 +235,11 @@ module.exports = function(config) {
     {
       label: 'Send email',
       path: '/admin/emails',
+      canAccess: 'admin',
+    },
+    {
+      label: 'Cron tasks',
+      path: '/admin/cron',
       canAccess: 'admin',
     },
   ];
