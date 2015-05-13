@@ -75,6 +75,10 @@
       ],
 
       GET: 'admin.cron.index',
+
+      '/run': {
+        POST: 'admin.cron.run',
+      }
     },
 
   }

@@ -2,7 +2,8 @@ var React = require('react');
 var Router = require('react-router');
 var Link = Router.Link;
 
-var Loader = require('./loader'),
+var List = require('./list'),
+  Loader = require('./loader'),
   RenderUtils = require('../utils/renderUtils'),  
   GuardedStateMixin = require('../mixins/guardedState');
 
@@ -29,6 +30,21 @@ module.exports = React.createClass({
   },
 
 
+  _buildItem: function(item) {
+    var rParams = {
+      key: encodeURIComponent(item.key)
+    };
+
+    var itemDisplay = this.props.itemDisplayNameFormatter(item);
+
+    return (
+      <Link to={this.props.itemRoute} params={rParams} className="item">
+        {itemDisplay}
+      </Link>
+    );
+  },
+
+
   _buildItemList: function() {
     var self = this;
 
@@ -43,25 +59,8 @@ module.exports = React.createClass({
             return false;
           }
         }
-
         return true;
-        
-      }).map(function(item) {
-        var rParams = {
-          key: encodeURIComponent(item.key)
-        };
-
-        var itemDisplay = self.props.itemDisplayNameFormatter(item);
-
-        return (
-          <li className="collection-item" key={item.key}>
-            <Link to={self.props.itemRoute} params={rParams} className="item">
-              {itemDisplay}
-            </Link>
-          </li>
-        );
       });
-
 
       return (
         <div>
@@ -74,7 +73,7 @@ module.exports = React.createClass({
               onKeyDown={this._onFilterChange}
               placeholder="Filter..." />
           </div>
-          <ul className="collection">{items}</ul>
+          <List items={items} renderItem={this._buildItem} />
         </div>
       );
     } else {

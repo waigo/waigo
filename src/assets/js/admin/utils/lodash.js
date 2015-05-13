@@ -14,3 +14,14 @@ exports.find = function(arr, fn) {
 
   return null;
 };
+
+
+exports.values = function(collection) {
+  var ret = [];
+
+  for (var key in collection) {
+    ret.push(collection[key]);
+  }
+
+  return ret;
+};

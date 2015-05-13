@@ -112,9 +112,15 @@ module.exports = React.createClass({
   _buildTableFilter: function() {
     var canSubmit = this._canSubmitSettingsForm();
 
-    return (
-      <div className="model-filters">
-        <Collapsible label="Change filter, sorting and paging">
+    var items = [
+      {
+        label: (
+          <span>
+            <i className="fa fa-gear"></i>
+            Change filter, sorting and paging
+          </span>
+        ),
+        body: (
           <form onSubmit={this._onSubmitSettingsForm}>
             <div className="filter">
               <label>Filter:</label>
@@ -140,7 +146,13 @@ module.exports = React.createClass({
               <SubmitButton label="Apply" disabled={!canSubmit} />
             </div>
           </form>          
-        </Collapsible>
+        )
+      }
+    ];
+
+    return (
+      <div className="model-filters">
+        <Collapsible items={items} />
       </div>
     );
   },

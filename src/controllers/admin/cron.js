@@ -7,8 +7,18 @@ var waigo = require('../../../'),
 
 exports.index = function*() {
   yield this.render('admin/cron', {
-    tasks: app.cron
+    tasks: this.app.cron
   });
 };
 
+
+
+
+exports.run = function*() {
+  var name = this.request.body.name;
+
+  yield this.app.cron[name].runNow();
+
+  yield this.render('admin/cron/run');
+};
 

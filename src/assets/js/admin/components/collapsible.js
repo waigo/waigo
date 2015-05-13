@@ -3,7 +3,15 @@ var React = require('react');
 
 module.exports = React.createClass({
   propTypes: {
-    label: React.PropTypes.string,
+    items: React.PropTypes.array,
+    initOnUpdate: React.PropTypes.bool,
+  },
+
+  getDefaultProps: function() {
+    return {
+      items: [],
+      initOnUpdate: false,
+    };
   },
 
   getInitialState: function() {
@@ -12,26 +20,29 @@ module.exports = React.createClass({
     };
   },
 
-  getDefaultProps: function() {
-    return {
-      label: '',
-    };
-  },
-
   render: function() {
-    return (
-      <ul className="collapsible" ref="collapsible">
+    var items = this.props.items.map(function(item) {
+      return (
         <li>
           <div className="collapsible-header">
-            <i className="fa fa-gear"></i>
-            <span>{this.props.label}</span>
+            {item.label}
           </div>
           <div className="collapsible-body">
-            {this.props.children}
+            {item.body}
           </div>
         </li>
-      </ul>
+      );
+    });
+
+    return (
+      <ul className="collapsible" ref="collapsible">{items}</ul>
     );
+  },
+
+  componentDidMount: function() {
+    if (!this.props.initOnUpdate) {
+      this.componentDidUpdate();
+    }
   },
 
   componentDidUpdate: function() {

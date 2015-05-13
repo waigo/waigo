@@ -4,7 +4,8 @@ var co = require('co'),
   CronJob = require('cron').CronJob;
 
 var waigo = require('../../'),
-  _ = waigo._;
+  _ = waigo._,
+  viewObjects = waigo.load('support/viewObjects');
 
 
 
@@ -80,6 +81,16 @@ module.exports = {
 
       // start the cron job
       cron.startScheduler(crontab);
+
+      // override view object method
+      cron[viewObjects.methodName] = function*(ctx) {
+        var json = this.toJSON();
+
+        json.schedule = crontab;
+        json.nextRun = cron.__extra.job.nextDate().toDate();
+
+        return json;
+      };
 
       return cron;
     },
@@ -159,13 +170,15 @@ module.exports = {
 
         yield this.runNow();
       } catch (err) {
-        _config.logger.error('Scheduled run error', err);
+        _config.logger.error('Scheduled run error', err.stack);
       }
     },
     /**
      * Run this task.
      *
      * This will run this task even if it's not active.
+     *
+     * @param {Object} [ctx] Request context (if available).
      */
     runNow: function*(ctx) {
       var _config = this.__extra;
@@ -190,13 +203,13 @@ module.exports = {
         });
 
       } catch (err) {
-        _config.logger.error('Run failed', err.stack);
-
         yield this.record('run_fail', 'cron', {
           task: this.name,
           err: err.stack,
           by: runByUser
         });
+
+        throw err;
       }
     },
   },
