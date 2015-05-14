@@ -92,5 +92,33 @@ main#admin_container
           font-size 110%
           font-weight bold
         
+    // /cron
+    .page-cron
+      .item-label
+        .status
+          &.inactive            
+            color #999
+            &:after
+              display inline-block
+              content '[Inactive]'
+              margin-left 1em
+              font-size 80%
+      .item-body
+        padding 1em
+        
+        .item-label
+          padding-left 0
+          color #000
+          font-weight bold
+          text-align left
+          & + div
+            display inline-block
+            text-align left
+            
+            span.by
+              margin-left 1em
+              color #666
+              font-size 80%
 
+        
         

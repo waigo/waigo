@@ -1837,6 +1837,33 @@ main#admin_container #admin_content .page-emails .tips code {
   font-size: 110%;
   font-weight: bold;
 }
+main#admin_container #admin_content .page-cron .item-label .status.inactive {
+  color: #999;
+}
+main#admin_container #admin_content .page-cron .item-label .status.inactive:after {
+  display: inline-block;
+  content: '[Inactive]';
+  margin-left: 1em;
+  font-size: 80%;
+}
+main#admin_container #admin_content .page-cron .item-body {
+  padding: 1em;
+}
+main#admin_container #admin_content .page-cron .item-body .item-label {
+  padding-left: 0;
+  color: #000;
+  font-weight: bold;
+  text-align: left;
+}
+main#admin_container #admin_content .page-cron .item-body .item-label + div {
+  display: inline-block;
+  text-align: left;
+}
+main#admin_container #admin_content .page-cron .item-body .item-label + div span.by {
+  margin-left: 1em;
+  color: #666;
+  font-size: 80%;
+}
 #login .signup {
   display: block;
   margin-top: 3em;

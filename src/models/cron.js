@@ -212,6 +212,18 @@ module.exports = {
         throw err;
       }
     },
+    /**
+     * Set schedule status of this task.
+     */
+    setActive: function*(active) {
+      var _config = this.__extra;
+
+      _config.logger.debug('Set active: ' + active);
+
+      this.disabled = !active;
+
+      yield this.save();
+    },
   },
 };
 

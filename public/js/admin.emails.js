@@ -5,12 +5,12 @@ webpackJsonp([0],{
 
 	"use strict";
 	
-	var React = __webpack_require__(4);
+	var React = __webpack_require__(6);
 	
-	var _ = __webpack_require__(19);
+	var _ = __webpack_require__(22);
 	
-	var UsersPage = __webpack_require__(21);
-	var SendPage = __webpack_require__(22);
+	var UsersPage = __webpack_require__(26);
+	var SendPage = __webpack_require__(27);
 	
 	var App = React.createClass({
 	  displayName: "App",
@@ -116,15 +116,15 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 21:
+/***/ 26:
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	
-	var React = __webpack_require__(4);
+	var React = __webpack_require__(6);
 	
-	var Button = __webpack_require__(6);
-	var ModelTable = __webpack_require__(14);
+	var Button = __webpack_require__(8);
+	var ModelTable = __webpack_require__(16);
 	
 	module.exports = React.createClass({
 	  displayName: "exports",
@@ -220,21 +220,21 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 22:
+/***/ 27:
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	
-	var React = __webpack_require__(4);
+	var React = __webpack_require__(6);
 	
-	var Timer = __webpack_require__(1).Timer;
+	var Timer = __webpack_require__(3).Timer;
 	
-	var RenderUtils = __webpack_require__(20),
-	    GuardedStateMixin = __webpack_require__(18);
+	var RenderUtils = __webpack_require__(23),
+	    GuardedStateMixin = __webpack_require__(21);
 	
-	var Button = __webpack_require__(6),
-	    Loader = __webpack_require__(12),
-	    TextEditor = __webpack_require__(17);
+	var Button = __webpack_require__(8),
+	    Loader = __webpack_require__(14),
+	    TextEditor = __webpack_require__(20);
 	
 	module.exports = React.createClass({
 	  displayName: "exports",

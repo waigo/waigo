@@ -20,6 +20,8 @@ buildWebpackConfig = (paths, options = {}) ->
 
   entries =
     vendor: [
+      'lodash',
+      'moment'
       'clockmaker'
       'pagination'
       'prism'

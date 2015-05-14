@@ -78,7 +78,11 @@
 
       '/run': {
         POST: 'admin.cron.run',
-      }
+      },
+
+      '/updateStatus': {
+        POST: 'admin.cron.updateStatus',
+      },
     },
 
   }

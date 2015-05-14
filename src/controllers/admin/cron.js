@@ -17,8 +17,31 @@ exports.index = function*() {
 exports.run = function*() {
   var name = this.request.body.name;
 
-  yield this.app.cron[name].runNow();
+  var task = this.app.cron[name];
 
-  yield this.render('admin/cron/run');
+  yield task.runNow();
+
+  yield this.render('admin/cron/run', {
+    task: task,
+  });
 };
+
+
+
+
+exports.updateStatus = function*() {
+  var name = this.request.body.name,
+    active = this.request.body.active;
+
+  active = ('true' === ('' + active));
+
+  var task = this.app.cron[name];
+
+  yield task.setActive(active);
+
+  yield this.render('admin/cron/updateStatus', {
+    task: task,
+  });
+};
+
 

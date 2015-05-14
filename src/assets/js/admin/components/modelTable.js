@@ -177,6 +177,10 @@ module.exports = React.createClass({
           flipValue = value;
           value = new Date(value).toString();
         }
+        // if value is a boolean
+        else if ('Boolean' === col.type) {
+          value = '' + false;
+        }
         // else if value is an array
         else if (Array.isArray(value)) {
           // extract sub key
