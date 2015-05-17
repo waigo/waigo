@@ -1,0 +1,21 @@
+# OSX
+.DS_Store
+
+# node
+node_modules
+npm-debug.log
+
+# IntelliJ
+.idea
+*.iml
+
+# bower
+bower_components
+
+# build
+public/_gen
+public/**/*.map
+webpack.config.js
+
+# config
+src/config/development.*.js

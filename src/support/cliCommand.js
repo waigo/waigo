@@ -59,6 +59,39 @@ AbstractCommand.prototype.log = function(msg) {
 
 
 /** 
+ * Copy a folder to given destination if it doesn't already exist at that destination.
+ *
+ * This checks to see if a folder with the same name exists at the 
+ * destination. It doesn't check that it contains the same content as the 
+ * source folder.
+ *
+ * @param {String} src Source folder path.
+ * @param {String} dst Destination folder path.
+ */
+AbstractCommand.prototype.copyFolder = function*(src, dst) {
+  var fullDstPath = path.join(this._getProjectFolder(), dst);
+
+  if (! (shell.test('-f', fullDstPath)) ) {
+    this.log('Creating: ' + dst);
+
+    // create intermediate folders
+    debug('Creating intermediate folders for: ' + dst);
+    shell.mkdir('-p', path.dirname(fullDstPath));
+
+    debug('Copying ' + src + ' -> ' + dst);
+
+    shell.cp('-R', src, fullDstPath);
+  } else {
+    this.log('Found: ' + dst);
+  }  
+};  
+
+
+
+
+
+
+/** 
  * Copy a file to given destination if it doesn't already exist at that destination.
  *
  * This checks to see if a file with the same name exists at the 
@@ -88,6 +121,7 @@ AbstractCommand.prototype.copyFile = function*(src, dst) {
 
 
 
+
 /** 
  * Install one or more NPM packages into the local NPM modules folder.
  *
@@ -95,28 +129,26 @@ AbstractCommand.prototype.copyFile = function*(src, dst) {
  * 
  * _Note: This does not modify the local package.json (if it exists)._
  *
- * @param {String} ... NPM package names.
+ * @param {Array} pkgs NPM package names.
+ * @param {Object} [options] Options.
+ * @param {Boolean} [options.dev] Whether to save as dev-dependency.
  */
-AbstractCommand.prototype.installPkgs = function*() {
-  var self = this;
-
-  var toInstall = [];
-
-  var npmFolder = self._getNpmFolderLocation();
-
-  _.each(arguments, function(pkg) {
-    // if module not found
-    if ( !npmFolder || !shell.test('-d', path.join(npmFolder, pkg)) )  {
-      self.log('NPM install ' + pkg)
-      toInstall.push(pkg);            
-    } else {
-      self.log('NPM pkg found: ' + pkg);
-    }
+AbstractCommand.prototype.installPkgs = function*(pkgs, options) {
+  options = _.extend({
+    dev: false,
   });
 
-  if (0 < toInstall.length) {
-    yield shell.execAsync('npm install ' + toInstall.join(' '));    
+  var str = pkgs.join(' ');
+
+  if (options.dev) {
+    str = '--save-dev ' + str;
+  } else {
+    str = '---save ' + str;
   }
+
+  this.log('NPM install ' + str);
+
+  yield shell.execAsync('npm install ' + str);    
 };  
 
 

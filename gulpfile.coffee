@@ -63,7 +63,7 @@ paths.assets.src.js_watchFiles = paths.assets.src.js_srcFiles
 # 
 
 # load all gulp tasks
-tasksFolder = path.join(__dirname, 'gulp', 'tasks')
+tasksFolder = path.join(__dirname, 'gulp')
 taskFiles = fs.readdirSync tasksFolder
 
 for tf in taskFiles
