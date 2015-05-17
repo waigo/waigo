@@ -188,8 +188,8 @@ loader.init = function*(options) {
     debug('Scanning for files in: ' + sourceName);
 
     _.extend(moduleMap, yield _walk(sourcePaths[sourceName], {
-        // only want .js files, but not any from cli/ or views/
-        matchFiles: /^(?!(cli|views)\/)(.+?\.js)$/i,
+        // only want .js files, but not any from views/ or cli/data
+        matchFiles: /^(?!(views|cli\/data)\/)(.+?\.js)$/i,
       })
     );
 

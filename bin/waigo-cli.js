@@ -19,6 +19,13 @@ var frameworkFolderPath = path.join(__dirname, '..'),
   waigo = require(frameworkFolderPath);
 
 
+
+var _handleError = function(err) {
+  console.error(err.stack);
+  process.exit(-1);
+};
+
+
 co(function*() {
   // app folder available?
   var appFolderPath = path.join(process.cwd(), 'src');
@@ -37,7 +44,7 @@ co(function*() {
   debug('Waigo initialised');
 
   // load all commands
-  var commands = waigo.getModulesInPath('cli');
+  var commands = waigo.getFilesInFolder('cli');
 
   // initialise parser
   var program = commander;
@@ -58,9 +65,12 @@ co(function*() {
       .command(commandName)
       .description(obj.description)
       .action(
-        co(function*() {
-          yield obj.run.apply(obj, arguments);
-        })
+        function() {
+          co(function*() {
+            yield obj.run.apply(obj, arguments);
+          })
+            .catch(_handleError);
+        }
       );
 
     _.each(obj.options, function(o) {
@@ -72,9 +82,5 @@ co(function*() {
   debug('Executing command');
 
   program.parse(process.argv);
-
-})(function(err) {
-  if (err) {
-    console.error(err);
-  }
-});
+})
+  .catch(_handleError);

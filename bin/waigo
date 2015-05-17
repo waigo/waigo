@@ -3,31 +3,55 @@
 "use strict";
 
 var path = require('path'),
-  shell = require('shelljs'),
-  v8flags = require('v8-flags');
+  shell = require('shelljs');
 
 
-// Turn on Harmony features
-var v8flags = require('v8-flags');
-v8flags.harmony(true);
+// if node <0.11 then no can do
+var semver = require('semver');
+if (semver.lt(process.version, '0.11.2')) {
+  throw new Error('Node v0.11.2+ required');
+}
 
+
+// check if ES6 enabled (works for Node 0.11.x and 0.12.x)
+var es6Enabled = false;
+try {
+  require('vm').runInNewContext('var a = function*() {};');
+  es6Enabled = true;
+} catch (err) {
+  es6Enabled = false;
+}
 
 // ['node', '../../bin/waigo', 'arg1', ...]
 var cliArgs = process.argv.slice(2);
 
-// by default let's assume waigo-cli is in this folder
-var pathToWaigoCli = path.join(__dirname, 'waigo-cli');
 
+if (es6Enabled) {
+  // by default let's assume waigo-cli is in this folder
+  var pathToWaigoCli = path.join(__dirname, 'waigo-cli.js');
 
-// check to see if we have a local installation of Waigo we can use
-// (we'll assume that the CLI is always run in the project root folder, where 
-// node_modules also resides)
-var pathToLocalWaigoCli = 
-  path.join(process.cwd(), 'node_modules', 'waigo', 'bin', 'waigo-cli');
+  // check to see if we have a local installation of Waigo we can use
+  // (we'll assume that the CLI is always run in the project root folder, where 
+  // node_modules also resides)
+  var pathToLocalWaigoCli = 
+    path.join(process.cwd(), 'node_modules', 'waigo', 'bin', 'waigo-cli.js');
 
-if (shell.test('-f', pathToLocalWaigoCli)) {
-  pathToWaigoCli = pathToLocalWaigoCli;
+  if (shell.test('-f', pathToLocalWaigoCli)) {
+    pathToWaigoCli = pathToLocalWaigoCli;
+  }
+
+  require(pathToWaigoCli);
+} else {
+  var spawn = require('child_process').spawn;
+
+  var app = spawn('node', ['--harmony', __filename].concat(cliArgs), {
+    cwd: process.cwd(),
+    env: process.env,
+    stdio: 'inherit',
+  });
+
+  app.on('exit', function (code) {
+    process.exit(code);
+  });
 }
 
-
-requre(pathToWaigoCli);
