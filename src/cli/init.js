@@ -52,6 +52,8 @@ Command.prototype.run = function*() {
   yield this.copyFile(path.join(dataFolder, 'README.md'), 'src/README.md');
   yield this.copyFile(path.join(dataFolder, '.gitignore'), '.gitignore');
 
+  yield this.copyFile(path.join(waigo.getWaigoFolder(), 'config', 'base.js'), 'src/config/base.js');
+
   yield this.copyFile(path.join(dataFolder, 'gulpfile.coffee'), 'gulpfile.coffee');
   yield this.copyFolder(path.join(dataFolder, 'gulp'), 'gulp');
 };
