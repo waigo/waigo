@@ -57,6 +57,10 @@ var matchesCurrentUrl = exports.matchesCurrentUrl = function(urlPath) {
 
 
 var processAlertMessage = exports.processAlertMessage = function(ctx) {
+  if (!ctx.session) {
+    return;
+  }
+  
   // clear current alert message (and save it for templates)
   if (ctx.session.alertMsg) {
     ctx.locals.alertMsg = ctx.session.alertMsg;

@@ -42,7 +42,7 @@ module.exports = function(config) {
     // default logging category
     category: 'app',
     // minimum logging level
-    minLevel: 'ERROR',
+    minLevel: 'DEBUG',
     // where logging output should go
     appenders: [
       {
@@ -148,7 +148,7 @@ module.exports = function(config) {
       'csrf',
     ],
     errorHandler: {
-      showStack: false
+      showStack: true
     },
     staticResources: {
       // relative to app folder
@@ -189,7 +189,7 @@ module.exports = function(config) {
           // Default view template filename extension when not explicitly provided. */
           ext: 'jade',
           // Whether compiled templates should be cached in memory (not all template engines honour this)
-          cache: true,
+          cache: false,
           // Map file extension to rendering engine
           engine: {
             'jade': 'jade'
@@ -251,24 +251,24 @@ module.exports = function(config) {
   config.mailer = {
     // default 'from' address
     from: 'System <waigo@localhost>',
-    // mailer type
-    type: 'smtp',
-    // options for mailer type
-    smtp: {
-      host: '127.0.0.1',
-      port: 25,
-      secure: false,
-      ignoreTLS: true,
-      tls: {
-        rejectUnauthorized: false
-      },
-      maxConnections: 1,
-      maxMessages: 100,
-      connectionTimeout: 3000,
-      greetingTimeout: 3000,
-      socketTimeout: 3000,
-      debug: false,
-    }
+    type: 'console',
+
+    // type: 'smtp',
+    // smtp: {
+    //   host: '127.0.0.1',
+    //   port: 25,
+    //   secure: false,
+    //   ignoreTLS: true,
+    //   tls: {
+    //     rejectUnauthorized: false
+    //   },
+    //   maxConnections: 1,
+    //   maxMessages: 100,
+    //   connectionTimeout: 3000,
+    //   greetingTimeout: 3000,
+    //   socketTimeout: 3000,
+    //   debug: false,
+    // }
   };
 
 
