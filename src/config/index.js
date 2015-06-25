@@ -14,7 +14,7 @@ var debug = require('debug')('waigo-config'),
  */
 var loadConfigModule = function(name) {
   try {
-    return waigo.load('config/' + name);
+    return waigo.load('app:config/' + name);
   } catch (e) {
     debug(e);
     return null;
