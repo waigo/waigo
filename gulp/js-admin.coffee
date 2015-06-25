@@ -15,7 +15,7 @@ uglify = require 'gulp-uglify'
 
 buildWebpackConfig = (paths, options = {}) ->
   # create entries array
-  adminJsFolder = path.join(paths.assets.src.js, 'admin')
+  adminJsFolder = path.join(paths.frontend.src.js, 'admin')
   adminJsFiles = recursiveReadDir(adminJsFolder)
 
   entries =
@@ -85,6 +85,6 @@ module.exports = (paths, options = {}) ->
         gutil.log(err.stack)
       )
       .pipe gulpIf(!options.debugBuild, uglify())
-      .pipe gulp.dest(paths.assets.build.js)
+      .pipe gulp.dest(paths.frontend.build.js)
 
 

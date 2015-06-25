@@ -11,12 +11,12 @@ rupture = require('rupture')
 
 module.exports = (paths, options = {}) ->
   return ->
-    gulp.src paths.assets.src.stylus.files
+    gulp.src paths.frontend.src.stylus.files
       .pipe stylus({
         use: [ nib(), rupture() ]
       })
       .pipe prefix()
       .pipe concat('style.css')
       .pipe gulpIf(!options.debugBuild, minifyCss())
-      .pipe gulp.dest(paths.assets.build.css.folder)
+      .pipe gulp.dest(paths.frontend.build.css.folder)
 

@@ -17,24 +17,25 @@ if options.debugBuild
 # paths
 
 paths =
+  npm: path.join(__dirname, 'node_modules')
   root: __dirname
-  assets: 
+  frontend: 
     src: 
-      folder: path.join(__dirname, 'src', 'assets')
+      folder: path.join(__dirname, 'src', 'frontend')
       js:
-        folder: path.join(__dirname, 'src', 'assets', 'js')
-        files: path.join(__dirname, 'src', 'assets', 'js', '*.js')
-        watch: path.join(__dirname, 'src', 'assets', 'js', '*.js')
+        folder: path.join(__dirname, 'src', 'frontend', 'js')
+        files: path.join(__dirname, 'src', 'frontend', 'js', '*.js')
+        watch: path.join(__dirname, 'src', 'frontend', 'js', '*.js')
       fonts:
-        folder: path.join(__dirname, 'src', 'assets', 'font')
+        folder: path.join(__dirname, 'src', 'frontend', 'font')
       stylus:
-        folder: path.join(__dirname, 'src', 'assets', 'stylus')
-        files: path.join(__dirname, 'src', 'assets', 'stylus', 'style.styl')
-        watch: path.join(__dirname, 'src', 'assets', 'stylus', '*.styl')        
+        folder: path.join(__dirname, 'src', 'frontend', 'stylus')
+        files: path.join(__dirname, 'src', 'frontend', 'stylus', 'style.styl')
+        watch: path.join(__dirname, 'src', 'frontend', 'stylus', '*.styl')        
       img:
-        folder: path.join(__dirname, 'src', 'assets', 'img')
-        files: path.join(__dirname, 'src', 'assets', 'img', '*.*')
-        watch: path.join(__dirname, 'src', 'assets', 'img', '*.*')
+        folder: path.join(__dirname, 'src', 'frontend', 'img')
+        files: path.join(__dirname, 'src', 'frontend', 'img', '*.*')
+        watch: path.join(__dirname, 'src', 'frontend', 'img', '*.*')
     build: 
       folder: path.join(__dirname, 'public') 
       js:

@@ -4,6 +4,6 @@ nodemon = require 'gulp-nodemon'
 
 module.exports = (paths, options = {}) ->
   return {
-    deps: ['assets', 'dev-assets', 'dev-server']
+    deps: ['frontend', 'dev-frontend', 'dev-server']
   }
 

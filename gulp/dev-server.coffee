@@ -14,7 +14,7 @@ module.exports = (paths, options = {}) ->
         'node_modules/*'
         'test/*'
         'src/cli/*'
-        'src/assets/*'
+        'src/frontend/*'
       ]
     })
 

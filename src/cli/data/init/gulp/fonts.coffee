@@ -5,7 +5,7 @@ module.exports = (paths, options = {}) ->
   return ->
     gulp.src [
       # Example: '#{paths.root}/node_modules/font-awesome-stylus/fonts/*.*'
-      # Example: path.join(paths.assets.lib.folder, 'materialize', 'font', '**')
+      # Example: path.join(paths.frontend.lib.folder, 'materialize', 'font', '**')
     ]
-      .pipe gulp.dest(paths.assets.build.fonts.folder)
+      .pipe gulp.dest(paths.frontend.build.fonts.folder)
 

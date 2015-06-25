@@ -20,9 +20,9 @@ if options.debugBuild
 
 paths =
   root: __dirname
-  assets: 
+  frontend: 
     src: 
-      _root: path.join(__dirname, 'src', 'assets')
+      _root: path.join(__dirname, 'src', 'frontend')
     build: 
       _root: path.join(__dirname, 'public') 
     lib: 
@@ -31,31 +31,31 @@ paths =
 
 # Stylus
 
-paths.assets.src.stylus = path.join(paths.assets.src._root, 'stylus')
-paths.assets.build.css = path.join(paths.assets.build._root, 'css')
+paths.frontend.src.stylus = path.join(paths.frontend.src._root, 'stylus')
+paths.frontend.build.css = path.join(paths.frontend.build._root, 'css')
 
-paths.assets.src.stylus_srcFiles = path.join(paths.assets.src.stylus, '**', '**', '**', '**', 'style.styl')
-paths.assets.src.stylus_watchFiles = path.join(paths.assets.src.stylus, '**', '*.styl')
+paths.frontend.src.stylus_srcFiles = path.join(paths.frontend.src.stylus, '**', '**', '**', '**', 'style.styl')
+paths.frontend.src.stylus_watchFiles = path.join(paths.frontend.src.stylus, '**', '*.styl')
 
 # Img 
 # 
-paths.assets.src.img = path.join(paths.assets.src._root, 'img')
-paths.assets.build.img = path.join(paths.assets.build._root, 'img')
+paths.frontend.src.img = path.join(paths.frontend.src._root, 'img')
+paths.frontend.build.img = path.join(paths.frontend.build._root, 'img')
 
-paths.assets.src.img_srcFiles = path.join(paths.assets.src.img, '**', '**', '**', '**', '*.*')
-paths.assets.src.img_watchFiles = paths.assets.src.img_srcFiles
+paths.frontend.src.img_srcFiles = path.join(paths.frontend.src.img, '**', '**', '**', '**', '*.*')
+paths.frontend.src.img_watchFiles = paths.frontend.src.img_srcFiles
 
 # Fonts
 # 
-paths.assets.build.fonts = path.join(paths.assets.build._root, 'font')
+paths.frontend.build.fonts = path.join(paths.frontend.build._root, 'font')
 
 # Js
 # 
-paths.assets.src.js = path.join(paths.assets.src._root, 'js')
-paths.assets.build.js = path.join(paths.assets.build._root, 'js')
+paths.frontend.src.js = path.join(paths.frontend.src._root, 'js')
+paths.frontend.build.js = path.join(paths.frontend.build._root, 'js')
 
-paths.assets.src.js_srcFiles = path.join(paths.assets.src.js, '**', '**', '**', '**', '*.js')
-paths.assets.src.js_watchFiles = paths.assets.src.js_srcFiles
+paths.frontend.src.js_srcFiles = path.join(paths.frontend.src.js, '**', '**', '**', '**', '*.js')
+paths.frontend.src.js_watchFiles = paths.frontend.src.js_srcFiles
 
 
 

@@ -8,9 +8,9 @@ uglify = require 'gulp-uglify'
 module.exports = (paths, options = {}) ->
   return ->
     v1 = gulp.src [
-      # Example: path.join(paths.assets.src.js.folder, 'app.js')
+      # Example: path.join(paths.frontend.src.js.folder, 'app.js')
     ]
-      .pipe concat('common.js')
+      .pipe concat('app.js')
       .pipe gulpIf(!options.debugBuild, uglify())
-      .pipe gulp.dest(paths.assets.build.js.folder)
+      .pipe gulp.dest(paths.frontend.build.js.folder)
 
