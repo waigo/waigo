@@ -23,7 +23,7 @@ module.exports = function(config) {
   /**
    * Server listening port.
    */
-  config.port = 3000;
+  config.port = (process.env.PORT || 3000);
 
 
   /**
