@@ -32,6 +32,7 @@ Command.prototype.run = function*() {
   yield this.installPkgs(['waigo']);
 
   yield this.installPkgs([
+    'semver',
     'coffee-script',
     'gulp@3.8.x',
     'gulp-if@1.2.x',
