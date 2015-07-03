@@ -44,6 +44,7 @@ Command.prototype.run = function*() {
     'gulp-uglify@1.1.x',
     'gulp-util@3.0.x',
     'gulp-nodemon@1.0.x',
+    'yargs'
   ], {
     dev: true,
   });

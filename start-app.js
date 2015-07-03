@@ -10,7 +10,7 @@
 function spawnNodeCluster() {
   var cluster = require('cluster');
 
-  var numWorkers = parseInt(process.env.NODE_WORKERS || 0) 
+  var numWorkers = parseInt(process.env.WAIGO_WORKERS || 0) 
     || require('os').cpus().length;
 
   var _log = function(workerId, msg) {
