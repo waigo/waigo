@@ -11,12 +11,17 @@ rupture = require('rupture')
 
 module.exports = (paths, options = {}) ->
   return ->
-    gulp.src paths.frontend.src.stylus_srcFiles
-      .pipe stylus({
-        use: [ nib(), rupture() ]
-      })
+    stylusCompiler = stylus({
+      use: [ nib(), rupture() ]
+    })
+
+    gulp.src paths.frontend.src.stylus.files
+      .pipe stylusCompiler
+      .on 'error', (err) ->
+        gutil.log err.stack
+        stylusCompiler.end()
       .pipe prefix()
-      .pipe concat('style.css')
+      .pipe concat('app.css')
       .pipe gulpIf(!options.debugBuild, minifyCss())
-      .pipe gulp.dest(paths.frontend.build.css)
+      .pipe gulp.dest(paths.frontend.build.css.folder)
 
