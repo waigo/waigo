@@ -52,7 +52,7 @@ Command.prototype.run = function*() {
   });
   
   yield this.copyFile(path.join(dataFolder, 'README.md'), 'src/README.md');
-  yield this.copyFile(path.join(dataFolder, '.gitignore'), '.gitignore');
+  yield this.copyFile(path.join(dataFolder, '_gitignore'), '.gitignore');
 
   yield this.copyFile(path.join(waigoFolder, '..', 'start-app.js'), 'start-app.js');
   yield this.copyFile(path.join(waigoFolder, '..', 'gulpfile.coffee'), 'gulpfile.coffee');
