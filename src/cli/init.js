@@ -81,5 +81,7 @@ Command.prototype.run = function*() {
   }, this);
   
   yield this.copyFile(path.join(waigoFolder, 'config', 'base.js'), 'src/config/base.js');
+
+  yield this.copyFolder(path.join(waigoFolder, 'views', 'emailTemplates'), 'src/views');
 };
 
