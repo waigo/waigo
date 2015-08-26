@@ -59,7 +59,6 @@ exports.login_submit = function*() {
 
 
 
-
 exports.register = function*() {
   var form = yield this.form.create('register', {
     context: this

@@ -34,7 +34,7 @@ paths =
 paths.frontend.src.stylus = path.join(paths.frontend.src._root, 'stylus')
 paths.frontend.build.css = path.join(paths.frontend.build._root, 'css')
 
-paths.frontend.src.stylus_srcFiles = path.join(paths.frontend.src.stylus, '**', '**', '**', '**', 'style.styl')
+paths.frontend.src.stylus_srcFiles = path.join(paths.frontend.src.stylus, '**', '**', '**', '**', 'app.styl')
 paths.frontend.src.stylus_watchFiles = path.join(paths.frontend.src.stylus, '**', '*.styl')
 
 # Img 
