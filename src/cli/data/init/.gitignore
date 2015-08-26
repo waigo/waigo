@@ -1,0 +1,26 @@
+# OSX
+.DS_Store
+
+# node
+node_modules
+npm-debug.log
+
+# IntelliJ
+.idea
+*.iml
+
+# VM
+Vagrantfile
+.vagrant
+
+# bower
+bower_components
+
+# build
+docs/api/*
+public/_gen
+public/js/*.map
+webpack.config.js
+
+# config
+src/config/development.*.js

@@ -52,13 +52,12 @@ Command.prototype.run = function*() {
   });
   
   yield this.copyFile(path.join(dataFolder, 'README.md'), 'src/README.md');
+  yield this.copyFile(path.join(dataFolder, '.gitignore'), '.gitignore');
 
   yield this.copyFile(path.join(waigoFolder, '..', 'start-app.js'), 'start-app.js');
-  yield this.copyFile(path.join(waigoFolder, '..', '.gitignore'), '.gitignore');
-
-  yield this.copyFile(path.join(waigoFolder, 'config', 'base.js'), 'src/config/base.js');
-
   yield this.copyFile(path.join(waigoFolder, '..', 'gulpfile.coffee'), 'gulpfile.coffee');
   yield this.copyFolder(path.join(waigoFolder, '..', 'gulp'), 'gulp');
+
+  yield this.copyFile(path.join(waigoFolder, 'config', 'base.js'), 'src/config/base.js');
 };
 
