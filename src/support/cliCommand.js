@@ -100,12 +100,19 @@ AbstractCommand.prototype.copyFolder = function*(src, dst) {
  *
  * @param {String} src Source file path.
  * @param {String} dst Destination file path.
+ * @param {Boolean} [overwrite] Whether to overwrite if already exists. Default is `false`.
  */
-AbstractCommand.prototype.copyFile = function*(src, dst) {
+AbstractCommand.prototype.copyFile = function*(src, dst, overwrite) {
   var fullDstPath = path.join(this._getProjectFolder(), dst);
 
-  if (! (shell.test('-f', fullDstPath)) ) {
-    this.log('Creating: ' + dst);
+  var fileExistsAlready = (!(shell.test('-f', fullDstPath)));
+
+  if ( !fileExistsAlready || overwrite ) {
+    if (fileExistsAlready) {
+      this.log('Overwriting: ' + dst);
+    } else {
+      this.log('Creating: ' + dst);      
+    }
 
     // create intermediate folders
     debug('Creating intermediate folders for: ' + dst);
