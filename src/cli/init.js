@@ -56,7 +56,13 @@ Command.prototype.run = function*() {
 
   yield this.copyFile(path.join(waigoFolder, '..', 'start-app.js'), 'start-app.js');
   yield this.copyFile(path.join(waigoFolder, '..', 'gulpfile.coffee'), 'gulpfile.coffee');
+  
   yield this.copyFolder(path.join(waigoFolder, '..', 'gulp'), '.');
+  // override JS gulp tasks
+  yield this.copyFile(path.join(dataFolder, 'gulp', 'js.coffee'), 'gulp/js.coffee');
+  yield this.copyFile(path.join(dataFolder, 'gulp', 'js-app.coffee'), 'gulp/js-app.coffee');
+  yield this.copyFile(path.join(dataFolder, 'gulp', 'js-common.coffee'), 'gulp/js-common.coffee');
+  yield this.deleteFile('gulp/js-admin.coffee');
 
   yield this.copyFile(path.join(waigoFolder, 'config', 'base.js'), 'src/config/base.js');
 };

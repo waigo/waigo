@@ -121,6 +121,21 @@ AbstractCommand.prototype.copyFile = function*(src, dst) {
 
 
 
+/** 
+ * Delete file at given destination if it exists.
+ *
+ * @param {String} dst Destination file path.
+ */
+AbstractCommand.prototype.deleteFile = function*(dst) {
+  var fullDstPath = path.join(this._getProjectFolder(), dst);
+
+  this.log('Deleting: ' + dst);
+  
+  shell.rm(fullDstPath);
+};  
+
+
+
 
 /** 
  * Install one or more NPM packages into the local NPM modules folder.
