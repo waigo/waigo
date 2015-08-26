@@ -1,5 +1,4 @@
 _ = require 'lodash'
-Q = require 'bluebird'
 path = require 'path'
 fs = require 'fs'
 recursiveReadDir = require 'readdirrsync'
