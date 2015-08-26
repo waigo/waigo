@@ -56,7 +56,7 @@ Command.prototype.run = function*() {
 
   yield this.copyFile(path.join(waigoFolder, '..', 'start-app.js'), 'start-app.js');
   yield this.copyFile(path.join(waigoFolder, '..', 'gulpfile.coffee'), 'gulpfile.coffee');
-  yield this.copyFolder(path.join(waigoFolder, '..', 'gulp'), 'gulp');
+  yield this.copyFolder(path.join(waigoFolder, '..', 'gulp'), '.');
 
   yield this.copyFile(path.join(waigoFolder, 'config', 'base.js'), 'src/config/base.js');
 };
