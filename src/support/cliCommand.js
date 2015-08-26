@@ -105,7 +105,7 @@ AbstractCommand.prototype.copyFolder = function*(src, dst) {
 AbstractCommand.prototype.copyFile = function*(src, dst, overwrite) {
   var fullDstPath = path.join(this._getProjectFolder(), dst);
 
-  var fileExistsAlready = (!(shell.test('-f', fullDstPath)));
+  var fileExistsAlready = !!shell.test('-f', fullDstPath);
 
   if ( !fileExistsAlready || overwrite ) {
     if (fileExistsAlready) {

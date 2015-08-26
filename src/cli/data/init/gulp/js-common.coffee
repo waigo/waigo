@@ -12,5 +12,5 @@ module.exports = (paths, options = {}) ->
     ]
       .pipe concat('common.js')
       .pipe gulpIf(!options.debugBuild, uglify())
-      .pipe gulp.dest(paths.frontend.build.js.folder)
+      .pipe gulp.dest(paths.frontend.build.js)
 

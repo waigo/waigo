@@ -1,7 +1,8 @@
 "use strict";
 
 
-var debug = require('debug')('waigo-cli-init'),
+var _ = require('lodash'),
+  debug = require('debug')('waigo-cli-init'),
   path = require('path'),
   util = require('util');
 
@@ -56,14 +57,29 @@ Command.prototype.run = function*() {
 
   yield this.copyFile(path.join(waigoFolder, '..', 'start-app.js'), 'start-app.js');
   yield this.copyFile(path.join(waigoFolder, '..', 'gulpfile.coffee'), 'gulpfile.coffee');
-  
-  yield this.copyFolder(path.join(waigoFolder, '..', 'gulp'), '.');
-  // override JS gulp tasks
-  yield this.copyFile(path.join(dataFolder, 'gulp', 'js.coffee'), 'gulp/js.coffee');
-  yield this.copyFile(path.join(dataFolder, 'gulp', 'js-app.coffee'), 'gulp/js-app.coffee', true);
-  yield this.copyFile(path.join(dataFolder, 'gulp', 'js-common.coffee'), 'gulp/js-common.coffee', true);
-  yield this.deleteFile('gulp/js-admin.coffee');
 
+  yield _.map([
+    'dev-frontend',
+    'dev-server',
+    'dev',
+    'frontend',
+  ], function(n) {
+    return this.copyFile(path.join(waigoFolder, '..', 'gulp', n+'.coffee'), 'gulp/' + n + '.coffee');
+  }, this);
+
+  yield _.map([
+    'img',
+    'css', 
+    'stylus',
+    'fonts',
+    'js-app',
+    'js-common',
+    'js',
+    'vendor-css',
+  ], function(n) {
+    return this.copyFile(path.join(dataFolder, 'gulp', n+'.coffee'), 'gulp/' + n + '.coffee');
+  }, this);
+  
   yield this.copyFile(path.join(waigoFolder, 'config', 'base.js'), 'src/config/base.js');
 };
 
