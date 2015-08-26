@@ -2,6 +2,9 @@ var co = require('co');
 
 var waigo = module.exports = require('./src/loader');
 
+// set it on global for easy access
+global.waigo = waigo;
+
 
 /**
  * Bootstrap your application.

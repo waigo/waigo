@@ -6,6 +6,9 @@
  */
 
 
+var IS_WAIGO_FRAMEWORK = ('waigo' === require('./package.json').name);
+
+
 
 function spawnNodeCluster() {
   var cluster = require('cluster');
@@ -31,7 +34,7 @@ function spawnNodeCluster() {
   } else if (cluster.isWorker) {
     _log(cluster.worker.id, 'started, pid: ' + cluster.worker.process.pid);
 
-    require('./')._bootstrap()
+    require(IS_WAIGO_FRAMEWORK ? './' : 'waigo')._bootstrap()
       .catch(function(err) {
         console.error(err.stack);
       });
@@ -41,8 +44,8 @@ function spawnNodeCluster() {
 
 // if node <0.11 then no can do
 var semver = require('semver');
-if (semver.lt(process.version, '0.11.2')) {
-  throw new Error('Node v0.11.2+ required');
+if (semver.lt(process.version, '0.12.0')) {
+  throw new Error('Node v0.12.0+ required');
 }
 
 

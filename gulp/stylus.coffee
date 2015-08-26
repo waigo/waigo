@@ -16,7 +16,7 @@ module.exports = (paths, options = {}) ->
       use: [ nib(), rupture() ]
     })
 
-    gulp.src paths.frontend.src.stylus.files
+    gulp.src paths.frontend.src.stylus_srcFiles
       .pipe stylusCompiler
       .on 'error', (err) ->
         gutil.log err.stack
@@ -24,5 +24,5 @@ module.exports = (paths, options = {}) ->
       .pipe prefix()
       .pipe concat('app.css')
       .pipe gulpIf(!options.debugBuild, minifyCss())
-      .pipe gulp.dest(paths.frontend.build.css.folder)
+      .pipe gulp.dest(paths.frontend.build.css)
 

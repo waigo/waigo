@@ -7,7 +7,7 @@ var debug = require('debug')('waigo-application'),
   path = require('path'),
   Q = require('bluebird'),
   moment = require('moment'),
-  waigo = require('../'),
+  waigo = global.waigo,
   _ = waigo._;
 
 // underscore mixins

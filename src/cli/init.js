@@ -8,6 +8,7 @@ var debug = require('debug')('waigo-cli-init'),
 var waigo = require('../../'),
   AbstractCommand = waigo.load('support/cliCommand');
   
+var waigoFolder = waigo.getWaigoFolder();
 
 var dataFolder = path.join(__dirname, 'data', 'init');  
 
@@ -50,13 +51,14 @@ Command.prototype.run = function*() {
     dev: true,
   });
   
-  yield this.copyFile(path.join(dataFolder, 'start-app.js'), 'start-app.js');
   yield this.copyFile(path.join(dataFolder, 'README.md'), 'src/README.md');
-  yield this.copyFile(path.join(dataFolder, '.gitignore'), '.gitignore');
 
-  yield this.copyFile(path.join(waigo.getWaigoFolder(), 'config', 'base.js'), 'src/config/base.js');
+  yield this.copyFile(path.join(waigoFolder, 'start-app.js'), 'start-app.js');
+  yield this.copyFile(path.join(waigoFolder, '.gitignore'), '.gitignore');
 
-  yield this.copyFile(path.join(dataFolder, 'gulpfile.coffee'), 'gulpfile.coffee');
-  yield this.copyFolder(path.join(dataFolder, 'gulp'), 'gulp');
+  yield this.copyFile(path.join(waigoFolder, 'config', 'base.js'), 'src/config/base.js');
+
+  yield this.copyFile(path.join(waigoFolder, 'gulpfile.coffee'), 'gulpfile.coffee');
+  yield this.copyFolder(path.join(waigoFolder, 'gulp'), 'gulp');
 };
 

@@ -108,6 +108,17 @@ module.exports = {
       });
     },
     /**
+     * Get whether any admin users exist.
+     * @return {Array}
+     */
+    haveAdminUsers: function*() {
+      return (yield this.find({
+        roles: {
+          $in: ['admin']
+        }
+      })).length > 0;
+    },
+    /**
      * Generate a secure SHA256 representing given password.
      * @param {String} password The password.
      * @param {String} [salt] Salt to use.

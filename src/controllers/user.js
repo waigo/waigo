@@ -59,6 +59,7 @@ exports.login_submit = function*() {
 
 
 
+
 exports.register = function*() {
   var form = yield this.form.create('register', {
     context: this
@@ -66,8 +67,7 @@ exports.register = function*() {
 
   this.logger.debug('Register');
 
-  var adminUserExists = 
-    !!(yield this.models.User.findAdminUsers().length);
+  var adminUserExists = yield this.models.User.haveAdminUsers();
 
   yield this.render('user/register', {
     form: form,
@@ -85,8 +85,7 @@ exports.register_submit = function*() {
     submitted: true,
   });
 
-  var adminUserExists = 
-    !!(yield this.models.User.findAdminUsers().length);
+  var adminUserExists = yield this.models.User.haveAdminUsers();
 
   try {
     yield form.process();

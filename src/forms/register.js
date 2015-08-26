@@ -31,7 +31,7 @@ module.exports = {
         User = app.models.User;
 
       // check if there's an admin user
-      var adminUserExists = !!(yield User.findAdminUsers().length),
+      var adminUserExists = yield User.haveAdminUsers(),
         roles = (adminUserExists ? [] : ['admin']);
 
       app.logger.info('Registering user', this.fields.email.value, roles);
