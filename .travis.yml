@@ -1,6 +1,6 @@
 branches:
   only:
-    - master
+    - v1
 
 language: node_js
 
