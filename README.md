@@ -1,6 +1,6 @@
 # What is Waigo?
 
-**NOTE: The `master` branch contains Waigo v2, which is under development. For v1 see the `v1` tag.**
+**NOTE: The `master` branch contains Waigo v2, which is under development. For v1 see the `v1` branch.**
 
 \[ [Guide](http://waigojs.com/guide.html) • [API](http://waigojs.com/api/) • [Examples](http://waigojs.com/examples/) • [Sites](http://waigojs.com/sites.html) \]
 
