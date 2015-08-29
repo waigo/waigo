@@ -1,13 +1,15 @@
 "use strict";
 
 
-var debug = require('debug')('waigo-cli-init'),
+var _ = require('lodash'),
+  debug = require('debug')('waigo-cli-init'),
   path = require('path'),
   util = require('util');
 
 var waigo = require('../../'),
   AbstractCommand = waigo.load('support/cliCommand');
   
+var waigoFolder = waigo.getWaigoFolder();
 
 var dataFolder = path.join(__dirname, 'data', 'init');  
 
@@ -19,21 +21,67 @@ var dataFolder = path.join(__dirname, 'data', 'init');
  */
 var Command = module.exports = function() {
   AbstractCommand.call(this, 
-    'Initialise and create a skeleton Waigo app', []
+    'Initialise and create a skeleton Waigo app and build tools', []
   );
 };
 util.inherits(Command, AbstractCommand);
-
 
 
 /**
  * Run this command.
  */
 Command.prototype.run = function*() {
-  yield this.installPkgs('waigo', 'co');
-  yield this.copyFile(path.join(dataFolder, 'routes.js'), 'src/routes.js');
-  yield this.copyFile(path.join(dataFolder, 'main.controller.js'), 'src/controllers/main.js');
-  yield this.copyFile(path.join(dataFolder, 'index.jade'), 'src/views/index.jade');
-  yield this.copyFile(path.join(dataFolder, 'start-app.js'), 'start-app.js');
+  yield this.installPkgs(['waigo']);
+
+  yield this.installPkgs([
+    'semver',
+    'coffee-script',
+    'gulp@3.8.x',
+    'gulp-if@1.2.x',
+    'gulp-autoprefixer@2.1.x',
+    'gulp-minify-css@0.4.x',
+    'gulp-concat@2.4.x',
+    'gulp-stylus@2.0.x',
+    'nib',
+    'rupture',
+    'gulp-uglify@1.1.x',
+    'gulp-util@3.0.x',
+    'gulp-nodemon@1.0.x',
+    'yargs'
+  ], {
+    dev: true,
+  });
+  
+  yield this.copyFile(path.join(dataFolder, 'README.md'), 'src/README.md');
+  yield this.copyFile(path.join(dataFolder, '_gitignore'), '.gitignore');
+
+  yield this.copyFile(path.join(waigoFolder, '..', 'start-app.js'), 'start-app.js');
+  yield this.copyFile(path.join(waigoFolder, '..', 'gulpfile.coffee'), 'gulpfile.coffee');
+
+  yield _.map([
+    'dev-frontend',
+    'dev-server',
+    'dev',
+    'frontend',
+  ], function(n) {
+    return this.copyFile(path.join(waigoFolder, '..', 'gulp', n+'.coffee'), 'gulp/' + n + '.coffee');
+  }, this);
+
+  yield _.map([
+    'img',
+    'css', 
+    'stylus',
+    'fonts',
+    'js-app',
+    'js-common',
+    'js',
+    'vendor-css',
+  ], function(n) {
+    return this.copyFile(path.join(dataFolder, 'gulp', n+'.coffee'), 'gulp/' + n + '.coffee');
+  }, this);
+  
+  yield this.copyFile(path.join(waigoFolder, 'config', 'base.js'), 'src/config/base.js');
+
+  yield this.copyFolder(path.join(waigoFolder, 'views', 'emailTemplates'), 'src/views');
 };
 

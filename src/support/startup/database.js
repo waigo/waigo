@@ -1,31 +1,40 @@
 "use strict";
 
 
-var debug = require('debug')('waigo-startup-database'),
-  waigo = require('../../../');
+var waigo = require('../../../'),
+  _ = waigo._;
 
 
 
 /**
  * Setup database connection.
  *
- * If database configuration is set then upon completion `app.db` will be an 
- * active database connection.
+ * Upon completion:
+ * 
+ * * `app.dbs` will be consist key-value pairs mapping database connection id to database instance.
+ * * `app.db` will be an alias for `app.dbs.main`.
  * 
  * @param {Object} app The application.
  * @param {Object} [app.config.db] Database configuration.
  */
 module.exports = function*(app) {
-  if (app.config.db) {
-    var dbType = Object.keys(app.config.db).pop();
-    debug('Setting up database connection : ' + dbType);
+  app.dbs = {};
 
-    var builder = waigo.load('support/db/' + dbType);
+  var ids = _.keys(app.config.db || {});
 
-    app.db = yield builder.create(app.config.db[dbType]);
-  } else {
-    app.db = undefined;
+  for (let i=0; ids.length > i; ++i) {
+    let id = ids[i],
+      cfg = app.config.db[id];
+
+    app.logger.debug('Setting up database connection: ' + id);
+    
+    var builder = waigo.load('support/db/' + cfg.type);
+
+    app.dbs[id] = yield builder.create(cfg);
   }
+
+  // for convenience
+  app.db = app.dbs.main;
 };
 
 

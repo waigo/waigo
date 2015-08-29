@@ -2,35 +2,70 @@
 
 
 
-var _ = require('lodash'),
-  debug = require('debug')('waigo-startup-models'),
+var debug = require('debug')('waigo-startup-models'),
   path = require('path'),
-  waigo = require('../../../');
+  Robe = require('Robe'),
+  waigo = require('../../../'),
+  _ = waigo._,
+  viewObjects = waigo.load('support/viewObjects');
+
 
 
 /**
  * Load models.
  *
- * This requires the 'database' startup step to be enabled.
- *
  * @param {Object} app The application.
  */
 module.exports = function*(app) {
-  var modelModuleFiles = waigo.getModulesInPath('models');
+  debug('Loading');
 
-  debug('Loading models');
+  var modelModuleFiles = waigo.getFilesInFolder('models');
 
   app.models = {};
 
-  modelModuleFiles.forEach(function(modulePath) {
-    var name = _.str.capitalize(
-      path.basename(modulePath, path.extname(modulePath))
-    );
+  for (let _i in modelModuleFiles) {
+    let modulePath = modelModuleFiles[_i];
 
-    var modelClass = waigo.load(modulePath)(app.db);
+    debug('Loading ' + modulePath);
+
+    var moduleFileName = path.basename(modulePath, path.extname(modulePath));
+
+    var modelInfo = waigo.load(modulePath);
+
+    var name = modelInfo.className || _.capitalize(moduleFileName),
+      dbName = modelInfo.db || 'main',
+      collectionName = modelInfo.collection || _.pluralize(name).toLowerCase();
     
-    debug('Adding model: ' + name);
+    // add view object docMethod (but can be overridden for each model)
+    var colMethods = modelInfo.methods || {},
+      docMethods = {};
+    docMethods[viewObjects.methodName] = function*(ctx) {
+      return this.toJSON();
+    };
 
-    app.models[modelClass.modelName || name] = modelClass;
-  });
+    // add method to fetch app
+    colMethods.getApp = docMethods.getApp = function() {
+      return app;
+    };
+
+    // add method to record to activity log
+    colMethods.record = docMethods.record = function*() {
+      if (app.record) {
+        yield app.record.apply(app, arguments);
+      }
+    };
+
+    modelInfo.docMethods = _.extend(docMethods, modelInfo.docMethods);
+
+    // create model instance
+    let Model = app.dbs[dbName].collection(collectionName, modelInfo);
+    app.models[name] = Model;
+
+    app.logger.debug('Added model', name, dbName  + '/' + collectionName);
+
+    // ensure indexes are created
+    debug('Ensure indexes', dbName, collectionName);
+
+    yield Model.ensureIndexes();
+  }
 };

@@ -1,7 +1,8 @@
 "use strict";
 
-var views = require('co-views'),
-  waigo = require('../../../');
+var debug = require('debug')('waigo-middleware-outputformat'),
+  waigo = require('../../../'),
+  _ = waigo._;
 
 var errors = waigo.load('support/errors'),
   viewObjects = waigo.load('support/viewObjects');
@@ -35,10 +36,14 @@ module.exports = function(options) {
     enabledFormats[format] = waigo.load('support/outputFormats/' + format).create(options.formats[format]);
   }
 
-  return function* setoutputFormat(next) {
-    var ctx = this;
+  return function* setOutputFormat(next) {
+    var ctx = this,
+      logger = this.app.logger.create('OutputFormats');
 
-    var requestedFormat = (this.query[options.paramName] || options.default).toLowerCase();
+    var requestedFormat = (
+      _.get(this.query, options.paramName) ||
+      options.default
+    ).toLowerCase();
 
     // check format is valid
     if (requestedFormat && !enabledFormats[requestedFormat]) {
@@ -47,8 +52,20 @@ module.exports = function(options) {
 
     this.request.outputFormat = requestedFormat;
 
+    logger.debug('Output format', requestedFormat);
+
     // attach renderer
-    this.render = function*(view, locals) {
+    this.render = function*(view, locals, options) {
+      locals = locals || {};
+      options = options || {};
+      
+      logger.debug('Render', view);
+
+      // set status code
+      if (options.status) {
+        this.status = options.status;
+      }
+
       // get yieldables
       var localsViewObjects = yield viewObjects.toViewObjectYieldable(ctx, locals);
 
@@ -58,6 +75,8 @@ module.exports = function(options) {
 
     // redirect method
     this.redirect = function*(url) {
+      logger.debug('Redirect', url);
+
       // call actual rendering method
       yield enabledFormats[requestedFormat].redirect.call(ctx, url);
     };

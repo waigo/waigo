@@ -1,10 +1,10 @@
 "use strict";
 
 
-var _ = require('lodash'),
-  bodyParser = require('co-body'),
+var bodyParser = require('co-body'),
   path = require('path'),
-  waigo = require('../../../');
+  waigo = require('../../../'),
+  _ = waigo._;
 
 
 /**
@@ -13,6 +13,8 @@ var _ = require('lodash'),
  * This middleware uses [co-body](https://github.com/visionmedia/co-body) to 
  * parse request POST bodies. Once parsed the request body parameters are 
  * available in `this.request.body`.
+ *
+ * If `csrf` middleware is enabled is set then this validates the csrf.
  * 
  * @param {Object} options Configuration options for `co-body`.
  * @param {String} [options.limit] The maximum allowed size of a request body.
@@ -22,6 +24,7 @@ var _ = require('lodash'),
 var fn = module.exports = function(options) {
   return function*(next) {
     this.request.body = yield fn._bodyParser(this, options);
+
     yield next;
   };
 };

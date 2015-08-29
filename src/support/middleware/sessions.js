@@ -38,7 +38,8 @@ module.exports = function(options) {
     store: waigo.load('support/session/store/' + options.store.type).create(app, options.store.config),
     cookie: {
       expires: moment().add('days', options.cookie.validForDays).toDate(),
-      path: options.cookie.path
+      path: options.cookie.path,
+      signed: false,
     }
   });
 };

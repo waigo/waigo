@@ -12,13 +12,13 @@ var debug = require('debug')('waigo-startup-middleware'),
  * @param {Array} app.config.middleware Names of middleware to initialise.
  */
 module.exports = function*(app) {
-  for (let idx in app.config.middleware.order) {
-    let m = app.config.middleware.order[idx];
+  for (let idx in app.config.middleware.ALL._order) {
+    let m = app.config.middleware.ALL._order[idx];
 
     debug('Setting up middleware: ' + m);
 
     app.use(waigo.load('support/middleware/' + m)(
-      app.config.middleware.options[m] || {}
+      app.config.middleware.ALL[m] || {}
     ));
   }
 };

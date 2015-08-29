@@ -1,8 +1,8 @@
 
 "use strict";
 
-var _ = require('lodash'),
-  waigo = require('../../../');
+var waigo = require('../../../'),
+  _ = waigo._;
 
 
 var errors = waigo.load('support/errors'),
@@ -30,11 +30,12 @@ var errors = waigo.load('support/errors'),
 
 
 /** A field validation error. */
-var FieldValidationError = exports.FieldValidationError = errors.define('FieldValidationError', errors.MultipleError);
+var FieldValidationError = exports.FieldValidationError = errors.define('FieldValidationError');
 
   
 /** A field sanitization error. */
 var FieldSanitizationError = exports.FieldSanitizationError = errors.define('FieldSanitizationError');
+
 
 
 
@@ -46,38 +47,67 @@ var FieldSanitizationError = exports.FieldSanitizationError = errors.define('Fie
  * @constructor
  */
 var Field = exports.Field = function(form, config) {
+  var self = this;
+
   this.form = form;
   this.config = config;
 
-  this.sanitizers = _.map(config.sanitizers || [], function(def) {
-    var id = def,
-      options = {};
+  this.sanitizers = [];
+  this.validators = [];
 
-    if (_.isObject(def)) {
-      id = def.id;
-      options = def;
-    }
-
-    return {
-      id: id,
-      fn: waigo.load('support/forms/sanitizers/' + id)(options)
-    };
+  _.each(config.sanitizers || [], function(def) {
+    self._addSanitizer(def);
   });
 
-  this.validators = _.map(config.validators || [], function(def) {
-    var id = def,
-      options = {};
-
-    if (_.isObject(def)) {
-      id = def.id;
-      options = def;
-    }
-
-    return {
-      id: id,
-      fn: waigo.load('support/forms/validators/' + id)(options)
-    };
+  _.each(config.validators || [], function(def) {
+    self._addValidator(def);
   });
+};
+
+
+/**
+ * Add a validator
+ * @param {String|Object|GeneratorFunction} def 
+ */
+Field.prototype._addValidator = function(def) {
+  if (_.isFunction(def)) {
+    return this.validators.push(def);
+  }
+
+  var options = {};
+
+  if (def.id) {
+    options = _.omit(def, 'id');
+    def = def.id;
+  }
+
+
+  this.validators.push(
+    waigo.load('support/forms/validators/' + def)(options)
+  );
+};
+
+
+/**
+ * Add a sanitizer
+ * @param {String|Object|GeneratorFunction} def 
+ */
+Field.prototype._addSanitizer = function(def) {
+  if (_.isFunction(def)) {
+    return this.sanitizers.push(def);
+  }
+
+  var options = {};
+
+  if (def.id) {
+    options = _.omit(def, 'id');
+    def = def.id;
+  }
+
+
+  this.validators.push(
+    waigo.load('support/forms/sanitizers/' + def)(options)
+  );
 };
 
 
@@ -95,6 +125,18 @@ Object.defineProperty(Field.prototype, 'name', {
 
 
 /**
+ * Field friendly label.
+ */
+Object.defineProperty(Field.prototype, 'label', {
+  get: function() {
+    return this.config.label || this.config.name;
+  }
+});
+
+
+
+
+/**
  * Field original value.
  *
  * This is useful if we wish to check whether the field value has changed 
@@ -102,7 +144,7 @@ Object.defineProperty(Field.prototype, 'name', {
  */
 Object.defineProperty(Field.prototype, 'originalValue', {
   get: function() {
-    return this.form.state[this.name].originalValue;
+    return _.get(this.form.state, this.name + '.originalValue');
   },
   set: function(value) {
     this.form.state[this.name].originalValue = value;
@@ -117,7 +159,7 @@ Object.defineProperty(Field.prototype, 'originalValue', {
  */
 Object.defineProperty(Field.prototype, 'value', {
   get: function() {
-    return this.form.state[this.name].value;
+    return _.get(this.form.state, this.name + '.value');
   },
   set: function(value) {
     this.form.state[this.name].value = value;
@@ -139,7 +181,7 @@ Object.defineProperty(Field.prototype, 'value', {
  */
 Field.prototype.setSanitizedValue = function*(val) {
   for (let idx in this.sanitizers) {
-    let sanitizerFn = this.sanitizers[idx].fn;
+    let sanitizerFn = this.sanitizers[idx];
 
     try {
       val = yield sanitizerFn(this, val);
@@ -170,37 +212,33 @@ Field.prototype.isDirty = function() {
 /**
  * Validate this field's value.
  *
+ * @param {Object} [context] Client koa request context.
+ *
  * @throws FieldValidationError If validation fails.
  */
-Field.prototype.validate = function*() {
-  var errors = null;
+Field.prototype.validate = function*(context) {
+  var errors = [];
 
   // if value is undefined and field is not required then nothing to do
   if (undefined === this.value || null === this.value || '' === this.value) {
     if (!this.config.required) {
       return;
     } else {
-      errors = {
-        required: new Error('Must be set')
-      };
+      errors.push('Must be set');
     }
   } else {
     for (let idx in this.validators) {
-      let validator = this.validators[idx];
+      let validatorFn = this.validators[idx];
 
       try {
-        yield validator.fn(this, this.value);
+        yield validatorFn(context, this, this.value);
       } catch (err) {
-        if (!errors) {
-          errors = {};
-        }
-
-        errors[validator.id] = err;
+        errors.push(err.message);
       }
     }    
   }
 
-  if (errors) {
+  if (0 < errors.length) {
     throw new FieldValidationError('Field validation failed', 400, errors);
   }
 };
@@ -217,20 +255,10 @@ Field.prototype.validate = function*() {
  * @return {Object}
  */
 Field.prototype[viewObjects.methodName] = function*(ctx) {
-  var r = {
-    type: this.config.type,
-    name: this.name,
-    label: this.config.label,
-    helpText: this.config.helpText,
+  return _.extend({}, this.config, {
     value: this.value,
-    originalValue: this.originalValue
-  };
-
-  if (this.config.meta) {
-    r.meta = this.config.meta;
-  }
-
-  return r;
+    originalValue: this.originalValue,
+  });
 };
 
 

@@ -1,8 +1,8 @@
 "use strict";
 
-var _ = require('lodash'),
-  util = require('util'),
-  waigo = require('../../../../');
+var util = require('util'),
+  waigo = require('../../../../'),
+  _ = waigo._;
 
 
 var Field = waigo.load('support/forms/field').Field;
@@ -12,12 +12,9 @@ var Field = waigo.load('support/forms/field').Field;
 
 /**
  * A text field.
- *
- * @param  {Form} form   Parent form
- * @param  {Object} config Configuration options
  * @constructor
  */
-var Text = exports.Field = function(form, config) {
+var Text = exports.Field = function() {
   Text.super_.apply(this, _.toArray(arguments));
 };
 util.inherits(Text, Field);

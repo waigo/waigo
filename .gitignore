@@ -3,6 +3,7 @@
 
 # node
 node_modules
+npm-debug.log
 
 # IntelliJ
 .idea
@@ -12,10 +13,19 @@ node_modules
 Vagrantfile
 .vagrant
 
+# bower
+bower_components
+
 # build
 docs/api/*
+public/_gen
+public/js/*.map
+webpack.config.js
 
 # test
 test/data/app
 test/data/*
 src/cli/__test.js
+
+# config
+src/config/development.*.js

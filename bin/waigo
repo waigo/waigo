@@ -1,92 +1,57 @@
-#!/usr/bin/env node --harmony
+#!/usr/bin/env node
 
 "use strict";
 
-var _ = require('lodash'),
-  co = require('co'),
-  commander = require('commander'),
-  debug = require('debug')('waigo-cli'),
-  path = require('path'),
+var path = require('path'),
   shell = require('shelljs');
 
 
-// check to see if we have a local installation of Waigo we can use
-// (we'll assume that the CLI is always run in the project root folder, where 
-// node_modules also resides)
-var pathToLocalWaigoCli = 
-  path.join(process.cwd(), 'node_modules', 'waigo', 'bin', 'waigo');
-if (shell.test('-f', pathToLocalWaigoCli) 
-        /* check that we're not calling ourselves again! */
-          && require.main.filename !== pathToLocalWaigoCli) {
-  // ['node', '../../bin/waigo', 'arg1', ...]
-  var cliArgs = process.argv.slice(2);
-
-  var spawned = shell.exec(pathToLocalWaigoCli + ' ' + cliArgs.join(' '), 
-    function(code, output) {
-      process.exit(code);
-    }
-  );
-
-  return;
+// if node <0.11 then no can do
+var semver = require('semver');
+if (semver.lt(process.version, '0.11.2')) {
+  throw new Error('Node v0.11.2+ required');
 }
 
 
-var frameworkFolderPath = path.join(__dirname, '..');
+// check if ES6 enabled (works for Node 0.11.x and 0.12.x)
+var es6Enabled = false;
+try {
+  require('vm').runInNewContext('var a = function*() {};');
+  es6Enabled = true;
+} catch (err) {
+  es6Enabled = false;
+}
 
-var waigo = require(path.join(__dirname, '..'));
+// ['node', '../../bin/waigo', 'arg1', ...]
+var cliArgs = process.argv.slice(2);
 
 
-co(function*() {
-  // app folder available?
-  var appFolderPath = path.join(process.cwd(), 'src');
-  if (!shell.test('-d', appFolderPath)) {
-    // if not then use the framework folder
-    appFolderPath = path.join(frameworkFolderPath, 'src');
+if (es6Enabled) {
+  // by default let's assume waigo-cli is in this folder
+  var pathToWaigoCli = path.join(__dirname, 'waigo-cli.js');
+
+  // check to see if we have a local installation of Waigo we can use
+  // (we'll assume that the CLI is always run in the project root folder, where 
+  // node_modules also resides)
+  var pathToLocalWaigoCli = 
+    path.join(process.cwd(), 'node_modules', 'waigo', 'bin', 'waigo-cli.js');
+
+  if (shell.test('-f', pathToLocalWaigoCli)) {
+    pathToWaigoCli = pathToLocalWaigoCli;
   }
 
-  // init
-  yield* waigo.init({
-    appFolder: appFolderPath
+  require(pathToWaigoCli);
+} else {
+  var spawn = require('child_process').spawn;
+
+  var app = spawn('node', ['--harmony', __filename].concat(cliArgs), {
+    cwd: process.cwd(),
+    env: process.env,
+    stdio: 'inherit',
   });
 
-  debug('Waigo initialised');
+  app.on('exit', function (code) {
+    process.exit(code);
+  });
+}
 
-  // load all commands
-  var commands = waigo.getModulesInPath('cli');
-
-  // initialise parser
-  var program = commander;
-
-  // version
-  var packageJson = require(path.join(waigo.getWaigoFolder(), '..', 'package.json'));
-  program.version(packageJson.version);
-
-  // commands
-  _.each(commands, function(command) {
-    debug('Found command: ' + command);
-    var commandName = path.basename(command);
-
-    var obj = new (waigo.load(command))();
-
-    var cmd = program
-      .command(commandName)
-      .description(obj.description)
-      .action(
-        co(function*() {
-          yield obj.run.apply(obj, arguments);
-        })
-      );
-
-    _.each(obj.options, function(o) {
-      cmd.option.apply(cmd, o);
-    });
-  }); 
-
-  // parse and dispatch
-  program.parse(process.argv);
-
-})(function(err) {
-  if (err) {
-    console.error(err);
-  }
-});

@@ -1,9 +1,10 @@
 "use strict";
 
 
-var _ = require('lodash'),
+var debug = require('debug')('waigo-config'),
   fs = require('fs'),
-  waigo = require('../../');
+  waigo = require('../../'),
+  _ = waigo._;
 
 
 /**
@@ -13,8 +14,9 @@ var _ = require('lodash'),
  */
 var loadConfigModule = function(name) {
   try {
-    return waigo.load('config/' + name);
+    return waigo.load('app:config/' + name);
   } catch (e) {
+    debug(e);
     return null;
   }
 };
@@ -49,6 +51,8 @@ module.exports = function() {
     mode: process.env.NODE_ENV || 'development',
     user: process.env.USER
   };
+
+  debug('Config mode, user', config.mode, config.user);
 
   // base
   var fn = loadConfigModule('base');

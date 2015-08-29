@@ -1,0 +1,54 @@
+include _mixins
+
+
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no")
+
+    // icons & favicons
+    link(rel="shortcut icon", href=staticUrl('waigo:/img/logo_114x114.png'))
+
+    //if IE
+      link(rel="shortcut icon", href=staticUrl('waigo:/img/logo_32x32.ico'))
+    // set for IE10 win
+    meta(name="msapplication-TileColor", content="#000")
+    meta(name="msapplication-TileImage", content=staticUrl('waigo:/img/logo_144x144.png'))
+
+    // styles
+    link(rel="stylesheet", href=staticUrl('waigo:/css/materialize.css'))
+    link(rel="stylesheet", href=staticUrl('waigo:/css/prism.css'))
+    link(rel="stylesheet", href=staticUrl('waigo:/css/app.css'))
+
+    block title
+      title Waigo
+
+  body
+    block pre_header
+
+    block header
+      header
+        .navbar-fixed
+          nav
+            .nav-wrapper
+              a.brand-logo(href="/") Waigo
+              a.button-collapse(href="#", data-activates="mobile-menu")
+                i.mdi-navigation-menu
+              ul#nav-mobile.right.hide-on-med-and-down
+                li
+                  a(href="/admin", title="Admin")
+                    i.fa.fa-gears
+                if currentUser
+                  li
+                    a(href="/user/logout", title="Logout")
+                      i.fa.fa-sign-out
+
+    block main_content_container
+      main.container
+        if alertMsg
+          +msg('info', alertMsg)
+        block main_content
+
+    script(type="text/javascript", src=staticUrl('waigo:/js/common.js'))
+    block scripts

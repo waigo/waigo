@@ -1,0 +1,27 @@
+extends _layout
+
+block title
+  title Welcome to Waigo!
+
+block topbar_rightmenu
+  a.popup.icon.settings.item(href="/admin", title="Admin dashboard")
+    i.alternate.settings.icon
+
+block main_content
+  #home
+    h1 Welcome!
+
+    section.well
+      :markdown
+        Your new Waigo app is running correctly!
+
+        Replace this page by creating a template: `views/index.jade`.
+
+    a.btn.waves-effect.waves-light(href="/admin")
+      i.fa.fa-gears
+      span Admin dashboard
+
+    a.btn.waves-effect.waves-light(href="http://waigojs.com")
+      i.fa.fa-book
+      span Read documentation
+

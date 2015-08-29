@@ -1,0 +1,1 @@
+This folder is where your app source code goes. See http://waigojs.com for more info.

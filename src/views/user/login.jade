@@ -1,0 +1,19 @@
+extends ../_layout
+
+include ../_mixins
+
+block title
+  title Login
+
+block main_content
+  #login
+    h1 Login
+
+    if reason
+      +msg('error', reason)
+
+    +form(form, error)
+
+    a.forgot(href="/user/forgot_password") I've forgotten my password
+
+    a.signup(href="/user/register") Not yet registered? Sign up.

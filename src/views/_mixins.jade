@@ -1,0 +1,55 @@
+mixin msg(type, header, options)
+  - var isCompact = !!_.get(options, 'compact')
+  div.msg
+    div(class="panel " + type + (isCompact ? ' compact': ''))
+      .panel-heading
+        .panel-title
+          if (!isCompact)
+            if ('error' == type)
+              i.fa.fa-warning
+            else if ('info' == type)
+              i.fa.fa-info-circle
+          span #{header}
+      .panel-body
+        block
+
+
+mixin form(form, error)
+  .row
+    form.col.s12(method=(form.method || 'post'), class='col s12 ' + (error ? 'error' : ''))
+      if error
+        +msg('error', error.msg)
+          if error.details
+            ul
+              if 'FormValidationError' === error.type
+                - each fieldErrors, fieldName in error.details
+                  - each fieldError in fieldErrors
+                    li #{form.fields[fieldName].label || fieldName}: #{fieldError}
+              else
+                - each detail in error.details
+                  li #{ detail }
+      .fields
+        - each fieldName in form.order
+          - var field = form.fields[fieldName]
+          - var fieldErrors = _.get(error, 'details.' + fieldName, [])
+          - var value = field.value || ''
+          - var placeholder = field.placeholder || field.label
+          if (field.type == 'text' || field.type == 'password')
+            .row
+              .input-field.col.m6.s12
+                input(name=field.name, type=field.type, value=value)
+                label #{field.label}
+                - each errorMsg in fieldErrors
+                  +msg('error', errorMsg, { compact: true })
+          else if (field.type == 'hidden')
+            input(name=field.name, type="hidden", value=value)
+
+      button.btn.btn-primary.waves-effect.waves-light(type="submit", name="action") Submit
+
+
+
+
+
+
+
+

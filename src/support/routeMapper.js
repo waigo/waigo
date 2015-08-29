@@ -1,10 +1,11 @@
 "use strict";
 
 
-var _ = require('lodash'),
+var debug = require('debug')('waigo-routemapper'),
   route = require('koa-trie-router'),
   util = require('util'),
-  waigo = require('../../');
+  waigo = require('../../'),
+  _ = waigo._;
 
 
 var errors = waigo.load('support/errors'),
@@ -12,29 +13,142 @@ var errors = waigo.load('support/errors'),
 
 
 
+var methods = ['GET', 'POST', 'DEL', 'DELETE', 'PUT', 'OPTIONS', 'HEAD'];
+
+
+
+
+
 /**
- * Parse a route http method and URL string.
- *
- * @param str {String} in the form "(httpMethod) (url)", e.g. "GET /index"
- *
- * @return {Object} object with form `{ method: (httpMethod), url: (url) }`.
- *
- * @throws RouteError if route URL is invalid or using an unsupported HTTP method.
+ * Load and initialise given middleware module.
+ * 
+ * @param  {Object|String} middlewareName Name of middleware module file or object representing combined name and options: `{ id: <middleware mame>, ...}`.
+ * @param  {Object} [middlewareOptions] Middleware options.
+ * 
+ * @return {Function}
  */
-var parseMethodUrl = function(str) {
-  var tokens = _.str.clean(str).split(' ');
-  if (2 !== tokens.length) {
-    throw new RouteError('Invalid route URL format: ' + str);
+var loadMiddleware = function(middlewareName, middlewareOptions) {
+  if (_.isPlainObject(middlewareName)) {
+    middlewareOptions = _.omit(middlewareName, 'id');
+    middlewareName = middlewareName.id;
+  } else {
+    // if reference is of form 'moduleName.xx.yy' then it's a controller reference
+    if (0 < middlewareName.indexOf('.')) {
+      return loadController(middlewareName);
+    }
+
+    middlewareOptions = middlewareOptions || {};
   }
-  var result = {
-    method: tokens[0],
-    url: '/' + _.str.ltrim(tokens[1], '/')
-  };
-  if (-1 === _.indexOf(['GET', 'POST', 'DEL', 'DELETE', 'PUT', 'OPTIONS', 'HEAD'], result.method)) {
-    throw new RouteError('Unsupported route HTTP method: ' + result.method);
-  }
-  return result;
+
+  return waigo.load('support/middleware/' + middlewareName)(middlewareOptions);
 };
+
+
+
+/**
+ * Load given controller.method
+ * 
+ * @param  {String} controller String of form `<controller path>.<method name>`.
+ * 
+ * @return {Function}
+ */
+var loadController = function(controller) {
+  var tokens = controller.split('.'),
+    controllerPath = tokens,
+    methodName = tokens.pop(),
+    controllerName = controllerPath.join('.');
+
+  var mod = waigo.load('controllers/' + controllerPath.join('/'));
+
+  if (!_.isFunction(mod[methodName])) {
+    throw new RouteError('Unable to find method "' + methodName + '" on controller "' + controllerName + '"');
+  }
+
+  return mod[methodName];
+};
+
+
+
+
+/**
+ * Build routes from given configuration config node.
+ * 
+ * @param  {Object} urlPath URL path of this node (relative to parent URL path).
+ * @param  {Object} node Config node.
+ * @param  {Object} parentConfig parent node config. 
+ * @param  {Object} parentConfig.urlPath URL path of parent node.
+ * @param  {Object} parentConfig.preMiddleware Resolved pre-middleware for all routes in this node.
+ * @return {Array} List of route mappings.
+ */
+var buildRoutes = function(logger, commonMiddleware, urlPath, node, parentConfig) {
+  urlPath = parentConfig.urlPath + urlPath;
+
+  logger.debug('Route', urlPath);
+
+  // make a shallow copy (so that we can delete keys from it)
+  node = _.extend({}, node);
+
+  // load parent middleware
+  var resolvedPreMiddleware = parentConfig.preMiddleware.concat(
+    _.map(node.pre || [], loadMiddleware)
+  );
+  delete node.pre;
+
+  var mappings = [];
+
+  // iterate through each possible method
+  _.each(methods , function(m) {
+    if (node[m]) {
+      var routeMiddleware = _.isArray(node[m]) ? node[m] : [node[m]];
+
+      mappings.push({
+        method: m,
+        name: node.name || urlPath,
+        url: urlPath,
+        resolvedMiddleware: commonMiddleware[m].concat(
+          resolvedPreMiddleware, 
+          _.map(routeMiddleware, function(rm) {
+            return loadMiddleware(rm);
+          })
+        )
+      });
+    }
+
+    delete node[m];
+  });
+
+  // delete name
+  delete node.name;
+
+  // go through children
+  _.each(node || {}, function(subNode, subUrlPath) {
+    mappings = mappings.concat(
+      buildRoutes(logger, commonMiddleware, subUrlPath, subNode, {
+        urlPath: urlPath,
+        preMiddleware: resolvedPreMiddleware,
+      })
+    );
+  });
+
+  return mappings;
+};
+
+
+/**
+ * Load middleware specified in config object.
+ * @return {Array}
+ */
+var loadCommonMiddleware = function(middleware) {
+  middleware = middleware || {};
+
+  return _.map(middleware._order, function(m) {
+    debug('Setting up middleware', m);
+    
+    return loadMiddleware(m, middleware[m]);
+  });
+};
+
+
 
 
 /**
@@ -49,62 +163,49 @@ var parseMethodUrl = function(str) {
  * @throws RouteError if there are any problems.
  */
 exports.map = function(app, routes) {
-  var controllers = app.controllers = {},
-    possibleMappings = [];
+  var logger = app.logger.create('RouteMapper');
 
-  _.each(routes, function(middleware, urlPath) {
-    if (!_.isArray(middleware)) {
-      middleware = [middleware];
-    }
+  var possibleMappings = [];
 
-    var mapping = parseMethodUrl(urlPath);
+  // resolve middleware for different HTTP methods
+  var commonMiddleware = {};
+  _.each(methods, function(method) {
+    logger.debug('Setting up HTTP method middleware', method);
 
-    // load all middleware
-    mapping.resolvedMiddleware = _.map(middleware, function(ref) {
-      // if reference is of form 'moduleName.methodName' then it's a controller reference
-      var dotPos = ('string' === typeof ref) && ref.indexOf('.');
-      if (0 < dotPos) {
-        var tokens = ref.split('.'),
-          controllerName = tokens[0],
-          methodName = tokens[1];
+    commonMiddleware[method] = 
+      loadCommonMiddleware(app.config.middleware[method]);
+  });
 
-        // load controller if not already done so
-        if (!controllers[controllerName]) {
-          controllers[controllerName] = waigo.load('controllers/' + controllerName);
-        }
-
-        if (!_.isFunction(controllers[controllerName][methodName])) {
-          throw new RouteError('Unable to find method "' + methodName + '" on controller "' + controllerName + '"');
-        }
-
-        return controllers[controllerName][methodName];
-      }
-      // else it's a middleware reference
-      else {
-        let middlewareName = ref,
-          middlewareOptions = {};
-
-        // if reference is an object then it's a middleware reference with initialisation options
-        if (_.isPlainObject(ref)) {
-          middlewareName = ref.id;
-          _.extend(middlewareOptions, ref);
-        }
-
-        return waigo.load('support/middleware/' + middlewareName)(middlewareOptions);
-      }
-    });
-
-    possibleMappings.push(mapping);
+  // build mappings
+  _.each(routes, function(node, urlPath) {
+    possibleMappings = possibleMappings.concat(
+      buildRoutes(logger, commonMiddleware, urlPath, node, {
+        urlPath: '',
+        preMiddleware: [],
+      })
+    );
   });
 
   // now order by path (specific to general)
   // put the routes into order (specific to general)
-  var orderedMappings = _.sortBy(possibleMappings, function(mapping) {
-    return mapping.url;
+  var orderedMappings = possibleMappings.sort(function(a, b) {
+    return a.url < b.url;
   });
 
-  _.each(orderedMappings.reverse(), function(mapping) {
+  app.routes = {
+    all: orderedMappings,
+    byName: {}
+  };
+
+  // add the handlers to routing
+  _.each(orderedMappings, function(mapping) {
     var route = app.route(mapping.url);
+
     route[mapping.method.toLowerCase()].apply(route, mapping.resolvedMiddleware);
+
+    // save to app
+    app.routes.byName[mapping.name] = mapping;
   });
 };
+
+

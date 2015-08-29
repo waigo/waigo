@@ -1,11 +1,12 @@
 "use strict";
 
 
-var _ = require('lodash'),
+var debug = require('debug')('waigo-errors'),
   util = require('util');
 
 
 var waigo = require('../../'),
+  _ = waigo._,
   viewObjects = waigo.load('support/viewObjects');
 
 
@@ -20,10 +21,17 @@ var waigo = require('../../'),
  * @return {Object} Plain object.
  */
 Error.prototype[viewObjects.methodName] = function*(ctx) {
-  return {
+  var ret = {
     type: this.name || 'Error',
-    msg: this.message
+    msg: this.message,
+    details: null,
   };
+
+  ret.details = this.details || this.failures;
+
+  debug(JSON.stringify(ret));
+
+  return ret;
 };
 
 
@@ -34,16 +42,16 @@ Error.prototype[viewObjects.methodName] = function*(ctx) {
  * Use this in preference to `Error` where possible as it provides for more 
  * descriptive output. 
  *
- * @param {String} msg Error message.
- * @param {Number} status HTTP return status code to set (used by the [error handler middleware](middleware/errorHandler.js.html))
- * @param {Object} data Additional data pertaining to this error.
+ * @param {String} [msg] Error message.
+ * @param {Number} [status] HTTP return status code to set. Default is 500.
+ * @param {Object} [details] Additional details pertaining to this error.
  */
-var RuntimeError = exports.RuntimeError = function(msg, status, data) {
+var RuntimeError = exports.RuntimeError = function(msg, status, details) {
   Error.call(this);
   this.name = 'RuntimeError';
   this.message = msg || 'An error occurred';
   this.status = status || 500;
-  this.data = data || null;
+  this.details = details || null;
   Error.captureStackTrace(this, RuntimeError);
 };
 util.inherits(RuntimeError, Error);
@@ -62,8 +70,8 @@ RuntimeError.prototype[viewObjects.methodName] = function*(ctx) {
     msg: this.message,
   };
 
-  if (this.data) {
-    ret.data = this.data;
+  if (this.details) {
+    ret.details = yield viewObjects.toViewObjectYieldable(ctx, this.details);
   }
 
   return ret;
@@ -84,9 +92,8 @@ RuntimeError.prototype[viewObjects.methodName] = function*(ctx) {
  * @param {Number} status HTTP return status code to set.
  */
 var MultipleError = exports.MultipleError = function(msg, status, errors) {
-  RuntimeError.call(this, msg || 'Multiple errors occurred', status);
+  RuntimeError.call(this, msg || 'Multiple errors occurred', status, errors);
   this.name = 'MultipleError';
-  this.errors = errors || {};
   Error.captureStackTrace(this, MultipleError);
 };
 util.inherits(MultipleError, RuntimeError);
@@ -104,13 +111,14 @@ util.inherits(MultipleError, RuntimeError);
 MultipleError.prototype[viewObjects.methodName] = function*(ctx) {
   var ret = {
     type: this.name,
-    msg: this.message
+    msg: this.message,
+    details: {},
   };
 
-  ret.errors = {};
+  for (let id in this.details) {
+    let fn = this.details[id][viewObjects.methodName];
 
-  for (var id in this.errors) {
-    ret.errors[id] = yield this.errors[id][viewObjects.methodName](ctx);
+    ret.details[id] = (fn ? yield fn(ctx) : this.details[id]);
   }
 
   return ret;
@@ -142,31 +150,5 @@ exports.define = function(newClassName, baseClass) {
   util.inherits(newErrorClass, (baseClass));
   return newErrorClass;
 };
-
-
-
-
-
-/**
- * Convert given error into a view object representation.
- *
- * @param {Object} ctx Request context.
- * @param {Error} err An error object.
- * 
- * @return {Object} A plain object.
- */
-exports[viewObjects.methodName] = function*(ctx, err) {
-  if (err[viewObjects.methodName]) {
-    return yield err[viewObjects.methodName].call(err, ctx);
-  } else {
-    return {
-      type: err.name || 'Error',
-      msg: err.message
-    }
-  }
-};
-
-
-
 
 
