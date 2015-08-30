@@ -9,9 +9,6 @@
 Waigo is a Node.js framework for building scalable and maintainable web 
 application back-ends.
 
-**Git: master branch contains v2 which is in development. For v1 check out the 
-`v1` branch**
-
 Quick overview:
 
  * Based on [koa](http://koajs.com/), uses ES6 generators, no callbacks
