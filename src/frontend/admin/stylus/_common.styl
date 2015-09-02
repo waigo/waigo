@@ -1,0 +1,79 @@
+i + span
+  margin-left 0.5em
+
+
+.msg
+  .panel
+    border-radius 5px
+    margin 1em 0 2em
+    
+    &.error
+      border 1px solid $red-darken-1
+      background-color $red-lighten-4
+      color #000
+      .panel-title
+        background-color $red-darken-1
+
+    &.info
+      border 1px solid $blue-darken-1
+      background-color $blue-lighten-4
+      color #000
+      .panel-title
+        background-color $blue-darken-1
+
+    &.compact
+      margin 0
+      .panel-title
+        font-size 100%
+
+    .panel-title
+      padding 0.5em
+      font-size 140%
+      color #fff
+      
+    .panel-body
+      padding 0 1em
+      p.description
+        margin-bottom 0
+
+
+
+form
+  button[type=submit]
+    margin-top 2em
+      
+
+.label
+  padding 0 6px
+  text-align center
+  font-size 1rem
+  line-height inherit
+  color: #757575
+  display inline-block
+  border-radius 10px
+  color #fff
+
+
+a
+  &:hover
+    text-decoration underline
+
+a.btn + a.btn
+  margin-left 1em
+
+.btn
+  &.small
+    font-size 80%
+    height 26px
+    line-height 26px
+    padding-left 10px
+    padding-right 10px
+
+    
+header
+  nav
+    .brand-logo
+      margin-left 0.2em
+
+main.container
+  margin-top 50px

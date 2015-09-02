@@ -1,0 +1,124 @@
+// #admin_menu
+//   +below($screen-md)
+//     display none
+// #admin_content
+//   +below($screen-md)
+//     width 100% !important
+
+// header
+//   a.admin.menu.item
+//     display none
+//     cursor pointer
+//     +below($screen-md)
+//       display inline-block
+
+
+main#admin_container
+  padding-top 1em
+  
+  #admin_content
+
+    h2
+      margin-top 0
+      margin-bottom 0.1em
+      font-size 2rem
+
+    input[type=submit]
+      margin-top 1em
+
+    
+    // /routes
+    .page-routes
+      .collection-item
+        padding 0
+        
+        a
+          display block
+          padding 0.9em
+
+          span.method
+            display inline-block
+            min-width 5%
+            margin-right 1em
+            
+          span.url
+            display inline-block
+            
+    .page-route
+      .result
+        margin-top 2em
+        border-top 1px solid #efefef
+        pre
+          margin-top 1em
+          max-height 400px
+        .meta
+          .label
+            margin-right 0.5em
+            
+    // /models
+    .page-modelRow
+      .actions
+        margin-top 1em
+        .btn, .modal-wrapper
+          display inline-block
+          margin-right 0.5em
+          
+    .page-model
+      .add-button
+        float right
+        margin 1em
+          
+    // /emails
+    .page-emails
+      .send-result
+        margin-top 0.5em
+      .tab-content > div
+        padding-top 1em
+      .preview
+        & > em
+          display block
+        .body
+          border 1px solid #ccc
+          height 400px
+          overflow scroll
+          padding 0.5em
+          background-color #efefef
+          
+          p:first-child
+            margin-top 0
+      .tips
+        font-style italic
+        code
+          font-size 110%
+          font-weight bold
+        
+    // /cron
+    .page-cron
+      .item-label
+        .status
+          &.inactive            
+            color #999
+            &:after
+              display inline-block
+              content '[Inactive]'
+              margin-left 1em
+              font-size 80%
+      .item-body
+        padding 1em
+        
+        .item-label
+          padding-left 0
+          color #000
+          font-weight bold
+          text-align left
+          & + div
+            display inline-block
+            text-align left
+            
+            span.by
+              margin-left 1em
+              color #666
+              font-size 80%
+
+        
+        
