@@ -9,7 +9,8 @@ var _ = require('lodash'),
 var waigo = require('../../'),
   AbstractCommand = waigo.load('support/cliCommand');
   
-var waigoFolder = waigo.getWaigoFolder();
+var waigoFolder = waigo.getWaigoFolder(),
+  frameworkRootFolder = path.join(waigoFolder, '..');
 
 var dataFolder = path.join(__dirname, 'data', 'init');  
 
@@ -59,10 +60,10 @@ Command.prototype.run = function*() {
   yield this.copyFile(path.join(dataFolder, 'README.md'), 'src/README.md');
   yield this.copyFile(path.join(dataFolder, '_gitignore'), '.gitignore');
 
-  yield this.copyFile(path.join(waigoFolder, '..', 'start-app.js'), 'start-app.js');
-  yield this.copyFile(path.join(waigoFolder, '..', 'gulpfile.coffee'), 'gulpfile.coffee');
+  yield this.copyFile(path.join(frameworkRootFolder, 'start-app.js'), 'start-app.js');
+  yield this.copyFile(path.join(frameworkRootFolder, 'gulpfile.coffee'), 'gulpfile.coffee');
 
-  yield this.copyFolder(path.join(waigoFolder, '..', 'gulp', 'utils'), 'gulp/utils');
+  yield this.copyFolder(path.join(frameworkRootFolder, 'gulp', 'utils'), 'gulp/utils');
 
   yield _.map([
     'dev-frontend',
@@ -73,7 +74,7 @@ Command.prototype.run = function*() {
     'frontend-js',
     'frontend',
   ], function(n) {
-    return this.copyFile(path.join(waigoFolder, '..', 'gulp', n+'.coffee'), 'gulp/' + n + '.coffee');
+    return this.copyFile(path.join(frameworkRootFolder, 'gulp', n+'.coffee'), 'gulp/' + n + '.coffee');
   }, this);
   
   yield this.copyFolder(path.join(waigoFolder, 'views', 'emailTemplates'), 'src/views');
