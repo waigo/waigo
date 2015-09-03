@@ -53,10 +53,6 @@ Command.prototype.run = function*() {
     'gulp-nodemon@1.0.x',
     'run-sequence',
     'yargs',
-    'browserify',
-    'reactify',
-    'babelify',
-    'watchify',
   ], {
     dev: true,
   });
