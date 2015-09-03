@@ -62,7 +62,7 @@ Command.prototype.run = function*() {
   yield this.copyFile(path.join(waigoFolder, '..', 'start-app.js'), 'start-app.js');
   yield this.copyFile(path.join(waigoFolder, '..', 'gulpfile.coffee'), 'gulpfile.coffee');
 
-  yield this.copyFolder(path.join(waigoFolder, 'gulp', 'utils'), 'gulp/utils');
+  yield this.copyFolder(path.join(waigoFolder, '..', 'gulp', 'utils'), 'gulp/utils');
 
   yield _.map([
     'dev-frontend',
