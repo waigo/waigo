@@ -20,7 +20,6 @@ bower_components
 docs/api/*
 public/_gen
 public/js/*.map
-webpack.config.js
 
 # test
 test/data/app

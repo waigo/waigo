@@ -47,6 +47,7 @@ Command.prototype.run = function*() {
     'gulp-uglify@1.1.x',
     'gulp-util@3.0.x',
     'gulp-nodemon@1.0.x',
+    'run-sequence',
     'yargs'
   ], {
     dev: true,
@@ -58,30 +59,21 @@ Command.prototype.run = function*() {
   yield this.copyFile(path.join(waigoFolder, '..', 'start-app.js'), 'start-app.js');
   yield this.copyFile(path.join(waigoFolder, '..', 'gulpfile.coffee'), 'gulpfile.coffee');
 
+  yield this.copyfolder(path.join(waigoFolder, 'gulp', 'utils'), 'gulp/utils');
   yield _.map([
     'dev-frontend',
     'dev-server',
     'dev',
+    'frontend-css',
+    'frontend-img',
+    'frontend-js',
     'frontend',
   ], function(n) {
     return this.copyFile(path.join(waigoFolder, '..', 'gulp', n+'.coffee'), 'gulp/' + n + '.coffee');
   }, this);
-
-  yield _.map([
-    'img',
-    'css', 
-    'stylus',
-    'fonts',
-    'js-app',
-    'js-common',
-    'js',
-    'vendor-css',
-  ], function(n) {
-    return this.copyFile(path.join(dataFolder, 'gulp', n+'.coffee'), 'gulp/' + n + '.coffee');
-  }, this);
+  
+  yield this.copyfolder(path.join(waigoFolder, 'views', 'emailTemplates'), 'src/views');
   
   yield this.copyFile(path.join(waigoFolder, 'config', 'base.js'), 'src/config/base.js');
-
-  yield this.copyFolder(path.join(waigoFolder, 'views', 'emailTemplates'), 'src/views');
 };
 
