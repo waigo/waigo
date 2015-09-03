@@ -2,7 +2,7 @@
 
 
 var debug = require('debug')('waigo-shutdown-database'),
-  waigo = require('../../../');
+  waigo = global.waigo;
 
 
 

@@ -1,6 +1,7 @@
 "use strict";
 
 
+
 // dependencies
 var _ = require('lodash'),
   debug = require('debug')('waigo-loader'),
@@ -413,4 +414,6 @@ loader.getAppFolder = function() {
 
 
 
-module.exports = loader;
+global.waigo = module.exports = loader;
+
+

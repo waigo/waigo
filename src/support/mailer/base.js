@@ -12,7 +12,7 @@ var debug = require('debug')('waigo-mailer-base'),
   marked = require('marked');
 
 
-var waigo = require('../../../'),
+var waigo = global.waigo,
   _ = waigo._,
   errors = waigo.load('support/errors'),
   NodeMailer = waigo.load('support/mailer/engines/nodeMailer').NodeMailer,

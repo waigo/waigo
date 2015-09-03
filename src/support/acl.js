@@ -3,7 +3,7 @@
 var co = require('co'),
   debug = require('debug')('waigo-acl');
 
-var waigo = require('../../'),
+var waigo = global.waigo,
   _ = waigo._,
   errors = waigo.load('support/errors');
 

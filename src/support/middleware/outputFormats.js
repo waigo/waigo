@@ -1,7 +1,7 @@
 "use strict";
 
 var debug = require('debug')('waigo-middleware-outputformat'),
-  waigo = require('../../../'),
+  waigo = global.waigo,
   _ = waigo._;
 
 var errors = waigo.load('support/errors'),

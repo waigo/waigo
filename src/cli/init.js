@@ -6,7 +6,7 @@ var _ = require('lodash'),
   path = require('path'),
   util = require('util');
 
-var waigo = require('../../'),
+var waigo = global.waigo,
   AbstractCommand = waigo.load('support/cliCommand');
   
 var waigoFolder = waigo.getWaigoFolder(),

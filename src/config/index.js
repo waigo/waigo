@@ -3,7 +3,7 @@
 
 var debug = require('debug')('waigo-config'),
   fs = require('fs'),
-  waigo = require('../../'),
+  waigo = global.waigo,
   _ = waigo._;
 
 

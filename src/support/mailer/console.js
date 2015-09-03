@@ -7,7 +7,7 @@
 var util = require('util'),
   nodemailerStubTransport = require('nodemailer-stub-transport');
 
-var waigo = require('../../../'),
+var waigo = global.waigo,
   _ = waigo._;
 
 

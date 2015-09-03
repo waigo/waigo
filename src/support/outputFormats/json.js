@@ -3,7 +3,7 @@
 
 var debug = require('debug')('waigo-render-html'),
   path = require('path'),
-  waigo = require('../../../'),
+  waigo = global.waigo,
   _ = waigo._;
 
 var errors = waigo.load('support/errors');

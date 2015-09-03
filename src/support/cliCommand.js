@@ -7,7 +7,7 @@ var debug = require('debug')('waigo-cli'),
   shell = require('shelljs');
 
 
-var waigo = require('../../'),
+var waigo = global.waigo,
   _ = waigo._;
 
 

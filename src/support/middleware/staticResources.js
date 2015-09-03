@@ -2,7 +2,7 @@
 
 
 var path = require('path'),
-  waigo = require('../../../'),
+  waigo = global.waigo,
   _ = waigo._;
 
 

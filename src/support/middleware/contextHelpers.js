@@ -6,7 +6,7 @@
 
 var URL = require('url');
 
-var waigo = require('../../../'),
+var waigo = global.waigo,
   _ = waigo._;
 
 

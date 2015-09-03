@@ -3,7 +3,7 @@
 
 
 var debug = require('debug')('waigo-startup-acl'),
-  waigo = require('../../../'),
+  waigo = global.waigo,
   acl = waigo.load('support/acl'),
   _ = waigo._;
 

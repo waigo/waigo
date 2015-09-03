@@ -3,7 +3,7 @@
 
 var koaSessionStore = require('koa-session-store'),
   moment = require('moment'),
-  waigo = require('../../../');
+  waigo = global.waigo;
 
 
 

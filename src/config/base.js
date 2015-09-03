@@ -3,7 +3,7 @@
 var cluster = require('cluster');
 
 
-var waigo = require('../../'),
+var waigo = global.waigo,
   _ = waigo._;
 
 

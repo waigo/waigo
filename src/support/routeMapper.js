@@ -4,7 +4,7 @@
 var debug = require('debug')('waigo-routemapper'),
   route = require('koa-trie-router'),
   util = require('util'),
-  waigo = require('../../'),
+  waigo = global.waigo,
   _ = waigo._;
 
 

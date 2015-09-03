@@ -3,7 +3,7 @@
 var co = require('co'),
   CronJob = require('cron').CronJob;
 
-var waigo = require('../../'),
+var waigo = global.waigo,
   _ = waigo._,
   viewObjects = waigo.load('support/viewObjects');
 

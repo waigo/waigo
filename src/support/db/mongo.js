@@ -5,7 +5,7 @@ var debug = require('debug')('waigo-db-mongo'),
   Robe = require('robe'),
   Q = require('bluebird');
 
-var waigo = require('../../../'),
+var waigo = global.waigo,
   _ = waigo._;
 
 

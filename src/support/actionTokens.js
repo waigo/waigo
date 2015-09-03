@@ -4,7 +4,7 @@ var debug = require('debug')('waigo-actiontokens'),
   crypto = require('crypto');
 
 
-var waigo = require('../../'),
+var waigo = global.waigo,
   _ = waigo._,
   RuntimeError = waigo.load('support/errors').RuntimeError;
 

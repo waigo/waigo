@@ -2,7 +2,7 @@
 
 
 var debug = require('debug')('waigo-startup-middleware'),
-  waigo = require('../../../');
+  waigo = global.waigo;
 
 
 /**

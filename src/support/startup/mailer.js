@@ -3,7 +3,7 @@
 var debug = require('debug')('waigo-startup-mailer');
 
 
-var waigo = require('../../../'),
+var waigo = global.waigo,
   _ = waigo._;
 
 

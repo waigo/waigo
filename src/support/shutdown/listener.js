@@ -3,7 +3,7 @@
 
 var debug = require('debug')('waigo-shutdown-listener'),
   Q = require('bluebird'),
-  waigo = require('../../../');
+  waigo = global.waigo;
 
 
 

@@ -1,7 +1,7 @@
 
 "use strict";
 
-var waigo = require('../../../'),
+var waigo = global.waigo,
   _ = waigo._;
 
 

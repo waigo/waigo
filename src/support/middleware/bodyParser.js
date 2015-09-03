@@ -3,7 +3,7 @@
 
 var bodyParser = require('co-body'),
   path = require('path'),
-  waigo = require('../../../'),
+  waigo = global.waigo,
   _ = waigo._;
 
 

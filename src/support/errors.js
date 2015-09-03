@@ -5,7 +5,7 @@ var debug = require('debug')('waigo-errors'),
   util = require('util');
 
 
-var waigo = require('../../'),
+var waigo = global.waigo,
   _ = waigo._,
   viewObjects = waigo.load('support/viewObjects');
 

@@ -3,7 +3,7 @@
 var crypto = require('crypto'),
   Q = require('bluebird');
 
-var waigo = require('../../'),
+var waigo = global.waigo,
   _ = waigo._,
   UserError = waigo.load('support/errors').define('UserError');
 

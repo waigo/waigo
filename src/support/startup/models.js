@@ -5,7 +5,7 @@
 var debug = require('debug')('waigo-startup-models'),
   path = require('path'),
   Robe = require('Robe'),
-  waigo = require('../../../'),
+  waigo = global.waigo,
   _ = waigo._,
   viewObjects = waigo.load('support/viewObjects');
 

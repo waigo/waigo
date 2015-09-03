@@ -5,7 +5,7 @@ var debug = require('debug')('waigo-startup-routes'),
   queryString = require('query-string');
 
 
-var waigo = require('../../../'),
+var waigo = global.waigo,
   _ = waigo._;
 
 

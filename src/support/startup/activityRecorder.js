@@ -1,7 +1,7 @@
 "use strict";
 
 var debug = require('debug')('waigo-startup-activities'),
-  waigo = require('../../../'),
+  waigo = global.waigo,
   _ = waigo._;
 
 

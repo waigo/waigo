@@ -4,7 +4,7 @@
 var debug = require('debug')('waigo-render-html'),
   path = require('path'),
   render = require('co-render'),
-  waigo = require('../../../'),
+  waigo = global.waigo,
   _ = waigo._;
 
 

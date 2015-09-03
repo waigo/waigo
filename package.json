@@ -113,7 +113,7 @@
     "type": "git",
     "url": "git://github.com/waigo/waigo.git"
   },
-  "main": "index",
+  "main": "src/index.js",
   "bin": {
     "waigo": "./bin/waigo"
   },

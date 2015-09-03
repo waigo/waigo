@@ -3,7 +3,7 @@
 
 var compose = require('generator-compose'),
   debug = require('debug')('waigo-form'),
-  waigo = require('../../../'),
+  waigo = global.waigo,
   _ = waigo._;
 
 
