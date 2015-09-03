@@ -63,7 +63,7 @@ Command.prototype.run = function*() {
   yield this.copyFile(path.join(frameworkRootFolder, 'start-app.js'), 'start-app.js');
   yield this.copyFile(path.join(frameworkRootFolder, 'gulpfile.coffee'), 'gulpfile.coffee');
 
-  yield this.copyFolder(path.join(frameworkRootFolder, 'gulp', 'utils'), 'gulp/utils');
+  yield this.copyFolder(path.join(frameworkRootFolder, 'gulp', 'utils'), 'gulp');
 
   yield _.map([
     'dev-frontend',
