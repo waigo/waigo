@@ -49,7 +49,6 @@
   "devDependencies": {
     "babelify": "~6.3.0",
     "browserify": "~11.0.1",
-    "browserify-shim": "~3.8.10",
     "chai": "~1.8.1",
     "chai-as-promised": "~4.1.1",
     "clockmaker": "^2.0.0",
@@ -89,15 +88,13 @@
   "browserify": {
     "transform": [
       "babelify",
-      "reactify",
-      "browserify-shim"
+      "reactify"
     ]
   },
   "browser": {
     "react-router": "./node_modules/react-router/lib/umd/ReactRouter.js",
     "prism": "./public/lib/prism/prism.js"
   },
-  "browserify-shim": {},
   "keywords": [
     "express",
     "framework",

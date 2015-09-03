@@ -52,7 +52,11 @@ Command.prototype.run = function*() {
     'gulp-util@3.0.x',
     'gulp-nodemon@1.0.x',
     'run-sequence',
-    'yargs'
+    'yargs',
+    'browserify',
+    'reactify',
+    'babelify',
+    'watchify',
   ], {
     dev: true,
   });

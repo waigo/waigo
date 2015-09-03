@@ -1,10 +1,10 @@
 path = require 'path'
-buildJs = require './utils/build-js'
+buildReactJs = require './utils/build-react-js'
 
 
 module.exports = (paths, options = {}) ->
   handler: ->
-    buildJs
+    buildReactJs
       srcGlob: path.join(paths.frontend.src, 'js', 'app.js')
       outputName: 'app.js'
       outputDir: path.join(paths.frontend.build, 'js')
