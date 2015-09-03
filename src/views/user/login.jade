@@ -1,7 +1,5 @@
 extends ../_layout
 
-include ../_mixins
-
 block title
   title Login
 
@@ -14,6 +12,8 @@ block main_content
 
     +form(form, error)
 
-    a.forgot(href="/user/forgot_password") I've forgotten my password
-
-    a.signup(href="/user/register") Not yet registered? Sign up.
+    ul
+      li
+        a.forgot(href="/user/forgot_password") I've forgotten my password
+      li
+        a.signup(href="/user/register") Not yet registered? Sign up.

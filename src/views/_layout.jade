@@ -1,4 +1,4 @@
-include _mixins
+include mixins/all
 
 
 doctype html
@@ -18,30 +18,14 @@ html
 
     // styles
     block css
+      link(href='http://fonts.googleapis.com/css?family=Roboto:700,400,100' rel='stylesheet' type='text/css')
       link(rel="stylesheet", href=staticUrl('waigo:/css/app.css'))
 
     block title
       title Waigo
 
   body
-    block pre_header
-
-    block header
-      header
-        .navbar-fixed
-          nav
-            .nav-wrapper
-              a.brand-logo(href="/") Waigo
-              a.button-collapse(href="#", data-activates="mobile-menu")
-                i.mdi-navigation-menu
-              ul#nav-mobile.right.hide-on-med-and-down
-                li
-                  a(href="/admin", title="Admin")
-                    i.fa.fa-gears
-                if currentUser
-                  li
-                    a(href="/user/logout", title="Logout")
-                      i.fa.fa-sign-out
+    block pre_main_content_container
 
     block main_content_container
       main.container

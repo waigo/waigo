@@ -1,6 +1,60 @@
 @import '_variables'
+@import '_extends'
 
 @import 'nib'
 @import 'rupture'
 
 global-reset()
+
+html
+  font-size 16px
+  
+body
+  font-family $body-font;
+  background-color $white
+  color $black
+
+pre
+  font-family $code-font
+  background-color $gray-light
+  border 1px solid $gray
+
+h1
+  font-size 2.5rem
+  margin 1em 0
+  
+p
+  margin 1em 0
+  
+ul
+  margin 1em 0
+  padding-left 1em
+  list-style disc
+  li
+    margin 0.3em 0
+
+main.container
+  padding 0 1em 1em
+  
+form
+  margin 1em 0
+  .input-field
+    margin 0.5em 0
+  label, input
+    display block
+  
+.msg
+  font-size 120%
+  margin 1em 0
+  width 60%
+  border 1px solid $black
+  border-radius 5px
+  .panel
+    padding 1em
+    &.error
+      background-color $red
+      color $white
+    &.info
+      background-color $green
+      color $black
+    

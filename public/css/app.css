@@ -89,3 +89,62 @@ td {
 a img {
   border: none;
 }
+html {
+  font-size: 16px;
+}
+body {
+  font-family: 'Roboto', Arial, Verdana, sans-serif;
+  background-color: #fff;
+  color: #000;
+}
+pre {
+  font-family: monospace;
+  background-color: #eee;
+  border: 1px solid #ccc;
+}
+h1 {
+  font-size: 2.5rem;
+  margin: 1em 0;
+}
+p {
+  margin: 1em 0;
+}
+ul {
+  margin: 1em 0;
+  padding-left: 1em;
+  list-style: disc;
+}
+ul li {
+  margin: 0.3em 0;
+}
+main.container {
+  padding: 0 1em 1em;
+}
+form {
+  margin: 1em 0;
+}
+form .input-field {
+  margin: 0.5em 0;
+}
+form label,
+form input {
+  display: block;
+}
+.msg {
+  font-size: 120%;
+  margin: 1em 0;
+  width: 60%;
+  border: 1px solid #000;
+  border-radius: 5px;
+}
+.msg .panel {
+  padding: 1em;
+}
+.msg .panel.error {
+  background-color: #f00;
+  color: #fff;
+}
+.msg .panel.info {
+  background-color: #0f0;
+  color: #000;
+}

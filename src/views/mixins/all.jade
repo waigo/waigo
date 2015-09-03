@@ -37,10 +37,10 @@ mixin form(form, error)
           if (field.type == 'text' || field.type == 'password')
             .row
               .input-field.col.m6.s12
-                input(name=field.name, type=field.type, value=value)
                 label #{field.label}
                 - each errorMsg in fieldErrors
                   +msg('error', errorMsg, { compact: true })
+                input(name=field.name, type=field.type, value=value)
           else if (field.type == 'hidden')
             input(name=field.name, type="hidden", value=value)
 
