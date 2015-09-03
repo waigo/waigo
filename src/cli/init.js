@@ -31,10 +31,13 @@ util.inherits(Command, AbstractCommand);
  * Run this command.
  */
 Command.prototype.run = function*() {
-  yield this.installPkgs(['waigo']);
+  yield this.installPkgs([
+    'waigo',
+    'semver',
+  ]);
 
   yield this.installPkgs([
-    'semver',
+    'lodash',
     'coffee-script',
     'gulp@3.8.x',
     'gulp-if@1.2.x',
@@ -73,7 +76,7 @@ Command.prototype.run = function*() {
   }, this);
   
   yield this.copyfolder(path.join(waigoFolder, 'views', 'emailTemplates'), 'src/views');
-  
+
   yield this.copyFile(path.join(waigoFolder, 'config', 'base.js'), 'src/config/base.js');
 };
 
