@@ -32,6 +32,10 @@ util.inherits(Command, AbstractCommand);
  * Run this command.
  */
 Command.prototype.run = function*() {
+  if (!this.fileExists('package.json')) {
+    throw new Error('Please run "npm init" first');
+  }
+
   yield this.installPkgs([
     'waigo',
     'semver',

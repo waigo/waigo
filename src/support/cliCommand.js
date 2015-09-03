@@ -177,6 +177,23 @@ AbstractCommand.prototype.installPkgs = function*(pkgs, options) {
 
 
 /** 
+ * Check whether given file exists in project folder.
+ *
+ * @return {Boolean} true if found, false otherwise.
+ */
+AbstractCommand.prototype.fileExists = function(filePath) {
+  var fullPath = path.join(this._getProjectFolder(), filePath);
+
+  return !!(shell.test('-e', fullPath));
+};  
+
+
+
+
+
+
+
+/** 
  * Find location of NPM node modules folder.
  *
  * @return {String} location if found, null otherwise.
@@ -195,6 +212,10 @@ AbstractCommand.prototype._getNpmFolderLocation = function() {
     return null;
   }
 };  
+
+
+
+
 
 
 
