@@ -18,4 +18,14 @@ block main_content_container
         block main_content
 
 
+block css
+  link(rel="stylesheet", href=staticUrl('waigo:/admin/admin-vendor.css'))
+  link(rel="stylesheet", href=staticUrl('waigo:/admin/admin.css'))
+
+
+block scripts
+  script(type="text/javascript" src=staticUrl('waigo:/admin/admin-vendor.js'))
+  script(type="text/javascript" src=staticUrl('waigo:/admin/admin.js'))
+
+
 

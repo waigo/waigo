@@ -2,12 +2,12 @@ var React = require('react');
 
 var Timer = require('clockmaker').Timer;
 
-var RenderUtils = require('../utils/renderUtils'),
-  GuardedStateMixin = require('../mixins/guardedState');
+var RenderUtils = require('../../utils/renderUtils'),
+  GuardedStateMixin = require('../../mixins/guardedState');
 
-var Button = require('../components/button'),
-  Loader = require("../components/loader"),
-  TextEditor = require('../components/textEditor');
+var Button = require('../../components/button'),
+  Loader = require("../../components/loader"),
+  TextEditor = require('../../components/textEditor');
 
 
 module.exports = React.createClass({

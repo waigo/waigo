@@ -1,7 +1,7 @@
 var React = require('react');
 
-var Button = require('../components/button');
-var ModelTable = require('../components/modelTable');
+var Button = require('../../components/button');
+var ModelTable = require('../../components/modelTable');
 
 
 module.exports = React.createClass({

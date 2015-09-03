@@ -5,11 +5,11 @@ var Link = Router.Link;
 var Timer = require('clockmaker').Timer;
 
 var _ = require('lodash'),
-  Loader = require('../components/loader'),
-  RenderUtils = require('../utils/renderUtils'),
-  ModelTable = require('../components/modelTable'),
-  Button = require('../components/button'),
-  GuardedStateMixin = require('../mixins/guardedState');
+  Loader = require('../../components/loader'),
+  RenderUtils = require('../../utils/renderUtils'),
+  ModelTable = require('../../components/modelTable'),
+  Button = require('../../components/button'),
+  GuardedStateMixin = require('../../mixins/guardedState');
 
 
 module.exports = React.createClass({

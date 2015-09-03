@@ -1,4 +1,9 @@
-module.exports = ->
+module.exports = (options, paths = {}, tasks) ->
+  deps = ['frontend-css', 'frontend-img', 'frontend-js']
+
+  if tasks['admin']
+    deps.push 'admin'
+
   return {
-    deps: ['css', 'img', 'js', 'fonts']
+    deps: deps
   }

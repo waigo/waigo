@@ -1,46 +1,34 @@
 var React = require('react');
+var Router = require('react-router');
+var DefaultRoute = Router.DefaultRoute;
+var RouteHandler = Router.RouteHandler;
+var Route = Router.Route;
 
-var Router = require('react-router'),
-  Link = Router.Link;
-
-var FilterList = require('../components/filterList'),
-  RenderUtils = require('../utils/renderUtils');
-
-
-module.exports = React.createClass({
-
-  render: function() { 
-    return (
-      <div className="page-routes">
-        <FilterList
-          ajaxUrl='/admin/routes?format=json'
-          ajaxResponseDataMapper={this._mapAjaxData}
-          itemDisplayNameFormatter={this._getItemDisplayName}
-          itemRoute="route" />
-      </div>
-    );
-  },
-
-  _mapAjaxData: function(data) {
-    data = data || {};
-
-    return (data.routes || []).map(function(r) {
-      // GET /example/path  -- >  get/example/path
-      r.key = r.method.toLowerCase() + r.url.toLowerCase();
-
-      return r;
-    });
-  },
+var PageRoutes = require('./routes');
+var PageRoute = require('./route');
 
 
-  _getItemDisplayName: function(item) {
-    return (
-      <span>
-        <span className="method">{item.method.toUpperCase()}</span>
-        <span className="url">{item.url}</span>
-      </span>
-    );
-  },
+exports.init = function(rootElem) {
+
+  var App = React.createClass({
+    render: function() {
+      return (
+        <RouteHandler {...this.props}/>
+      );
+    }
+  });
 
 
-});
+  var routes = (
+    <Route handler={App}>
+      <DefaultRoute name="routes" handler={PageRoutes} />
+      <Route name="route" path=":key" handler={PageRoute} />
+    </Route>
+  );
+
+
+  Router.run(routes, Router.HashLocation, function(Handler, state) {
+    React.render(<Handler routes={state.routes} params={state.params} query={state.query} />, rootElem);
+  });
+
+};

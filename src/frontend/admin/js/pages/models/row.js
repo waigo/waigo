@@ -2,12 +2,12 @@ var React = require('react');
 var Router = require('react-router');
 var Link = Router.Link;
 
-var Loader = require('../components/loader'),
-  Button = require('../components/button'),
-  JsonEditor  = require('../components/jsonEditor'),
-  Modal = require('../components/modal'),
-  RenderUtils = require('../utils/renderUtils'),
-  GuardedStateMixin = require('../mixins/guardedState');
+var Loader = require('../../components/loader'),
+  Button = require('../../components/button'),
+  JsonEditor  = require('../../components/jsonEditor'),
+  Modal = require('../../components/modal'),
+  RenderUtils = require('../../utils/renderUtils'),
+  GuardedStateMixin = require('../../mixins/guardedState');
 
 
 module.exports = React.createClass({

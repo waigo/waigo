@@ -2,12 +2,12 @@ var React = require('react');
 
 var Router = require('react-router');
 
-var Loader = require('../components/loader'),
-  SubmitBtn = require('../components/submitButton'),
-  JsonEditor  = require('../components/jsonEditor'),
-  CodeView = require('../components/codeView'),
-  RenderUtils = require('../utils/renderUtils'),
-  GuardedStateMixin = require('../mixins/guardedState');
+var Loader = require('../../components/loader'),
+  SubmitBtn = require('../../components/submitButton'),
+  JsonEditor  = require('../../components/jsonEditor'),
+  CodeView = require('../../components/codeView'),
+  RenderUtils = require('../../utils/renderUtils'),
+  GuardedStateMixin = require('../../mixins/guardedState');
   
 
 module.exports = React.createClass({

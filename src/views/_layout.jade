@@ -17,9 +17,8 @@ html
     meta(name="msapplication-TileImage", content=staticUrl('waigo:/img/logo_144x144.png'))
 
     // styles
-    link(rel="stylesheet", href=staticUrl('waigo:/css/materialize.css'))
-    link(rel="stylesheet", href=staticUrl('waigo:/css/prism.css'))
-    link(rel="stylesheet", href=staticUrl('waigo:/css/app.css'))
+    block css
+      link(rel="stylesheet", href=staticUrl('waigo:/css/app.css'))
 
     block title
       title Waigo
@@ -50,5 +49,6 @@ html
           +msg('info', alertMsg)
         block main_content
 
-    script(type="text/javascript", src=staticUrl('waigo:/js/common.js'))
     block scripts
+      script(type="text/javascript" src=staticUrl('waigo:/js/app.js'))
+

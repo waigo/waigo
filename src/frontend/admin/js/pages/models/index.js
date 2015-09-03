@@ -1,42 +1,38 @@
 var React = require('react');
+var Router = require('react-router');
+var DefaultRoute = Router.DefaultRoute;
+var RouteHandler = Router.RouteHandler;
+var Route = Router.Route;
 
-var Router = require('react-router'),
-  Link = Router.Link;
-
-var FilterList = require('../components/filterList'),
-  RenderUtils = require('../utils/renderUtils');
-
-
-module.exports = React.createClass({
-  render: function() { 
-    return (
-      <div className="page-models">
-        <FilterList
-          ajaxUrl='/admin/models?format=json'
-          ajaxResponseDataMapper={this._mapAjaxData}
-          itemDisplayNameFormatter={this._getItemDisplayName}
-          itemRoute="model" />
-      </div>
-    );
-  },
-
-  _mapAjaxData: function(data) {
-    data = data || {};
-
-    return (data.models || []).map(function(r) {
-      return {
-        key: r,
-        name: r,
-      };
-    });
-  },
+var Models = require('./models');
+var Model = require('./model');
+var Row = require('./row');
 
 
-  _getItemDisplayName: function(item) {
-    return (
-      <span>{item.name}</span>
-    );
-  },
+exports.init = function(rootElem) {
+
+  var App = React.createClass({
+    render: function() {
+      return (
+        <RouteHandler {...this.props}/>
+      );
+    }
+  });
 
 
-});
+  var routes = (
+    <Route handler={App}>
+      <DefaultRoute name="models" handler={Models} />
+      <Route name="model" path="/:key" handler={Model} />
+      <Route name="modelRow" path="/:key/:id" handler={Row} />
+    </Route>
+  );
+
+
+  Router.run(routes, Router.HashLocation, function(Handler, state) {
+    React.render(<Handler routes={state.routes} params={state.params} query={state.query} />, rootElem);
+  });
+
+
+};
+

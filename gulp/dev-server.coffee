@@ -1,9 +1,10 @@
 gulp = require 'gulp'
+gutil = require 'gulp-util'
 nodemon = require 'gulp-nodemon'
 
 
 module.exports = (paths, options = {}) ->
-  return ->
+  handler: ->
     nodemon({ 
       script: 'start-app.js'
       ext: 'js'

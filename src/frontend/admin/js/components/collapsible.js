@@ -1,6 +1,5 @@
 var React = require('react');
 
-
 module.exports = React.createClass({
   propTypes: {
     items: React.PropTypes.array,

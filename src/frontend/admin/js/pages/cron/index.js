@@ -2,10 +2,10 @@ var React = require('react');
 
 var _ = require('lodash');
 
-var Collapsible = require('../components/collapsible'),
-  Loader = require('../components/loader'),
-  RenderUtils = require('../utils/renderUtils'),  
-  GuardedStateMixin = require('../mixins/guardedState');
+var Collapsible = require('../../components/collapsible'),
+  Loader = require('../../components/loader'),
+  RenderUtils = require('../../utils/renderUtils'),  
+  GuardedStateMixin = require('../../mixins/guardedState');
 
 
 var CronItemHeader = require('./cronItemHeader'),

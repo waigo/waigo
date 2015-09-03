@@ -2,11 +2,11 @@ var React = require('react');
 var Router = require('react-router');
 var moment = require('moment');
 
-var Button = require('../components/button'),
-  Switch = require('../components/switch'),
-  Loader = require('../components/loader'),
-  RenderUtils = require('../utils/renderUtils'),  
-  GuardedStateMixin = require('../mixins/guardedState');
+var Button = require('../../components/button'),
+  Switch = require('../../components/switch'),
+  Loader = require('../../components/loader'),
+  RenderUtils = require('../../utils/renderUtils'),  
+  GuardedStateMixin = require('../../mixins/guardedState');
 
 
 
