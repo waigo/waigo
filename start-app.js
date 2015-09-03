@@ -5,8 +5,12 @@
  * @fileOverview Executable script to bootstrap your app.
  */
 
-
-var IS_WAIGO_FRAMEWORK = ('waigo' === require('./package.json').name);
+var IS_WAIGO_FRAMEWORK = false;
+try {
+  IS_WAIGO_FRAMEWORK = ('waigo' === require('./package.json').name);
+} catch (err) {
+  console.warn('package.json not found');
+}
 
 
 
