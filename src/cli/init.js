@@ -62,7 +62,8 @@ Command.prototype.run = function*() {
   yield this.copyFile(path.join(waigoFolder, '..', 'start-app.js'), 'start-app.js');
   yield this.copyFile(path.join(waigoFolder, '..', 'gulpfile.coffee'), 'gulpfile.coffee');
 
-  yield this.copyfolder(path.join(waigoFolder, 'gulp', 'utils'), 'gulp/utils');
+  yield this.copyFolder(path.join(waigoFolder, 'gulp', 'utils'), 'gulp/utils');
+
   yield _.map([
     'dev-frontend',
     'dev-server',
@@ -75,7 +76,7 @@ Command.prototype.run = function*() {
     return this.copyFile(path.join(waigoFolder, '..', 'gulp', n+'.coffee'), 'gulp/' + n + '.coffee');
   }, this);
   
-  yield this.copyfolder(path.join(waigoFolder, 'views', 'emailTemplates'), 'src/views');
+  yield this.copyFolder(path.join(waigoFolder, 'views', 'emailTemplates'), 'src/views');
 
   yield this.copyFile(path.join(waigoFolder, 'config', 'base.js'), 'src/config/base.js');
 };

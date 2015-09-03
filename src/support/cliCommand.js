@@ -158,7 +158,7 @@ AbstractCommand.prototype.deleteFile = function*(dst) {
 AbstractCommand.prototype.installPkgs = function*(pkgs, options) {
   options = _.extend({
     dev: false,
-  });
+  }, options);
 
   var str = pkgs.join(' ');
 
