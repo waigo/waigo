@@ -13,6 +13,7 @@ module.exports = function*(app) {
   // template helpers
   app.locals = {
     _: _,
+    config: app.config,
   };
 };
 
