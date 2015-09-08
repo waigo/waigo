@@ -116,6 +116,8 @@ module.exports = function(config) {
       type: 'mongo',
       // name of db
       name: 'waigo',
+      // connection timeout
+      //connectionTimeoutMs: 3000,
       // host/replica sets
       hosts: [
         // first entry is always treated as the master

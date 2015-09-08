@@ -43,7 +43,9 @@ exports.create = function*(dbConfig) {
     return url;
   });
 
-  var db = yield Robe.connect(mongoUrls);
+  var db = yield Robe.connect(mongoUrls, {
+    timeout: dbConfig.connectionTimeoutMs
+  });
 
   _connections.push(db);
 
