@@ -55,7 +55,11 @@ ACL.prototype.init = function*() {
   }
 
   // get notified of ACL updates
-  yield this.app.models.Acl.addWatcher(_.bind(this.onAclUpdated, this));
+  try {
+    yield this.app.models.Acl.addWatcher(_.bind(this.onAclUpdated, this));
+  } catch (err) {
+    this.logger.error('Unable to watch for ACL updates', err.stack);
+  }
 };
 
 
