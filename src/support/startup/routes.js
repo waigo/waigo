@@ -68,7 +68,7 @@ module.exports = function*(app) {
   _.each(routeFiles, function(routeFile) {
     debug('Loading ' + routeFile);
 
-    _.extend(app.routes, waigo.load(routeFile));
+    _.merge(app.routes, waigo.load(routeFile));
   });
 
   waigo.load('support/routeMapper').map(app, app.routes);
