@@ -26,6 +26,7 @@ var EmailSchema = {
 var AuthSchema = {
   type: { type: String, required: true },
   token: { type: String, required: true },
+  data: { type: Object },
 }
 
 
@@ -271,6 +272,46 @@ module.exports = {
 
       // record
       yield this.record('update_password', this);
+    },
+    /**
+     * Save OAuth data.
+     * @param {String} provider Auth provider.
+     * @param {String} token Auth token.
+     * @param [Object] data Additional data.
+     */
+    saveOAuth: function*(provider, token, data) {
+      yield this.saveAuth('oauth:' + provider, token, data);
+    },
+    /**
+     * Save Auth data
+     * @param {String} type Auth type.
+     * @param {String} token Auth token.
+     * @param [Object] data Additional data.
+     */
+    saveAuth: function*(type, token, data) {
+      this.getApp().logger.debug('Save user auth', this._id, type, token);
+
+      var existing = _.find(this.auth, function(a) {
+        return type === a.type;
+      });
+
+      if (!existing) {
+        existing = {
+          type: type
+        };
+
+        this.auth.push(existing);
+      }
+
+      existing.token = token;
+      existing.data = data;
+
+      // save
+      this.markChanged('auth');
+      yield this.save();
+
+      // record
+      yield this.record('save_auth', this, _.pick(existing, 'type', 'token'));
     },
     /**
      * Get whether user can access given resource.

@@ -11,10 +11,7 @@ var waigo = global.waigo,
 
 
 /**
- * Build middleware for setting up context-level helpers and template vars.
- *
- * This should be the last middleware which gets run prior to route-specific 
- * middleware.
+ * Build middleware for setting up `currentUser` on context.
  * 
  * @return {Function} middleware
  */

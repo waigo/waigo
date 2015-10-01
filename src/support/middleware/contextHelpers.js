@@ -34,6 +34,7 @@ module.exports = function() {
     this.acl = this.app.acl;
     this.models = this.app.models;
     this.form = this.app.form;
+    this.record = this.app.record;
 
     processAlertMessage(this);
 

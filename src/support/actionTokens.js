@@ -145,7 +145,7 @@ ActionTokens.prototype.process = function*(token, options) {
   }
 
   // record activity
-  yield this.app.record('action_token', user, {
+  yield this.app.record('action_token_processed', user, {
     type: type,
     salt: salt,
   });
