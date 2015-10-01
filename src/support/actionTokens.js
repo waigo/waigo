@@ -47,7 +47,7 @@ var ActionTokens = function(app, config) {
  *
  * @return {String} the action token. 
  */
-ActionTokens.prototype.create = function(type, user, data, options) {
+ActionTokens.prototype.create = function*(type, user, data, options) {
   options = _.extend({
     validForHours: this.config.validForHours
   }, options);

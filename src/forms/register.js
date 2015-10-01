@@ -47,7 +47,7 @@ module.exports = {
       yield user.login(this.context);
 
       // send confirmation email
-      var token = app.actionTokens.create('verify_email', user, {
+      var token = yield app.actionTokens.create('verify_email', user, {
         email: this.fields.email.value,
       });
       

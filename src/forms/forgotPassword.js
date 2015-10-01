@@ -48,7 +48,7 @@ module.exports = {
       }
 
       // action
-      var token = app.actionTokens.create('reset_password', user);
+      var token = yield app.actionTokens.create('reset_password', user);
 
       app.logger.debug('Reset password token for ' + user._id , token);
 
