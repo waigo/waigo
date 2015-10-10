@@ -249,6 +249,35 @@ module.exports = {
       });
     },
     /**
+     * Add an email address.
+     * @param {String} email Email address to verify.
+     * @param {Boolea} verified Whether address is verified.
+     */
+    addEmail: function*(email, verified) {
+      var theEmail = _.find(this.emails, function(e) {
+        return email === e.email;
+      });
+
+      if (!theEmail) {
+        theEmail = {
+          email: email,
+        };
+
+        this.emails.push(theEmail);
+      }
+
+      theEmail.verified = true;
+
+      // save
+      this.markChanged('emails');
+      yield this.save();
+
+      // record
+      yield this.record('add_email', this, {
+        email: email
+      });
+    },
+    /**
      * Update this user's password.
      * @param {String} newPassword New password.
      */
@@ -274,7 +303,20 @@ module.exports = {
       yield this.record('update_password', this);
     },
     /**
+     * Get OAuth data.
+     * 
+     * @param {String} provider Auth provider.
+     *
+     * @return {Object} null if not found.
+     */
+    getOauth: function*(provider)  {
+      return _.find(this.auth, function(a) {
+        return type === a.type;
+      });
+    },
+    /**
      * Save OAuth data.
+     * 
      * @param {String} provider Auth provider.
      * @param {String} token Auth token.
      * @param [Object] data Additional data.
@@ -283,7 +325,8 @@ module.exports = {
       yield this.saveAuth('oauth:' + provider, token, data);
     },
     /**
-     * Save Auth data
+     * Save Auth data.
+     * 
      * @param {String} type Auth type.
      * @param {String} token Auth token.
      * @param [Object] data Additional data.
@@ -311,7 +354,7 @@ module.exports = {
       yield this.save();
 
       // record
-      yield this.record('save_auth', this, _.pick(existing, 'type', 'token'));
+      yield this.record('save_oauth', this, _.pick(existing, 'type', 'token'));
     },
     /**
      * Get whether user can access given resource.
