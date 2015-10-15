@@ -309,30 +309,32 @@ module.exports = {
      *
      * @return {Object} null if not found.
      */
-    getOauth: function*(provider)  {
-      return _.find(this.auth, function(a) {
-        return type === a.type;
+    getOauth: function(provider)  {
+      provider = 'oauth:' + provider;
+      
+      provider = _.find(this.auth, function(a) {
+        return provider === a.type;
       });
+
+      return _.get(provider, 'data', null);
     },
     /**
      * Save OAuth data.
      * 
      * @param {String} provider Auth provider.
-     * @param {String} token Auth token.
-     * @param [Object] data Additional data.
+     * @param {Object} data Data.
      */
-    saveOAuth: function*(provider, token, data) {
-      yield this.saveAuth('oauth:' + provider, token, data);
+    saveOAuth: function*(provider, data) {
+      yield this.saveAuth('oauth:' + provider, data);
     },
     /**
      * Save Auth data.
      * 
      * @param {String} type Auth type.
-     * @param {String} token Auth token.
-     * @param [Object] data Additional data.
+     * @param {Object} data Data.
      */
-    saveAuth: function*(type, token, data) {
-      this.getApp().logger.debug('Save user auth', this._id, type, token);
+    saveAuth: function*(type, data) {
+      this.getApp().logger.debug('Save user auth', this._id, type);
 
       var existing = _.find(this.auth, function(a) {
         return type === a.type;
@@ -346,7 +348,6 @@ module.exports = {
         this.auth.push(existing);
       }
 
-      existing.token = token;
       existing.data = data;
 
       // save

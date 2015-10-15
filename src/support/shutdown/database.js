@@ -17,7 +17,7 @@ module.exports = function*(app) {
   var dbAdapters = waigo.getModulesInPath('support/db');
 
   yield Promise.map(dbAdapters, function(adapter) {
-    yield Promise.coroutine(waigo.load(adapter).closeAll)();
+    return Promise.coroutine(waigo.load(adapter).closeAll)();
   });
 };
 

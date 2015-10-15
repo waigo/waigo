@@ -129,6 +129,7 @@ loader.init = function*(options) {
   options.plugins = options.plugins || {};
 
   appFolder = options.appFolder || appFolder;
+  debug('App folder ' + appFolder);
 
   // get loadable plugin
   if (!options.plugins.names) {

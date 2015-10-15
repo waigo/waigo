@@ -51,7 +51,7 @@ module.exports = function(config) {
           type: 'pattern',
           pattern: '(%h-%z) %[[%d] [%p] [%c]%] - %m',
           tokens: {
-            workerId: cluster.worker.id
+            workerId: _.get(cluster, 'worker.id', 0)
           }
         }
       }
