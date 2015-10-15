@@ -2,7 +2,8 @@
 
 
 var debug = require('debug')('waigo-shutdown-database'),
-  waigo = global.waigo;
+  waigo = global.waigo,
+  _ = waigo._;
 
 
 
@@ -14,10 +15,10 @@ var debug = require('debug')('waigo-shutdown-database'),
 module.exports = function*(app) {
   debug('Shutting down database connections');
 
-  var dbAdapters = waigo.getModulesInPath('support/db');
+  var dbAdapters = waigo.getFilesInFolder('support/db');
 
-  yield Promise.map(dbAdapters, function(adapter) {
-    return Promise.coroutine(waigo.load(adapter).closeAll)();
+  yield _.map(dbAdapters, function(adapter) {
+    return waigo.load(adapter).closeAll();
   });
 };
 
