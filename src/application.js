@@ -124,11 +124,11 @@ Application.setupLogger = function*(cfg) {
 Application.start = function*(options) {
   // load config
   /*jshint -W030 */
-  yield* Application.loadConfig(options);
+  yield Application.loadConfig(options);
 
   // logging
   /*jshint -W030 */
-  yield* Application.setupLogger(Application.app.config.logging);
+  yield Application.setupLogger(Application.app.config.logging);
 
   // run startup steps
   for (let idx in Application.app.config.startupSteps) {
@@ -137,7 +137,7 @@ Application.start = function*(options) {
     debug('Running startup step: ' + stepName);
     
     /*jshint -W030 */
-    yield* waigo.load('support/startup/' + stepName)(Application.app);
+    yield waigo.load('support/startup/' + stepName)(Application.app);
   }
 };
 
@@ -158,7 +158,7 @@ Application.shutdown = function*() {
     debug('Running shutdown step: ' + stepName);
 
     /*jshint -W030 */
-    yield* waigo.load('support/shutdown/' + stepName)(Application.app);
+    yield waigo.load('support/shutdown/' + stepName)(Application.app);
   }
 
   // prepare the koa app for a restart
