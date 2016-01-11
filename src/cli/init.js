@@ -84,5 +84,6 @@ Command.prototype.run = function*() {
   yield this.copyFolder(path.join(waigoFolder, 'views', 'emailTemplates'), 'src/views');
 
   yield this.copyFile(path.join(waigoFolder, 'config', 'base.js'), 'src/config/base.js');
+  yield this.copyFile(path.join(waigoFolder, 'config', 'development.js'), 'src/config/development.js');
 };
 
