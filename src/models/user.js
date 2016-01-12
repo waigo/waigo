@@ -146,9 +146,9 @@ module.exports = {
       // create user
       var user = yield this.insert({
         username: properties.email,
-        profile: {
+        profile: _.extend({
           displayName: properties.email,
-        },
+        }, properties.profile),
         emails: [
           {
             email: properties.email,
@@ -172,6 +172,17 @@ module.exports = {
       yield this.record('register', user);
 
       return user;
+    },
+    loadLoggedIn: function*(context) {
+      var userId = _.get(context, 'session.user._id');
+
+      if (!userId) {
+        return null;
+      }
+
+      return yield this.findOne({
+        _id: userId,
+      });
     },
   },
   docMethods: {
