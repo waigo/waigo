@@ -1,7 +1,6 @@
 "use strict";
 
 
-
 // dependencies
 var _ = require('lodash'),
   debug = require('debug')('waigo-loader'),
@@ -13,16 +12,19 @@ var _ = require('lodash'),
   walk = require('findit');
 
 
-// some stuff
-var waigoFolder = path.join(__dirname),
-  appFolder = path.join(path.dirname(require.main.filename), 'src'),
-  loader = {};
 
+const WAIGO_FOLDER = path.join(__dirname),
+  APP_FOLDER = path.join(path.dirname(require.main.filename), 'src'),
+  $FILE = Symbol('file loading config'),
+  $SOURCE_PATHS = Symbol('paths to sources');
+
+
+var loader = module.exports = global.waigo = {};
 
 
 
 /**
- * Reference to `lodash`.
+ * Reference to Lodash instance.
  * 
  * Once waigo.load('application') has been called this will have been extended 
  * with `underscore.string` module and Waigo's 
@@ -32,17 +34,17 @@ loader._ = _;
 
 
 /** 
- * Internal file loading configuration. Do not access or manipulate this yourself. This is exposed purely for testing purposes.
+ * Internal file loading configuration.
  * @private
  */
-loader.__files = null;
+loader[$FILE] = null;
 
 
 /** 
- * Internal paths to file sources. Do not access or manipulate this yourself. This is exposed purely for testing purposes.
+ * Internal paths to file sources.
  * @private
  */
-loader.__sourcePaths = null;
+loader[$SOURCE_PATHS] = null;
 
 
 
@@ -415,6 +417,5 @@ loader.getAppFolder = function() {
 
 
 
-global.waigo = module.exports = loader;
 
 

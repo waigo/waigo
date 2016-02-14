@@ -1,5 +1,6 @@
-var co = require('co');
+"use strict";
 
+var co = require('co');
 var waigo = module.exports = require('./loader');
 
 

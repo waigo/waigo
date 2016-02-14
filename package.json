@@ -1,14 +1,15 @@
 {
   "name": "waigo",
-  "description": "Next-gen web framework for node.js using generators",
+  "description": "Reactive web framework for Node.js 5+ using RethinkDB",
   "version": "2.0.0",
+  "license": "MIT",
   "author": {
     "name": "Ramesh Nair",
     "email": "ram@hiddentao.com"
   },
   "dependencies": {
     "bluebird": "^2.3.4",
-    "co": "^4.5.2",
+    "co": "^4.6.0",
     "co-body": "0.0.1",
     "co-render": "0.0.1",
     "commander": "~2.2.0",
@@ -26,7 +27,7 @@
     "koa-session-store": "~1.x.x",
     "koa-static": "~1.4.x",
     "koa-trie-router": "~1.0.x",
-    "lodash": "^3.8.0",
+    "lodash": "^4.3.0",
     "log4js": "^0.6.21",
     "markdown": "~0.5.x",
     "marked": "^0.3.3",
@@ -96,7 +97,7 @@
     "prism": "./public/lib/prism/prism.js"
   },
   "keywords": [
-    "express",
+    "reactive",
     "framework",
     "koa",
     "generators",
@@ -123,8 +124,9 @@
     "test": "NODE_ENV=test node --harmony `which grunt` test"
   },
   "engines": {
-    "node": ">=0.12.0"
+    "node": ">=5.0.0"
   },
+  "engineStrict": true,
   "readmeFilename": "README.md",
   "bugs": {
     "url": "https://github.com/waigo/waigo/issues"
