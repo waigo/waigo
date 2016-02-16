@@ -254,7 +254,7 @@ Field.prototype.validate = function*(context) {
  * 
  * @return {Object}
  */
-Field.prototype[viewObjects.methodName] = function*(ctx) {
+Field.prototype[viewObject.METHOD_NAME] = function*(ctx) {
   return _.extend({}, this.config, {
     value: this.value,
     originalValue: this.originalValue,

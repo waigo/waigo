@@ -1,8 +1,6 @@
 "use strict";
 
-const debug = require('debug')('waigo-actiontokens'),
-  crypto = require('crypto');
-
+const crypto = require('crypto');
 
 const waigo = global.waigo,
   _ = waigo._,

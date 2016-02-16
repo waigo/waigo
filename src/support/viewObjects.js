@@ -1,7 +1,7 @@
 "use strict";
 
 
-var waigo = global.waigo,
+const waigo = global.waigo,
   _ = waigo._;
 
 
@@ -10,7 +10,7 @@ var waigo = global.waigo,
  * The name of the method which when called will return a view object representation of the callee.
  * @type {String}
  */
-var methodName = exports.methodName = 'toViewObject';
+const METHOD_NAME = exports.METHOD_NAME = 'toViewObject';
 
 
 
@@ -22,7 +22,7 @@ var methodName = exports.methodName = 'toViewObject';
  * @param  {*} inputObject The object.
  * @return A yieldable value.
  */
-var toViewObjectYieldable = exports.toViewObjectYieldable = function(ctx, inputObject) {
+const toViewObjectYieldable = exports.toViewObjectYieldable = function(ctx, inputObject) {
   if (inputObject) {
     // if it's one of our model schema types
     // (see https://github.com/hiddentao/simple-mongo-schema)
@@ -42,8 +42,8 @@ var toViewObjectYieldable = exports.toViewObjectYieldable = function(ctx, inputO
     }
 
     // has view object method
-    if (inputObject[methodName]) {
-      return inputObject[methodName].call(inputObject, ctx);
+    if (inputObject[METHOD_NAME]) {
+      return inputObject[METHOD_NAME].call(inputObject, ctx);
     }
     // is an array
     else if (_.isArray(inputObject)) {

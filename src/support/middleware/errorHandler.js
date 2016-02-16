@@ -18,7 +18,7 @@ var waigo = global.waigo,
 var render = function*(config, err) {
   this.status = err.status || 500;
 
-  var error = yield err[viewObjects.methodName].call(err, this);
+  var error = yield err[viewObject.METHOD_NAME].call(err, this);
 
   error.status = this.status;
   error.request = {

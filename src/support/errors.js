@@ -1,11 +1,8 @@
 "use strict";
 
+const util = require('util');
 
-var debug = require('debug')('waigo-errors'),
-  util = require('util');
-
-
-var waigo = global.waigo,
+const waigo = global.waigo,
   _ = waigo._,
   viewObjects = waigo.load('support/viewObjects');
 
@@ -20,8 +17,8 @@ var waigo = global.waigo,
  * 
  * @return {Object} Plain object.
  */
-Error.prototype[viewObjects.methodName] = function*(ctx) {
-  var ret = {
+Error.prototype[viewObject.METHOD_NAME] = function*(ctx) {
+  let ret = {
     type: this.name || 'Error',
     msg: this.message,
     details: null,
@@ -29,33 +26,33 @@ Error.prototype[viewObjects.methodName] = function*(ctx) {
 
   ret.details = this.details || this.failures;
 
-  debug(JSON.stringify(ret));
-
   return ret;
 };
 
 
-
 /**
- * Base runtime error class.
- *
+ * A runtime error.
+ * 
  * Use this in preference to `Error` where possible as it provides for more 
  * descriptive output. 
- *
- * @param {String} [msg] Error message.
- * @param {Number} [status] HTTP return status code to set. Default is 500.
- * @param {Object} [details] Additional details pertaining to this error.
  */
-var RuntimeError = exports.RuntimeError = function(msg, status, details) {
-  Error.call(this);
-  this.name = 'RuntimeError';
-  this.message = msg || 'An error occurred';
-  this.status = status || 500;
-  this.details = details || null;
-  Error.captureStackTrace(this, RuntimeError);
-};
-util.inherits(RuntimeError, Error);
-
+export class RuntimeError extends Error {
+  /**
+   * Constructor.
+   *
+   * @param {String} [msg] Error message.
+   * @param {Number} [status] HTTP return status code to set. Default is 500.
+   * @param {Object} [details] Additional details pertaining to this error.
+   */
+  constructor (msg = 'An error occurred', status = 500, details = null) {
+    super(msg);
+    this.name = this.constructor.name;
+    this.message = msg;
+    this.status = status;
+    this.details = details;
+    Error.captureStackTrace(this, this.constructor);
+  }
+}
 
 
 
@@ -64,8 +61,8 @@ util.inherits(RuntimeError, Error);
  *
  * @return {Object} Plain object.
  */
-RuntimeError.prototype[viewObjects.methodName] = function*(ctx) {
-  var ret = {
+RuntimeError.prototype[viewObject.METHOD_NAME] = function*(ctx) {
+  let ret = {
     type: this.name,
     msg: this.message,
   };
@@ -81,22 +78,24 @@ RuntimeError.prototype[viewObjects.methodName] = function*(ctx) {
 
 
 
-
 /**
  * Represents multiple errors grouped together.
  *
  * Sometimes we may wish to report multiple related errors (e.g. form field 
  * validation failures). This error class makes it easy to do so.
- *
- * @param {Object} errors Map of errors, where each value is itself an `Error` instance.
- * @param {Number} status HTTP return status code to set.
  */
-var MultipleError = exports.MultipleError = function(msg, status, errors) {
-  RuntimeError.call(this, msg || 'Multiple errors occurred', status, errors);
-  this.name = 'MultipleError';
-  Error.captureStackTrace(this, MultipleError);
-};
-util.inherits(MultipleError, RuntimeError);
+export class MultipleError {
+  /**
+   * Constructor.
+   *
+   * @param {String} [msg] Error message.
+   * @param {Number} [status] HTTP return status code to set. Default is 500.
+   * @param {Object} [subErrors] Map of errors, where each value is itself an `Error` instance.
+   */
+  construct (msg = 'Some errors occurred', status = 500, subErrors = {}) {
+    super(msg, status, subErrors);
+  }
+}
 
 
 
@@ -108,17 +107,17 @@ util.inherits(MultipleError, RuntimeError);
  *
  * @return {Object} Plain object.
  */
-MultipleError.prototype[viewObjects.methodName] = function*(ctx) {
-  var ret = {
+MultipleError.prototype[viewObject.METHOD_NAME] = function*(ctx) {
+  let ret = {
     type: this.name,
     msg: this.message,
     details: {},
   };
 
-  for (let id in this.details) {
-    let fn = this.details[id][viewObjects.methodName];
+  for (let subError of this.details) {
+    let fn = subError[viewObject.METHOD_NAME];
 
-    ret.details[id] = (fn ? yield fn(ctx) : this.details[id]);
+    ret.details[id] = (fn ? yield fn(ctx) : subError);
   }
 
   return ret;
@@ -129,25 +128,23 @@ MultipleError.prototype[viewObjects.methodName] = function*(ctx) {
 
 
 /**
- * Define an `Error` class.
+ * Define a new error class.
  *
  * This is a convenience method for quickly creating custom error classes which 
- * inherit from `Error` and have all the correct properties setup.
+ * inherit from existing classes. 
  *
  * @param {String} newClassName Name of this new error type.
  * @param {Class} [baseClass] Base class to derive the new class from. Default is `RuntimeError`.
  *
- * @return {Function} The new error class.
+ * @return {Class} The new error class.
  */
-exports.define = function(newClassName, baseClass) {
-  baseClass = baseClass || RuntimeError;
-
-  var newErrorClass = function() {
+exports.define = function(newClassName, baseClass = RuntimeError) {
+  let newErrorClass = function() {
     (baseClass).apply(this, arguments);
     this.name = newClassName;
     Error.captureStackTrace(this, newErrorClass);
   };
-  util.inherits(newErrorClass, (baseClass));
+  util.inherits(newErrorClass, baseClass);
   return newErrorClass;
 };
 

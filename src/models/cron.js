@@ -83,7 +83,7 @@ module.exports = {
       cron.startScheduler(crontab);
 
       // override view object method
-      cron[viewObjects.methodName] = function*(ctx) {
+      cron[viewObject.METHOD_NAME] = function*(ctx) {
         var json = this.toJSON();
 
         json.schedule = crontab;

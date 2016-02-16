@@ -39,7 +39,7 @@ module.exports = function*(app) {
     // add view object docMethod (but can be overridden for each model)
     var colMethods = modelInfo.methods || {},
       docMethods = {};
-    docMethods[viewObjects.methodName] = function*(ctx) {
+    docMethods[viewObject.METHOD_NAME] = function*(ctx) {
       return this.toJSON();
     };
 

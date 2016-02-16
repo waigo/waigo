@@ -265,7 +265,7 @@ Form.prototype.runHook = function*(hookName) {
  *
  * @return {Object} Renderable plain object representation.
  */
-Form.prototype[viewObjects.methodName] = function*(ctx) {
+Form.prototype[viewObject.METHOD_NAME] = function*(ctx) {
   var fields = this.fields,
     fieldViewObjects = {},
     fieldOrder = [];
@@ -273,7 +273,7 @@ Form.prototype[viewObjects.methodName] = function*(ctx) {
   for (let fieldName in fields) {
     let field = fields[fieldName];
       
-    fieldViewObjects[fieldName] = yield field[viewObjects.methodName](ctx);
+    fieldViewObjects[fieldName] = yield field[viewObject.METHOD_NAME](ctx);
     fieldOrder.push(fieldName);
   }
 
