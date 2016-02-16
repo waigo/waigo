@@ -2,7 +2,7 @@
 
 
 const _ = require('lodash'),
-  debug = require('debug')('waigo-loader'),
+  debug = require('debug')('waigo loader'),
   findup = require('findup-sync'),
   path = require('path'),
   fs = require('fs'),

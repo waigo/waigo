@@ -1,11 +1,8 @@
 "use strict";
 
 
-
-var debug = require('debug')('waigo-startup-acl'),
-  waigo = global.waigo,
-  acl = waigo.load('support/acl'),
-  _ = waigo._;
+const waigo = global.waigo,
+  acl = waigo.load('support/acl');
 
 
 
@@ -17,7 +14,7 @@ var debug = require('debug')('waigo-startup-acl'),
  * @param {Object} app The application.
  */
 module.exports = function*(app) {
-  debug('Setting up ACL');
+  app.logger.debug('Setting up ACL');
 
   app.acl = yield acl.init(app);
 };

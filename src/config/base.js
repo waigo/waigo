@@ -1,9 +1,8 @@
 "use strict";
 
-var cluster = require('cluster');
 
-
-var waigo = global.waigo,
+const cluster = require('cluster'),
+  waigo = global.waigo,
   _ = waigo._;
 
 
@@ -11,15 +10,20 @@ var waigo = global.waigo,
 /**
  * # Base configuration
  * 
- * This is the base configuration for the application.
+ * This is the base configuration for Waigo applications and is always loaded 
+ * before any environment-specific configuration files.
  * 
- * This configuration module file is mandatory and gets applied for all modes 
- * in which the application may run.
+ * This configuration module file is designed for running an app in a 
+ * development environment and contains all the default available config 
+ * options in Waigo.
+ *
+ * For production-quality deployments it is recommended you create a 
+ * `production.js` config file and set the `NODE_ENV` environment variable to 
+ * equal `production`.
  * 
- * @param  {Object} config Configuration object to modify.
+ * @param {Object} config config Initial configuration object.
  */
 module.exports = function(config) {
-
   /**
    * Server listening port.
    */

@@ -1,7 +1,7 @@
 "use strict";
 
 
-var debug = require('debug')('waigo-config'),
+const debug = require('debug')('waigo config'),
   fs = require('fs'),
   waigo = global.waigo,
   _ = waigo._;
@@ -14,9 +14,13 @@ var debug = require('debug')('waigo-config'),
  */
 var loadConfigModule = function(name) {
   try {
-    return waigo.load('config/' + name);
+    debug(`Loading ${name} configuration`);
+
+    return waigo.load(`config/${name}`);
   } catch (e) {
+    debug(`Error loading config: ${name}`);
     debug(e);
+
     return null;
   }
 };
@@ -47,7 +51,7 @@ var loadConfigModule = function(name) {
  * @return {Object}
  */
 module.exports = function() {
-  var config = {
+  let config = {
     mode: process.env.NODE_ENV || 'development',
     user: process.env.USER
   };
@@ -55,7 +59,7 @@ module.exports = function() {
   debug('Config mode, user', config.mode, config.user);
 
   // base
-  var fn = loadConfigModule('base');
+  let fn = loadConfigModule('base');
   if (!fn) {
     throw new Error('Base configuration file not found');
   }

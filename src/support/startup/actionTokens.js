@@ -1,6 +1,6 @@
 "use strict";
 
-var waigo = global.waigo,
+const waigo = global.waigo,
   _ = waigo._;
 
 
@@ -10,7 +10,7 @@ var waigo = global.waigo,
  * @param {Object} app The application.
  */
 module.exports = function*(app) {
-  var mod = waigo.load('support/actionTokens');
+  let mod = waigo.load('support/actionTokens');
 
   app.actionTokens = yield mod.init(
     app, app.config.actionTokens
