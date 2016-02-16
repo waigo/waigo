@@ -4,24 +4,21 @@
  * @fileOverview
  *
  * Email admins some user stats:
- * - users signed up in past month
+ * - users signed up in past 7 days
  */
 
 var moment = require('moment');
 
 
-
-// exports.schedule = '*/10 * * * * *';
-exports.schedule = '0 0 3 0 * *';   // 1st of of every month at 3am
+exports.schedule = '0 0 3 * * 1';   // every monday morning at 3am
 
 
 exports.handler = function*(app) {
-  var lastMonth = moment().add('months', -1);
+  var lastWeek = moment().add('days', -7);
 
   var activities = yield app.models.Activity.find({
     published: {
-      $gte: lastMonth.date(1).toDate(),
-      $lte: lastMonth.endOf('month').toDate(),
+      $gte: lastWeek.toDate(),
     },
     verb: 'register'
   });
@@ -35,10 +32,11 @@ exports.handler = function*(app) {
 
   yield app.mailer.send({
     to: admins,
-    subject: 'Report - user signups last month',
+    subject: 'Report - user signups during past 7 days',
     bodyTemplate: 'reportUserSignups',
     locals: {
-      month: lastMonth.format('MMMM'),
+      from: lastWeek.format('MMMM DD, YYYY'),
+      to: moment().format('MMMM DD, YYYY'),
       users: users,
     }
   });

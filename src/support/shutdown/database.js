@@ -17,7 +17,7 @@ module.exports = function*(app) {
   let dbAdapters = waigo.getFilesInFolder('support/db');
 
   yield _.map(dbAdapters, function(adapter) {
-    return waigo.load(adapter).closeAll();
+    return waigo.load(adapter).closeAll(app.logger);
   });
 };
 

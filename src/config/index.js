@@ -2,8 +2,9 @@
 
 
 const debug = require('debug')('waigo config'),
-  fs = require('fs'),
-  waigo = global.waigo,
+  fs = require('fs');
+
+const waigo = global.waigo,
   _ = waigo._;
 
 

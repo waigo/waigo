@@ -1,8 +1,8 @@
 "use strict";
 
+const cluster = require('cluster');
 
-const cluster = require('cluster'),
-  waigo = global.waigo,
+const waigo = global.waigo,
   _ = waigo._;
 
 

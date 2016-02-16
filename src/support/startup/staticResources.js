@@ -17,8 +17,8 @@ const waigo = global.waigo,
  * @param {Object} app The application.
  */
 module.exports = function*(app) {
-  app.logger.debug('Copying static reources into public folder');
-
+  app.logger.debug('Copying static resources into public folder');
+  
   let logger = app.logger.create('StaticResources');
   
   let tmpFolder = path.join(shell.tempdir(), 'waigo-app-' + Date.now());
@@ -53,8 +53,9 @@ module.exports = function*(app) {
   shell.cp('-Rf', path.join(tmpFolder, '*'), destFolder);
 
   // Static URL helper
-  app.locals.staticUrl = _.curry(_staticUrl, 2)(logger);
+  app.templateVars.staticUrl = _.curry(_staticUrl, 2)(logger);
 };
+
 
 
 /**
@@ -68,8 +69,8 @@ module.exports = function*(app) {
  * 
  * @return {String}
  */
-var _staticUrl = function(logger, resourcePath) {
-  var pos = resourcePath.indexOf(':'),
+function _staticUrl(logger, resourcePath) {
+  let pos = resourcePath.indexOf(':'),
     owner =  (0 <= pos) ? resourcePath.substr(0, pos) : '',
     theUrl = (0 <= pos) ? resourcePath.substr(pos+1) : resourcePath;
 

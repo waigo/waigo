@@ -1,19 +1,17 @@
 "use strict";
 
 
-var debug = require('debug')('waigo-routemapper'),
-  route = require('koa-trie-router'),
-  util = require('util'),
-  waigo = global.waigo,
-  _ = waigo._;
+const route = require('koa-trie-router'),
+  util = require('util');
+
+const waigo = global.waigo,
+  _ = waigo._,
+  errors = waigo.load('support/errors');
 
 
-var errors = waigo.load('support/errors'),
-  RouteError = exports.RouteError = errors.define('RouteError');
+const RouteError = exports.RouteError = errors.define('RouteError');
 
-
-
-var methods = ['GET', 'POST', 'DEL', 'DELETE', 'PUT', 'OPTIONS', 'HEAD'];
+const METHODS = ['GET', 'POST', 'DEL', 'DELETE', 'PUT', 'OPTIONS', 'HEAD'];
 
 
 
@@ -27,7 +25,7 @@ var methods = ['GET', 'POST', 'DEL', 'DELETE', 'PUT', 'OPTIONS', 'HEAD'];
  * 
  * @return {Function}
  */
-var loadMiddleware = function(middlewareName, middlewareOptions) {
+var loadMiddleware = function(middlewareName, middlewareOptions = null) {
   if (_.isPlainObject(middlewareName)) {
     middlewareOptions = _.omit(middlewareName, 'id');
     middlewareName = middlewareName.id;
@@ -40,7 +38,7 @@ var loadMiddleware = function(middlewareName, middlewareOptions) {
     middlewareOptions = middlewareOptions || {};
   }
 
-  return waigo.load('support/middleware/' + middlewareName)(middlewareOptions);
+  return waigo.load(`support/middleware/${middlewareName}`)(middlewareOptions);
 };
 
 
@@ -53,15 +51,15 @@ var loadMiddleware = function(middlewareName, middlewareOptions) {
  * @return {Function}
  */
 var loadController = function(controller) {
-  var tokens = controller.split('.'),
+  let tokens = controller.split('.'),
     controllerPath = tokens,
     methodName = tokens.pop(),
     controllerName = controllerPath.join('.');
 
-  var mod = waigo.load('controllers/' + controllerPath.join('/'));
+  let mod = waigo.load(`controllers/${controllerPath.join('/')}`);
 
   if (!_.isFunction(mod[methodName])) {
-    throw new RouteError('Unable to find method "' + methodName + '" on controller "' + controllerName + '"');
+    throw new RouteError(`Unable to find method "${methodName}" on controller "${controllerName}"`);
   }
 
   return mod[methodName];
@@ -78,6 +76,7 @@ var loadController = function(controller) {
  * @param  {Object} parentConfig parent node config. 
  * @param  {Object} parentConfig.urlPath URL path of parent node.
  * @param  {Object} parentConfig.preMiddleware Resolved pre-middleware for all routes in this node.
+ * 
  * @return {Array} List of route mappings.
  */
 var buildRoutes = function(logger, commonMiddleware, urlPath, node, parentConfig) {
@@ -89,17 +88,17 @@ var buildRoutes = function(logger, commonMiddleware, urlPath, node, parentConfig
   node = _.extend({}, node);
 
   // load parent middleware
-  var resolvedPreMiddleware = parentConfig.preMiddleware.concat(
+  let resolvedPreMiddleware = parentConfig.preMiddleware.concat(
     _.map(node.pre || [], loadMiddleware)
   );
   delete node.pre;
 
-  var mappings = [];
+  let mappings = [];
 
   // iterate through each possible method
   _.each(methods , function(m) {
     if (node[m]) {
-      var routeMiddleware = _.isArray(node[m]) ? node[m] : [node[m]];
+      let routeMiddleware = _.isArray(node[m]) ? node[m] : [node[m]];
 
       mappings.push({
         method: m,
@@ -136,6 +135,7 @@ var buildRoutes = function(logger, commonMiddleware, urlPath, node, parentConfig
 
 /**
  * Load middleware specified in config object.
+ * 
  * @return {Array}
  */
 var loadCommonMiddleware = function(middleware) {
@@ -163,12 +163,12 @@ var loadCommonMiddleware = function(middleware) {
  * @throws RouteError if there are any problems.
  */
 exports.map = function(app, routes) {
-  var logger = app.logger.create('RouteMapper');
+  let logger = app.logger.create('RouteMapper');
 
-  var possibleMappings = [];
+  let possibleMappings = [];
 
   // resolve middleware for different HTTP methods
-  var commonMiddleware = {};
+  let commonMiddleware = {};
   _.each(methods, function(method) {
     logger.debug('Setting up HTTP method middleware', method);
 
@@ -188,7 +188,7 @@ exports.map = function(app, routes) {
 
   // now order by path (specific to general)
   // put the routes into order (specific to general)
-  var orderedMappings = possibleMappings.sort(function(a, b) {
+  let orderedMappings = possibleMappings.sort(function(a, b) {
     return a.url < b.url;
   });
 
@@ -199,7 +199,7 @@ exports.map = function(app, routes) {
 
   // add the handlers to routing
   _.each(orderedMappings, function(mapping) {
-    var route = app.route(mapping.url);
+    let route = app.route(mapping.url);
 
     route[mapping.method.toLowerCase()].apply(route, mapping.resolvedMiddleware);
 

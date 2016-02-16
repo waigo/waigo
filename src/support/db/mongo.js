@@ -1,11 +1,10 @@
 "use strict";
 
 
-var debug = require('debug')('waigo-db-mongo'),
-  Robe = require('robe'),
-  Q = require('bluebird');
+const Robe = require('robe');
 
-var waigo = global.waigo,
+
+const waigo = global.waigo,
   _ = waigo._;
 
 
@@ -25,28 +24,26 @@ var _connections = [];
  * @return {Object} db connection.
  */
 exports.create = function*(logger, dbConfig) {
-  debug('create connection');
+  logger.debug('Create db connection');
 
-  var name = dbConfig.name,
+  let name = dbConfig.name,
     hosts = dbConfig.hosts;
 
-  var mongoUrls = _.map(hosts, function(thisHost) {
+  let mongoUrls = _.map(hosts, function(thisHost) {
     // user/passwd
-    var auth = '';
+    let auth = '';
     if (thisHost.user && thisHost.pass) {
       auth = thisHost.user + ':' + thisHost.pass + '@';
     }
 
-    var url = auth + thisHost.host + ':' + thisHost.port + '/' + name;
-
-    debug(url);
+    let url = auth + thisHost.host + ':' + thisHost.port + '/' + name;
 
     return url;
   });
 
   logger.debug('Connecting to Mongo hosts', mongoUrls);
 
-  var db = yield Robe.connect(mongoUrls, {
+  let db = yield Robe.connect(mongoUrls, {
     timeout: dbConfig.connectionTimeoutMs
   });
 
@@ -70,11 +67,15 @@ exports.create = function*(logger, dbConfig) {
 
 /**
  * Shutdown all database connections.
+ *
+ * @param {Object} logger The app logger
  */
-exports.closeAll = function*() {
-  debug('close all connections');
+exports.closeAll = function*(logger) {
+  logger.debug('Close all connections');
 
   yield Q.map(_connections, function(db) {
     return db.close();
   });
 };
+
+
