@@ -1,13 +1,13 @@
 "use strict";
 
-var co = require('co');
-var waigo = module.exports = require('./loader');
+const co = require('co');
+const waigo = module.exports = require('./loader');
 
 
 /**
  * Bootstrap your application.
  *
- * @return {Promise}
+ * @return {Coroutine}
  */
 waigo._bootstrap = function() {
   return co(function*() {

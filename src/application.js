@@ -1,14 +1,13 @@
 "use strict";
 
 
-var debug = require('debug')('waigo-application'),
+const debug = require('debug')('waigo-application'),
   koa = require('koa'),
   log4js = require('log4js'),
   path = require('path'),
-  Q = require('bluebird'),
-  moment = require('moment'),
   waigo = global.waigo,
   _ = waigo._;
+
 
 // underscore mixins
 waigo.load('support/lodashMixins')(_);
@@ -74,7 +73,7 @@ Application.loadConfig = function*(options) {
  * @param {Object} cfg Logger configuration.
  */
 Application.setupLogger = function*(cfg) {
-  var app = Application.app;
+  let app = Application.app;
   
   debug('Setup logging');
 
@@ -108,9 +107,6 @@ Application.setupLogger = function*(cfg) {
 
 
 
-
-
-
 /**
  * Start the Koa application.
  *
@@ -131,14 +127,16 @@ Application.start = function*(options) {
   yield Application.setupLogger(Application.app.config.logging);
 
   // run startup steps
-  for (let idx in Application.app.config.startupSteps) {
-    let stepName = Application.app.config.startupSteps[idx];
+  let app = Application.app;
 
-    debug('Running startup step: ' + stepName);
+  for (stepName of app.config.startupSteps) {
+    app.logger.debug(`Running startup step: ${stepName}`);
     
     /*jshint -W030 */
-    yield waigo.load('support/startup/' + stepName)(Application.app);
+    yield waigo.load(`support/startup/${stepName}`)(Application.app);
   }
+
+  app.logger.info('Startup complete');
 };
 
 
@@ -150,20 +148,19 @@ Application.start = function*(options) {
  * This will reset the internal Koa `app` object.
  */
 Application.shutdown = function*() {
-  // run shutdown steps
-  var shutdownSteps = _.get(Application.app, 'config.shutdownSteps', []);
-  for (let idx in shutdownSteps) {
-    let stepName = shutdownSteps[idx];
+  let app = Application.app;
 
-    debug('Running shutdown step: ' + stepName);
+  // run shutdown steps
+  for (let stepName of app.config.shutdownSteps) {
+    app.logger.debug(`Running shutdown step: ${stepName}`);
 
     /*jshint -W030 */
-    yield waigo.load('support/shutdown/' + stepName)(Application.app);
+    yield waigo.load(`support/shutdown/${stepName}`)(Application.app);
   }
 
-  // prepare the koa app for a restart
-  debug('Resetting koa app');
+  app.logger.info('Shutdown complete');
 
+  // prepare the koa app for a restart
   Application.app = koa();
 };
 

@@ -3,6 +3,9 @@
 
 /**
  * @fileOverview Executable script to bootstrap your app.
+ *
+ * The code in this file must not use ES6 features as it it expected to be 
+ * executed within non-ES6-supporting versions of Node too.
  */
 
 var IS_WAIGO_FRAMEWORK = false;
@@ -13,70 +16,39 @@ try {
 }
 
 
-
-function spawnNodeCluster() {
-  var cluster = require('cluster');
-
-  var numWorkers = parseInt(process.env.WAIGO_WORKERS || 0) 
-    || require('os').cpus().length;
-
-  var _log = function(workerId, msg) {
-    console.log('[worker' + workerId + '] ' + msg);
-  };
-
-  if (cluster.isMaster) {
-    cluster.on('exit', function(worker, code, signal) {
-      _log(worker.id, 'exited: ' + code + ', ' + signal);
-
-      cluster.fork(); // restart
-    });
-
-    // fork workers
-    for (var i = 0; i < numWorkers; i++) {
-      cluster.fork();
-    }
-  } else if (cluster.isWorker) {
-    _log(cluster.worker.id, 'started, pid: ' + cluster.worker.process.pid);
-
-    require(IS_WAIGO_FRAMEWORK ? './' : 'waigo')._bootstrap()
-      .catch(function(err) {
-        console.error(err.stack);
-      });
-  }
-}
-
-
-// if node <0.11 then no can do
+// if < v4 then no can do
 var semver = require('semver');
-if (semver.lt(process.version, '0.12.0')) {
-  throw new Error('Node v0.12.0+ required');
+if (semver.lt(process.version, '4.0.0')) {
+  throw new Error('Node v4.0.0+ required');
 }
 
+var cluster = require('cluster');
 
-// check if ES6 enabled (works for Node 0.11.x and 0.12.x)
-var es6Enabled = false;
-try {
-  require('vm').runInNewContext('var a = function*() {};');
-  es6Enabled = true;
-} catch (err) {
-  es6Enabled = false;
-}
+var numWorkers = parseInt(process.env.WAIGO_WORKERS || 0) 
+  || require('os').cpus().length;
 
-// if ES6 enabled
-if (es6Enabled) {
-  spawnNodeCluster();
-}
-// else run this script again with the --harmony flag
-else {
-  var spawn = require('child_process').spawn;
+var _log = function(workerId, msg) {
+  console.log('[worker' + workerId + '] ' + msg);
+};
 
-  var app = spawn('node', ['--harmony', __filename], {
-    cwd: process.cwd(),
-    env: process.env,
-    stdio: 'inherit',
+if (cluster.isMaster) {
+  cluster.on('exit', function(worker, code, signal) {
+    _log(worker.id, 'exited: ' + code + ', ' + signal);
+
+    cluster.fork(); // restart
   });
 
-  app.on('exit', function (code) {
-    process.exit(code);
-  });
+  // fork workers
+  for (var i = 0; i < numWorkers; i++) {
+    cluster.fork();
+  }
+} else if (cluster.isWorker) {
+  _log(cluster.worker.id, 'started, pid: ' + cluster.worker.process.pid);
+
+  require(IS_WAIGO_FRAMEWORK ? './' : 'waigo')._bootstrap()
+    .catch(function(err) {
+      console.error(err.stack);
+    });
 }
+
+
