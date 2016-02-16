@@ -30,7 +30,7 @@ exports.create = function(config) {
       debug('Template type', ext);
 
       // get locals
-      locals = _.extend({}, this.app.locals, this.locals, locals, {
+      locals = _.extend({}, this.app.templateVars, this.locals, locals, {
         cache: !!config.cache,
         engine: config.engine[ext],
       });

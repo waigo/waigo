@@ -1,16 +1,17 @@
 "use strict";
 
-/**
- * @fileOverview Setup form stuff.
- */
-
 
 var waigo = global.waigo,
   _ = waigo._;
 
 
+/** 
+ * Setup forms.
+ * @param {App} app  The application.
+ */
 module.exports = function*(app) {
-  // Form
+  app.logger.debug('Setting up forms');
+
   app.form = waigo.load('support/forms/form');
 };
 

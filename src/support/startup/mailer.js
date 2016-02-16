@@ -1,9 +1,6 @@
 "use strict";
 
-var debug = require('debug')('waigo-startup-mailer');
-
-
-var waigo = global.waigo,
+const waigo = global.waigo,
   _ = waigo._;
 
 
@@ -18,12 +15,11 @@ var waigo = global.waigo,
  * @param {Object} app The application.
  */
 module.exports = function*(app) {
-  var mailerConfig = app.config.mailer;
+  let mailerConfig = _.get(app.config, 'mailer', {});
 
-  // load in the mailer implementation
-  var mailer = waigo.load('support/mailer/' + mailerConfig.type);
+  app.logger.debug(`Initializing mailer: ${mailerConfig.type}`);
 
-  app.logger.debug('Initializing mailer: ' + mailerConfig.type);
+  let mailer = waigo.load(`support/mailer/${mailerConfig.type}`);
 
   app.mailer = yield mailer.create(app, mailerConfig);
 };

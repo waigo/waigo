@@ -1,11 +1,10 @@
 "use strict";
 
 
+const path = require('path'),
+  Robe = require('robe');
 
-var debug = require('debug')('waigo-startup-models'),
-  path = require('path'),
-  Robe = require('robe'),
-  waigo = global.waigo,
+const waigo = global.waigo,
   _ = waigo._,
   viewObjects = waigo.load('support/viewObjects');
 
@@ -17,28 +16,27 @@ var debug = require('debug')('waigo-startup-models'),
  * @param {Object} app The application.
  */
 module.exports = function*(app) {
-  debug('Loading');
+  app.logger.debug('Loading models');
 
-  var modelModuleFiles = waigo.getFilesInFolder('models');
+  let modelModuleFiles = waigo.getFilesInFolder('models');
 
   app.models = {};
 
-  for (let _i in modelModuleFiles) {
-    let modulePath = modelModuleFiles[_i];
+  for (let modulePath of modelModuleFiles) {
+    app.logger.debug(`Loading ${modulePath}`);
 
-    debug('Loading ' + modulePath);
+    let moduleFileName = path.basename(modulePath, path.extname(modulePath));
 
-    var moduleFileName = path.basename(modulePath, path.extname(modulePath));
+    let modelInfo = waigo.load(modulePath);
 
-    var modelInfo = waigo.load(modulePath);
-
-    var name = modelInfo.className || _.capitalize(moduleFileName),
+    let name = modelInfo.className || _.capitalize(moduleFileName),
       dbName = modelInfo.db || 'main',
       collectionName = modelInfo.collection || _.pluralize(name).toLowerCase();
     
     // add view object docMethod (but can be overridden for each model)
-    var colMethods = modelInfo.methods || {},
+    let colMethods = modelInfo.methods || {},
       docMethods = {};
+
     docMethods[viewObject.METHOD_NAME] = function*(ctx) {
       return this.toJSON();
     };
@@ -59,12 +57,13 @@ module.exports = function*(app) {
 
     // create model instance
     let Model = app.dbs[dbName].collection(collectionName, modelInfo);
+
     app.models[name] = Model;
 
     app.logger.debug('Added model', name, dbName  + '/' + collectionName);
 
     // ensure indexes are created
-    debug('Ensure indexes', dbName, collectionName);
+    app.logger.debug('Ensure indexes', dbName, collectionName);
 
     yield Model.ensureIndexes();
   }

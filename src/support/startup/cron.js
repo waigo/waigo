@@ -1,34 +1,37 @@
 "use strict";
 
-var path = require('path');
+const path = require('path');
 
-var waigo = global.waigo,
+const waigo = global.waigo,
   _ = waigo._;
 
 
 
 /**
- * Setup cron jobs.
+ * Setup cron system.
+ *
+ * @param {Object} app The application.
  */
 module.exports = function*(app) {
-  var logger = app.logger.create('Cron');
+  logger.info(`Setting up cron`);
+
+  let logger = app.logger.create('Cron');
   
   app.cron = {};
 
-  var cronTasks = waigo.getFilesInFolder('support/cronTasks');
+  let cronTasks = waigo.getFilesInFolder('support/cronTasks');
 
-  logger.info('Setting up cron: ' + cronTasks.length + ' tasks');
+  logger.info(`${cronTasks.length} cron tasks found`);
 
-  for (let i=0; cronTasks.length > i; ++i) {
-    let modulePath = cronTasks[i];
+  for (modulePath of cronTasks) {
+    let name = path.basename(modulePath, path.extname(modulePath));
 
-    var name = path.basename(modulePath, path.extname(modulePath));
+    logger.debug(`Adding cron task: ${name}`);
 
-    logger.debug('Adding cron task: ' + name);
+    let job = waigo.load(modulePath);
 
-    var job = waigo.load(modulePath);
-
-    app.cron[name] = yield app.models.Cron.create(name, job.schedule, job.handler);
+    app.cron[name] = 
+      yield app.models.Cron.create(name, job.schedule, job.handler);
   }
 };
 

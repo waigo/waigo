@@ -1,15 +1,12 @@
 "use strict";
 
-/**
- * @fileOverview Setup static resources.
- */
+const path = require('path'),
+  shell = require('shelljs');
 
 
-var waigo = global.waigo,
+const waigo = global.waigo,
   _ = waigo._;
 
-var path = require('path'),
-  shell = require('shelljs');
 
 
 
@@ -17,19 +14,18 @@ var path = require('path'),
  * Copy all built static resources from plugin and core framework folders into 
  * app's folder. And also setup static resource URL helper.
  *
- * This must be preceded by `globalHelpers` startup step.
- *
  * @param {Object} app The application.
- * @param {Object} [app.config.staticResources.folder] Path to static resources folder.
  */
 module.exports = function*(app) {
-  var logger = app.logger.create('StaticResources');
+  app.logger.debug('Copying static reources into public folder');
+
+  let logger = app.logger.create('StaticResources');
   
-  var tmpFolder = path.join(shell.tempdir(), 'waigo-app-' + Date.now());
+  let tmpFolder = path.join(shell.tempdir(), 'waigo-app-' + Date.now());
 
   logger.debug('Copy static resources into', tmpFolder);
 
-  var sources = waigo.getSources();
+  let sources = waigo.getSources();
 
   for (let key in sources) {
     // skip app's own

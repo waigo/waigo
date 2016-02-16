@@ -1,6 +1,5 @@
 "use strict";
 
-const util = require('util');
 
 const waigo = global.waigo,
   _ = waigo._,
@@ -36,7 +35,7 @@ Error.prototype[viewObject.METHOD_NAME] = function*(ctx) {
  * Use this in preference to `Error` where possible as it provides for more 
  * descriptive output. 
  */
-export class RuntimeError extends Error {
+class RuntimeError extends Error {
   /**
    * Constructor.
    *
@@ -53,6 +52,7 @@ export class RuntimeError extends Error {
     Error.captureStackTrace(this, this.constructor);
   }
 }
+exports.RuntimeError = RuntimeError;
 
 
 
@@ -84,7 +84,7 @@ RuntimeError.prototype[viewObject.METHOD_NAME] = function*(ctx) {
  * Sometimes we may wish to report multiple related errors (e.g. form field 
  * validation failures). This error class makes it easy to do so.
  */
-export class MultipleError {
+class MultipleError {
   /**
    * Constructor.
    *
@@ -96,6 +96,7 @@ export class MultipleError {
     super(msg, status, subErrors);
   }
 }
+exports.MultipleError = MultipleError;
 
 
 
@@ -139,12 +140,14 @@ MultipleError.prototype[viewObject.METHOD_NAME] = function*(ctx) {
  * @return {Class} The new error class.
  */
 exports.define = function(newClassName, baseClass = RuntimeError) {
-  let newErrorClass = function() {
-    (baseClass).apply(this, arguments);
-    this.name = newClassName;
-    Error.captureStackTrace(this, newErrorClass);
+  let newErrorClass = new Class extends baseClass {
+    construct(msg, status, details) {
+      super(msg, status, details);
+      this.name = newClassName;
+      Error.captureStackTrace(this, newErrorClass);
+    }
   };
-  util.inherits(newErrorClass, baseClass);
+
   return newErrorClass;
 };
 

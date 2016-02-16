@@ -1,7 +1,6 @@
 "use strict";
 
-var debug = require('debug')('waigo-startup-activities'),
-  waigo = global.waigo,
+const waigo = global.waigo,
   _ = waigo._;
 
 
@@ -16,7 +15,7 @@ var debug = require('debug')('waigo-startup-activities'),
  * @param {Object} app The application.
  */
 module.exports = function*(app) {
-  debug('Setting up Activity recorder');
+  app.logger.debug('Setting up Activity recorder');
 
   /**
    * Record an activity.
@@ -41,7 +40,7 @@ module.exports = function*(app) {
       }
     }
 
-    var qry = {
+    let qry = {
      verb: verb,
      actor: actor,
      published: new Date(), 

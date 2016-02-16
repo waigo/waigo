@@ -1,24 +1,22 @@
 "use strict";
 
 
-var debug = require('debug')('waigo-startup-middleware'),
-  waigo = global.waigo;
+var waigo = global.waigo;
 
 
 /**
  * Setup middleware common to all requests.
  *
  * @param {Object} app The application.
- * @param {Array} app.config.middleware Names of middleware to initialise.
  */
 module.exports = function*(app) {
-  for (let idx in app.config.middleware.ALL._order) {
-    let m = app.config.middleware.ALL._order[idx];
+  app.logger.debug('Setting up common middleware');
 
-    debug('Setting up middleware: ' + m);
+  for (let m of app.config.middleware.ALL._order) {
+    app.logger.debug(`Loading middleware: ${m}`);
 
-    app.use(waigo.load('support/middleware/' + m)(
-      app.config.middleware.ALL[m] || {}
+    app.use(waigo.load(`support/middleware/${m}`)(
+      _.get(app.config.middleware.ALL[m] || {}
     ));
   }
 };

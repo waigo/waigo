@@ -1,8 +1,7 @@
 "use strict";
 
 
-var debug = require('debug')('waigo-shutdown-database'),
-  waigo = global.waigo,
+const waigo = global.waigo,
   _ = waigo._;
 
 
@@ -13,9 +12,9 @@ var debug = require('debug')('waigo-shutdown-database'),
  * @param {Object} app The application.
  */
 module.exports = function*(app) {
-  debug('Shutting down database connections');
+  app.logger.debug('Shutting down database connections');
 
-  var dbAdapters = waigo.getFilesInFolder('support/db');
+  let dbAdapters = waigo.getFilesInFolder('support/db');
 
   yield _.map(dbAdapters, function(adapter) {
     return waigo.load(adapter).closeAll();

@@ -1,11 +1,6 @@
 "use strict";
 
 
-var debug = require('debug')('waigo-shutdown-listener'),
-  Q = require('bluebird'),
-  waigo = global.waigo;
-
-
 
 /**
  * Shutdown the HTTP server.
@@ -14,9 +9,17 @@ var debug = require('debug')('waigo-shutdown-listener'),
  */
 module.exports = function*(app) {
   if (app.server) {
-    debug('Shutting down HTTP server');
-    
-    yield Q.promisify(app.server.close, app.server)();
+    app.logger.debug('Shutting down HTTP server');
+
+    yield new Promise(function(resolve, reject) {
+      app.server.close(function(err) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      })
+    });
   } 
 };
 

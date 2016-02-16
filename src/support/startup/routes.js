@@ -1,17 +1,16 @@
 "use strict";
 
 
-var debug = require('debug')('waigo-startup-routes'),
-  queryString = require('query-string');
+const queryString = require('query-string');
 
-
-var waigo = global.waigo,
+const waigo = global.waigo,
   _ = waigo._;
 
 
 
 /** 
  * Build URL to given route.
+ * 
  * @param  {App} app         The app.
  * @param  {String} routeName   Name of route.
  * @param  {Object} [urlParams]   URL params for route.

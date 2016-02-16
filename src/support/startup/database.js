@@ -1,13 +1,13 @@
 "use strict";
 
 
-var waigo = global.waigo,
+const waigo = global.waigo,
   _ = waigo._;
 
 
 
 /**
- * Setup database connection.
+ * Setup database connections.
  *
  * Upon completion:
  * 
@@ -15,26 +15,30 @@ var waigo = global.waigo,
  * * `app.db` will be an alias for `app.dbs.main`.
  * 
  * @param {Object} app The application.
- * @param {Object} [app.config.db] Database configuration.
  */
 module.exports = function*(app) {
+  app.logger.info(`Setting up database connections`);
+
   app.dbs = {};
 
-  var ids = _.keys(app.config.db || {});
+  let ids = _.keys(app.config.db || {});
 
-  for (let i=0; ids.length > i; ++i) {
-    let id = ids[i],
-      cfg = app.config.db[id];
+  for (let id of ids) {
+    app.logger.debug(`Setting up db: ${id}`);
 
-    app.logger.debug('Setting up database connection: ' + id);
+    let cfg = _.get(app.config.db, id);
+
+    if (!cfg) {
+      throw new Error(`Unable to find configuration for database: ${id}`);
+    }
     
-    var builder = waigo.load('support/db/' + cfg.type);
+    let builder = waigo.load(`support/db/${cfg.type}`);
 
     app.dbs[id] = yield builder.create(app.logger, cfg);
   }
 
   // for convenience
-  app.db = app.dbs.main;
+  app.db = _.get(app.dbs, 'main');
 };
 
 
