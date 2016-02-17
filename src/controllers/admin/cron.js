@@ -1,6 +1,6 @@
 "use strict";
 
-var waigo = global.waigo,
+const waigo = global.waigo,
   _ = waigo._;
 
 
@@ -15,9 +15,9 @@ exports.index = function*() {
 
 
 exports.run = function*() {
-  var name = this.request.body.name;
+  let name = this.request.body.name;
 
-  var task = this.app.cron[name];
+  let task = this.app.cron[name];
 
   yield task.runNow();
 
@@ -30,12 +30,12 @@ exports.run = function*() {
 
 
 exports.updateStatus = function*() {
-  var name = this.request.body.name,
+  let name = this.request.body.name,
     active = this.request.body.active;
 
   active = ('true' === ('' + active));
 
-  var task = this.app.cron[name];
+  let task = this.app.cron[name];
 
   yield task.setActive(active);
 

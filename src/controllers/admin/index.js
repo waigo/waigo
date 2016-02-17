@@ -1,7 +1,7 @@
 "use strict";
 
 
-var waigo = global.waigo,
+const waigo = global.waigo,
   _ = waigo._;
 
 
@@ -9,9 +9,9 @@ var waigo = global.waigo,
  * Middleware method to configure menu for rendering.
  */
 exports.configureMenu = function*(next) {
-  var user = this.currentUser;
+  let user = this.currentUser;
 
-  var menu = this.app.config.adminMenu,
+  let menu = this.app.config.adminMenu,
     finalMenu = [];
 
   for (let item, i=0; menu.length>i; ++i) {

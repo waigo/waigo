@@ -1,12 +1,12 @@
 "use strict";
 
-var waigo = global.waigo,
+const waigo = global.waigo,
   _ = waigo._;
 
 
 
 exports.index = function*() {
-  var routes = this.app.routes.all;
+  let routes = this.app.routes.all;
 
   yield this.render('admin/routes', {
     routes: _.map(routes, function(route) {

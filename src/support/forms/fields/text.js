@@ -1,23 +1,28 @@
 "use strict";
 
-var util = require('util'),
-  waigo = global.waigo,
-  _ = waigo._;
-
-
-var Field = waigo.load('support/forms/field').Field;
+const waigo = global.waigo,
+  _ = waigo._,
+  Field = waigo.load('support/forms/field').Field;
 
 
 
 
 /**
  * A text field.
- * @constructor
  */
-var Text = exports.Field = function() {
-  Text.super_.apply(this, _.toArray(arguments));
-};
-util.inherits(Text, Field);
+class Text extends Field {
+  /**
+   * Construct.
+   * @param  {Form} form   Parent form
+   * @param  {Object} config Configuration options
+   * @constructor
+   */
+  constructor (form, config) {
+    super(form, config);
+  }
+}
 
+
+module.exports = Text;
 
 

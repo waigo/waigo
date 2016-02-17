@@ -1,6 +1,6 @@
 "use strict";
 
-var validator = require('validator');
+const validator = require('validator');
 
 
 
@@ -13,9 +13,7 @@ var validator = require('validator');
  * 
  * @throws Error If not an email address.
  */
-module.exports = function(options) {
-  options = options || {};
-
+module.exports = function(options = {}) {
   return function*(context, field, value) {
     options.min = options.min || 0;
     options.max = options.max || 10000000;

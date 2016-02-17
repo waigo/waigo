@@ -1,15 +1,18 @@
 "use strict";
 
-var co = require('co'),
+const co = require('co'),
   CronJob = require('cron').CronJob;
 
-var waigo = global.waigo,
+const waigo = global.waigo,
   _ = waigo._,
   viewObjects = waigo.load('support/viewObjects');
 
 
+const $EXTRA = Symbol('cron extra data');
 
-var LastRunSchema = {
+
+
+const LastRunSchema = {
   when: {
     type: Date,
     required: true,
@@ -63,18 +66,18 @@ module.exports = {
      * @return {Cron} new Cron instance.
      */
     create: function*(name, crontab, handler) {
-      var cron = yield this.findOne({
+      let cron = yield this.findOne({
         name: name
       });
 
       if (!cron) {
-        var cron = yield this.insert({
+        let cron = yield this.insert({
           name: name,
           disabled: false,
         });
       }
 
-      cron.__extra = {
+      cron[$EXTRA] = {
         logger: this.getApp().logger.create('Cron:' + name + ':' + process.pid),
         handler: handler,
       };
@@ -84,10 +87,10 @@ module.exports = {
 
       // override view object method
       cron[viewObject.METHOD_NAME] = function*(ctx) {
-        var json = this.toJSON();
+        let json = this.toJSON();
 
         json.schedule = crontab;
-        json.nextRun = cron.__extra.job.nextDate().toDate();
+        json.nextRun = cron[$EXTRA].job.nextDate().toDate();
 
         return json;
       };
@@ -100,7 +103,7 @@ module.exports = {
      * Start the cron scheduler for this job.
      */
     startScheduler: function(crontab) {
-      var _config = this.__extra;
+      let _config = this[$EXTRA];
       
       _config.logger.info('Setting up cron schedule ' + crontab);
 
@@ -114,16 +117,17 @@ module.exports = {
       
       // we add 1 second to next date otherwise, _getNextDateFrom() returns 
       // the same date back
-      var nextRunDate = _config.job.nextDate().add(1, 'seconds');
+      let nextRunDate = _config.job.nextDate().add(1, 'seconds');
 
-      _config.timeBetweenRunsMs = _config.job.cronTime._getNextDateFrom(nextRunDate).valueOf() - nextRunDate.valueOf();
+      _config.timeBetweenRunsMs = 
+        _config.job.cronTime._getNextDateFrom(nextRunDate).valueOf() - nextRunDate.valueOf();
     },
     /**
      * Callback for cron job when task needs to run.
      * @return {[type]} [description]
      */
     _cronCallback: function*() {
-      var _config = this.__extra;
+      let _config = this[$EXTRA];
 
       _config.logger.info('Starting scheduled run');
 
@@ -142,7 +146,7 @@ module.exports = {
          */
         
         // first we check to see that it wasn't run recently
-        var timeSinceLastRunMs = Date.now() - 
+        let timeSinceLastRunMs = Date.now() - 
           (this.lastRun ? this.lastRun.when.getTime() : 0);
 
         if (timeSinceLastRunMs < _config.timeBetweenRunsMs) {
@@ -150,7 +154,7 @@ module.exports = {
         }
 
         // try updating doc (with update guard)
-        var result = yield this.__col.update({
+        let result = yield this.__col.update({
           _id: this._id,
           'lastRun.when': _.get(this.lastRun, 'when'),
           'lastRun.by': _.get(this.lastRun, 'by'),
@@ -181,18 +185,18 @@ module.exports = {
      * @param {Object} [ctx] Request context (if available).
      */
     runNow: function*(ctx) {
-      var _config = this.__extra;
+      let _config = this[$EXTRA];
 
-      var runByUser = _.get(ctx, 'currentUser._id', '');
+      let runByUser = _.get(ctx, 'currentUser._id', '');
 
       _config.logger.debug('Running task (user: ' + runByUser + ')');
 
       try {
-        var start = Date.now();
+        let start = Date.now();
 
         yield _config.handler(this.getApp());
 
-        var duration = Date.now() - start;
+        let duration = Date.now() - start;
 
         _config.logger.info('Run complete: ' + duration + ' ms');
 
@@ -216,7 +220,7 @@ module.exports = {
      * Set schedule status of this task.
      */
     setActive: function*(active) {
-      var _config = this.__extra;
+      let _config = this[$EXTRA];
 
       _config.logger.debug('Set active: ' + active);
 

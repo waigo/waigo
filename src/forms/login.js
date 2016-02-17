@@ -1,9 +1,11 @@
 "use strict";
 
 
-var waigo = global.waigo,
+const waigo = global.waigo,
   _ = waigo._,
-  RuntimeError = waigo.load('support/errors').RuntimeError;
+  errors = waigo.load('support/errors');
+
+const LoginError = errors.define('LoginError');
 
 
 module.exports = {
@@ -33,10 +35,10 @@ module.exports = {
   method: 'POST',
   postValidation: [
     function* checkUserCredentials(next) {
-      var User = this.context.app.models.User;
+      let User = this.context.app.models.User;
 
       // load user
-      var user = yield User.findOne({
+      let user = yield User.findOne({
         $or: [
           {
             username: this.fields.email.value,
@@ -55,7 +57,7 @@ module.exports = {
       // check user and password
       if (!user 
           || !(yield user.isPasswordCorrect(this.fields.password.value)) ) {
-        throw new RuntimeError('Incorrect username or password', 400);
+        throw new LoginError('Incorrect username or password', 400);
       }
 
       // log the user in

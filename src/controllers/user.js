@@ -13,9 +13,9 @@ exports.logout = function*() {
 
 
 exports.login = function*() {
-  var reason = this.request.query.r || null;
+  let reason = this.request.query.r || null;
 
-  var form = yield this.form.create('login', {
+  let form = yield this.form.create('login', {
     context: this
   });
   form.fields.postLoginUrl.value = this.request.query.u || '/';
@@ -34,7 +34,7 @@ exports.login = function*() {
 exports.login_submit = function*() {
   this.logger.debug('Logging in');
 
-  var form = yield this.form.create('login', {
+  let form = yield this.form.create('login', {
     context: this
   });
 
@@ -60,13 +60,13 @@ exports.login_submit = function*() {
 
 
 exports.register = function*() {
-  var form = yield this.form.create('register', {
+  let form = yield this.form.create('register', {
     context: this
   });
 
   this.logger.debug('Register');
 
-  var adminUserExists = yield this.models.User.haveAdminUsers();
+  let adminUserExists = yield this.models.User.haveAdminUsers();
 
   yield this.render('user/register', {
     form: form,
@@ -79,12 +79,12 @@ exports.register = function*() {
 exports.register_submit = function*() {
   this.logger.debug('Registering user');
 
-  var form = yield this.form.create('register', {
+  let form = yield this.form.create('register', {
     context: this,
     submitted: true,
   });
 
-  var adminUserExists = yield this.models.User.haveAdminUsers();
+  let adminUserExists = yield this.models.User.haveAdminUsers();
 
   try {
     yield form.process();
@@ -108,7 +108,7 @@ exports.register_submit = function*() {
 
 
 exports.verify_email = function*() {
-  var action = yield this.app.actionTokens.process(
+  let action = yield this.app.actionTokens.process(
     this.request.query.c, {
       type: 'verify_email'
     }
@@ -132,7 +132,7 @@ exports.verify_email = function*() {
 
 
 exports.forgot_password = function*() {
-  var form = yield this.form.create('forgotPassword', {
+  let form = yield this.form.create('forgotPassword', {
     context: this
   });
 
@@ -145,7 +145,7 @@ exports.forgot_password = function*() {
 
 
 exports.forgot_password_submit = function*() {
-  var form = yield this.form.create('forgotPassword', {
+  let form = yield this.form.create('forgotPassword', {
     context: this
   });
 
@@ -173,7 +173,7 @@ exports.forgot_password_submit = function*() {
 
 
 exports.reset_password = function*() {
-  var action = yield this.app.actionTokens.process(
+  let action = yield this.app.actionTokens.process(
     this.request.query.c, {
       type: 'reset_password'
     }
@@ -184,7 +184,7 @@ exports.reset_password = function*() {
 
   this.logger.debug('Reset password', action.user._id);
 
-  var form = yield this.form.create('resetPassword', {
+  let form = yield this.form.create('resetPassword', {
     context: this
   });
 
@@ -198,7 +198,7 @@ exports.reset_password = function*() {
 exports.reset_password_submit = function*() {
   this.logger.debug('Resetting password');
 
-  var form = yield this.form.create('resetPassword', {
+  let form = yield this.form.create('resetPassword', {
     context: this
   });
 

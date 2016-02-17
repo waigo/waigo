@@ -1,7 +1,6 @@
 "use strict";
 
-var validator = require('validator');
-
+const validator = require('validator');
 
 
 
@@ -12,7 +11,7 @@ var validator = require('validator');
  */
 module.exports = function() {
   return function*(context, field, value) {
-    var numUsers = yield context.app.models.User.count({
+    let numUsers = yield context.app.models.User.count({
       'emails.email': value
     });
 

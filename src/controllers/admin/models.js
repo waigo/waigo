@@ -1,9 +1,9 @@
 "use strict";
 
-var toObjectID = require('robe').Utils.toObjectID;
+const toObjectID = require('robe').Utils.toObjectID;
 
 
-var waigo = global.waigo,
+const waigo = global.waigo,
   _ = waigo._;
 
 
@@ -18,17 +18,17 @@ exports.index = function*() {
 
 
 exports.columns = function*() {
-  var modelName = this.request.query.name;
+  let modelName = this.request.query.name;
 
   this.logger.debug('get columns', modelName);
 
   // iterate through schema
-  var model = this.models[modelName],
+  let model = this.models[modelName],
     schema = _.get(model, 'options.schema', {}),
     listViewColumns = _.get(model, 'options.admin.listView', []);
 
   // return columns as array of objects, each object defining column properties
-  var columns = listViewColumns.map(function(c) {
+  let columns = listViewColumns.map(function(c) {
     if (!c.name) {
       c = {
         name: c
@@ -48,7 +48,7 @@ exports.columns = function*() {
 
 
 exports.rows = function*() {
-  var modelName = this.request.body.name,
+  let modelName = this.request.body.name,
     filter = JSON.parse(this.request.body.filter),
     excludeIds = JSON.parse(this.request.body.excludeIds),
     sort = JSON.parse(this.request.body.sort),
@@ -57,7 +57,7 @@ exports.rows = function*() {
 
   this.logger.debug('get rows', modelName);
 
-  var model = this.models[modelName],
+  let model = this.models[modelName],
     listViewColumns = _.get(model, 'options.admin.listView');
 
   if (!model) {
@@ -65,9 +65,9 @@ exports.rows = function*() {
   }
 
   // [a,b,c] => {a:1, b:1, c:1}
-  var fieldsToInclude = {};
+  let fieldsToInclude = {};
   _.each(listViewColumns, function(c) {
-    var name = c.name || c;
+    let name = c.name || c;
 
     fieldsToInclude[name] = 1;
   });
@@ -89,10 +89,10 @@ exports.rows = function*() {
   }
 
   // get count
-  var count = yield model.count(filter);
+  let count = yield model.count(filter);
 
   // get data
-  var rows = yield model.find(filter, {
+  let rows = yield model.find(filter, {
     fields: fieldsToInclude,
     sort: sort,
     limit: limit,
@@ -108,15 +108,15 @@ exports.rows = function*() {
 
 
 exports.doc = function*() {
-  var modelName = this.request.query.name,
+  let modelName = this.request.query.name,
     rowId = this.request.query.id;
 
   this.logger.debug('get doc', modelName, rowId);
 
-  var model = this.models[modelName];
+  let model = this.models[modelName];
 
   // get data
-  var row = yield model.findOne({
+  let row = yield model.findOne({
     _id: rowId
   });
 
@@ -129,11 +129,11 @@ exports.doc = function*() {
 
 
 exports.docCreate = function*() {
-  var modelName = this.request.query.name;
+  let modelName = this.request.query.name;
 
   this.logger.debug('create doc', modelName);
 
-  var doc = JSON.parse(this.request.body.doc);
+  let doc = JSON.parse(this.request.body.doc);
 
   if (_.isEmpty(doc)) {
     this.throw('Cannot create an empty document', 403);
@@ -144,12 +144,12 @@ exports.docCreate = function*() {
     this.throw('Cannot override _id', 403);
   }
 
-  var model = this.models[modelName];
+  let model = this.models[modelName];
 
   doc = model.schema.typeify(doc);
 
   // update data
-  var newDoc = yield model.insert(doc);
+  let newDoc = yield model.insert(doc);
 
   // record activity
   yield this.app.record('insert_doc', this.currentUser, {
@@ -167,12 +167,12 @@ exports.docCreate = function*() {
 
 
 exports.docUpdate = function*() {
-  var modelName = this.request.query.name,
+  let modelName = this.request.query.name,
     rowId = this.request.query.id;
 
   this.logger.debug('update doc', modelName, rowId);
 
-  var doc = JSON.parse(this.request.body.doc);
+  let doc = JSON.parse(this.request.body.doc);
 
   if (_.isEmpty(doc)) {
     this.throw('Cannot update to an empty document', 403);
@@ -181,7 +181,7 @@ exports.docUpdate = function*() {
   // don't allow _id to be updated
   delete doc._id;
 
-  var model = this.models[modelName];
+  let model = this.models[modelName];
 
   doc = model.schema.typeify(doc);
 
@@ -205,12 +205,12 @@ exports.docUpdate = function*() {
 
 
 exports.docDelete = function*() {
-  var modelName = this.request.query.name,
+  let modelName = this.request.query.name,
     rowId = this.request.query.id;
 
   this.logger.debug('delete doc', modelName, rowId);
 
-  var model = this.models[modelName];
+  let model = this.models[modelName];
 
   // delete data
   yield model.remove({

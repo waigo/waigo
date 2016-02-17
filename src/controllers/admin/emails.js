@@ -1,7 +1,7 @@
 "use strict";
 
 
-var toObjectID = require('robe').Utils.toObjectID;
+const toObjectID = require('robe').Utils.toObjectID;
 
 
 
@@ -12,13 +12,13 @@ exports.index = function*() {
 
 
 exports.render = function*() {
-  var body = this.request.body.body,
+  let body = this.request.body.body,
     subject = this.request.body.subject,
     userId = this.request.body.user;
 
   this.app.logger.debug('Render email template');
 
-  var user = yield this.app.models.User.findOne({
+  let user = yield this.app.models.User.findOne({
     _id: userId
   });
 
@@ -26,7 +26,7 @@ exports.render = function*() {
     this.throw('User not found', 404);
   }
 
-  var output = yield this.app.mailer.render({
+  let output = yield this.app.mailer.render({
     to: user,
     subject: subject,
     body: body,
@@ -40,13 +40,13 @@ exports.render = function*() {
 
 
 exports.send = function*() {
-  var body = this.request.body.body,
+  let body = this.request.body.body,
     subject = this.request.body.subject,
     userIds = this.request.body.users;
 
   this.app.logger.debug('Send email to users', userIds);
 
-  var users = yield this.app.models.User.find({
+  let users = yield this.app.models.User.find({
     _id: {
       $in: userIds.map(function(v) {
         return toObjectID(v);

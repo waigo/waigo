@@ -15,7 +15,7 @@
  */
 module.exports = function(options) {
   return function*(context, field, value) {
-    var fields = field.form.fields,
+    let fields = field.form.fields,
       otherField = fields[options.field]
 
     if (!otherField) {

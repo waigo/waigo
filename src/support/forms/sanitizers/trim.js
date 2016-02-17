@@ -1,6 +1,6 @@
 "use strict";
 
-var validatorSanitizer = require('validator');
+const validatorSanitizer = require('validator');
 
 
 /**

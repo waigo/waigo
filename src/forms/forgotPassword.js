@@ -1,9 +1,12 @@
 "use strict";
 
 
-var waigo = global.waigo,
+const waigo = global.waigo,
   _ = waigo._,
-  RuntimeError = waigo.load('support/errors').RuntimeError;
+  errors = waigo.load('support/errors');
+
+
+const ForgotPasswordError = errors.define('ForgotPasswordError');
 
 
 module.exports = {
@@ -20,12 +23,12 @@ module.exports = {
   method: 'POST',
   postValidation: [
     function* sendResetPasswordEmail(next) {
-      var app = this.context.app;
+      let app = this.context.app;
 
-      var User = app.models.User;
+      let User = app.models.User;
 
       // load user
-      var user = yield User.findOne({
+      let user = yield User.findOne({
         $or: [
           {
             username: this.fields.email.value,
@@ -44,11 +47,11 @@ module.exports = {
       });
 
       if (!user) {
-        throw new RuntimeError('User not found', 404);
+        throw new ForgotPasswordError('User not found', 404);
       }
 
       // action
-      var token = yield app.actionTokens.create('reset_password', user);
+      let token = yield app.actionTokens.create('reset_password', user);
 
       app.logger.debug('Reset password token for ' + user._id , token);
 

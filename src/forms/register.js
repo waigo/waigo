@@ -1,8 +1,9 @@
 "use strict";
 
 
-var waigo = global.waigo,
+const waigo = global.waigo,
   _ = waigo._;
+
 
 
 module.exports = {
@@ -27,17 +28,17 @@ module.exports = {
   method: 'POST',
   postValidation: [
     function* createUserAndLogin(next) {
-      var app = this.context.app,
+      let app = this.context.app,
         User = app.models.User;
 
       // check if there's an admin user
-      var adminUserExists = yield User.haveAdminUsers(),
+      let adminUserExists = yield User.haveAdminUsers(),
         roles = (adminUserExists ? [] : ['admin']);
 
       app.logger.info('Registering user', this.fields.email.value, roles);
 
       // create user
-      var user = yield User.register({
+      let user = yield User.register({
         email: this.fields.email.value,
         password: this.fields.password.value,
         roles: roles
@@ -47,7 +48,7 @@ module.exports = {
       yield user.login(this.context);
 
       // send confirmation email
-      var token = yield app.actionTokens.create('verify_email', user, {
+      let token = yield app.actionTokens.create('verify_email', user, {
         email: this.fields.email.value,
       });
       

@@ -1,4 +1,7 @@
- module.exports = { 
+"use strict";
+
+
+module.exports = { 
   '/admin': {
     pre: [
       { 

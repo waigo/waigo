@@ -1,8 +1,9 @@
 "use strict";
 
 
-var waigo = global.waigo,
+const waigo = global.waigo,
   _ = waigo._;
+
 
 
 module.exports = {
@@ -31,7 +32,7 @@ module.exports = {
   method: 'POST',
   postValidation: [
     function* updateUserPassword(next) {
-      var app = this.context.app,
+      let app = this.context.app,
         user = this.context.currentUser;
 
       app.logger.info('Resetting user password', user._id);
@@ -42,7 +43,7 @@ module.exports = {
       yield next;
     },
     function* emailUser(next) {
-      var app = this.context.app,
+      let app = this.context.app,
         user = this.context.currentUser;
 
       yield app.mailer.send({

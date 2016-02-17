@@ -1,29 +1,39 @@
 "use strict";
 
-var crypto = require('crypto'),
-  Q = require('bluebird');
+const crypto = require('crypto');
 
-var waigo = global.waigo,
+const waigo = global.waigo,
   _ = waigo._,
-  UserError = waigo.load('support/errors').define('UserError');
+  errors = waigo.load('support/errors');
+
+const UserError = errors.define('UserError');
 
 
-var randomBytesQ = Q.promisify(crypto.pseudoRandomBytes);
+function randomBytesQ(numBytes) {
+  return new Promise((resolve, reject) => {
+    crypto.pseudoRandomBytes(numBytes, (err, val) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(val);
+      }
+    });
+  });
+}
 
 
-
-var ProfileSchema = {
+const ProfileSchema = {
   displayName: { type: String, required: true },
 };
 
 
-var EmailSchema = {
+const EmailSchema = {
   email: { type: String, required: true },
   verified: { type: Boolean },
 };
 
 
-var AuthSchema = {
+const AuthSchema = {
   type: { type: String, required: true },
   token: { type: String, required: true },
   data: { type: Object },
@@ -126,7 +136,7 @@ module.exports = {
      * @return {String} hash to store
      */
     generatePasswordHash: function*(password, salt) {
-      var hash = crypto.createHash('sha256');
+      let hash = crypto.createHash('sha256');
 
       salt = salt || (yield randomBytesQ(64)).toString('hex');
       hash.update(salt);
@@ -144,7 +154,7 @@ module.exports = {
      */
     register: function*(properties) {
       // create user
-      var user = yield this.insert({
+      let user = yield this.insert({
         username: properties.email,
         profile: _.extend({
           displayName: properties.email,
@@ -174,7 +184,7 @@ module.exports = {
       return user;
     },
     loadLoggedIn: function*(context) {
-      var userId = _.get(context, 'session.user._id');
+      let userId = _.get(context, 'session.user._id');
 
       if (!userId) {
         return null;
@@ -190,7 +200,7 @@ module.exports = {
      * Get whether user has any of  given roles
      */
     isOneOf: function() {
-      var roles = _.toArray(arguments);
+      let roles = _.toArray(arguments);
       
       return !! (_.intersection(this.roles || [], roles).length);
     },
@@ -201,7 +211,7 @@ module.exports = {
      * @return {Boolean} true if password matches, false otherwise
      */
     isPasswordCorrect: function*(password) {
-      var passAuth = _.find(this.auth, function(a) {
+      let passAuth = _.find(this.auth, function(a) {
         return 'password' === a.type;
       });
 
@@ -209,11 +219,11 @@ module.exports = {
         return false;
       }
 
-      var sepPos = passAuth.token.indexOf('-'),
+      let sepPos = passAuth.token.indexOf('-'),
         salt = passAuth.token.substr(0, sepPos),
         hash = passAuth.token.substr(sepPos + 1);
       
-      var generatedHash = yield this.__col.generatePasswordHash(
+      let generatedHash = yield this.__col.generatePasswordHash(
         password, salt
       );
 
@@ -240,7 +250,7 @@ module.exports = {
      * @param {String} email Email address to verify.
      */
     verifyEmail: function*(email) {
-      var theEmail = _.find(this.emails, function(e) {
+      let theEmail = _.find(this.emails, function(e) {
         return email === e.email;
       });
 
@@ -265,7 +275,7 @@ module.exports = {
      * @param {Boolea} verified Whether address is verified.
      */
     addEmail: function*(email, verified) {
-      var theEmail = _.find(this.emails, function(e) {
+      let theEmail = _.find(this.emails, function(e) {
         return email === e.email;
       });
 
@@ -295,7 +305,7 @@ module.exports = {
     updatePassword: function*(newPassword) {
       this.getApp().logger.debug('Update user password', this._id);
 
-      var passAuth = _.find(this.auth, function(a) {
+      let passAuth = _.find(this.auth, function(a) {
         return 'password' === a.type;
       });
 
@@ -347,7 +357,7 @@ module.exports = {
     saveAuth: function*(type, data) {
       this.getApp().logger.debug('Save user auth', this._id, type);
 
-      var existing = _.find(this.auth, function(a) {
+      let existing = _.find(this.auth, function(a) {
         return type === a.type;
       });
 

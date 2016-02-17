@@ -7,28 +7,28 @@
  * - users signed up in past 7 days
  */
 
-var moment = require('moment');
+let  moment = require('moment');
 
 
 exports.schedule = '0 0 3 * * 1';   // every monday morning at 3am
 
 
 exports.handler = function*(app) {
-  var lastWeek = moment().add('days', -7);
+  let  lastWeek = moment().add('days', -7);
 
-  var activities = yield app.models.Activity.find({
+  let  activities = yield app.models.Activity.find({
     published: {
       $gte: lastWeek.toDate(),
     },
     verb: 'register'
   });
 
-  var users = activities.map(function(a) {
+  let  users = activities.map(function(a) {
     return a.actor;
   });
 
   // get admins
-  var admins = yield app.models.User.findAdminUsers();
+  let  admins = yield app.models.User.findAdminUsers();
 
   yield app.mailer.send({
     to: admins,
