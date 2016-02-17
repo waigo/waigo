@@ -4,9 +4,10 @@
  * @fileOverview Setup context-level convenient accessors and template helpers
  */
 
-var URL = require('url');
+const URL = require('url');
 
-var waigo = global.waigo,
+
+const waigo = global.waigo,
   _ = waigo._;
 
 
@@ -43,12 +44,13 @@ module.exports = function() {
 };
 
 
+
 /** 
  * Get whether given URL path matches current URL path.
  * @param  {String} urlPath URL path.
  * @return {Boolean}  true if so; false otherwise.
  */
-var matchesCurrentUrl = exports.matchesCurrentUrl = function(urlPath) {
+const matchesCurrentUrl = exports.matchesCurrentUrl = function(urlPath) {
   var parsedURL = URL.parse(this.request.url),
     parsedPath = URL.parse(urlPath);
 
@@ -57,7 +59,11 @@ var matchesCurrentUrl = exports.matchesCurrentUrl = function(urlPath) {
 
 
 
-var processAlertMessage = exports.processAlertMessage = function(ctx) {
+/**
+ * Process an alert message.
+ * @param  {Object} ctx Request context.
+ */
+const processAlertMessage = exports.processAlertMessage = function(ctx) {
   if (!ctx.session) {
     return;
   }

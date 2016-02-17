@@ -1,10 +1,11 @@
 "use strict";
 
-var querystring = require('querystring');
+const querystring = require('querystring');
 
 
-var waigo = global.waigo,
-  _ = waigo._;
+const waigo = global.waigo,
+  _ = waigo._,
+  { RuntimeError } = waigo.load('support/errors');
 
 
 
@@ -28,7 +29,7 @@ module.exports = function(options) {
 
     try {
       if (!this.currentUser) {
-        this.throw('You must be logged in to access this content.', 403);
+        throw new RuntimeError('You must be logged in to access this content.', 403);
       } else {
         // need specific access?
         if (options.canAccess) {
@@ -47,7 +48,7 @@ module.exports = function(options) {
           u: this.request.url,
         });
 
-        return yield this.redirect('/user/login?' + qryStr);
+        return yield this.redirect(`/user/login?${qryStr}`);
       }
       // else show error
       else {

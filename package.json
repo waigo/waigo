@@ -8,7 +8,6 @@
     "email": "ram@hiddentao.com"
   },
   "dependencies": {
-    "bluebird": "^2.3.4",
     "co": "^4.6.0",
     "co-body": "0.0.1",
     "co-render": "0.0.1",
@@ -49,6 +48,7 @@
   },
   "devDependencies": {
     "babelify": "~6.3.0",
+    "bluebird": "~2.9.25",
     "browserify": "~11.0.1",
     "chai": "~1.8.1",
     "chai-as-promised": "~4.1.1",
@@ -119,8 +119,8 @@
   },
   "scripts": {
     "prepublish": "npm prune",
-    "build": "node --harmony gulpfile.coffee",
-    "test": "NODE_ENV=test node --harmony `which grunt` test"
+    "build": "node gulpfile.coffee",
+    "test": "NODE_ENV=test node `which grunt` test"
   },
   "engines": {
     "node": ">=4.0.0"

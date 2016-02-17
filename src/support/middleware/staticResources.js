@@ -1,8 +1,9 @@
 "use strict";
 
 
-var path = require('path'),
-  waigo = global.waigo,
+const path = require('path');
+
+const waigo = global.waigo,
   _ = waigo._;
 
 
@@ -22,7 +23,7 @@ var path = require('path'),
  * @return {Function} middleware
  */
 module.exports = function(options) {
-  var moreOptions = _.extend({
+  let moreOptions = _.extend({
     maxage: 0,
     hidden: false,
     index: 'index.html',

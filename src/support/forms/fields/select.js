@@ -3,8 +3,9 @@
 
 const waigo = global.waigo,
   _ = waigo._,
+  errors = waigo.load('errors'),
   viewObjects = waigo.load('support/viewObjects'),
-  Field = waigo.load('support/forms/field').Field;
+  { Field, FieldValidationError } = waigo.load('support/forms/field');
 
 
 
@@ -47,7 +48,7 @@ class Select extends Field {
         if (diff.length || (1 < val.length && !field.config.multiple)) {
           let str = field.config.multiple ? 'one or more of' : 'one of';
 
-          throw new Error('Must be ' + str + ': ' + _.values(options).join(', '));
+          throw new FieldValidationError(`Must be ${str}: ${_.values(options).join(', ')}`);
         }
       }
     );

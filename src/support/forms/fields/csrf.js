@@ -4,14 +4,14 @@
 const waigo = global.waigo,
   _ = waigo._,
   viewObjects = waigo.load('support/viewObjects'),
-  HiddenField = waigo.load('support/forms/fields/hidden').Field;
+  Field = waigo.load('support/forms/fields/hidden');
 
 
 
 /**
- * A CSRF field.
+ * A Cross-site request forgery prevention field.
  */
-class Field extends HiddenField {
+class Csrf extends Field {
   /**
    * Construct.
    * 
@@ -38,7 +38,7 @@ class Field extends HiddenField {
 /**
  * @override
  */
-Field.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
+Csrf.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
   let ret = yield HiddenField.prototype.toViewObject.call(this, ctx);
 
   ret.type = 'hidden';
@@ -49,5 +49,5 @@ Field.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
 
 
 
-module.exports = Field;
+module.exports = Csrf;
 

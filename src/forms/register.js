@@ -28,7 +28,8 @@ module.exports = {
   method: 'POST',
   postValidation: [
     function* createUserAndLogin(next) {
-      let app = this.context.app,
+      let ctx = this.context,
+        app = ctx.app,
         User = app.models.User;
 
       // check if there's an admin user

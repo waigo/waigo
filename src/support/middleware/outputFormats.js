@@ -1,12 +1,12 @@
 "use strict";
 
-var debug = require('debug')('waigo-middleware-outputformat'),
-  waigo = global.waigo,
-  _ = waigo._;
-
-var errors = waigo.load('support/errors'),
+const waigo = global.waigo,
+  _ = waigo._,
+  errors = waigo.load('support/errors'),
   viewObjects = waigo.load('support/viewObjects');
 
+
+const OutputFormatError = errors.define('OutputFormatError');
 
 
 
@@ -28,26 +28,30 @@ var errors = waigo.load('support/errors'),
  * @return {Function} Express middleware.
  */
 module.exports = function(options) {
-  var enabledFormats = {};
+  let app = waigo.load('application').app,
+    logger = app.logger.create('OutputFormats');
 
-  var formatNames = Object.keys(options.formats);
-  for (let i=0; i<formatNames.length; ++i) {
-    let format = formatNames[i];
-    enabledFormats[format] = waigo.load('support/outputFormats/' + format).create(options.formats[format]);
+  let enabledFormats = {};
+
+  let formatNames = Object.keys(options.formats);
+
+  for (format of formatNames) {
+    enabledFormats[format] = 
+      waigo.load(`support/outputFormats/${format}`)
+        .create(logger.create(format), options.formats[format]);
   }
 
   return function* setOutputFormat(next) {
-    var ctx = this,
-      logger = this.app.logger.create('OutputFormats');
+    let ctx = this,
+      app = ctx.app;
+      
 
-    var requestedFormat = (
-      _.get(this.query, options.paramName) ||
-      options.default
-    ).toLowerCase();
+    let requestedFormat = 
+      _.get(this.query, options.paramName, options.default).toLowerCase();
 
     // check format is valid
     if (requestedFormat && !enabledFormats[requestedFormat]) {
-      throw new errors.RuntimeError('Invalid output format requested: ' + requestedFormat, 400);
+      throw new OutputFormatError(`Invalid output format requested: ${requestedFormat}`, 400);
     }
 
     this.request.outputFormat = requestedFormat;
@@ -67,7 +71,7 @@ module.exports = function(options) {
       }
 
       // get yieldables
-      var localsViewObjects = yield viewObjects.toViewObjectYieldable(ctx, locals);
+      let localsViewObjects = yield viewObjects.toViewObjectYieldable(ctx, locals);
 
       // call actual rendering method
       yield enabledFormats[requestedFormat].render.call(ctx, view, localsViewObjects);

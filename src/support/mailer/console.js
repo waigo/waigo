@@ -4,29 +4,29 @@
  * @fileOverview Console mailer - prints emails to console.
  */
 
-var util = require('util'),
-  nodemailerStubTransport = require('nodemailer-stub-transport');
+const nodemailerStubTransport = require('nodemailer-stub-transport');
 
-var waigo = global.waigo,
-  _ = waigo._;
-
-
-var Mailer = waigo.load('support/mailer/base').Mailer;
-
-
-var Console = function(app, config) {
-  Console.super_.call(this, app, config, app.logger.create('ConsoleLogger'));
-};
-util.inherits(Console, Mailer);
+const waigo = global.waigo,
+  _ = waigo._,
+  Mailer = waigo.load('support/mailer/base').Mailer;
 
 
 
+class Console extends Mailer {
+  constructor(app, config) {
+    super(app, config, 'console');
+  }
 
-Console.prototype.send = function*(options) {
-  var result = yield this._send(options);
+  * send (params) {
+    let result = yield this._send(options);
 
-  console.log(result);
-};
+    this.logger.info(result);
+  }
+
+}
+
+
+exports.Console = Console;
 
 
 
@@ -37,3 +37,7 @@ exports.create = function*(app, config) {
 
   return c;
 };
+
+
+
+

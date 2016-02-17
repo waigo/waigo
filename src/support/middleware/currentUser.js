@@ -5,7 +5,7 @@
  */
 
 
-var waigo = global.waigo,
+const waigo = global.waigo,
   _ = waigo._;
 
 

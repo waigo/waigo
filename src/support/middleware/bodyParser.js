@@ -1,9 +1,11 @@
 "use strict";
 
 
-var bodyParser = require('co-body'),
-  path = require('path'),
-  waigo = global.waigo,
+const bodyParser = require('co-body'),
+  path = require('path');
+
+
+const waigo = global.waigo,
   _ = waigo._;
 
 

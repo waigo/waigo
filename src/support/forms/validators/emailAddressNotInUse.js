@@ -3,6 +3,9 @@
 const validator = require('validator');
 
 
+const waigo = global.waigo,
+  { FieldValidationError } = waigo.load('support/field');
+
 
 /**
  * Validator to check whether given email address is already in use.
@@ -16,7 +19,7 @@ module.exports = function() {
     });
 
     if (0 < numUsers) {
-      throw new Error('Email already in use');
+      throw new FieldValidationError('Email already in use');
     }
   }
 };

@@ -4,22 +4,12 @@ const crypto = require('crypto');
 
 const waigo = global.waigo,
   _ = waigo._,
+  Q = waigo.load('support/promise'),
   errors = waigo.load('support/errors');
 
 const UserError = errors.define('UserError');
 
-
-function randomBytesQ(numBytes) {
-  return new Promise((resolve, reject) => {
-    crypto.pseudoRandomBytes(numBytes, (err, val) => {
-      if (err) {
-        reject(err)
-      } else {
-        resolve(val);
-      }
-    });
-  });
-}
+const randomBytesQ = Q.promisify(crypto.pseudoRandomBytes);
 
 
 const ProfileSchema = {

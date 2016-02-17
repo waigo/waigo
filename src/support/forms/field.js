@@ -27,7 +27,7 @@ const waigo = global.waigo,
 
 /** A field validation error. */
 const FieldValidationError = exports.FieldValidationError = 
-  errors.define('FieldValidationError');
+  errors.define('FieldValidationError', errors.MultipleError);
 
   
 /** A field sanitization error. */
@@ -175,8 +175,6 @@ class Field {
 
 
 
-
-
   /**
    * Validate this field's value.
    *
@@ -210,8 +208,6 @@ class Field {
       throw new FieldValidationError('Field validation failed', 400, errors);
     }
   }
-
-
 }
 
 

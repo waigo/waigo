@@ -1,16 +1,17 @@
 "use strict";
 
 
-var debug = require('debug')('waigo-render-html'),
-  path = require('path'),
-  render = require('co-render'),
-  waigo = global.waigo,
+const path = require('path'),
+  render = require('co-render');
+
+const waigo = global.waigo,
   _ = waigo._;
 
 
 /**
  * HTML output format.
  *
+ * @param {Object} logger Logger to use.
  * @param {Object} config configuration for this output format.
  * @param {String} config.folder View templates folder, relative to application root folder.
  * @param {String} config.ext Default template file extension.
@@ -18,7 +19,7 @@ var debug = require('debug')('waigo-render-html'),
  *
  * @return {Object} Object with `render` and `redirect` methods.
  */
-exports.create = function(config) {
+exports.create = function(logger, config) {
   return {
     render: function*(view, locals) {
       // what type of template is this?
@@ -27,7 +28,7 @@ exports.create = function(config) {
         ext = config.ext;
       }
 
-      debug('Template type', ext);
+      logger.debug('Template type', ext);
 
       // get locals
       locals = _.extend({}, this.app.templateVars, this.locals, locals, {
@@ -38,14 +39,14 @@ exports.create = function(config) {
       // get full path to view file
       view = waigo.getPath('views/' + view + '.' + ext);
 
-      debug('Template path', view);
+      logger.debug('Template path', view);
 
       this.body = yield render(view, locals);
       this.type = 'html';
     },
 
     redirect: function*(url) {
-      debug('Redirect', url);
+      logger.debug('Redirect', url);
 
       this.response.redirect(url);
     },

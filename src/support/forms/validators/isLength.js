@@ -2,6 +2,9 @@
 
 const validator = require('validator');
 
+const waigo = global.waigo,
+  { FieldValidationError } = waigo.load('support/field');
+
 
 
 /**
@@ -19,7 +22,7 @@ module.exports = function(options = {}) {
     options.max = options.max || 10000000;
 
     if (!validator.isLength(value, options.min, options.max)) {
-      throw new Error('Must be between ' 
+      throw new FieldValidationError('Must be between ' 
         + options.min + ' and ' 
         + options.max + ' characters in length'
       );

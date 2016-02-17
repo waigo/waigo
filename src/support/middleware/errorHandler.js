@@ -1,44 +1,10 @@
 "use strict";
 
 
-var waigo = global.waigo,
+const waigo = global.waigo,
   _ = waigo._,
   errors = waigo.load('support/errors'),
   viewObjects = waigo.load('support/viewObjects');
-
-
-
-/**
- * Render given error back to client.
- * @param config {Object} error handler config.
- * @param err {Error} the error
- * @return {*}
- * @private
- */
-var render = function*(config, err) {
-  this.status = err.status || 500;
-
-  var error = yield err[viewObject.METHOD_NAME].call(err, this);
-
-  error.status = this.status;
-  error.request = {
-    method: this.request.method,
-    url: this.request.url,
-  };
-
-  if (config.showStack) {
-    error.stack = err.stack.split("\n");
-  }
-
-  try {
-    yield this.render('error', error);
-  } catch (err) {
-    this.app.emit('error', err);
-
-    this.type = 'json';
-    this.body = err;
-  }
-};
 
 
 
@@ -74,6 +40,45 @@ module.exports = function(options) {
 };
 
 
+
+
+
+/**
+ * Render given error back to client.
+ * @param config {Object} error handler config.
+ * @param err {Error} the error
+ * @return {*}
+ * @private
+ */
+var render = function*(config, err) {
+  this.status = err.status || 500;
+
+  let error = yield err[viewObject.METHOD_NAME].call(err, this);
+
+  error.status = this.status;
+  error.request = {
+    method: this.request.method,
+    url: this.request.url,
+  };
+
+  if (config.showStack) {
+    error.stack = err.stack.split("\n");
+  }
+
+  try {
+    yield this.render('error', error);
+  } catch (err) {
+    this.app.emit('error', err);
+
+    this.type = 'json';
+    this.body = err;
+  }
+};
+
+
+
+
+
 /**
  * Throw an error
  * @param  {Class} [errorClass] Error class. Default is `RuntimeError`.
@@ -81,7 +86,7 @@ module.exports = function(options) {
  * @throws Error
  */
 var _throw = function() {
-  var args = Array.prototype.slice.call(arguments),
+  let args = Array.prototype.slice.call(arguments),
     ErrorClass = args[0];
 
   if (_.isObject(ErrorClass)) {

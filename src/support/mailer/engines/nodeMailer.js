@@ -4,50 +4,49 @@
  * @fileOverview Nodemailer engine.
  */
 
-var debug = require('debug')('waigo-mailer-base'),
-  nodemailer = require('nodemailer'),
-  htmlToText = require('nodemailer-html-to-text').htmlToText,
-  Q = require('bluebird');
+const nodemailer = require('nodemailer'),
+  htmlToText = require('nodemailer-html-to-text').htmlToText;
 
 
-var waigo = global.waigo,
-  _ = waigo._;
+const waigo = global.waigo,
+  _ = waigo._,
+  Q = waigo.load('support/promise'),
+  errors = waigo.load('support/errors');
 
 
-var NodeMailerError = exports.NodeMailerError = 
-  waigo.load('support/errors').define('NodeMailerError');
-
-
-/**
- * @constructor
- */
-var NodeMailer = exports.NodeMailer = function(logger, config, transportImpl) {
-  this.logger = logger;
-  this._transport = nodemailer.createTransport(transportImpl);
-  this._transport.use('compile', htmlToText());
-  this._send = Q.promisify(this._transport.sendMail, this._transport);
-};
+const NodeMailerError = exports.NodeMailerError = 
+  errors.define('NodeMailerError');
 
 
 
-/** 
- * Send an email.
- */
-NodeMailer.prototype.send = function*(mailOptions) {
-  if (!mailOptions.replyTo) {
-    mailOptions.replyTo = mailOptions.from;
+class NodeMailer {
+  constructor (logger, config, transportImpl) {
+    this.logger = logger.create('NodeMailer');
+    this._transport = nodemailer.createTransport(transportImpl);
+    this._transport.use('compile', htmlToText());
+    this._send = Q.promisify(this._transport.sendMail, this._transport);
   }
 
-  this.logger.debug('send', mailOptions);
+  /**
+   * Send an email.
+   */
+  * send (params) {
+    if (!params.replyTo) {
+      params.replyTo = params.from;
+    }
 
-  var noBody = _.isEmpty(mailOptions.html) && _.isEmpty(mailOptions.text);
+    this.logger.debug('send', params);
 
-  if (noBody || _.isEmpty(mailOptions.from) || _.isEmpty(mailOptions.to)) {
-    throw new NodeMailerError('Need from, to and html/text');
+    var noBody = _.isEmpty(params.html) && _.isEmpty(params.text);
+
+    if (noBody || _.isEmpty(params.from) || _.isEmpty(params.to)) {
+      throw new NodeMailerError('Need from, to and html/text');
+    }
+
+    return yield this._send(params);
   }
-
-  return yield this._send(mailOptions);
-};
+}
 
 
+exports.NodeMailer = NodeMailer;
 

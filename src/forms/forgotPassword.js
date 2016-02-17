@@ -23,7 +23,8 @@ module.exports = {
   method: 'POST',
   postValidation: [
     function* sendResetPasswordEmail(next) {
-      let app = this.context.app;
+      let ctx = this.context,
+        app = ctx.app;
 
       let User = app.models.User;
 
@@ -47,7 +48,7 @@ module.exports = {
       });
 
       if (!user) {
-        throw new ForgotPasswordError('User not found', 404);
+        ctx.throw(ForgotPasswordError, 'User not found', 404);
       }
 
       // action

@@ -3,6 +3,11 @@
 const validator = require('validator');
 
 
+const waigo = global.waigo,
+  { FieldValidationError } = waigo.load('support/field');
+
+
+
 /**
  * Validator to check whether given value is non-empty.
  *
@@ -11,7 +16,7 @@ const validator = require('validator');
 module.exports = function() {
   return function*(context, field, value) {
     if (validator.isNull(value) || !validator.isLength(value, 1)) {
-      throw new Error('Must not be empty');
+      throw new FieldValidationError('Must not be empty');
     }
   }
 };

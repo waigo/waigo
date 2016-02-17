@@ -6,8 +6,12 @@ const compose = require('generator-compose');
 const waigo = global.waigo,
   _ = waigo._,
   errors = waigo.load('support/errors'),
-  Field = waigo.load('support/forms/field').Field,
+  FieldExports = waigo.load('support/forms/field'),
+  { Field } = FieldExports,
   viewObjects = waigo.load('support/viewObjects');
+
+
+module.exports = FieldExports;
 
 
 
@@ -17,8 +21,9 @@ const FormValidationError = exports.FormValidationError =
 
 
 
+
 // the form spec cache
-var cache = {}
+var cache = {};
 
 
 
@@ -94,7 +99,7 @@ class Form {
     this.logger = this.context.app.logger.create('Form[' + this.config.id + ']');
 
     // CSRF enabled?
-    if (!!this.context.assertCSRF) {
+    if (!!_.get(this.context, 'assertCSRF')) {
       this.logger.debug('Adding CSRF field');
 
       this.config.fields.push({
@@ -216,7 +221,13 @@ class Form {
    * hooks will be run.
    */
   * process () {
-    yield this.setValues(this.context.request.body);
+    let body = _.get(this.context, 'request.body');
+
+    if (!body) {
+      throw new FormValidationError('No request body available to process');
+    }
+
+    yield this.setValues(body);
     yield this.validate();
     yield this.runHook('postValidation');
   }

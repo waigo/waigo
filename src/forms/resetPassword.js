@@ -32,8 +32,9 @@ module.exports = {
   method: 'POST',
   postValidation: [
     function* updateUserPassword(next) {
-      let app = this.context.app,
-        user = this.context.currentUser;
+      let ctx = this.context,
+        app = ctx.app,
+        user = ctx.currentUser;
 
       app.logger.info('Resetting user password', user._id);
 
@@ -43,8 +44,9 @@ module.exports = {
       yield next;
     },
     function* emailUser(next) {
-      let app = this.context.app,
-        user = this.context.currentUser;
+      let ctx = this.context,
+        app = ctx.app,
+        user = ctx.currentUser;
 
       yield app.mailer.send({
         to: user,

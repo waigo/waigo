@@ -1,7 +1,7 @@
 "use strict";
 
 
-var csrf = require('koa-csrf');
+const csrf = require('koa-csrf');
 
 
 

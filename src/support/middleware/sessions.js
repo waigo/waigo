@@ -1,9 +1,11 @@
 "use strict";
 
 
-var koaSessionStore = require('koa-session-store'),
-  moment = require('moment'),
-  waigo = global.waigo;
+const koaSessionStore = require('koa-session-store'),
+  moment = require('moment');
+
+
+const waigo = global.waigo;
 
 
 
@@ -25,7 +27,7 @@ var koaSessionStore = require('koa-session-store'),
  * @param {String} options.cookie.path Cookie path.
  */
 module.exports = function(options) {
-  var app = waigo.load('application').app;
+  let app = waigo.load('application').app;
 
   if (!options.keys) {
     throw new Error('Please specify cookie signing keys in the config file.');
@@ -35,7 +37,8 @@ module.exports = function(options) {
 
   return koaSessionStore({
     name: options.name,
-    store: waigo.load('support/session/store/' + options.store.type).create(app, options.store.config),
+    store: waigo.load(`support/session/store/${options.store.type}`)
+                  .create(app, options.store.config),
     cookie: {
       expires: moment().add('days', options.cookie.validForDays).toDate(),
       path: options.cookie.path,

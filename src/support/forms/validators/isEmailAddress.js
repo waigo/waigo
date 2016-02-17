@@ -2,7 +2,8 @@
 
 const validator = require('validator');
 
-
+const waigo = global.waigo,
+  { FieldValidationError } = waigo.load('support/field');
 
 
 /**
@@ -13,7 +14,7 @@ const validator = require('validator');
 module.exports = function() {
   return function*(context, field, value) {
     if (!validator.isEmail(value)) {
-      throw new Error('Must be an email address');
+      throw new FieldValidationError('Must be an email address');
     }
   }
 };

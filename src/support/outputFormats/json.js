@@ -1,29 +1,32 @@
 "use strict";
 
 
-var debug = require('debug')('waigo-render-html'),
-  path = require('path'),
-  waigo = global.waigo,
-  _ = waigo._;
+const path = require('path');
 
-var errors = waigo.load('support/errors');
+const waigo = global.waigo,
+  _ = waigo._,
+  errors = waigo.load('support/errors');
+
+
+const JsonRenderError = errors.define('JsonRenderError');
 
 
 
 /**
  * JSON output format.
  *
+ * @param {Object} logger Logger to use.
  * @return {Object} Object with render method.
  */
-exports.create = function() {
+exports.create = function(logger) {
   return {
     render: function*(view, locals) {
-      debug('View', view);
+      logger.debug('View', view);
 
       locals = locals || {};
 
       if (!_.isPlainObject(locals)) {
-        throw new errors.RuntimeError('Plain object required for JSON output format');
+        throw new JsonRenderError('Plain object required for JSON output format');
       }
 
       this.body = locals;
@@ -32,7 +35,7 @@ exports.create = function() {
 
 
     redirect: function*(url) {
-      debug('Redirect', url);
+      logger.debug('Redirect', url);
       
       this.type = 'json';
       this.status = 200;

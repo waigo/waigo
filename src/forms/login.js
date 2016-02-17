@@ -35,7 +35,9 @@ module.exports = {
   method: 'POST',
   postValidation: [
     function* checkUserCredentials(next) {
-      let User = this.context.app.models.User;
+      let ctx = this.context;
+
+      let User = ctx.app.models.User;
 
       // load user
       let user = yield User.findOne({
@@ -57,7 +59,7 @@ module.exports = {
       // check user and password
       if (!user 
           || !(yield user.isPasswordCorrect(this.fields.password.value)) ) {
-        throw new LoginError('Incorrect username or password', 400);
+        ctx.throw(LoginError, 'Incorrect username or password', 400);
       }
 
       // log the user in
