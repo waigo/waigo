@@ -24,6 +24,7 @@ else
 paths =
   npm: path.join(__dirname, 'node_modules')
   projectRoot: __dirname
+  test: path.join(__dirname, 'test')
   frontend: 
     src: path.join(__dirname, 'src', 'frontend')
     build: path.join(__dirname, 'public') 

@@ -1,6 +1,6 @@
 var Promise = require('bluebird');
 
-waigo = require('../index');
+waigo = require('../src');
 
 module.exports = function(_module) {
   var _testUtils = require('waigo-test-utils')(_module);

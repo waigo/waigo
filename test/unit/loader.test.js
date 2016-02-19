@@ -1,6 +1,8 @@
 var _ = require('lodash'),
   path = require('path'),
-  Promise = require('bluebird');
+  Q = require('bluebird');
+
+  
 
 var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
   test = _testUtils.test,
@@ -13,7 +15,7 @@ var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
 
 // waigo = waigo.load('loader') but we do this just to make sure the loader can load itself
 var loader = require('../../src/loader');
-loader.initPromise = Promise.coroutine(loader.init);
+loader.initPromise = Q.coroutine(loader.init);
 
 
 test['app folder'] = {
@@ -56,13 +58,13 @@ test['init()'] = {
       }
     };
 
-    Promise.all([
+    Q.all([
       testUtils.deletePackageJson(),
       testUtils.deleteTestFolders()
     ])
       .then(testUtils.createTestFolders)
       .then(function createPlugins() {
-        return Promise.all([
+        return Q.all([
           testUtils.createPluginModules('waigo-plugin-1_TESTPLUGIN'),
           testUtils.createPluginModules('waigo-plugin-2_TESTPLUGIN'),
           testUtils.createPluginModules('another-plugin_TESTPLUGIN'),
@@ -74,7 +76,7 @@ test['init()'] = {
       .nodeify(done);
   },
   afterEach: function(done) {
-    Promise.all([
+    Q.all([
       testUtils.deletePackageJson(),
       testUtils.deleteTestFolders(),
     ]).nodeify(done);
@@ -248,7 +250,7 @@ test['init()'] = {
     'multiple plugins for module not possible': function(done) {
       var options = this.options;
 
-      Promise.all([
+      Q.all([
         testUtils.createPluginModules('waigo-plugin-1_TESTPLUGIN', ['support/errors']),
         testUtils.createPluginModules('waigo-plugin-2_TESTPLUGIN', ['support/errors'])
       ])
@@ -261,7 +263,7 @@ test['init()'] = {
     'app overrides plugins': function(done) {
       var options = this.options;
 
-      Promise.all([
+      Q.all([
         testUtils.createPluginModules('waigo-plugin-1_TESTPLUGIN', ['support/errors']),
         testUtils.createPluginModules('waigo-plugin-2_TESTPLUGIN', ['support/errors']),
         testUtils.createAppModules(['support/errors']),
@@ -298,7 +300,7 @@ test['load()'] = {
       testUtils.deleteTestFolders()
         .then(testUtils.createTestFolders)
         .then(function createTestModules() {
-          return Promise.all([
+          return Q.all([
             testUtils.createPluginModules('waigo-plugin-1_TESTPLUGIN', ['support/errors']),
             testUtils.createPluginModules('waigo-plugin-2_TESTPLUGIN', ['support/onlyme', 'support/errors']),
             testUtils.createPluginModules('another-plugin_TESTPLUGIN', ['support/appoverride']),
