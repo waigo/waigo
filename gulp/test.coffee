@@ -6,7 +6,7 @@ module.exports = (paths, options = {}) ->
   handler: ->
     return gulp.src(
       [
-        path.join(paths.test, 'unit', 'loader.test.js')
+        path.join(paths.test, 'unit', '*.test.js')
       ], { 
         read: false 
       }

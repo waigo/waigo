@@ -1,6 +1,6 @@
 var moment = require('moment'),
   path = require('path'),
-  Promise = require('bluebird'),
+  Q = require('bluebird'),
   winston = require('winston');
 
 var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),

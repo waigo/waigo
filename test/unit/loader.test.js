@@ -15,7 +15,7 @@ var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
 
 // waigo = waigo.load('loader') but we do this just to make sure the loader can load itself
 var loader = require('../../src/loader');
-loader.initPromise = Q.coroutine(loader.init);
+loader.initQ = Q.coroutine(loader.init);
 
 
 
@@ -82,11 +82,11 @@ test['init()'] = {
     ]).nodeify(done);
   },
   'can be called more than once': function(done) {
-    loader.initPromise({
+    loader.initQ({
       appFolder: testUtils.appFolder
     })
       .then(() => {
-        loader.initPromise({
+        loader.initQ({
           appFolder: testUtils.appFolder
         });
       })
@@ -95,7 +95,7 @@ test['init()'] = {
   'set app folder': function(done) {
     expect(loader.getAppFolder()).to.not.eql(testUtils.appFolder);
 
-    loader.initPromise({
+    loader.initQ({
       appFolder: testUtils.appFolder
     })
       .then(function() {
@@ -109,7 +109,7 @@ test['init()'] = {
         appFolder: testUtils.appFolder
       };
 
-      loader.initPromise(options)
+      loader.initQ(options)
         .then(function checkLoadedPlugins(options) {
           options.plugins.names.should.eql([]);
         })
@@ -119,7 +119,7 @@ test['init()'] = {
       'object': function(done) {
         var options = this.options;
 
-        loader.initPromise(options)
+        loader.initQ(options)
           .then(function checkLoadedPlugins(options) {
             options.plugins.names.should.eql(['waigo-plugin-1_TESTPLUGIN', 'waigo-plugin-2_TESTPLUGIN']);
           })
@@ -131,7 +131,7 @@ test['init()'] = {
             var options = this.options;
             options.plugins.config = path.join(options.appFolder, 'pluginConfig.js');
 
-            loader.initPromise(options)
+            loader.initQ(options)
               .then(function checkLoadedPlugins(options) {
                 options.plugins.names.should.eql(['waigo-plugin-1_TESTPLUGIN']);
               })
@@ -141,7 +141,7 @@ test['init()'] = {
             var options = this.options;
             options.plugins.config = path.join(options.appFolder, 'invalid.js');
 
-            loader.initPromise(options)
+            loader.initQ(options)
               .should.be.rejectedWith(`Unable to load config file: ${options.plugins.config}`)
               .and.notify(done);
           }          
@@ -155,7 +155,7 @@ test['init()'] = {
               '{ "dependencies": {"waigo-plugin-1_TESTPLUGIN": "0.0.1"} }'
             )
               .then(function() {
-                return loader.initPromise(options);
+                return loader.initQ(options);
               })
               .then(function checkLoadedPlugins(options) {
                 options.plugins.names.should.eql(['waigo-plugin-1_TESTPLUGIN']);
@@ -166,7 +166,7 @@ test['init()'] = {
             var options = this.options;
             options.plugins.config = 'package.json';
 
-            loader.initPromise(options)
+            loader.initQ(options)
               .then(function checkLoadedPlugins(options) {
                 options.plugins.names.should.not.contain('waigo-plugin-1_TESTPLUGIN');
               })
@@ -179,7 +179,7 @@ test['init()'] = {
       var options = this.options;
       options.plugins.glob = ['*another*'];
 
-      loader.initPromise(options)
+      loader.initQ(options)
         .then(function checkLoadedPlugins(options) {
           options.plugins.names.should.eql(['another-plugin_TESTPLUGIN']);
         })
@@ -189,7 +189,7 @@ test['init()'] = {
       var options = this.options;
       options.plugins.configKey = ['peerDependencies'];
 
-      loader.initPromise(options)
+      loader.initQ(options)
         .then(function checkLoadedPlugins(options) {
           options.plugins.names.should.eql([]);
         })
@@ -203,7 +203,7 @@ test['init()'] = {
         }
       }
 
-      loader.initPromise(options)
+      loader.initQ(options)
         .then(function checkLoadedPlugins(options) {
           options.plugins.names.should.eql(['another-plugin_TESTPLUGIN']);
         })
@@ -214,7 +214,7 @@ test['init()'] = {
     'default version': function(done) {
       var options = this.options;
 
-      loader.initPromise(options)
+      loader.initQ(options)
         .then(function checkLoadedPlugins() {
           loader.getPath('support/errors').should.eql(
             path.join(loader.getWaigoFolder(), 'support', 'errors.js')
@@ -227,7 +227,7 @@ test['init()'] = {
 
       testUtils.createAppModules(['support/errors'])
         .then(function() {
-          return loader.initPromise(options)
+          return loader.initQ(options)
             .then(function checkLoadedPlugins() {
               loader.getPath('support/errors').should.eql(
                 path.join(loader.getAppFolder(), 'support', 'errors.js')
@@ -241,7 +241,7 @@ test['init()'] = {
 
       testUtils.createAppModules(['support/blabla'])
         .then(function() {
-          return loader.initPromise(options)
+          return loader.initQ(options)
             .then(function checkLoadedPlugins() {
               loader.getPath('support/blabla').should.eql(
                 path.join(loader.getAppFolder(), 'support', 'blabla.js')
@@ -255,7 +255,7 @@ test['init()'] = {
 
       testUtils.createPluginModules('waigo-plugin-1_TESTPLUGIN', ['support/errors'])
         .then(function() {
-          return loader.initPromise(options)
+          return loader.initQ(options)
             .then(function checkLoadedPlugins() {
               loader.getPath('support/errors').should.eql(
                 path.join(testUtils.pluginsFolder, 'waigo-plugin-1_TESTPLUGIN', 'src', 'support', 'errors.js')
@@ -272,7 +272,7 @@ test['init()'] = {
         testUtils.createPluginModules('waigo-plugin-2_TESTPLUGIN', ['support/errors'])
       ])
         .then(function() {
-          return loader.initPromise(options);
+          return loader.initQ(options);
         })
         .should.be.rejectedWith('Path "support/errors" has more than one plugin implementation to choose from: waigo-plugin-1_TESTPLUGIN, waigo-plugin-2_TESTPLUGIN')
         .and.notify(done);
@@ -286,7 +286,7 @@ test['init()'] = {
         testUtils.createAppModules(['support/errors']),
       ])
         .then(function() {
-          return loader.initPromise(options)
+          return loader.initQ(options)
             .then(function checkLoadedPlugins() {
               loader.getPath('support/errors').should.eql(
                 path.join(loader.getAppFolder(), 'support', 'errors.js')
@@ -327,7 +327,7 @@ test['load()'] = {
           ])
         })
         .then(function() {
-          return loader.initPromise({
+          return loader.initQ({
             appFolder: testUtils.appFolder,
             plugins: {
               names: ['waigo-plugin-1_TESTPLUGIN', 'waigo-plugin-2_TESTPLUGIN', 'another-plugin_TESTPLUGIN']

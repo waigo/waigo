@@ -1,6 +1,6 @@
 var moment = require('moment'),
   path = require('path'),
-  Promise = require('bluebird');
+  Q = require('bluebird');
 
 var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
   test = _testUtils.test,
@@ -192,7 +192,7 @@ test['errors'] = {
       var e = new this.RuntimeError2('my msg', 505);
       var eParent = new errors.RuntimeError('my msg', 505);
 
-      Promise.all([
+      Q.all([
         testUtils.spawn(e.toViewObject, e),
         testUtils.spawn(eParent.toViewObject, eParent),
       ])
@@ -208,7 +208,7 @@ test['errors'] = {
       var e = new this.MultipleError2('my msg', 505);
       var eParent = new errors.MultipleError('my msg', 505);
 
-      Promise.all([
+      Q.all([
         testUtils.spawn(e.toViewObject, e),
         testUtils.spawn(eParent.toViewObject, eParent),
       ])
@@ -228,7 +228,7 @@ test['errors'] = {
       var err = new Error('test');
 
       test.mocker.stub(err, 'toViewObject', function() {
-        return Promise.resolve('blah');
+        return Q.resolve('blah');
       });
 
       testUtils.spawn(err.toViewObject, err)

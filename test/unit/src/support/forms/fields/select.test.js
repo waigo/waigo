@@ -2,7 +2,7 @@ var _ = require('lodash'),
   co = require('co'),
   moment = require('moment'),
   path = require('path'),
-  Promise = require('bluebird');
+  Q = require('bluebird');
 
 var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
   test = _testUtils.test,

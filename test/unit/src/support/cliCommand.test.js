@@ -1,7 +1,7 @@
 var _ = require('lodash'),
   moment = require('moment'),
   path = require('path'),
-  Promise = require('bluebird'),
+  Q = require('bluebird'),
   shell = require('shelljs');
 
 var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
@@ -126,7 +126,7 @@ test['cli command base class'] = {
       });
 
       var execSpy = test.mocker.stub(shell, 'execAsync', function() {
-        return Promise.resolve();
+        return Q.resolve();
       });
 
       testUtils.spawn(c.installPkgs, c, 'foo123', 'bar123')
@@ -155,7 +155,7 @@ test['cli command base class'] = {
       });
 
       var execSpy = test.mocker.stub(shell, 'execAsync', function() {
-        return Promise.resolve();
+        return Q.resolve();
       });
 
       testUtils.spawn(c.installPkgs, c, 'foo123', 'bar123', 'jump123')

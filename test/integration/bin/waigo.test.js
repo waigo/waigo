@@ -1,7 +1,7 @@
 var _ = require('lodash'),
   moment = require('moment'),
   path = require('path'),
-  Promise = require('bluebird'),
+  Q = require('bluebird'),
   shell = require('shelljs');
 
 var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
@@ -17,7 +17,7 @@ var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
 var pathToBin = path.join(__dirname, '..', '..', '..', 'bin', 'waigo');
 
 var execBin = function(args) {
-  var defer = Promise.defer();
+  var defer = Q.defer();
 
   shell.exec('node --harmony ' + pathToBin + ' ' + args, function(code, output) {
     if (0 !== code) {

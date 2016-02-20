@@ -1,5 +1,5 @@
 var path = require('path'),
-  Promise = require('bluebird');
+  Q = require('bluebird');
 
 var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
   test = _testUtils.test,
@@ -25,7 +25,7 @@ test['config loader'] = {
         };
         modulesToCreate['config/development.' + process.env.USER] = 'module.exports = function(config) { config.dev_user = 1 };';
 
-        return Promise.all([
+        return Q.all([
           testUtils.createAppModules(modulesToCreate)
         ]);
       })

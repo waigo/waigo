@@ -2,7 +2,7 @@ var _ = require('lodash'),
   co = require('co'),
   moment = require('moment'),
   path = require('path'),
-  Promise = require('bluebird');
+  Q = require('bluebird');
 
 var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
   test = _testUtils.test,
@@ -242,7 +242,7 @@ test['form fields'] = {
       //     }
       //   ]
 
-      //   new Promise(function(resolve, reject){
+      //   new Q(function(resolve, reject){
       //     testUtils.spawn(f.setSanitizedValue, f, 'abc')
       //       .catch(function(err) {
       //         try {
@@ -330,7 +330,7 @@ test['form fields'] = {
             }
           ];
 
-          new Promise(function(resolve, reject) {
+          new Q(function(resolve, reject) {
             testUtils.spawn(f.validate, f)
               .then(reject)
               .catch(function(err) {
@@ -361,7 +361,7 @@ test['form fields'] = {
             }
           ];
 
-          new Promise(function(resolve, reject) {
+          new Q(function(resolve, reject) {
             testUtils.spawn(f.validate, f)
               .then(reject)
               .catch(function(err) {
@@ -392,7 +392,7 @@ test['form fields'] = {
             }
           ];
 
-          new Promise(function(resolve, reject) {
+          new Q(function(resolve, reject) {
             testUtils.spawn(f.validate, f)
               .then(reject)
               .catch(function(err) {
@@ -438,7 +438,7 @@ test['form fields'] = {
           }
         ];
 
-        new Promise(function(resolve, reject) {
+        new Q(function(resolve, reject) {
           testUtils.spawn(f.validate, f)
             .then(reject)
             .catch(function(err) {

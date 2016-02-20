@@ -1,7 +1,7 @@
 var _ = require('lodash'),
   moment = require('moment'),
   path = require('path'),
-  Promise = require('bluebird'),
+  Q = require('bluebird'),
   shell = require('shelljs');
 
 var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
@@ -50,11 +50,11 @@ test['init command'] = {
     var c = new InitCommand();
 
     var installPkgSpy = test.mocker.stub(c, 'installPkgs', function() {
-      return Promise.resolve();
+      return Q.resolve();
     })
 
     var copyFileSpy = test.mocker.stub(c, 'copyFile', function() {
-      return Promise.resolve();
+      return Q.resolve();
     })
 
     testUtils.spawn(c.run, c)

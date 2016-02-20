@@ -1,7 +1,7 @@
 var co = require('co'),
   moment = require('moment'),
   path = require('path'),
-  Promise = require('bluebird');
+  Q = require('bluebird');
 
 var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
   test = _testUtils.test,
@@ -87,7 +87,7 @@ test['output formats middleware'] = {
 
     ctx.query.format = 'html';
 
-    new Promise(function(resolve, reject) {
+    new Q(function(resolve, reject) {
       testUtils.spawn(fn, ctx, true)
         .then(function() {
           reject(new Error('should have failed'));
