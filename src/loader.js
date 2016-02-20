@@ -10,10 +10,14 @@ const _ = require('lodash'),
   walk = require('findit');
 
 
-const WAIGO_FOLDER = path.join(__dirname),
-  APP_FOLDER = path.join(path.dirname(require.main.filename), 'src'),
+const WAIGO_FOLDER = __dirname,
+  DEFAULT_APP_FOLDER = path.join(path.dirname(require.main.filename), 'src'),
   $FILE = Symbol('file loading config'),
   $SOURCE_PATHS = Symbol('paths to sources');
+
+
+
+var appFolder = null;
 
 
 var loader = module.exports = global.waigo = {};
@@ -94,6 +98,22 @@ var _walk = function(folder, options) {
 
 
 
+/**
+ * Reset the internal file loader configuration.
+ *
+ * NOTE: `init()` must be called after this to re-initialize the loader.
+ * @return {[type]} [description]
+ */
+loader.reset = function() {
+  debug('Reset loader config');
+
+  appFolder = null;
+  loader[$FILE] = null;
+  loader[$SOURCE_PATHS] = null;
+};
+
+
+
 
 
 /**
@@ -117,19 +137,20 @@ var _walk = function(folder, options) {
  * @param {Array} [options.plugins.glob] Regexes specifying plugin naming conventions. Default is `waigo-*`.
  * @param {String|Object} [options.plugins.config] JSON config containing names of plugins to load. If a string is given then it assumed to be the path of a script which exports the configuration. Default is to load `package.json`.
  * @param {Array} [options.plugins.configKey] Names of keys in JSON config whose values contain names of plugins. Default is `dependencies, devDependencies, peerDependencies`.
+ *
+ * @return {Object} Final augmented options, in which ase you wish to check loading config.
  */
 loader.init = function*(options) {
   if (loader[$FILE]) {
     debug('Waigo was already initialised. Re-initialising...');
 
-    loader[$FILE] = null;
-    loader[$SOURCE_PATHS] = null;
+    loader.reset();
   }
 
-  options = options || {};
+  options = JSON.parse(JSON.stringify(options || {}));
   options.plugins = options.plugins || {};
 
-  appFolder = options.appFolder || appFolder;
+  appFolder = options.appFolder || DEFAULT_APP_FOLDER;
   debug('App folder ' + appFolder);
 
   // get loadable plugin
@@ -141,29 +162,23 @@ loader.init = function*(options) {
     let config = options.plugins.config || null;
     let scope = options.plugins.configKey || ['dependencies', 'devDependencies', 'peerDependencies'];
     
-    if (null === config || 'string' === typeof config) {
-      let pathToConfig = config || 'package.json';
+    if (null === config || typeof config === 'string') {
+      let pathToConfig = config;
 
-      if ('package.json' === pathToConfig) {
-        pathToConfig = findup(pathToConfig, {
-          cwd: APP_FOLDER
+      if (!pathToConfig || 'package.json' === pathToConfig) {
+        pathToConfig = findup('package.json', {
+          cwd: appFolder
         });
 
-        if (pathToConfig) {
-          debug('Unable to find path to package.json');
+        if (!pathToConfig) {
+          throw new Error(`Unable to find package.json`);
         }
-
-        config = {};
       }
 
-      if (pathToConfig) {
-        try {
-          config = require(path.resolve(pathToConfig));
-        } catch (err) {
-          debug(`Error loading ${pathToConfig}`);
-
-          config = {};
-        }
+      try {
+        config = require(path.resolve(pathToConfig));
+      } catch (err) {
+        throw new Error(`Unable to load config file: ${pathToConfig}`);
       }
     }
 
@@ -177,12 +192,9 @@ loader.init = function*(options) {
   
   debug(`Plugins to load: ${options.plugins.names.join(', ')}`);
 
-  // reset cache
-  loader[$FILE] = {};
-
   // what paths will we search?
   let sourcePaths = loader[$SOURCE_PATHS] = {
-    waigo: waigoFolder,
+    waigo: WAIGO_FOLDER,
     app: appFolder
   };
 
@@ -192,8 +204,11 @@ loader.init = function*(options) {
 
   let scanOrder = ['waigo'].concat(options.plugins.names, 'app');
 
+  // reset cache
+  loader[$FILE] = {};
+
   // start scanning
-  for (sourceName of scanOrder) {
+  for (let sourceName of scanOrder) {
     let moduleMap = {};
 
     debug(`Scanning for files in: ${sourceName}`);
@@ -214,9 +229,10 @@ loader.init = function*(options) {
 
     /*jshint -W083 */
     _.each(moduleMap, function(modulePath, moduleName) {
-      loader[$FILE][moduleName] = loader[$FILE][moduleName] || { 
+      loader[$FILE] = loader[$FILE] || {};
+      loader[$FILE][moduleName] = _.get(loader[$FILE], moduleName, { 
         sources: {} 
-      };
+      });
       loader[$FILE][moduleName].sources[sourceName] = modulePath;
     });
   }
@@ -252,6 +268,8 @@ loader.init = function*(options) {
 
     debug(`File "${moduleName}" will be loaded from source "${moduleConfig._load}"`);
   });
+
+  return options;
 };
 
 
@@ -270,7 +288,11 @@ loader.init = function*(options) {
  * @throws Error if there was an error loading the file.
  */
 loader.load = function(fileName) {
-  return require(loader.getPath(fileName));
+  let resolvedPath = loader.getPath(fileName);
+
+  debug(`Load ${fileName} -> ${resolvedPath}`);
+
+  return require(resolvedPath);
 };
 
 
@@ -414,7 +436,7 @@ loader.getWaigoFolder = function() {
  * @return {String}
  */
 loader.getAppFolder = function() {
-  return APP_FOLDER;
+  return appFolder;
 };
 
 

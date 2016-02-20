@@ -1,8 +1,7 @@
 "use strict";
 
 const waigo = global.waigo,
-  _ = waigo._,
-  Q = waigo.load('support/promise');
+  _ = waigo._;
 
 
 module.exports = Promise;
