@@ -13,8 +13,6 @@ const waigo = global.waigo,
  * @param {Object} app The application.
  */
 module.exports = function*(app) {
-  logger.info(`Setting up cron`);
-
   let logger = app.logger.create('Cron');
   
   app.cron = {};
@@ -23,12 +21,12 @@ module.exports = function*(app) {
 
   logger.info(`${cronTasks.length} cron tasks found`);
 
-  for (modulePath of cronTasks) {
-    let name = path.basename(modulePath, path.extname(modulePath));
+  for (let taskFilePath of cronTasks) {
+    let name = path.basename(taskFilePath, path.extname(taskFilePath));
 
     logger.debug(`Adding cron task: ${name}`);
 
-    let job = waigo.load(modulePath);
+    let job = waigo.load(taskFilePath);
 
     app.cron[name] = 
       yield app.models.Cron.create(name, job.schedule, job.handler);

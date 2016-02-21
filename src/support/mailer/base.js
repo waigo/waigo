@@ -35,7 +35,7 @@ class Mailer {
 
 
   * _init (transport) {
-    this._nodeMailer = new NodeMailer(this.logger, this.config, transport);
+    this._nodeMailer = new NodeMailer(this.app.logger, this.config, transport);
 
     this._emailBuilder = yield emailTemplates(
       path.join(waigo.getAppFolder(), 'views', 'emailTemplates')

@@ -8,7 +8,7 @@ const nodemailerStubTransport = require('nodemailer-stub-transport');
 
 const waigo = global.waigo,
   _ = waigo._,
-  Mailer = waigo.load('support/mailer/base').Mailer;
+  Mailer = waigo.load('support/mailer/base');
 
 
 
