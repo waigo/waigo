@@ -7,7 +7,7 @@ const waigo = global.waigo,
   _ = waigo._,
   errors = waigo.load('support/errors'),
   FieldExports = waigo.load('support/forms/field'),
-  { Field } = FieldExports,
+  Field = FieldExports.Field,
   viewObjects = waigo.load('support/viewObjects');
 
 
@@ -80,12 +80,12 @@ class Form {
    * 
    * @constructor
    */
-  constructor (config, options = {}) {
-    _.defaults(options, {
+  constructor (config, options) {
+    options = _.extend({
       context: null,
       state: null,
       submitted: false,
-    });
+    }, options);
 
     if (config instanceof Form) {
       // passed-in state overrides existing form's state
@@ -128,7 +128,12 @@ class Form {
     return this._state;
   }
 
-  set state (newState = {}) {
+  /**
+   * Set new state.
+   *
+   * @param {Object} newState New state.
+   */
+  set state (newState) {
     this._state = newState;
 
     for (let fieldName in this.fields) {
@@ -145,7 +150,7 @@ class Form {
    *
    * @param {Object} values Mapping from field name to field value.
    */
-  * setValues (values = {}) {
+  * setValues (values) {
     for (let fieldName in this.fields) {
       yield this.fields[fieldName].setSanitizedValue(values[fieldName]);
     }
@@ -160,7 +165,7 @@ class Form {
    * 
    * @param {Object} values Mapping from field name to field original value.
    */
-  * setOriginalValues (values = {}) {
+  * setOriginalValues (values) {
     for (let fieldName in this.fields) {
       this.fields[fieldName].originalValue = values[fieldName];
     }
@@ -252,7 +257,7 @@ class Form {
  *
  * @return {Object} Renderable plain object representation.
  */
-Form.prototype[viewObject.METHOD_NAME] = function*(ctx) {
+Form.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
   let fields = this.fields,
     fieldViewObjects = {},
     fieldOrder = [];
@@ -260,7 +265,7 @@ Form.prototype[viewObject.METHOD_NAME] = function*(ctx) {
   for (let fieldName in fields) {
     let field = fields[fieldName];
       
-    fieldViewObjects[fieldName] = yield field[viewObject.METHOD_NAME](ctx);
+    fieldViewObjects[fieldName] = yield field[viewObjects.METHOD_NAME](ctx);
     fieldOrder.push(fieldName);
   }
 

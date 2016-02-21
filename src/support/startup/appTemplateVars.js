@@ -7,11 +7,15 @@ const waigo = global.waigo,
 /**
  * Setup app-level template variables.
  *
+ * This startup step should run after all others.
+ *
  * @param {Object} app The application.
  */
 module.exports = function*(app) {
   app.templateVars = {
     _: _,
+    routeUrl: app.routeUrl,
+    staticUrl: app.staticUrl,
     config: app.config,
   };
 };

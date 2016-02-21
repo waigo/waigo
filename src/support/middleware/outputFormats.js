@@ -35,10 +35,12 @@ module.exports = function(options) {
 
   let formatNames = Object.keys(options.formats);
 
-  for (format of formatNames) {
+  for (let format of formatNames) {
     enabledFormats[format] = 
-      waigo.load(`support/outputFormats/${format}`)
-        .create(logger.create(format), options.formats[format]);
+      waigo.load(`support/outputFormats/${format}`).create(
+        app.logger.create(`OutputFormats/${format}`), 
+        options.formats[format]
+      );
   }
 
   return function* setOutputFormat(next) {

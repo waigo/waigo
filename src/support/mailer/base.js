@@ -70,7 +70,7 @@ class Mailer {
 
     var content = marked(compiled(templateVars || {}));
 
-    var locals = _.extend({}, templateVars, {
+    var locals = _.extend({}, this.app.templateVars, templateVars, {
       content: content
     });
 
@@ -82,12 +82,7 @@ class Mailer {
 
 
   * _renderBodyTemplate (templateName, templateVars) {
-    var content = yield this._renderEmailTemplate(templateName, templateVars);
-
-    var locals = _.extend({}, templateVars, {
-      content: content.html
-    });
-
+    var body = yield this._renderEmailTemplate(templateName, templateVars);
 
     return body.html;
   }
@@ -95,7 +90,7 @@ class Mailer {
 
 
 
-  Mailer.prototype._renderBody = function*(mailOptions, templateVars) {
+  * _renderBody (mailOptions, templateVars) {
     if (mailOptions.bodyTemplate) {
       return yield this._renderBodyTemplate(mailOptions.bodyTemplate, templateVars);
     } else {

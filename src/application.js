@@ -4,13 +4,19 @@
 const debug = require('debug')('waigo application'),
   koa = require('koa'),
   log4js = require('log4js'),
-  path = require('path'),
-  waigo = global.waigo,
-  _ = waigo._;
+  path = require('path');
+
+
+const waigo = global.waigo,
+  _ = waigo._,
+  errors = waigo.load('support/errors');
 
 
 // underscore mixins
 waigo.load('support/lodashMixins')(_);
+
+
+const ShutdownError = errors.define('ShutdownError');
 
 
 
@@ -26,6 +32,7 @@ waigo.load('support/lodashMixins')(_);
 var Application = module.exports = {
   app: koa()
 };
+
 
 
 
@@ -129,7 +136,7 @@ Application.start = function*(options) {
   // run startup steps
   let app = Application.app;
 
-  for (stepName of app.config.startupSteps) {
+  for (let stepName of app.config.startupSteps) {
     app.logger.debug(`Running startup step: ${stepName}`);
     
     /*jshint -W030 */
@@ -149,6 +156,10 @@ Application.start = function*(options) {
  */
 Application.shutdown = function*() {
   let app = Application.app;
+
+  if (!_.get(app.config, 'shutdownSteps')) {
+    throw new ShutdownError('Application not started');
+  }
 
   // run shutdown steps
   for (let stepName of app.config.shutdownSteps) {

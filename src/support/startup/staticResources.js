@@ -53,7 +53,7 @@ module.exports = function*(app) {
   shell.cp('-Rf', path.join(tmpFolder, '*'), destFolder);
 
   // Static URL helper
-  app.templateVars.staticUrl = _.curry(_staticUrl, 2)(logger);
+  app.staticUrl = _.curry(_staticUrl, 2)(logger);
 };
 
 

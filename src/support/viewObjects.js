@@ -42,7 +42,7 @@ const toViewObjectYieldable = exports.toViewObjectYieldable = function(ctx, inpu
     }
 
     // has view object method
-    if (inputObject[METHOD_NAME]) {
+    if ('function' === typeof inputObject[METHOD_NAME]) {
       return inputObject[METHOD_NAME].call(inputObject, ctx);
     }
     // is an array
@@ -54,7 +54,7 @@ const toViewObjectYieldable = exports.toViewObjectYieldable = function(ctx, inpu
     }
     // is an object
     else if (_.isPlainObject(inputObject)) {
-      var yieldables = {};
+      let yieldables = {};
 
       for (let idx in inputObject) {
         yieldables[idx] = toViewObjectYieldable(ctx, inputObject[idx]);

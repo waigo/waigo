@@ -37,7 +37,7 @@ module.exports = function*(app) {
     let colMethods = modelInfo.methods || {},
       docMethods = {};
 
-    docMethods[viewObject.METHOD_NAME] = function*(ctx) {
+    docMethods[viewObjects.METHOD_NAME] = function*(ctx) {
       return this.toJSON();
     };
 

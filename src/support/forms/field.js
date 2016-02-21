@@ -219,7 +219,7 @@ class Field {
  * 
  * @return {Object}
  */
-Field.prototype[viewObject.METHOD_NAME] = function*(ctx) {
+Field.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
   return _.extend({}, this.config, {
     value: this.value,
     originalValue: this.originalValue,

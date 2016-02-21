@@ -5,7 +5,7 @@ const querystring = require('querystring');
 
 const waigo = global.waigo,
   _ = waigo._,
-  { RuntimeError } = waigo.load('support/errors');
+  RuntimeError = waigo.load('support/errors').RuntimeError;
 
 
 

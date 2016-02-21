@@ -7,7 +7,18 @@ var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
   assert = testUtils.assert,
   expect = testUtils.expect,
   should = testUtils.should,
-  waigo = testUtils.waigo;
+  waigo = testUtils.waigo,
+  _ = waigo._;
+
+
+const DUMMY_CONFIG = {
+  logging: {
+    minLevel: 'debug'
+  },
+  startupSteps: [],
+  shutdownSteps: [],
+};
+
 
 
 test['app'] = {
@@ -103,7 +114,9 @@ test['app'] = {
     'loads app configuration': function(done) {
       var self = this;
 
-      test.mocker.stub(self.Application, 'loadConfig', function*() {});
+      test.mocker.stub(self.Application, 'loadConfig', function*() {
+        self.Application.app.config = DUMMY_CONFIG;
+      });
 
       var options = {
         dummy: true
@@ -120,12 +133,12 @@ test['app'] = {
       var self = this;
 
       test.mocker.stub(self.Application, 'loadConfig', function*() {
-        self.Application.app.config = {
+        self.Application.app.config = _.extend(DUMMY_CONFIG, {
           startupSteps: [
             'test1',
             'test2'
           ]
-        }
+        });
       });
 
       testUtils.spawn(self.Application.start)
@@ -154,6 +167,17 @@ test['app'] = {
         })
         .nodeify(done);
     },
+    'config must be loaded first': function(done) {
+      testUtils.spawn(this.Application.shutdown)
+        .then(() => {
+          throw new Error('Unexpected');
+        })
+        .catch((err) => {
+          err.message.should.eql('Application not started');
+          err.type.should.eql('ShutdownError');
+        })
+        .nodeify(done);
+    },
     'calls shutdown steps': function(done) {
       var self = this;
 
@@ -170,6 +194,8 @@ test['app'] = {
     },
     'recreates app': function(done) {
       var self = this;
+
+      self.Application.app.config.shutdownSteps = [];
 
       self.Application.app.middleware = [1];
 

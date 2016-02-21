@@ -7,7 +7,9 @@ const waigo = global.waigo,
 module.exports = Promise;
 
 
-Promise.promisify = function(fn, ctx = null) {
+Promise.promisify = function(fn, ctx) {
+  ctx = ctx || null;
+  
   return function() {
     let args = _.toArray(arguments);
 

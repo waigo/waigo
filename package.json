@@ -120,7 +120,7 @@
   },
   "scripts": {
     "prepublish": "npm prune",
-    "build": "node gulpfile.coffee",
+    "dev": "WAIGO_WORKERS=1 gulp",
     "test": "NODE_ENV=test gulp test"
   },
   "engines": {

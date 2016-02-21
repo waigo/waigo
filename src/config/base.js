@@ -77,7 +77,6 @@ module.exports = function(config) {
    * Each of these corresponds to a module file under the `support/startup` path.
    */
   config.startupSteps = [
-    'appLocals',
     'database',
     'models',
     'forms',
@@ -89,6 +88,7 @@ module.exports = function(config) {
     'actionTokens',
     'mailer',
     'cron',
+    'appTemplateVars',
     'listener'
   ];
 

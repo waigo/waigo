@@ -53,7 +53,7 @@ module.exports = function(options) {
 var render = function*(config, err) {
   this.status = err.status || 500;
 
-  let error = yield err[viewObject.METHOD_NAME].call(err, this);
+  let error = yield err[viewObjects.METHOD_NAME].call(err, this);
 
   error.status = this.status;
   error.request = {

@@ -24,7 +24,7 @@ var routeUrl = function(app, routeName, urlParams, queryParams, options) {
     absolute: false
   }, options);
 
-  debug('Generate URL for route ' + routeName);
+  app.logger.debug('Generate URL for route ' + routeName);
 
   var route = app.routes.byName[routeName];
 
@@ -56,7 +56,7 @@ var routeUrl = function(app, routeName, urlParams, queryParams, options) {
  * @param {Object} app The application.
  */
 module.exports = function*(app) {
-  debug('Setting up routes');
+  app.logger.debug('Setting up routes');
 
   require('koa-trie-router')(app);
 
@@ -65,7 +65,7 @@ module.exports = function*(app) {
   app.routes = {};
 
   _.each(routeFiles, function(routeFile) {
-    debug('Loading ' + routeFile);
+    app.logger.debug('Loading ' + routeFile);
 
     _.merge(app.routes, waigo.load(routeFile));
   });
@@ -75,7 +75,7 @@ module.exports = function*(app) {
   app.use(app.router);
 
   // helper to build a URL based on a route
-  app.routeUrl = app.locals.routeUrl = _.bind(routeUrl, null, app);
+  app.routeUrl = _.bind(routeUrl, null, app);
 };
 
 

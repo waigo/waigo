@@ -25,7 +25,7 @@ const METHODS = ['GET', 'POST', 'DEL', 'DELETE', 'PUT', 'OPTIONS', 'HEAD'];
  * 
  * @return {Function}
  */
-var loadMiddleware = function(middlewareName, middlewareOptions = null) {
+var loadMiddleware = function(middlewareName, middlewareOptions) {
   if (_.isPlainObject(middlewareName)) {
     middlewareOptions = _.omit(middlewareName, 'id');
     middlewareName = middlewareName.id;
@@ -96,7 +96,7 @@ var buildRoutes = function(logger, commonMiddleware, urlPath, node, parentConfig
   let mappings = [];
 
   // iterate through each possible method
-  _.each(methods , function(m) {
+  _.each(METHODS , function(m) {
     if (node[m]) {
       let routeMiddleware = _.isArray(node[m]) ? node[m] : [node[m]];
 
@@ -138,11 +138,11 @@ var buildRoutes = function(logger, commonMiddleware, urlPath, node, parentConfig
  * 
  * @return {Array}
  */
-var loadCommonMiddleware = function(middleware) {
+var loadCommonMiddleware = function(logger, middleware) {
   middleware = middleware || {};
 
   return _.map(middleware._order, function(m) {
-    debug('Setting up middleware', m);
+    logger.debug('Setting up middleware', m);
     
     return loadMiddleware(m, middleware[m]);
   });
@@ -169,11 +169,11 @@ exports.map = function(app, routes) {
 
   // resolve middleware for different HTTP methods
   let commonMiddleware = {};
-  _.each(methods, function(method) {
+  _.each(METHODS, function(method) {
     logger.debug('Setting up HTTP method middleware', method);
 
     commonMiddleware[method] = 
-      loadCommonMiddleware(app.config.middleware[method]);
+      loadCommonMiddleware(logger, app.config.middleware[method]);
   });
 
   // build mappings

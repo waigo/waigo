@@ -16,7 +16,7 @@ const waigo = global.waigo,
  * 
  * @return {Object} Plain object.
  */
-Error.prototype[viewObject.METHOD_NAME] = function*(ctx) {
+Error.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
   let ret = {
     type: this.name || 'Error',
     msg: this.message,
@@ -27,6 +27,8 @@ Error.prototype[viewObject.METHOD_NAME] = function*(ctx) {
 
   return ret;
 };
+
+
 
 
 /**
@@ -43,12 +45,13 @@ class RuntimeError extends Error {
    * @param {Number} [status] HTTP return status code to set. Default is 500.
    * @param {Object} [details] Additional details pertaining to this error.
    */
-  constructor (msg = 'An error occurred', status = 500, details = null) {
+  constructor (msg, status, details) {
+    msg = msg || 'An error occurred';
     super(msg);
     this.name = this.constructor.name;
     this.message = msg;
-    this.status = status;
-    this.details = details;
+    this.status = status || 500;
+    this.details = details || null;
     Error.captureStackTrace(this, this.constructor);
   }
 }
@@ -61,7 +64,7 @@ exports.RuntimeError = RuntimeError;
  *
  * @return {Object} Plain object.
  */
-RuntimeError.prototype[viewObject.METHOD_NAME] = function*(ctx) {
+RuntimeError.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
   let ret = {
     type: this.name,
     msg: this.message,
@@ -84,7 +87,7 @@ RuntimeError.prototype[viewObject.METHOD_NAME] = function*(ctx) {
  * Sometimes we may wish to report multiple related errors (e.g. form field 
  * validation failures). This error class makes it easy to do so.
  */
-class MultipleError {
+class MultipleError extends RuntimeError {
   /**
    * Constructor.
    *
@@ -92,7 +95,10 @@ class MultipleError {
    * @param {Number} [status] HTTP return status code to set. Default is 500.
    * @param {Object} [subErrors] Map of errors, where each value is itself an `Error` instance.
    */
-  construct (msg = 'Some errors occurred', status = 500, subErrors = {}) {
+  constructor (msg, status, subErrors) {
+    msg = msg || 'Some errors occurred';
+    subErrors = subErrors || {};
+
     super(msg, status, subErrors);
   }
 }
@@ -108,7 +114,7 @@ exports.MultipleError = MultipleError;
  *
  * @return {Object} Plain object.
  */
-MultipleError.prototype[viewObject.METHOD_NAME] = function*(ctx) {
+MultipleError.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
   let ret = {
     type: this.name,
     msg: this.message,
@@ -116,7 +122,7 @@ MultipleError.prototype[viewObject.METHOD_NAME] = function*(ctx) {
   };
 
   for (let subError of this.details) {
-    let fn = subError[viewObject.METHOD_NAME];
+    let fn = subError[viewObjects.METHOD_NAME];
 
     ret.details[id] = (fn ? yield fn(ctx) : subError);
   }
@@ -139,14 +145,16 @@ MultipleError.prototype[viewObject.METHOD_NAME] = function*(ctx) {
  *
  * @return {Class} The new error class.
  */
-exports.define = function(newClassName, baseClass = RuntimeError) {
-  let newErrorClass = new Class extends baseClass {
-    construct(msg, status, details) {
+exports.define = function(newClassName, baseClass) {
+  baseClass = baseClass || RuntimeError;
+
+  let newErrorClass = (class Class extends baseClass {
+    constructor (msg, status, details) {
       super(msg, status, details);
       this.name = newClassName;
       Error.captureStackTrace(this, newErrorClass);
     }
-  };
+  });
 
   return newErrorClass;
 };

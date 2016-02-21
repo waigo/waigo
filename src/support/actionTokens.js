@@ -37,10 +37,12 @@ class ActionTokens {
    *
    * @return {String} the action token. 
    */
-  * create (type, user, data = '', options = {}) {
-    _.defaults(options, {
+  * create (type, user, data, options) {
+    data = data || '';
+
+    options = _.extend({
       validForHours: this.config.validForHours
-    });
+    }, options);
 
     this.logger.debug(`Creating action token: ${type} for user ${user._id}`, data);
 
@@ -76,7 +78,9 @@ class ActionTokens {
    * 
    * @param {Object} token `type`, `user` and `data`.
    */
-  * process (token, options = {}) {
+  * process (token, options) {
+    options = options || {};
+    
     this.logger.debug(`Processing action token: ${token}`);
 
     let json = null;
