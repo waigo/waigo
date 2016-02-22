@@ -2,7 +2,7 @@
 
 
 const path = require('path'),
-  Robe = require('robe');
+  thinky = require('thinky')();
 
 const waigo = global.waigo,
   _ = waigo._,
@@ -25,46 +25,14 @@ module.exports = function*(app) {
   for (let modulePath of modelModuleFiles) {
     app.logger.debug(`Loading ${modulePath}`);
 
-    let moduleFileName = path.basename(modulePath, path.extname(modulePath));
+    let moduleFileName = path.basename(modulePath, path.extname(modulePath)),
+      modelConfig = waigo.load(modulePath),
+      model = modelConfig(app);
 
-    let modelInfo = waigo.load(modulePath);
-
-    let name = modelInfo.className || _.capitalize(moduleFileName),
-      dbName = modelInfo.db || 'main',
-      collectionName = modelInfo.collection || _.pluralize(name).toLowerCase();
-    
-    // add view object docMethod (but can be overridden for each model)
-    let colMethods = modelInfo.methods || {},
-      docMethods = {};
-
-    docMethods[viewObjects.METHOD_NAME] = function*(ctx) {
-      return this.toJSON();
-    };
-
-    // add method to fetch app
-    colMethods.getApp = docMethods.getApp = function() {
-      return app;
-    };
-
-    // add method to record to activity log
-    colMethods.record = docMethods.record = function*() {
-      if (app.record) {
-        yield app.record.apply(app, arguments);
-      }
-    };
-
-    modelInfo.docMethods = _.extend(docMethods, modelInfo.docMethods);
-
-    // create model instance
-    let Model = app.dbs[dbName].collection(collectionName, modelInfo);
+    let name = model.modelName || _.capitalize(moduleFileName);
 
     app.models[name] = Model;
 
-    app.logger.debug('Added model', name, dbName  + '/' + collectionName);
-
-    // ensure indexes are created
-    app.logger.debug('Ensure indexes', dbName, collectionName);
-
-    yield Model.ensureIndexes();
+    app.logger.debug('Added model', name);
   }
 };
