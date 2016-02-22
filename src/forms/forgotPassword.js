@@ -40,7 +40,7 @@ module.exports = {
         ]
       }, {
         fields: {
-          _id: 1,
+          id: 1,
           username: 1,
           profile: 1,
           emails: 1,
@@ -54,7 +54,7 @@ module.exports = {
       // action
       let token = yield app.actionTokens.create('reset_password', user);
 
-      app.logger.debug('Reset password token for ' + user._id , token);
+      app.logger.debug('Reset password token for ' + user.id , token);
 
       // record
       yield app.record('reset_password', user);

@@ -22,7 +22,7 @@ module.exports = function() {
 
       this.currentUser =  
         yield this.app.models.User.findOne({
-          _id: this.session.user._id
+          id: this.session.user.id
         })
       ;
     }

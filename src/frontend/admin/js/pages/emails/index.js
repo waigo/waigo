@@ -17,7 +17,7 @@ exports.init = function(rootElem) {
     },
     addUser: function(user) {
       var existing = _.find(this.state.users, function(u) {
-        return u._id === user._id;
+        return u.id === user.id;
       });
 
       if (!existing) {
@@ -27,12 +27,12 @@ exports.init = function(rootElem) {
       }
     },
     removeUser: function(userOrId) {
-      if (userOrId._id) {
-        userOrId = userOrId._id;
+      if (userOrId.id) {
+        userOrId = userOrId.id;
       }
 
       var newUsers = this.state.users.filter(function(u) {
-        return u._id !== userOrId;
+        return u.id !== userOrId;
       });
 
       this.setState({

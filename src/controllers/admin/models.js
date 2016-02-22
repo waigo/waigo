@@ -71,14 +71,14 @@ exports.rows = function*() {
 
     fieldsToInclude[name] = 1;
   });
-  fieldsToInclude._id = 1;  // always include _id field
+  fieldsToInclude.id = 1;  // always include id field
 
   // exclude certain ids?
   if (excludeIds && excludeIds.length) {
     filter = {
       $and: [
         filter, {
-          _id: {
+          id: {
             $nin: excludeIds.map(function(id) {
               return toObjectID(id);
             })
@@ -117,7 +117,7 @@ exports.doc = function*() {
 
   // get data
   let row = yield model.findOne({
-    _id: rowId
+    id: rowId
   });
 
   yield this.render('/admin/models/doc', {
@@ -139,9 +139,9 @@ exports.docCreate = function*() {
     this.throw('Cannot create an empty document', 403);
   }
 
-  // don't allow _id to be updated
-  if (doc._id) {
-    this.throw('Cannot override _id', 403);
+  // don't allow id to be updated
+  if (doc.id) {
+    this.throw('Cannot override id', 403);
   }
 
   let model = this.models[modelName];
@@ -154,7 +154,7 @@ exports.docCreate = function*() {
   // record activity
   yield this.app.record('insert_doc', this.currentUser, {
     model: modelName,
-    _id: newDoc._id
+    id: newDoc.id
   });
 
   this.body = {
@@ -178,8 +178,8 @@ exports.docUpdate = function*() {
     this.throw('Cannot update to an empty document', 403);
   }
 
-  // don't allow _id to be updated
-  delete doc._id;
+  // don't allow id to be updated
+  delete doc.id;
 
   let model = this.models[modelName];
 
@@ -187,13 +187,13 @@ exports.docUpdate = function*() {
 
   // update data
   yield model.update({
-    _id: rowId
+    id: rowId
   }, doc);
 
   // record activity
   yield this.app.record('update_doc', this.currentUser, {
     model: modelName,
-    _id: rowId
+    id: rowId
   });
 
   this.body = {
@@ -214,13 +214,13 @@ exports.docDelete = function*() {
 
   // delete data
   yield model.remove({
-    _id: rowId
+    id: rowId
   });
 
   // record activity
   yield this.app.record('delete_doc', this.currentUser, {
     model: modelName,
-    _id: rowId
+    id: rowId
   });
 
   this.body = {

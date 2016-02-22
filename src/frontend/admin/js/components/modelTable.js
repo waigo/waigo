@@ -53,7 +53,7 @@ module.exports = React.createClass({
 
     if (this.props.onRowClick) {
       var item = _.find(this.state.rows, function(row) {
-        return row._id === e.currentTarget.id;
+        return row.id === e.currentTarget.id;
       });
 
       this.props.onRowClick(item);
@@ -204,7 +204,7 @@ module.exports = React.createClass({
         return (<td key={col.name} dataFlipValue={flipValue}>{value}</td>);
       });
 
-      return (<tr id={row._id} key={row._id} onClick={self._onRowClick}>{values}</tr>);
+      return (<tr id={row.id} key={row.id} onClick={self._onRowClick}>{values}</tr>);
     });
 
     return (
@@ -305,7 +305,7 @@ module.exports = React.createClass({
         error: null,
       });
 
-      var excludeIds = self.props.excludeRows.map(er => er._id);
+      var excludeIds = self.props.excludeRows.map(er => er.id);
 
       // fetch collection rows
       $.ajax({

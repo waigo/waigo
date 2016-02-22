@@ -102,7 +102,7 @@ class ACL {
    * @return {Boolean} true if allowed; false otherwise.
    */
   can (resource, user) {
-    this.logger.debug('can', resource, user._id);
+    this.logger.debug('can', resource, user.id);
 
     // if resource name is "public" then everyone has access
     if ('public' === resource) {
@@ -120,7 +120,7 @@ class ACL {
     }
 
     // if user has access it's ok
-    if (_.get(this.users, user._id + '.' + resource)) {
+    if (_.get(this.users, user.id + '.' + resource)) {
       return true;
     }
 
@@ -143,10 +143,10 @@ class ACL {
    * @throws AclError if access disallowed.
    */
   assert (resource, user) {
-    this.logger.debug('assert', resource, user._id);
+    this.logger.debug('assert', resource, user.id);
 
     if (!this.can(resource, user)) {
-      throw new AclError(`User ${user._id} does not have permission to access: ${resource}`, 403);
+      throw new AclError(`User ${user.id} does not have permission to access: ${resource}`, 403);
     }
   }
 }

@@ -164,7 +164,7 @@ module.exports = React.createClass({
         data: {
           subject: self.state.subject,
           body: self.state.body,
-          user: self.props.users[0]._id
+          user: self.props.users[0].id
         }
       })
         .done(function(data){        
@@ -210,7 +210,7 @@ module.exports = React.createClass({
       data: {
         subject: self.state.subject,
         body: self.state.body,
-        users: self.props.users.map( v => v._id ),
+        users: self.props.users.map( v => v.id ),
       }
     })
       .done(function() {

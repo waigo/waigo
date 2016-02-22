@@ -19,7 +19,7 @@ exports.render = function*() {
   this.app.logger.debug('Render email template');
 
   let user = yield this.app.models.User.findOne({
-    _id: userId
+    id: userId
   });
 
   if (!user) {
@@ -47,7 +47,7 @@ exports.send = function*() {
   this.app.logger.debug('Send email to users', userIds);
 
   let users = yield this.app.models.User.find({
-    _id: {
+    id: {
       $in: userIds.map(function(v) {
         return toObjectID(v);
       })

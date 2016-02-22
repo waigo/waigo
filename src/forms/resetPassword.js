@@ -36,7 +36,7 @@ module.exports = {
         app = ctx.app,
         user = ctx.currentUser;
 
-      app.logger.info('Resetting user password', user._id);
+      app.logger.info('Resetting user password', user.id);
 
       // save new password
       yield user.updatePassword(this.fields.password.value);

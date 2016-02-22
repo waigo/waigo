@@ -69,7 +69,7 @@ exports.init = function(rootElem) {
     _setItem: function(itemNewData) {
       // loop through our list, and overwrite item
       this.state.tasks.forEach(function(item) {
-        if (item._id === itemNewData._id) {
+        if (item.id === itemNewData.id) {
           _.extend(item, itemNewData);
         }
       });

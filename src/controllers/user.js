@@ -114,7 +114,7 @@ exports.verify_email = function*() {
     }
   );
   
-  this.logger.debug('Verify email address', action.user._id, action.data.email);
+  this.logger.debug('Verify email address', action.user.id, action.data.email);
 
   // verify email address
   yield action.user.verifyEmail(action.data.email);
@@ -182,7 +182,7 @@ exports.reset_password = function*() {
   // log the user in
   yield action.user.login(this);
 
-  this.logger.debug('Reset password', action.user._id);
+  this.logger.debug('Reset password', action.user.id);
 
   let form = yield this.form.create('resetPassword', {
     context: this

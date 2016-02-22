@@ -30,7 +30,7 @@ module.exports = React.createClass({
   _onRowClick: function(item) {
     this.context.router.transitionTo('modelRow', {
       key: this.context.router.getCurrentParams().key,
-      id: item._id
+      id: item.id
     });
   },
 

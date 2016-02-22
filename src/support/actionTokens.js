@@ -44,7 +44,7 @@ class ActionTokens {
       validForHours: this.config.validForHours
     }, options);
 
-    this.logger.debug(`Creating action token: ${type} for user ${user._id}`, data);
+    this.logger.debug(`Creating action token: ${type} for user ${user.id}`, data);
 
     // every token is uniquely identied by a salt (this is also doubles up as  
     // a factor for more secure encryption)
@@ -54,7 +54,7 @@ class ActionTokens {
       Date.now() + (options.validForHours * 1000 * 60 * 60), 
       salt, 
       type, 
-      user._id, 
+      user.id, 
       data 
     ]);
 
@@ -118,7 +118,7 @@ class ActionTokens {
     }
 
     var user = yield this.app.models.User.findOne({
-      _id: userId
+      id: userId
     });
 
     if (!user) {

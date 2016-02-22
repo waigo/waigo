@@ -38,7 +38,7 @@ module.exports = React.createClass({
           <li className="collection-item">
             {user.username}
             <a href="#!" className="secondary-content" 
-                data-id={user._id} onClick={self._onRemoveUser}>
+                data-id={user.id} onClick={self._onRemoveUser}>
               <i className="fa fa-remove"></i>
             </a>
           </li>

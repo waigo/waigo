@@ -134,7 +134,7 @@ module.exports = React.createClass({
         var doc = JSON.parse(data.doc);
 
         // remove id attribute
-        delete doc._id;
+        delete doc.id;
 
         self.setStateIfMounted({
           jsonStr: JSON.stringify(doc)
@@ -200,9 +200,9 @@ module.exports = React.createClass({
         Materialize.toast('Create successful', 2000, 'rounded');
 
         var doc = JSON.parse(data.doc),
-          id = doc._id;
+          id = doc.id;
 
-        delete doc._id;
+        delete doc.id;
 
         self.setStateIfMounted({
           id: id,
