@@ -93,7 +93,9 @@ function buildModelMethods(app) {
         return null;
       }
 
-      return _.get(yield this.filter({ id: userId }).run(), '0');
+      let res = yield this.filter({ id: userId }).run();
+
+      return _.get(res, '0');
     },
   };
 }
@@ -129,7 +131,7 @@ function buildDocMethods(app) {
         salt = passAuth.token.substr(0, sepPos),
         hash = passAuth.token.substr(sepPos + 1);
       
-      let generatedHash = yield this.__col.generatePasswordHash(
+      let generatedHash = yield this.getModel().generatePasswordHash(
         password, salt
       );
 
@@ -144,7 +146,7 @@ function buildDocMethods(app) {
 
       context.session.user = {
         id: this.id,
-        username: this.username
+        username: this.username,
       };
 
       // update last-login timestamp
@@ -167,11 +169,10 @@ function buildDocMethods(app) {
       theEmail.verified = true;
 
       // save
-      this.markChanged('emails');
       yield this.save();
 
       // record
-      yield this.record('verify_email', this, {
+      yield app.record('verify_email', this, {
         email: email
       });
     },
@@ -196,11 +197,10 @@ function buildDocMethods(app) {
       theEmail.verified = true;
 
       // save
-      this.markChanged('emails');
       yield this.save();
 
       // record
-      yield this.record('add_email', this, {
+      yield app.record('add_email', this, {
         email: email
       });
     },
@@ -220,14 +220,13 @@ function buildDocMethods(app) {
       }
 
       // update password
-      passAuth.token = yield this.__col.generatePasswordHash(newPassword);
+      passAuth.token = yield this.getModel().generatePasswordHash(newPassword);
 
       // save
-      this.markChanged('auth');
       yield this.save();
 
       // record
-      yield this.record('update_password', this);
+      yield app.record('update_password', this);
     },
     /**
      * Get OAuth data.
@@ -278,11 +277,10 @@ function buildDocMethods(app) {
       existing.data = data;
 
       // save
-      this.markChanged('auth');
       yield this.save();
 
       // record
-      yield this.record('save_oauth', this, _.pick(existing, 'type', 'token'));
+      yield app.record('save_oauth', this, _.pick(existing, 'type', 'token'));
     },
     /**
      * Get whether user can access given resource.
@@ -314,22 +312,21 @@ module.exports = function(app) {
   const db = app.db;
 
   const User = db.createModel("User", {
-    id: db.type.string().required(),
     username: db.type.string().required(),
     profile: {
       displayName: db.type.string().required(),
     },
     emails: db.type.array().required().schema({
       email: db.type.string().required(),
-      verified: db.type.boolean(),
+      verified: db.type.boolean().optional(),
     }),
     auth: db.type.array().required().schema({
       type: db.type.string().required(),
       token: db.type.string().required(),
-      data: db.type.object(),allowExtra(),
+      data: db.type.object().optional().allowExtra(),
     }),
     roles: db.type.array().required().schema(db.type.string()),
-    lastLogin: db.type.date()
+    lastLogin: db.type.date().optional(),
   }, {
     enforce_missing: true
   });
@@ -338,9 +335,17 @@ module.exports = function(app) {
     listView: ['verb', 'actor', 'published'],
   };
 
+  _.each(buildModelMethods(app), function(fn, k) {
+    User[k] = _.bind(fn, User);
+  });
+
+  _.each(buildDocMethods(app), function(fn, k) {
+    User.define(k, fn);
+  });
+
   User.ensureIndex('username');
   User.ensureIndex('email', function(doc) {
-    return _.pluck(doc('emails'), 'email');
+    return doc('emails')('email');
   }, {
     multi: true,
   });

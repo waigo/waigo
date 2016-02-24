@@ -191,12 +191,11 @@ module.exports = function(app) {
   const db = app.db;
 
   const Cron = db.createModel("Cron", {
-    id: db.type.string().required(),
     disabled: db.type.boolean().required(),
-    lastRun: {
+    lastRun: db.type.object().optional().schema({
       type: db.type.string().required(),
       when: db.type.date().required(),
-    },
+    }),
   }, {
     enforce_missing: true
   });
@@ -206,11 +205,11 @@ module.exports = function(app) {
     listView: ['id', 'disabled', 'lastRun.when'],
   };
 
-  _.each(buildModelMethods(app), (fn, k) => {
-    Cron.defineStatic(k, fn);
+  _.each(buildModelMethods(app), function(fn, k) {
+    Cron[k] = _.bind(fn, Cron);
   });
 
-  _.each(buildDocMethods(app),app (fn, k) => {
+  _.each(buildDocMethods(app), function(fn, k) {
     Cron.define(k, fn);
   });
 

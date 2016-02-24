@@ -34,7 +34,7 @@ module.exports = function*(app) {
     
     let builder = waigo.load(`support/db/${cfg.type}`);
 
-    app.dbs[id] = yield builder.create(app.logger, cfg);
+    app.dbs[id] = yield builder.create(app.logger.create(id), cfg);
   }
 
   // for convenience

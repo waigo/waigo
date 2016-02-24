@@ -31,7 +31,7 @@ module.exports = function*(app) {
 
     let name = model.modelName || _.capitalize(moduleFileName);
 
-    app.models[name] = Model;
+    app.models[name] = model;
 
     app.logger.debug('Added model', name);
   }

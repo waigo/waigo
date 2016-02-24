@@ -39,13 +39,14 @@ class ACL {
     }
 
     // get notified of ACL updates
-    try {
-      yield this.app.models.Acl.addWatcher(() => {
+    this.app.models.Acl.changes()
+      .then((feed) => {
         this.onAclUpdated();
+      })
+      .error((err) => {
+        this.logger.error(error);
       });
-    } catch (err) {
-      this.logger.error('Unable to watch for ACL updates', err.stack);
-    }
+    ;
   }
 
 
@@ -55,9 +56,7 @@ class ACL {
   * reload () {
     this.logger.debug('Reloading rules from db');
 
-    let data = yield this.app.models.Acl.find({}, {
-      rawMode: true
-    });
+    let data = yield this.app.models.Acl.load();
 
     let res = this.res = {},
       users = this.users = {},

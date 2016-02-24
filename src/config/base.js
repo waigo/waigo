@@ -116,20 +116,21 @@ module.exports = function(config) {
   config.db = {
     // connection id
     main: {
-      // currently supported: mongo
-      type: 'mongo',
+      // currently supported: rethinkdb
+      type: 'rethinkdb',
       // name of db
       name: 'waigo',
       // connection timeout
-      //connectionTimeoutMs: 3000,
+      // connectionTimeoutMs: 3000,
       // host/replica sets
-      hosts: [
-        // first entry is always treated as the master
-        {
-          host: '127.0.0.1',
-          port: 27017,
-        }
-      ],
+      poolConfig: {
+        servers: [
+          {
+            host: '127.0.0.1',
+            port: 28015,
+          }
+        ],
+      }
     }
   };
   
