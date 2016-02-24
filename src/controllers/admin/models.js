@@ -24,15 +24,15 @@ exports.columns = function*() {
 
   // iterate through schema
   let model = this.models[modelName],
-    schema = _.get(model, 'options.schema', {}),
-    listViewColumns = _.get(model, 'options.admin.listView', []);
+    schema = model.getColumnDefinitions(),
+    listViewColumns = _.get(model, 'admin.listView', []);
 
   // return columns as array of objects, each object defining column properties
   let columns = listViewColumns.map(function(c) {
     if (!c.name) {
       c = {
         name: c
-      }
+      };
     }
 
     c.type = _.get(schema[c.name], 'type', String);
@@ -58,7 +58,7 @@ exports.rows = function*() {
   this.logger.debug('get rows', modelName);
 
   let model = this.models[modelName],
-    listViewColumns = _.get(model, 'options.admin.listView');
+    listViewColumns = _.get(model, 'admin.listView');
 
   if (!model) {
     this.throw('Unable to find model', 404);

@@ -48,7 +48,11 @@ function buildModelMethods(app) {
 
       // override view object method
       cron[viewObjects.METHOD_NAME] = function*(ctx) {
-        let json = this.toJSON();
+        let json = {
+          id: this.id,
+          disabled: this.disabled,
+          lastRun: this.lastRun ? this.lastRun.when : 'never',
+        };
 
         json.schedule = crontab;
         json.nextRun = cron[$EXTRA].job.nextDate().toDate();
