@@ -17,40 +17,6 @@ const waigo = global.waigo,
 module.exports = function*(app) {
   app.logger.debug('Setting up Activity recorder');
 
-  /**
-   * Record an activity.
-   * 
-   * @param {String} verb          activity name
-   * @param {String|User} actor    `User` who did it. Or name of system process.
-   * @param {Object} [details]     Additional details.
-   * 
-   * @return {Activity} the created activity object
-   */
-  app.record = function*(verb, actor, details) {
-    app.logger.debug('Recording activity', verb, actor.id || actor, details);
-
-    if (!actor.id) {
-      actor = {
-        displayName: actor
-      }
-    } else {
-      actor = {
-        id: '' + actor.id,
-        displayName: actor.username,
-      }
-    }
-
-    let qry = {
-     verb: verb,
-     actor: actor,
-     published: new Date(), 
-    }
-
-    if (details) {
-      qry.details = details;
-    }
-
-    return yield app.models.Activity.insert(qry);
-  };
+  app.record = app.models.Activity.record;
 };
 
