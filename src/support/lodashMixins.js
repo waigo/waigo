@@ -3,6 +3,37 @@
 
 module.exports = function(_) {
   _.mixin({
+    /**
+     * Bind generator function to given context.
+     * @param  {GeneratorFunction} genFn Generator function.
+     * @param  {Object} ctx   Desired `this` context.
+     * @return {GeneratorFunction}
+     */
+    bindGen: function(genFn, ctx) {
+      return function*(...args) {
+        return yield genFn.apply(ctx, args);
+      };
+    },
+    /** 
+     * Get whether given function is a generator function.
+     *
+     * @param {Function} fn A function.
+     *
+     * @return {Boolean} true if so; false otherwise.
+     */
+    isGen: function(fn) {
+      var constructor = fn.constructor;
+
+      if (!constructor) {
+        return false;
+      }
+
+      if ('GeneratorFunction' === constructor.name || 'GeneratorFunction' === constructor.displayName) {
+        return true;
+      }
+
+      return ('function' == typeof constructor.prototype.next && 'function' == typeof constructor.prototype.throw);
+    },
     pluralize: require('pluralize'),
     uuid: require('node-uuid'),
     /**
