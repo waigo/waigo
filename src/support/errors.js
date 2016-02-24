@@ -25,6 +25,10 @@ Error.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
 
   ret.details = this.details || this.failures;
 
+  if (this.stack && _.get(ctx, 'app.config.errors.showStack')) {
+    ret.stack = this.stack;
+  }
+
   return ret;
 };
 
@@ -74,6 +78,10 @@ RuntimeError.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
     ret.details = yield viewObjects.toViewObjectYieldable(ctx, this.details);
   }
 
+  if (this.stack && _.get(ctx, 'app.config.errors.showStack')) {
+    ret.stack = this.stack;
+  }
+
   return ret;
 };
 
@@ -96,10 +104,7 @@ class MultipleError extends RuntimeError {
    * @param {Object} [subErrors] Map of errors, where each value is itself an `Error` instance.
    */
   constructor (msg, status, subErrors) {
-    msg = msg || 'Some errors occurred';
-    subErrors = subErrors || {};
-
-    super(msg, status, subErrors);
+    super(msg || 'Some errors occurred', status, subErrors || {});
   }
 }
 exports.MultipleError = MultipleError;
@@ -115,16 +120,15 @@ exports.MultipleError = MultipleError;
  * @return {Object} Plain object.
  */
 MultipleError.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
-  let ret = {
-    type: this.name,
-    msg: this.message,
-    details: {},
-  };
+  let ret = RuntimeError.prototype[viewObjects.METHOD_NAME].call(this, ctx);
 
-  for (let subError of this.details) {
-    let fn = subError[viewObjects.METHOD_NAME];
+  ret.details = {};
 
-    ret.details[id] = (fn ? yield fn(ctx) : subError);
+  for (let subErrorKey in this.details) {
+    let subError = this.details[subErrorKey],
+      fn = subError[viewObjects.METHOD_NAME];
+
+    ret.details[subErrorKey] = (fn ? yield fn(ctx) : subError);
   }
 
   return ret;

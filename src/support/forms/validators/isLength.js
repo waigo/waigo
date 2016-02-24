@@ -3,7 +3,7 @@
 const validator = require('validator');
 
 const waigo = global.waigo,
-  { FieldValidationError } = waigo.load('support/field');
+  FieldValidationError = waigo.load('support/field').FieldValidationError;
 
 
 

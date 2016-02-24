@@ -105,6 +105,18 @@ module.exports = function(config) {
   ];
 
 
+  /** 
+   * Error handling config.
+   */
+  config.errors = {
+    /** 
+     * Whether stack traces should be included when rendering errors.
+     * @type {Boolean}
+     */
+    showStack: true,
+  };
+
+
 
   /**
    * Database connection.
@@ -154,9 +166,7 @@ module.exports = function(config) {
       'contextHelpers',
       'csrf',
     ],
-    errorHandler: {
-      showStack: true
-    },
+    errorHandler: {},
     staticResources: {
       // relative to app folder
       folder: config.staticResources.folder,

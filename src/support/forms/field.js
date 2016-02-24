@@ -241,11 +241,13 @@ Field.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
  */
 Field.new = function(form, config) {
   let type = config.type,
-    FieldClass = waigo.load(`support/forms/fields/${type}`).Field;
+    FieldClass = waigo.load(`support/forms/fields/${type}`);
 
   return new FieldClass(form, config);
 }
 
 
 
+
+exports.Field = Field;
 

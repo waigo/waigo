@@ -11,7 +11,7 @@ const waigo = global.waigo,
   viewObjects = waigo.load('support/viewObjects');
 
 
-module.exports = FieldExports;
+exports.Field = FieldExports.Field;
 
 
 

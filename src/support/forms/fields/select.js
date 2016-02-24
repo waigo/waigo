@@ -5,7 +5,9 @@ const waigo = global.waigo,
   _ = waigo._,
   errors = waigo.load('errors'),
   viewObjects = waigo.load('support/viewObjects'),
-  { Field, FieldValidationError } = waigo.load('support/forms/field');
+  FieldExports = waigo.load('support/forms/field'),
+  Field = FieldExports.Field, 
+  FieldValidationError = FieldExports.FieldValidationError;
 
 
 

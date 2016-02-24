@@ -14,16 +14,9 @@ const waigo = global.waigo,
  * This will catch any errors thrown from downstream middleware or controller 
  * handler functions.
  * 
- * @param {Object} options Configuration options.
- * @parma {Boolean} [options.showStack] whether to show the stack trace in error output. Default is false.
- *
  * @return {Function} middleware
  */
-module.exports = function(options) {
-  options = _.extend({
-    showStack: false
-  }, options);
-
+module.exports = function() {
   return function*(next) {
     // convenient throw method
     this.throw = _throw;
@@ -34,7 +27,9 @@ module.exports = function(options) {
       this.app.emit('error', err.stack);
 
       // render error page
-      yield render.call(this, options, err);
+      yield render.call(this, {
+        showStack: !!_.get(this.app, 'config.errors.showStack'),
+      }, err);
     }
   }
 };

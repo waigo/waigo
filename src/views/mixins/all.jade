@@ -28,6 +28,8 @@ mixin form(form, error)
               else
                 - each detail in error.details
                   li #{ detail }
+        if !_.isEmpty(error.stack)
+          pre #{error.stack}
       .fields
         - each fieldName in form.order
           - var field = form.fields[fieldName]

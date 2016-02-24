@@ -22,13 +22,10 @@ const waigo = global.waigo,
  */
 module.exports = function() {
   return function*(next) {
-    this.locals = this.locals || {};
-
-    // current user
-    this.locals.currentUser = this.currentUser;
-
-    // template helpers
-    this.locals.matchesCurrentUrl = _.bind(matchesCurrentUrl, this);
+    // request template vars
+    this.templateVars = this.templateVars || {};
+    this.templateVars.currentUser = this.currentUser;
+    this.templateVars.matchesCurrentUrl = _.bind(matchesCurrentUrl, this);
 
     // convenient accessors
     this.logger = this.app.logger;
