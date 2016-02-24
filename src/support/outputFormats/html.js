@@ -21,7 +21,7 @@ const waigo = global.waigo,
  */
 exports.create = function(logger, config) {
   return {
-    render: function*(view, locals) {
+    render: function*(view, templateVars) {
       // what type of template is this?
       var ext = path.extname(view).slice(1);  // slice(1) to remove '.' prefix
       if (!ext.length) {
@@ -30,8 +30,8 @@ exports.create = function(logger, config) {
 
       logger.debug('Template type', ext);
 
-      // get locals
-      locals = _.extend({}, this.app.templateVars, this.locals, locals, {
+      // get templateVars
+      templateVars = _.extend({}, this.app.templateVars, this.templateVars, templateVars, {
         cache: !!config.cache,
         engine: config.engine[ext],
       });
@@ -41,7 +41,7 @@ exports.create = function(logger, config) {
 
       logger.debug('Template path', view);
 
-      this.body = yield render(view, locals);
+      this.body = yield render(view, templateVars);
       this.type = 'html';
     },
 

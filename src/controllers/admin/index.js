@@ -26,7 +26,7 @@ exports.configureMenu = function*(next) {
     }
   }
 
-  this.app.locals.adminMenu = finalMenu;    
+  this.app.templateVars.adminMenu = finalMenu;    
 
   yield next;
 };

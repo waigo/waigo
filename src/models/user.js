@@ -15,6 +15,13 @@ const randomBytesQ = Q.promisify(crypto.pseudoRandomBytes);
 function buildModelMethods(app) {
   return {
     /** 
+     * Get user by id
+     * @return {User}
+     */
+    getById: function*(id) {
+      return yield this.get(id).run();
+    },
+    /** 
      * Get user by email address.
      * @return {User}
      */

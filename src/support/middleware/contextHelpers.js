@@ -67,7 +67,7 @@ const processAlertMessage = exports.processAlertMessage = function(ctx) {
   
   // clear current alert message (and save it for templates)
   if (ctx.session.alertMsg) {
-    ctx.locals.alertMsg = ctx.session.alertMsg;
+    ctx.templateVars.alertMsg = ctx.session.alertMsg;
     ctx.session.alertMsg = null;
   }
 

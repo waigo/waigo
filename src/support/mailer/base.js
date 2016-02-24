@@ -44,11 +44,11 @@ class Mailer {
 
 
 
-  _renderEmailTemplate (templateName, locals) {
+  _renderEmailTemplate (templateName, templateVars) {
     this.logger.debug('Rendering template ' + templateName);
 
     return new Q((resolve, reject) => {
-      this._emailBuilder(templateName, locals, function(err, html, text) {
+      this._emailBuilder(templateName, templateVars, function(err, html, text) {
         if (err) {
           reject(err);
         } else {
@@ -70,11 +70,11 @@ class Mailer {
 
     var content = marked(compiled(templateVars || {}));
 
-    var locals = _.extend({}, this.app.templateVars, templateVars, {
+    var templateVars = _.extend({}, this.app.templateVars, templateVars, {
       content: content
     });
 
-    var body = yield this._renderEmailTemplate('layout', locals);
+    var body = yield this._renderEmailTemplate('layout', templateVars);
 
     return body.html;
   }
@@ -116,7 +116,7 @@ class Mailer {
       subject: null,
       body: null,
       bodyTemplate: null,
-      locals: {},
+      templateVars: {},
       ctx: {},
       allowEmpty: false
     }, mailOptions);
@@ -138,9 +138,9 @@ class Mailer {
       mailOptions.to = [mailOptions.to];
     }
 
-    // locals common to all recipients
-    mailOptions.locals = _.extend({}, this.app.locals, mailOptions.ctx.locals, 
-      yield viewObjects.toViewObjectYieldable(mailOptions.ctx, mailOptions.locals)
+    // templateVars common to all recipients
+    mailOptions.templateVars = _.extend({}, this.app.templateVars, mailOptions.ctx.templateVars, 
+      yield viewObjects.toViewObjectYieldable(mailOptions.ctx, mailOptions.templateVars)
     );
 
     return mailOptions;
@@ -149,19 +149,19 @@ class Mailer {
 
 
   * _send (mailOptions) {
+    let self = this;
+
     mailOptions = yield self._prepareMailOptions(mailOptions);
 
     return yield _.map(mailOptions.to, (recipient) => {
-      var self = this;
-
       return co.wrap(function*() {
         // email address
         var email = _.get(recipient, 'emails.0.email', recipient);
 
         self.logger.debug('Email ' + email + ': ' + mailOptions.subject);
 
-        // user-specific locals
-        var userLocals = _.extend({}, mailOptions.locals, 
+        // user-specific templateVars
+        var userLocals = _.extend({}, mailOptions.templateVars, 
           yield viewObjects.toViewObjectYieldable(mailOptions.ctx, {
             recipient: recipient
           })
@@ -207,8 +207,8 @@ class Mailer {
 
     this.logger.debug('Render email ' + email + ': ' + mailOptions.subject);
 
-    // user-specific locals
-    var userLocals = _.extend({}, mailOptions.locals, 
+    // user-specific templateVars
+    var userLocals = _.extend({}, mailOptions.templateVars, 
       yield viewObjects.toViewObjectYieldable(mailOptions.ctx, {
         recipient: recipient
       })

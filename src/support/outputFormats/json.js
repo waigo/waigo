@@ -20,16 +20,16 @@ const JsonRenderError = errors.define('JsonRenderError');
  */
 exports.create = function(logger) {
   return {
-    render: function*(view, locals) {
+    render: function*(view, templateVars) {
       logger.debug('View', view);
 
-      locals = locals || {};
+      templateVars = templateVars || {};
 
-      if (!_.isPlainObject(locals)) {
+      if (!_.isPlainObject(templateVars)) {
         throw new JsonRenderError('Plain object required for JSON output format');
       }
 
-      this.body = locals;
+      this.body = templateVars;
       this.type = 'json';
     },
 
