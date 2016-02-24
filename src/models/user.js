@@ -14,6 +14,18 @@ const randomBytesQ = Q.promisify(crypto.pseudoRandomBytes);
 
 function buildModelMethods(app) {
   return {
+    /** 
+     * Get user by email address.
+     * @return {User}
+     */
+    getByEmail: function*(email) {
+      let ret = yield this.filter(function(user) {
+        return user('username').eq(email)
+          || user('emails')('email').eq(email)
+      }).run();
+
+      return _.get(ret, '0');
+    },
     /**
      * Find all admin users.
      * @return {Array}
@@ -28,9 +40,11 @@ function buildModelMethods(app) {
      * @return {Array}
      */
     haveAdminUsers: function*() {
-      return (yield this.count(function(user) {
+      let count = yield this.count(function(user) {
         return user('roles').contains('admin')
-      }).run()) > 0;
+      }).execute();
+
+      return count > 0;
     },
     /**
      * Generate a secure SHA256 representing given password.

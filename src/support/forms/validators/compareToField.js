@@ -1,7 +1,7 @@
 "use strict";
 
 const waigo = global.waigo,
-  FieldValidationError = waigo.load('support/field').FieldValidationError;
+  FieldValidationError = waigo.load('support/forms/field').FieldValidationError;
 
 
 

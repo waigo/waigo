@@ -36,7 +36,7 @@ module.exports = {
       let adminUserExists = yield User.haveAdminUsers(),
         roles = (adminUserExists ? [] : ['admin']);
 
-      app.logger.info('Registering user', this.fields.email.value, roles);
+      app.logger.info('Registering user ' + this.fields.email.value, roles);
 
       // create user
       let user = yield User.register({

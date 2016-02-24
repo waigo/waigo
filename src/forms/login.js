@@ -40,21 +40,7 @@ module.exports = {
       let User = ctx.app.models.User;
 
       // load user
-      let user = yield User.findOne({
-        $or: [
-          {
-            username: this.fields.email.value,
-          },
-          {
-            'emails.email': this.fields.email.value,
-          }
-        ]
-      }, {
-        fields: {
-          id: 1,
-          auth: 1,
-        }
-      });
+      let user = yield User.getByEmail(this.fields.email.value);
 
       // check user and password
       if (!user 

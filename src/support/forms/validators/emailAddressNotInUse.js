@@ -4,7 +4,7 @@ const validator = require('validator');
 
 
 const waigo = global.waigo,
-  FieldValidationError = waigo.load('support/field').FieldValidationError;
+  FieldValidationError = waigo.load('support/forms/field').FieldValidationError;
 
 
 /**
@@ -14,11 +14,9 @@ const waigo = global.waigo,
  */
 module.exports = function() {
   return function*(context, field, value) {
-    let numUsers = yield context.app.models.User.count({
-      'emails.email': value
-    });
+    let existingUser = yield context.app.models.User.getByEmail(value);
 
-    if (0 < numUsers) {
+    if (existingUser) {
       throw new FieldValidationError('Email already in use');
     }
   }
