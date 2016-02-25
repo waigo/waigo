@@ -1,5 +1,6 @@
 "use strict";
 
+
 const waigo = global.waigo,
   Q = waigo.load('support/promise'),
   errors = waigo.load('support/errors'),
@@ -60,6 +61,16 @@ class Model extends RethinkDbModel {
     }
 
     return yield this._insert(qry);
+  }
+
+
+
+  * getRegistrationsSince (date) {
+    let ret = yield this._native.filter(function(doc) {
+      return doc('published').ge(date) && doc('verb').eq('register');
+    }).execute();
+
+    return this._wrap(ret);
   }
 
 }

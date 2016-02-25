@@ -15,9 +15,9 @@ exports.index = function*() {
 
 
 exports.run = function*() {
-  let name = this.request.body.name;
+  let id = this.request.body.id;
 
-  let task = this.app.cron[name];
+  let task = this.app.cron[id];
 
   yield task.runNow();
 
@@ -30,12 +30,12 @@ exports.run = function*() {
 
 
 exports.updateStatus = function*() {
-  let name = this.request.body.name,
+  let id = this.request.body.id,
     active = this.request.body.active;
 
   active = ('true' === ('' + active));
 
-  let task = this.app.cron[name];
+  let task = this.app.cron[id];
 
   yield task.setActive(active);
 

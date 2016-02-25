@@ -4,15 +4,19 @@
 module.exports = function(_) {
   _.mixin({
     /**
-     * Bind generator function to given context.
-     * @param  {GeneratorFunction} genFn Generator function.
+     * Bind normal and/or generator function to given context.
+     * @param  {Function|GeneratorFunction} fn Normal/generator function.
      * @param  {Object} ctx   Desired `this` context.
-     * @return {GeneratorFunction}
+     * @return {Function|GeneratorFunction}
      */
-    bindGen: function(genFn, ctx) {
-      return function*() {
-        return yield genFn.apply(ctx, arguments);
-      };
+    bindGen: function(fn, ctx) {
+      if (this.isGen(fn)) {
+        return function*() {
+          return yield fn.apply(ctx, arguments);
+        };
+      } else {
+        return this.bind(fn, ctx);
+      }
     },
     /** 
      * Get whether given function is a generator function.

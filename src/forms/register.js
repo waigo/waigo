@@ -57,7 +57,7 @@ module.exports = {
         to: user,
         subject: 'Thanks for signing up!',
         bodyTemplate: 'signupWelcome',
-        locals: {
+        templateVars: {
           link: app.routeUrl('verify_email', null, {
             c: token
           }, {

@@ -36,6 +36,8 @@ module.exports = function*(app) {
     let ModelClass = waigo.load(modulePath),
       model = new ModelClass(app);
 
+    yield model.init();
+
     app.models[model.name] = model;
 
     app.logger.debug('Added model', model.name);

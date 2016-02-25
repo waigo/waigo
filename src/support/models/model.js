@@ -122,10 +122,12 @@ class RethinkDbModel extends Model {
 
   * init () {
     // create indexes
-    this._native = this.db.createModel(this.name);
+    this._native = this.db.createModel(this.name, {});
 
-    for (index of this.indexes) {
-      this._native.ensureIndex(index.name, index.fn, index.options);
+    for (let index of this.indexes) {
+      this._native.ensureIndex(
+        index.name, index.fn, index.options
+      );
     }
   }
 
@@ -158,7 +160,7 @@ class RethinkDbModel extends Model {
   * _insert (rawDoc) {
     yield this.schema.validate(rawDoc);
 
-    let ret = yield this.db.table(this.name).r.insert(rawDoc).run();
+    let ret = yield this.db.r.table(this.name).insert(rawDoc).run();
 
     let newDoc = _.extend({}, rawDoc);
     rawDoc[this.pk] = ret[this.pk];

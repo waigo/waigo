@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var React = require('react');
 var Router = require('react-router');
 var moment = require('moment');
@@ -35,7 +36,7 @@ module.exports = React.createClass({
             {moment(item.lastRun.when).fromNow()}
           </span>
           <span className="by">
-            {item.lastRun.by.length ? item.lastRun.by : ''}
+            {_.get(item.lastRun, 'by.length') ? item.lastRun.by : ''}
           </span>
         </span>
       );
@@ -84,7 +85,7 @@ module.exports = React.createClass({
       </div>
     );
 
-    // <a href="#" data-name={item.name} onClick={this._run}>
+    // <a href="#" data-name={item.id} onClick={this._run}>
     //   <i className="fa fa-play" />
     // </a>
   },
@@ -102,7 +103,7 @@ module.exports = React.createClass({
       method: 'POST',
       url: '/admin/cron/updateStatus?format=json',
       data: {
-        name: this.props.item.name,
+        id: this.props.item.id,
         active: setActive,
       }
     })
@@ -139,7 +140,7 @@ module.exports = React.createClass({
       method: 'POST',
       url: '/admin/cron/run?format=json',
       data: {
-        name: this.props.item.name,
+        id: this.props.item.id,
       }
     })
       .done(function(data) {

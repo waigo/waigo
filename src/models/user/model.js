@@ -53,7 +53,7 @@ class Model extends RethinkDbModel {
       return user('roles').contains('admin')
     }).execute();
 
-    this._wrap(ret);
+    return this._wrap(ret);
   }
 
 

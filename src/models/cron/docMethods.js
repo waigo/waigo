@@ -96,20 +96,20 @@ module.exports = {
     try {
       let start = Date.now();
 
-      yield _config.handler(this.getApp());
+      yield _config.handler(this.__app);
 
       let duration = Date.now() - start;
 
       _config.logger.info(`Run complete: ${duration}ms`);
 
-      yield this.record('run_pass', 'cron', {
+      yield this.__app.record('run_pass', 'cron', {
         task: this.id,
         duration: duration,
         by: runByUser
       });
 
     } catch (err) {
-      yield this.record('run_fail', 'cron', {
+      yield this.__app.record('run_fail', 'cron', {
         task: this.id,
         err: err.stack,
         by: runByUser

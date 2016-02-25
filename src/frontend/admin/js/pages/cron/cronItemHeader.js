@@ -20,7 +20,7 @@ module.exports = React.createClass({
 
     return (
       <span className="item-label">
-        <span className={status}>{item.name}</span>
+        <span className={status}>{item.id}</span>
       </span>
     );
   },

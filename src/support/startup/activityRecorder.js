@@ -17,6 +17,6 @@ const waigo = global.waigo,
 module.exports = function*(app) {
   app.logger.debug('Setting up Activity recorder');
 
-  app.record = app.models.Activity.record;
+  app.record = _.bindGen(app.models.Activity.record, app.models.Activity);
 };
 

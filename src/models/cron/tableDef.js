@@ -30,7 +30,7 @@ module.exports = {
   },
   indexes: [
     {
-      id: 'name',
+      name: 'name',
     },
   ],
 };
