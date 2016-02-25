@@ -60,7 +60,7 @@ module.exports = function*(app) {
 
   require('koa-trie-router')(app);
 
-  var routeFiles = waigo.getFilesInFolder('routes');
+  var routeFiles = waigo.getItemsInFolder('routes');
 
   app.routes = {};
 

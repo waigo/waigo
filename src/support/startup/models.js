@@ -18,21 +18,26 @@ const waigo = global.waigo,
 module.exports = function*(app) {
   app.logger.debug('Loading models');
 
-  let modelModuleFiles = waigo.getFilesInFolder('models');
+  let modelModuleFiles = _.chain(waigo.getItemsInFolder('models'))
+    .filter((file) => {
+      return _.endsWith(file, 'model');
+    })
+    .value();
 
   app.models = {};
 
   for (let modulePath of modelModuleFiles) {
-    app.logger.debug(`Loading ${modulePath}`);
+    let modelName = path.basename(
+      modulePath.substr(0, modulePath.length - ('/model').length)
+    );
 
-    let moduleFileName = path.basename(modulePath, path.extname(modulePath)),
-      modelConfig = waigo.load(modulePath),
-      model = modelConfig(app);
+    app.logger.debug(`Loading ${modelName}`);
 
-    let name = model.modelName || _.capitalize(moduleFileName);
+    let ModelClass = waigo.load(modulePath),
+      model = new ModelClass(app);
 
-    app.models[name] = model;
+    app.models[model.name] = model;
 
-    app.logger.debug('Added model', name);
+    app.logger.debug('Added model', model.name);
   }
 };

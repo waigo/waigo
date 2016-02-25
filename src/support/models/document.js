@@ -114,9 +114,11 @@ class Document {
    * @param  {Array} ...keys Properties to mark as having changed.
    * @return {[type]}     [description]
    */
-  markChanged (...keys) {
-    for (let k in keys) {
-      this.__marked[keys[k]] = true;
+  markChanged () {
+    let args = _.toArray(arguments);
+
+    for (let arg of args) {
+      this.__marked[arg] = true;
     }
   }
 

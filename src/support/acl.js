@@ -39,14 +39,9 @@ class ACL {
     }
 
     // get notified of ACL updates
-    this.app.models.Acl.changes()
-      .then((feed) => {
-        this.onAclUpdated();
-      })
-      .error((err) => {
-        this.logger.error(error);
-      });
-    ;
+    this.app.models.Acl.onChange(() => {
+      this.onAclUpdated();
+    });
   }
 
 

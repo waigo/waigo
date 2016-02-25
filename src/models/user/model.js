@@ -17,9 +17,9 @@ const randomBytesQ = Q.promisify(crypto.pseudoRandomBytes);
 
 
 
-class UserModel extends RethinkDbModel {
-  constructor (app, db) {
-    super(app, db, {
+class Model extends RethinkDbModel {
+  constructor (app) {
+    super(app, app.db, {
       name: "User",
       schema: tableDef.schema,
       indexes: tableDef.indexes,
@@ -28,15 +28,6 @@ class UserModel extends RethinkDbModel {
     });
   }
 
-  /** 
-   * Get user by id
-   * @return {User}
-   */
-  * getById (id) {
-    let doc = yield this._get(id).execute();
-
-    return this._wrap(doc);
-  }
 
 
   /** 
@@ -44,7 +35,7 @@ class UserModel extends RethinkDbModel {
    * @return {User}
    */
   * getByEmail (email) {
-    let ret = yield this.filter(function(user) {
+    let ret = yield this._native.filter(function(user) {
       return user('username').eq(email)
         || user('emails')('email').eq(email)
     }).execute();
@@ -58,7 +49,7 @@ class UserModel extends RethinkDbModel {
    * @return {Array}
    */
   * findAdminUsers () {
-    let ret = yield this.filter(function(user) {
+    let ret = yield this._native.filter(function(user) {
       return user('roles').contains('admin')
     }).execute();
 
@@ -71,7 +62,7 @@ class UserModel extends RethinkDbModel {
    * @return {Number}
    */
   * haveAdminUsers () {
-    let count = yield this.count(function(user) {
+    let count = yield this._native.count(function(user) {
       return user('roles').contains('admin')
     }).execute();
 
@@ -148,10 +139,10 @@ class UserModel extends RethinkDbModel {
     }
 
     return yield this._get(userId);
-  },
+  }
 
 }
 
 
 
-module.exports = UserModel;
+module.exports = Model;

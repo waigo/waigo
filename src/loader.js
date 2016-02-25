@@ -386,22 +386,20 @@ loader.getSources = function() {
 
 
 /**
- * Get names of all files under a particular foder.
+ * Get all items under a particular foder.
  *
- * This will look through the initialised file list for all files 
- * which reside under the given folder (items in sub-folders are ignored) 
- * and then return their names. Files provided by both plugins and the 
- * app itself will also be included.
+ * This will look through the initialised file list for all files
+ * which reside under the given folder (and subfolders) and then return their names. 
+ * Files provided by both plugins and the app itself will also be included.
  *
  * This is useful in situations where a particular folder holds a number of 
- * related files and you wish to see which ones are 
- * available.
+ * related files/folders and you wish to see which ones are available.
  *
  * @param {String} folder Folder to check under, relative to application folder.
  * @return {Array} List of file names.
  * @throws Error if there was an error.
  */
-loader.getFilesInFolder = function(folder) {
+loader.getItemsInFolder = function(folder) {
   if (!loader[$FILE]) {
     throw new Error('Please initialise Waigo first');
   }
@@ -409,7 +407,7 @@ loader.getFilesInFolder = function(folder) {
   var ret = _.chain(loader[$FILE])
     .keys()
     .filter(function(filePath) {
-      return 0 === filePath.indexOf(folder);
+      return (0 === filePath.indexOf(folder));
     })
     .value();
 

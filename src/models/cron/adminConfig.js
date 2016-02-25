@@ -3,7 +3,7 @@
 
 module.exports = {
   listView: {
-    columns: ['username', 'roles', 'lastLogin'],
+    columns: ['name', 'disabled', 'lastRun'],
   },
 };
 

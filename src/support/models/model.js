@@ -62,17 +62,18 @@ class Model {
           }
         });
       } else {
-        return new this._createDoc(result);
+        return this._createDoc(result);
       }
     } else {
       return result;
     }
   }
 
+
   /**
    * Wrap given raw doc in a `Document` instance.
-   * @param  {Array|Object} [rawDoc]
-   * @return {Array|Document}
+   * @param  {Object} doc
+   * @return {Document}
    */
   _createDoc (doc) {
     if (doc) {
@@ -86,11 +87,13 @@ class Model {
         }
       });
     }
+
+    return doc;
   }
 }
 
 
-exports = Model;
+exports.Model = Model;
 
 
 
@@ -120,10 +123,35 @@ class RethinkDbModel extends Model {
   }
 
 
+  /** 
+   * Get item by id
+   * @return {Document}
+   */
+  * getById (id) {
+    return yield this._get(id);
+  }
+
+
+
+  /**
+   * Listen for changes to this model's data.
+   * 
+   * @param  {Function} cb Callback
+   */
+  onChange (cb) {
+    this.db.r.table(this.name).changes()
+      .then(cb)
+      .error((err) => {
+        this.app.logger.error(`${this.name} changes error`, err);
+      });
+  }
+
+
+
   * _insert (rawDoc) {
     yield this.schema.validate(rawDoc);
 
-    let ret = yield this.db.r.insert(rawDoc).run();
+    let ret = yield this.db.table(this.name).r.insert(rawDoc).run();
 
     let newDoc = _.extend({}, rawDoc);
     rawDoc[this.pk] = ret[this.pk];
@@ -137,17 +165,26 @@ class RethinkDbModel extends Model {
 
     yield this.schema.validate(rawDoc);
 
-    yield this.db.r.get(id).update(toUpdate).run();
+    yield this.db.r.table(this.name).get(id).update(toUpdate).run();
   }
 
 
   * _remove (id) {
-    yield this.db.r.get(id).delete(toUpdate).run();
+    yield this.db.r.table(this.name).get(id).delete(toUpdate).run();
   }
 
 
   * _get (id) {
-    yield this.db.r.get(id).run();
+    return this._wrap(
+      yield this.db.r.table(this.name).get(id).run()
+    );
+  }
+
+
+  * _getAll () {
+    return this._wrap(
+      yield this.db.r.table(this.name).run()
+    );
   }
 
 }

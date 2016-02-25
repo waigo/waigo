@@ -17,7 +17,7 @@ module.exports = function*(app) {
   
   app.cron = {};
 
-  let cronTasks = waigo.getFilesInFolder('support/cronTasks');
+  let cronTasks = waigo.getItemsInFolder('support/cronTasks');
 
   logger.info(`${cronTasks.length} cron tasks found`);
 

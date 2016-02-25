@@ -10,8 +10,8 @@ module.exports = function(_) {
      * @return {GeneratorFunction}
      */
     bindGen: function(genFn, ctx) {
-      return function*(...args) {
-        return yield genFn.apply(ctx, args);
+      return function*() {
+        return yield genFn.apply(ctx, arguments);
       };
     },
     /** 
