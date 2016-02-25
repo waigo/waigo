@@ -15,6 +15,7 @@ class Model {
   constructor (app, db, cfg) {
     this.app = app;
     this.db = db;
+    this.cfg = cfg;
     this.name = cfg.name;
     this.docMethods = _.get(cfg, 'docMethods', {});
     this.pk = _.get(cfg, 'pk', 'id');
@@ -31,7 +32,13 @@ class Model {
   }
 
   getAdminListViewColumns () {
-    return _.get(this.adminConfig, 'listView.columns');
+    let columns = _.get(this.adminConfig, 'listView.columns');
+
+    if (!_.get(columns, 'length')) {
+      columns = [this.pk];
+    }
+
+    return columns;
   }
 
   * _insert (rawDoc) {

@@ -24,7 +24,7 @@ exports.columns = function*() {
 
   // iterate through schema
   let model = this.models[modelName],
-    schema = model.getColumnDefinitions(),
+    schema = model.getAdminListViewColumns(),
     listViewColumns = _.get(model, 'admin.listView', []);
 
   // return columns as array of objects, each object defining column properties
