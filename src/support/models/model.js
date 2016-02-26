@@ -172,7 +172,9 @@ class RethinkDbModel extends Model {
   * _update (id, document, changes) {
     let toUpdate = _.without(document.toJSON(), this.pk);
 
-    yield this.schema.validate(rawDoc);
+    yield this.schema.validate(toUpdate, {
+      ignoreMissing: true,
+    });
 
     yield this.db.r.table(this.name).get(id).update(toUpdate).run();
   }
@@ -184,6 +186,10 @@ class RethinkDbModel extends Model {
 
 
   * _get (id) {
+    if (undefined === id || null === id) {
+      return null;
+    }
+
     return this._wrap(
       yield this.db.r.table(this.name).get(id).run()
     );

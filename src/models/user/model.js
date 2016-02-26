@@ -3,6 +3,7 @@
 const crypto = require('crypto');
 
 const waigo = global.waigo,
+  _ = waigo._,
   Q = waigo.load('support/promise'),
   errors = waigo.load('support/errors'),
   Document = waigo.load('support/models/document'),

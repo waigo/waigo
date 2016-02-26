@@ -32,7 +32,7 @@ module.exports = {
       salt = passAuth.token.substr(0, sepPos),
       hash = passAuth.token.substr(sepPos + 1);
     
-    let generatedHash = yield this.getModel().generatePasswordHash(
+    let generatedHash = yield this.__model.generatePasswordHash(
       password, salt
     );
 
@@ -121,7 +121,7 @@ module.exports = {
     }
 
     // update password
-    passAuth.token = yield this.getModel().generatePasswordHash(newPassword);
+    passAuth.token = yield this.__model().generatePasswordHash(newPassword);
 
     // save
     yield this.save();

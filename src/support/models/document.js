@@ -105,6 +105,11 @@ class Document {
   }
 
 
+  getId () {
+    return this[this.__model.pk];
+  }
+
+
   /**
    * Mark a property as having changed.
    *
