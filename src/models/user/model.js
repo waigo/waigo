@@ -94,7 +94,7 @@ class Model extends RethinkDbModel {
    * Register a new user
    * @param {Object} properties User props.
    * @param {String} properties.email Email address.
-   * @param {String} properties.password Password.
+   * @param {String} [properties.emailVerified] Email address verified or not (Default is `false`).
    * @param {Object} properties.roles Roles
    * @return {User} The registered user.
    */
@@ -108,7 +108,7 @@ class Model extends RethinkDbModel {
       emails: [
         {
           email: properties.email,
-          verified: false,
+          verified: !!properties.emailVerified,
         }
       ],
       auth: [
