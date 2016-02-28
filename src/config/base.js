@@ -81,6 +81,7 @@ module.exports = function(config) {
     'models',
     'forms',
     'activityRecorder',
+    'notifications',
     'acl',
     'middleware',
     'routes',
@@ -89,7 +90,7 @@ module.exports = function(config) {
     'mailer',
     'cron',
     'appTemplateVars',
-    'listener'
+    'listener',
   ];
 
 
@@ -308,5 +309,37 @@ TEMPORARILY DISABLED WHILST WE FIX THINGS FOR RETHINKDB
     // default token validity duration from when it was created
     validForHours: 2,
   };
+
+
+
+  /**
+   * Notificatiers are mechanisms through which notifications can be sent.
+   */
+  config.notifications = {
+    // the key is the name of the notifier
+    admins: {
+      // one more notification transports
+      transports: [
+        {
+          type: 'console',
+        },
+        /*
+        {
+          // Slack
+          type: 'slack',
+          // Notification config
+          config: {
+            url: slack url,
+            channel: channel name,
+            username: username to show in slack,
+            icon_emoji: URL to image to use as notifications icon,
+          },
+        },
+        */
+      ]
+    },
+  };
+
+
 };
 

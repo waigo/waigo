@@ -1,6 +1,8 @@
 "use strict";
 
 
+const cluster = require('cluster');
+
 const waigo = global.waigo;
 
 
@@ -18,6 +20,15 @@ module.exports = function*(app) {
 
   app.server = app.listen(app.config.port);
 
-  app.logger.info(`Server listening in ${app.config.mode} mode on port ${app.config.port} (baseURL: ${app.config.baseURL})`);
+  let msg = `Server (process:${process.pid}, worker:${cluster.worker.id}) started - listening in ${app.config.mode} mode on port ${app.config.port} (baseURL: ${app.config.baseURL})`;
+
+  app.logger.info(msg);
+
+  if (app.sendNotification) {
+    yield app.sendNotification('admins', msg);
+  }
 };
+
+
+
 

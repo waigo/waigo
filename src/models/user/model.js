@@ -127,6 +127,11 @@ class Model extends RethinkDbModel {
     // log activity
     yield this.app.record('register', user);
 
+    // notify admins
+    if (this.app.sendNotification) {
+      yield this.app.sendNotification('admins', `New user: ${user.username} - ${user.username}`);
+    }
+
     return user;
   }
 
