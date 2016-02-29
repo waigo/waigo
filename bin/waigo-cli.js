@@ -7,7 +7,7 @@
 
 "use strict";
 
-var _ = require('lodash'),
+const _ = require('lodash'),
   co = require('co'),
   commander = require('commander'),
   debug = require('debug')('waigo-cli'),
@@ -15,53 +15,56 @@ var _ = require('lodash'),
   shell = require('shelljs');
 
 
-var frameworkFolderPath = path.join(__dirname, '..'),
+const frameworkFolderPath = path.join(__dirname, '..'),
   waigo = require(frameworkFolderPath);
 
 
 
-var _handleError = function(err) {
+let _handleError = function(err) {
   console.error(err.stack);
+
   process.exit(-1);
 };
 
 
 co(function*() {
   // app folder available?
-  var appFolderPath = path.join(process.cwd(), 'src');
+  let appFolderPath = path.join(process.cwd(), 'src');
   if (!shell.test('-d', appFolderPath)) {
     // if not then use the framework folder
     appFolderPath = path.join(frameworkFolderPath, 'src');
   }
 
-  debug('App folder: ' + appFolderPath);
+  debug(`App folder: ${appFolderPath}`);
 
   // init
-  yield* waigo.init({
+  yield waigo.init({
     appFolder: appFolderPath
   });
 
   debug('Waigo initialised');
 
   // load all commands
-  var commands = waigo.getItemsInFolder('cli');
+  let commands = waigo.getItemsInFolder('cli');
 
   // initialise parser
-  var program = commander;
+  let program = commander;
 
   // version
-  var packageJson = require(path.join(waigo.getWaigoFolder(), '..', 'package.json'));
+  let packageJson = require(path.join(waigo.getWaigoFolder(), '..', 'package.json'));
   program.version(packageJson.version);
 
   // commands
   _.each(commands, function(command) {
-    debug('Found command: ' + command);
+    debug(`Found command: ${command}`);
 
-    var commandName = path.basename(command);
+    let commandName = path.basename(command);
 
-    var obj = new (waigo.load(command))();
+    let CommandClass = waigo.load(command);
 
-    var cmd = program
+    let obj = new CommandClass;
+
+    let cmd = program
       .command(commandName)
       .description(obj.description)
       .action(

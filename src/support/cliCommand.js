@@ -1,12 +1,12 @@
 "use strict";
 
 
-let debug = require('debug')('waigo-cli'),
+const debug = require('debug')('waigo-cli'),
   path = require('path'),
   shell = require('shelljs');
 
 
-let waigo = global.waigo,
+const waigo = global.waigo,
   _ = waigo._,
   Q = waigo.load('support/promise');
 
@@ -28,9 +28,9 @@ class AbstractCommand {
    * @param  {Array} options Command options.
    * @constructor
    */
-  constructor (description, options = []) {
+  constructor (description, options) {
     this.description = description;
-    this.options = options;
+    this.options = options || [];
   }
 
   /** 
@@ -48,7 +48,7 @@ class AbstractCommand {
    * @param {String} msg The log message to write.
    */
   log (msg) {
-    console.log('[waigo-cli] ' + msg);
+    console.log(`[waigo-cli] ${msg}`);
   }
 
 
@@ -158,7 +158,7 @@ class AbstractCommand {
       str = '---save ' + str;
     }
 
-    this.log('NPM install ' + str);
+    this.log('npm install ' + str);
 
     yield shell.execAsync('npm install ' + str);    
   }  

@@ -33,14 +33,14 @@ class Command extends AbstractCommand {
     }
 
     yield this.installPkgs([
-      'waigo',
+      'waigo/waigo#4e08242921e7bf325a93143bb07dbba17d2f45b7',
       'semver',
     ]);
 
     yield this.installPkgs([
       'lodash',
       'coffee-script',
-      'gulp@3.8.x',
+      'gulp@3.9.x',
       'gulp-if@1.2.x',
       'gulp-autoprefixer@2.1.x',
       'gulp-minify-css@0.4.x',
@@ -57,8 +57,8 @@ class Command extends AbstractCommand {
       dev: true,
     });
     
-    const this.copyFile(path.join(DATA_FOLDER, 'README.md'), 'src/README.md');
-    const this.copyFile(path.join(DATA_FOLDER, '_gitignore'), '.gitignore');
+    yield this.copyFile(path.join(DATA_FOLDER, 'README.md'), 'src/README.md');
+    yield this.copyFile(path.join(DATA_FOLDER, '_gitignore'), '.gitignore');
 
     yield this.copyFile(path.join(FRAMEWORK_FOLDER, 'start-app.js'), 'start-app.js');
     yield this.copyFile(path.join(FRAMEWORK_FOLDER, 'gulpfile.coffee'), 'gulpfile.coffee');
@@ -73,14 +73,16 @@ class Command extends AbstractCommand {
       'frontend-img',
       'frontend-js',
       'frontend',
-    ], function(n) {
-      return this.copyFile(path.join(FRAMEWORK_FOLDER, 'gulp', n+'.coffee'), 'gulp/' + n + '.coffee');
-    }, this);
+    ], (n) => {
+      return this.copyFile(path.join(FRAMEWORK_FOLDER, 'gulp', `${n}.coffee`), `gulp/${n}.coffee`);
+    });
     
     yield this.copyFolder(path.join(WAIGO_FOLDER, 'views', 'emailTemplates'), 'src/views');
-
     yield this.copyFile(path.join(WAIGO_FOLDER, 'config', 'base.js'), 'src/config/base.js');
-    yield this.copyFile(path.join(WAIGO_FOLDER, 'config', 'development.js'), 'src/config/development.js');
   }
 }
+
+
+
+module.exports = Command;
 
