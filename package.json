@@ -1,6 +1,6 @@
 {
   "name": "waigo",
-  "description": "Reactive web framework for Node.js 5+ using RethinkDB",
+  "description": "Reactive web framework for Node.js ES6 using RethinkDB",
   "version": "2.0.0",
   "license": "MIT",
   "author": {

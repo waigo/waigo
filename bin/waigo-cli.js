@@ -44,7 +44,7 @@ co(function*() {
   debug('Waigo initialised');
 
   // load all commands
-  var commands = waigo.getFilesInFolder('cli');
+  var commands = waigo.getItemsInFolder('cli');
 
   // initialise parser
   var program = commander;
