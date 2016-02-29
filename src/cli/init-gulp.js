@@ -46,6 +46,9 @@ class Command extends AbstractCommand {
       'gulp-util@3.0.x',
       'gulp-nodemon@1.0.x',
       'run-sequence',
+      'watchify',
+      'browserify',
+      'vinyl-source-stream2',
       'yargs',
     ], {
       dev: true,
