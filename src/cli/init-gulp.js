@@ -15,8 +15,6 @@ const DATA_FOLDER = path.join(__dirname, 'data', 'init');
 
 
 /**
- * The `init-gulp` CLI command.
- *
  * This command initialises a skeleton Gulpfile with associated tasks.
  */
 class Command extends AbstractCommand {

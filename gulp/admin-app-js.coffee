@@ -1,10 +1,10 @@
 path = require 'path'
-buildReactJs = require './utils/build-react-js'
+buildBrowserifyJs = require './utils/build-browserify-js'
 
 
 module.exports = (paths, options = {}) ->
   handler: ->
-    buildReactJs
+    buildBrowserifyJs
       srcGlob: path.join(paths.frontend.src, 'admin', 'js', 'app.js')
       outputName: 'admin.js'
       outputDir: path.join(paths.frontend.build, 'admin')
