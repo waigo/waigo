@@ -36,3 +36,13 @@ html
     block scripts
       script(type="text/javascript" src=staticUrl('waigo:/js/app.js'))
 
+    if 'development' == config.mode
+      script.
+        (function() {
+          var lrHost = location.protocol + '//' + location.hostname + ':53235';
+          var s = document.createElement('script');
+          s.async = true;
+          s.setAttribute('src', lrHost + '/livereload.js');
+          document.body.appendChild(s);
+        })();
+

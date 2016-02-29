@@ -36,6 +36,7 @@ class Command extends AbstractCommand {
       'lodash',
       'coffee-script',
       'gulp@3.9.x',
+      'gulp-server-livereload',
       'gulp-if@1.2.x',
       'gulp-autoprefixer@2.1.x',
       'gulp-minify-css@0.4.x',
