@@ -33,7 +33,7 @@ class Command extends AbstractCommand {
     }
 
     yield this.installPkgs([
-      'waigo/waigo#4e08242921e7bf325a93143bb07dbba17d2f45b7',
+      'waigo/waigo#master',
       'semver',
     ]);
 
