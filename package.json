@@ -36,6 +36,7 @@
     "nodemailer-html-to-text": "^1.0.1",
     "nodemailer-markdown": "^1.0.0",
     "nodemailer-stub-transport": "^1.0.0",
+    "oauth": "^0.9.14",
     "pluralize": "^1.1.0",
     "query-string": "^2.0.0",
     "raw-body": "~1.1.x",

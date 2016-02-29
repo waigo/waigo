@@ -1,10 +1,11 @@
 "use strict";
 
-const waigo = require('waigo'),
+const waigo = global.waigo,
   oauth = waigo.load('support/oauth/index'),
   errors = waigo.load('support/errors');
 
-const OauthError = waigo.load('support/oauth/errors').OauthError;
+
+const OauthError = oauth.OauthError;
 
 
 
@@ -61,13 +62,25 @@ exports.callback = function*() {
     yield user.saveOAuth(provider, response);
 
     // all done!
-    yield impl.handleSuccess();
+    yield exports.handleCallbackSuccess.call(this, provider, response);
   } catch (err) {
-    this.app.logger.error('OAuth error', err);
-
-    yield impl.handleError(err);
+    yield exports.handleCallbackError.call(this, provider, err);
   }
 };
+
+
+
+exports.handleCallbackSuccess = function*(provider, response) {
+  yield this.redirect('/');
+};
+
+
+exports.handleCallbackError = function*(provider, err) {
+  this.app.logger.error(`OAuth error - ${provider}`, err);
+
+  throw err;
+};
+
 
 
 

@@ -1,27 +1,23 @@
 "use strict";
 
 const qs = require('query-string'),
-  oauth = require('oauth');
+  OAuth2 = require('oauth').OAuth2;
 
 
 const waigo = global.waigo,
   _ = waigo._,
   Q = waigo.load('support/promise'),
-  errors = waigo.load('support/errors');
+  OauthError = waigo.load('support/oauth/index').OauthError;
 
 
 
 
-/**
- * Top-level OAuth errors class.
- */
-const OauthError = exports.OauthError = errors.define('OauthError');
 
 
 /**
  * Base class for OAuth providers.
  */
-class Oauth {
+class GenericOauth {
   /**
    * @constructor
    * @param  {Object} context  Current request context.
@@ -39,21 +35,22 @@ class Oauth {
       provider: provider,
     });
 
-    this.oauth2 = new oauth.OAuth2(this.config.clientId,
+    this.oauth2 = new OAuth2(
+      this.config.clientId,
       this.config.clientSecret, 
       this.config.baseURL,
       this.config.authorizePath,
       this.config.accessTokenPath,
       {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       }
     );
 
     this.tokens = tokens;
 
-    if (tokens) {
+    if (this.tokens) {
       this.authHeader = {
-        'Authorization': 'Bearer ' + tokens.access_token,
+        'Authorization': `Bearer ${this.tokens.access_token}`,
       };
     }
   }
@@ -81,7 +78,7 @@ class Oauth {
   * getAccessToken (code) {
     let user = this._user();
 
-    this.logger.info(`Get access token: user=${user.id} code=${code}`);
+    this.logger.info(`Get access token: user=${user.id ? user.id : 'anon'} code=${code}`);
 
     try {
       return yield new Q(function(resolve, reject) {
@@ -139,12 +136,12 @@ class Oauth {
     }
 
     return url;
-  };
+  }
 
 
 
   * _request (method, url, queryParams, body) {
-    let url = this._buildRequestUrl(url, queryParams);
+    url = this._buildRequestUrl(url, queryParams);
 
     this.logger.debug(method, url);
 
@@ -182,7 +179,9 @@ class Oauth {
   _buildBasicParams () {
     let params = _.extend({}, _.get(this.config, 'accessTokenParams'));
 
-    params[_.get(this.config, 'callbackParam', 'redirect_uri'))] = this.callbackURL;
+    let callbackParamName = _.get(this.config, 'callbackParam', 'redirect_uri');
+
+    params[callbackParamName] = this.callbackURL;
 
     return params;
   }
@@ -204,11 +203,11 @@ class Oauth {
     }));
 
     throw err;
-  };
+  }
 
 }
 
-exports.Oauth = Oauth;
+module.exports = GenericOauth;
 
 
 
