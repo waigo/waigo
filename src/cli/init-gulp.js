@@ -15,13 +15,13 @@ const DATA_FOLDER = path.join(__dirname, 'data', 'init');
 
 
 /**
- * The init CLI command.
+ * The `init-gulp` CLI command.
  *
- * This command initialises a skeleton Waigo application with a basic view template.
+ * This command initialises a skeleton Gulpfile with associated tasks.
  */
 class Command extends AbstractCommand {
   constructor() {
-    super('Initialise and create a skeleton Waigo app', []);
+    super('Initialise and create a skeleton Gulpfile and associated tasks', []);
   }
 
   /**
@@ -29,13 +29,8 @@ class Command extends AbstractCommand {
    */
   * run () {
     if (!this.fileExists('package.json')) {
-      throw new Error('Please run "npm init" first');
+      throw new Error('Please run "waigo init" first');
     }
-
-    yield this.installPkgs([
-      'waigo/waigo#4e08242921e7bf325a93143bb07dbba17d2f45b7',
-      'semver',
-    ]);
 
     yield this.installPkgs([
       'lodash',
@@ -57,13 +52,19 @@ class Command extends AbstractCommand {
       dev: true,
     });
     
-    yield this.copyFile(path.join(DATA_FOLDER, 'README.md'), 'src/README.md');
-    yield this.copyFile(path.join(DATA_FOLDER, '_gitignore'), '.gitignore');
-
-    yield this.copyFile(path.join(FRAMEWORK_FOLDER, 'start-app.js'), 'start-app.js');
-    
-    yield this.copyFolder(path.join(WAIGO_FOLDER, 'views', 'emailTemplates'), 'src/views');
-    yield this.copyFile(path.join(WAIGO_FOLDER, 'config', 'base.js'), 'src/config/base.js');
+    yield this.copyFile(path.join(FRAMEWORK_FOLDER, 'gulpfile.coffee'), 'gulpfile.coffee');
+    yield this.copyFolder(path.join(FRAMEWORK_FOLDER, 'gulp', 'utils'), 'gulp');
+    yield _.map([
+      'dev-frontend',
+      'dev-server',
+      'dev',
+      'frontend-css',
+      'frontend-img',
+      'frontend-js',
+      'frontend',
+    ], (n) => {
+      return this.copyFile(path.join(FRAMEWORK_FOLDER, 'gulp', `${n}.coffee`), `gulp/${n}.coffee`);
+    });
   }
 }
 
