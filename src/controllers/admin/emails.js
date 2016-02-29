@@ -1,7 +1,6 @@
 "use strict";
 
 
-const toObjectID = require('robe').Utils.toObjectID;
 
 
 
@@ -49,7 +48,7 @@ exports.send = function*() {
   let users = yield this.app.models.User.find({
     id: {
       $in: userIds.map(function(v) {
-        return toObjectID(v);
+        return v;
       })
     }
   });

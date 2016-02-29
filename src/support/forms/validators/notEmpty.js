@@ -1,9 +1,8 @@
 "use strict";
 
-const validator = require('validator');
-
 
 const waigo = global.waigo,
+  _ = waigo._,
   FieldValidationError = waigo.load('support/forms/field').FieldValidationError;
 
 
@@ -15,7 +14,7 @@ const waigo = global.waigo,
  */
 module.exports = function() {
   return function*(context, field, value) {
-    if (validator.isNull(value) || !validator.isLength(value, 1)) {
+    if (_.get(value, 'length', 0) < 1) {
       throw new FieldValidationError('Must not be empty');
     }
   }

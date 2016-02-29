@@ -1,8 +1,5 @@
 "use strict";
 
-const toObjectID = require('robe').Utils.toObjectID;
-
-
 const waigo = global.waigo,
   _ = waigo._;
 
@@ -80,7 +77,7 @@ exports.rows = function*() {
         filter, {
           id: {
             $nin: excludeIds.map(function(id) {
-              return toObjectID(id);
+              return id;
             })
           }
         }

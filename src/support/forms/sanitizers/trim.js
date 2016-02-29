@@ -1,6 +1,7 @@
 "use strict";
 
-const validatorSanitizer = require('validator');
+const waigo = global.waigo,
+  _ = waigo._;
 
 
 /**
@@ -10,7 +11,7 @@ const validatorSanitizer = require('validator');
  */
 module.exports = function() {
   return function*(field, value) {
-    return validatorSanitizer.trim(value);
+    return (typeof value === 'string' ? _.trim(value) : value);
   }
 };
 

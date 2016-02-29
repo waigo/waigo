@@ -1,6 +1,5 @@
 "use strict";
 
-const validator = require('validator');
 
 
 const waigo = global.waigo,
