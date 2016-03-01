@@ -38,6 +38,7 @@ module.exports = function(_) {
 
       return ('function' == typeof constructor.prototype.next && 'function' == typeof constructor.prototype.throw);
     },
+    classnames: require('classnames'),
     pluralize: require('pluralize'),
     uuid: require('node-uuid'),
     /**

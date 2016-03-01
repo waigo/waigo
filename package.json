@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "bluebird": "^3.3.3",
+    "classnames": "^2.2.3",
     "co": "^4.6.0",
     "co-body": "^4.0.0",
     "co-render": "^1.1.0",
