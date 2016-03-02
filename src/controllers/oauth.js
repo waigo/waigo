@@ -10,7 +10,7 @@ const OauthError = oauth.OauthError;
 
 
 exports.getAuthorizeUrl = function*() {
-  var impl = yield oauth.load(this, this.request.query.provider);
+  let impl = yield oauth.load(this, this.request.query.provider);
 
   yield this.render('getAuthorizeUrl', {
     url: yield impl.getAuthorizeUrl(),
@@ -20,9 +20,9 @@ exports.getAuthorizeUrl = function*() {
 
 
 exports.callback = function*() {
-  var provider = this.request.params.provider;
+  let provider = this.request.params.provider;
 
-  var impl = yield oauth.load(this, provider);
+  let impl = yield oauth.load(this, provider);
 
   let user = this.currentUser;
 

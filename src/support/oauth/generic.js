@@ -82,7 +82,7 @@ class GenericOauth {
 
     try {
       return yield new Q(function(resolve, reject) {
-        let params = this._buildBasicParams();
+        let params = this._buildAccessTokenParams();
 
         this.oauth2.getOAuthAccessToken(code, params, (err, access_token, refresh_token, result) => {
           if (err) {
@@ -176,14 +176,19 @@ class GenericOauth {
   }
 
 
-  _buildBasicParams () {
-    let params = _.extend({}, _.get(this.config, 'accessTokenParams'));
+  _buildAuthorizeParams () {
+    let params = _.extend({}, _.get(this.config, 'authorizeParams'));
 
     let callbackParamName = _.get(this.config, 'callbackParam', 'redirect_uri');
 
     params[callbackParamName] = this.callbackURL;
 
     return params;
+  }
+
+
+  _buildAccessTokenParams () {
+    return _.extend({}, _.get(this.config, 'accessTokenParams'));
   }
 
 
