@@ -78,6 +78,16 @@ module.exports = {
     });
   },
   /**
+   * Check whether user has given email address.
+   * @param {String} email Email address to check.
+   * @return {Boolean}
+   */
+  hasEmail: function*(email) {
+    return = _.contains(this.emails || [], function(e) {
+      return email === e.email;
+    });
+  },
+  /**
    * Add an email address.
    * @param {String} email Email address to verify.
    * @param {Boolea} verified Whether address is verified.
