@@ -33,6 +33,8 @@ class GenericOauth {
     this.config = _.get(this.app.config.oauth, this.provider, {});
     this.callbackURL = this.app.routeUrl('oauth_callback', {
       provider: provider,
+    }, null, {
+      absolute: true
     });
 
     this.oauth2 = new OAuth2(

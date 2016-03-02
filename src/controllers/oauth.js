@@ -13,7 +13,7 @@ exports.getAuthorizeUrl = function*() {
   let impl = yield oauth.load(this, this.request.query.provider);
 
   yield this.render('getAuthorizeUrl', {
-    url: yield impl.getAuthorizeUrl(),
+    url: impl.getAuthorizeUrl(),
   });
 };
 

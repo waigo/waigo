@@ -36,7 +36,12 @@ var routeUrl = function(app, routeName, urlParams, queryParams, options) {
 
   str += route.url;
 
-  // TODO: integrate params
+  // route params
+  _.each(urlParams, function(value, key) {
+    str = str.replace(`:${key}`, value);
+  });
+
+  // query params
   if (!_.isEmpty(queryParams)) {
     str += '?' + queryString.stringify(queryParams);
   }
