@@ -61,7 +61,7 @@ class GenericOauth {
    * @return {String}
    */
   getAuthorizeUrl () {
-    let params = this._buildBasicParams();
+    let params = this._buildAuthorizeParams();
 
     let url = this.oauth2.getAuthorizeUrl(params);
 
