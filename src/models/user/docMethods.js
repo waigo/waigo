@@ -83,7 +83,7 @@ module.exports = {
    * @return {Boolean}
    */
   hasEmail: function*(email) {
-    return = _.contains(this.emails || [], function(e) {
+    return 0 <= _.findIndex(this.emails || [], function(e) {
       return email === e.email;
     });
   },

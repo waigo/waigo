@@ -33,6 +33,7 @@ module.exports = function() {
     this.models = this.app.models;
     this.form = this.app.form;
     this.record = this.app.record;
+    this.sendNotification = this.app.sendNotification;
 
     processAlertMessage(this);
 
