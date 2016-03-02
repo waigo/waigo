@@ -7,7 +7,7 @@ const qs = require('query-string'),
 const waigo = global.waigo,
   _ = waigo._,
   Q = waigo.load('support/promise'),
-  OauthError = waigo.load('support/oauth/index').OauthError;
+  OauthError = waigo.load('support/oauth/error');
 
 
 
@@ -83,7 +83,7 @@ class GenericOauth {
     this.logger.info(`Get access token: user=${user.id ? user.id : 'anon'} code=${code}`);
 
     try {
-      return yield new Q(function(resolve, reject) {
+      return yield new Q((resolve, reject) => {
         let params = this._buildAccessTokenParams();
 
         this.oauth2.getOAuthAccessToken(code, params, (err, access_token, refresh_token, result) => {
@@ -93,7 +93,7 @@ class GenericOauth {
 
           // check that scope is still the same
           if (result.scope !== _.get(this.config, 'authorizeParams.scope')) {
-            return reject(new OauthError('Scope mismatch'));
+            return reject(new OauthError(`Scope mismatch: ${result.scope}`));
           }
 
           resolve({
@@ -152,7 +152,7 @@ class GenericOauth {
     }
 
     try {
-      return yield new Q(function(resolve, reject) {
+      return yield new Q((resolve, reject) => {
         this.oauth2._request(method, url, this.authHeader, body, this.accessToken, (err, result) => {
           if (err) {
             return reject(new OauthError(method + ' error', err.statusCode || 400, err));

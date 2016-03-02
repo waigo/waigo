@@ -2,14 +2,8 @@
 
 const waigo = global.waigo,
   _ = waigo._,
-  errors = waigo.load('support/errors'),
-  GenericOauth = waigo.load(`support/oauth/generic`);
-
-
-/**
- * Top-level OAuth errors class.
- */
-const OauthError = exports.OauthError = errors.define('OauthError');
+  OauthError = waigo.load('support/oauth/error'),
+  GenericOauth = waigo.load('support/oauth/providers/generic');
 
 
 
@@ -32,7 +26,7 @@ exports.load = function*(ctx, provider, tokens) {
   let Impl = GenericOauth;
 
   try {
-    Impl = waigo.load(`support/oauth/${provider}`);
+    Impl = waigo.load(`support/oauth/providers/${provider}`);
   } catch (err) {
     ctx.logger.warn(`No OAuth implementation found for "${provider}", using generic.`);
   }
