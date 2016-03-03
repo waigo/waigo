@@ -258,6 +258,8 @@ class Form {
  * @return {Object} Renderable plain object representation.
  */
 Form.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
+  let ret = _.omit(this.config, 'fields', 'postValidation');
+
   let fields = this.fields,
     fieldViewObjects = {},
     fieldOrder = [];
@@ -269,15 +271,8 @@ Form.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
     fieldOrder.push(fieldName);
   }
 
-  let ret = {
-    fields: fieldViewObjects,
-    order: fieldOrder,
-    method: this.config.method,
-  }
-
-  if (this.config.id) {
-    ret.id = this.config.id
-  }
+  ret.fields = fieldViewObjects;
+  ret.order = fieldOrder;
 
   return ret;
 }
