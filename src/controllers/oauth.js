@@ -48,36 +48,24 @@ exports.callback = function*() {
     let response = yield impl.getAccessToken(code);
 
     this.logger.info('OAuth access token', 
-      provider, response.access_token, response.result.info.email);
-
-    // create user if not set
-    if (!user) {
-      user = yield this.app.models.User.register({
-        email: response.result.info.email,
-        emailVerified: true,
-        roles: [],
-      });
-    }
-
-    // save oauth info
-    yield user.saveOAuth(provider, response);
+      provider, response.access_token, response);
 
     // all done!
-    yield exports.handleCallbackSuccess.call(this, provider, response);
+    yield exports.handleCallbackSuccess.call(this, impl, response);
   } catch (err) {
-    yield exports.handleCallbackError.call(this, provider, err);
+    yield exports.handleCallbackError.call(this, impl, err);
   }
 };
 
 
 
-exports.handleCallbackSuccess = function*(provider, response) {
+exports.handleCallbackSuccess = function*(impl, response) {
   yield this.redirect('/');
 };
 
 
-exports.handleCallbackError = function*(provider, err) {
-  this.app.logger.error(`OAuth error - ${provider}`, err);
+exports.handleCallbackError = function*(impl, err) {
+  this.app.logger.error(`OAuth error - ${impl.provider}`, err);
 
   throw err;
 };

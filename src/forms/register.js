@@ -40,7 +40,13 @@ module.exports = {
 
       // create user
       let user = yield User.register({
-        email: this.fields.email.value,
+        username: this.fields.email.value,
+        emails: [
+          {
+            email: this.fields.email.value,
+            verified: false,
+          },
+        ],
         password: this.fields.password.value,
         roles: roles
       });

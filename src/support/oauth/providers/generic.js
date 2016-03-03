@@ -46,12 +46,8 @@ class GenericOauth {
       this.config.customHeaders
     );
 
-    this.tokens = tokens;
-
-    if (this.tokens) {
-      this.authHeader = {
-        'Authorization': `Bearer ${this.tokens.access_token}`,
-      };
+    if (tokens) {
+      this._setTokens(tokens);
     }
   }
 
@@ -78,7 +74,7 @@ class GenericOauth {
   * getAccessToken (code) {
     let user = this._user();
 
-    this.logger.info(`Get access token: user=${user.id ? user.id : 'anon'} code=${code}`);
+    this.logger.info(`Get access token: user=${user ? user.id : 'anon'} code=${code}`);
 
     try {
       return yield new Q((resolve, reject) => {
@@ -90,8 +86,19 @@ class GenericOauth {
           }
 
           if (_.get(result, 'error')) {
-            return reject(new OauthError(`Get access token error: ${result.error}`, 400, result.error));
+            return reject(
+              new OauthError(`Get access token error: ${result.error}`, 400, {
+                error: result.error
+              })
+            );
           }
+
+          this.logger.debug(`Get access token result: ${access_token}, ${refresh_token}, ${JSON.stringify(result)}`);
+
+          this._setTokens({
+            access_token: access_token,
+            refresh_token: refresh_token,             
+          });
 
           resolve({
             access_token: access_token,
@@ -105,6 +112,18 @@ class GenericOauth {
       yield this._handleError(err, {
         method: 'getOAuthAccessToken',
       });
+    }
+  }
+
+
+
+  _setTokens (tokens) {
+    this.tokens = tokens;
+
+    if (this.tokens) {
+      this.authHeader = {
+        'Authorization': `Bearer ${this.tokens.access_token}`,
+      };
     }
   }
 
@@ -126,12 +145,6 @@ class GenericOauth {
       throw new OauthError(`${this.provider}: apiBaseUrl must be provided`);
     }
 
-    url = this.config.apiBaseUrl + url;
-
-    queryParams = qs.stringify(queryParams || {});
-
-    if (queryParams.length) {
-      url += '?' + queryParams;
     }
 
     return url;
@@ -205,7 +218,7 @@ class GenericOauth {
   * _handleError (err, attrs) {
     this.logger.error(err);
 
-    yield this.context.record('oauth_request', this._user(), _.extend({}, attrs, {
+    yield this.context.record('oauth_request', this._user() || 'anon', _.extend({}, attrs, {
       type: 'error',
       provider: this.provider,
       message: err.message,

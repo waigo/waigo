@@ -2,7 +2,8 @@
 
 
 const waigo = global.waigo,
-  _ = waigo._;
+  _ = waigo._,
+  Q = waigo.load('support/promise');
 
 
 
@@ -28,17 +29,17 @@ const toViewObjectYieldable = exports.toViewObjectYieldable = function(ctx, inpu
     // (see https://github.com/hiddentao/simple-mongo-schema)
     switch (inputObject) {
       case String:
-        return 'String';
+        return Q.resolve('String');
       case Boolean:
-        return 'Boolean';
+        return Q.resolve('Boolean');
       case Number:
-        return 'Number';
+        return Q.resolve('Number');
       case Date:
-        return 'Date';
+        return Q.resolve('Date');
       case Object:
-        return 'Object';
+        return Q.resolve('Object');
       case Array:
-        return 'Array';
+        return Q.resolve('Array');
     }
 
     // has view object method
@@ -64,7 +65,7 @@ const toViewObjectYieldable = exports.toViewObjectYieldable = function(ctx, inpu
     }
   }
 
-  return inputObject;
+  return Q.resolve(inputObject);
 };
 
 

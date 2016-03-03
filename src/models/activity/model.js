@@ -39,9 +39,9 @@ class Model extends RethinkDbModel {
   * record (verb, actor, details) {
     this.app.logger.debug('Recording activity', verb, actor.id || actor, details);
 
-    if (!actor.id) {
+    if (!actor || !actor.id) {
       actor = {
-        displayName: actor
+        displayName: actor || 'system'
       }
     } else {
       actor = {

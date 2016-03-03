@@ -93,24 +93,17 @@ class Model extends RethinkDbModel {
   /**
    * Register a new user
    * @param {Object} properties User props.
-   * @param {String} properties.email Email address.
-   * @param {String} [properties.emailVerified] Email address verified or not (Default is `false`).
+   * @param {String} properties.username Username.
    * @param {Object} properties.roles Roles
    * @return {User} The registered user.
    */
   * register (properties) {
     // create user
     let user = yield this._insert({
-      username: properties.email,
+      username: properties.username,
       profile: _.extend({
-        displayName: properties.email,
+        displayName: properties.username,
       }, properties.profile),
-      emails: [
-        {
-          email: properties.email,
-          verified: !!properties.emailVerified,
-        }
-      ],
       auth: [
         {
           type: 'password',
