@@ -31,6 +31,14 @@ class AclModel extends RethinkDbModel {
     return yield this._getAll();
   }
 
+
+  /**
+   * Insert a record.
+   */
+  * insert(props) {
+    yield this._insert(props);
+  }
+
 }
 
 

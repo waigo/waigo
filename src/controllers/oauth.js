@@ -2,10 +2,9 @@
 
 const waigo = global.waigo,
   oauth = waigo.load('support/oauth/index'),
+  OauthError = waigo.load('support/oauth/error'),
   errors = waigo.load('support/errors');
 
-
-const OauthError = oauth.OauthError;
 
 
 
@@ -28,6 +27,7 @@ exports.callback = function*() {
 
   yield this.record('oauth_callback', user || 'anon', {
     provider: provider,
+    query: this.request.query,
   });
 
   try {
@@ -47,7 +47,8 @@ exports.callback = function*() {
 
     let response = yield impl.getAccessToken(code);
 
-    this.logger.info('OAuth access token', provider, response.access_token);
+    this.logger.info('OAuth access token', 
+      provider, response.access_token, response.result.info.email);
 
     // create user if not set
     if (!user) {

@@ -43,9 +43,7 @@ class GenericOauth {
       this.config.baseURL,
       this.config.authorizePath,
       this.config.accessTokenPath,
-      {
-        'Content-Type': 'application/json',
-      }
+      this.config.customHeaders
     );
 
     this.tokens = tokens;
@@ -91,9 +89,8 @@ class GenericOauth {
             return reject(new OauthError('Get access token error', err.statusCode || 400, err));
           }
 
-          // check that scope is still the same
-          if (result.scope !== _.get(this.config, 'authorizeParams.scope')) {
-            return reject(new OauthError(`Scope mismatch: ${result.scope}`));
+          if (_.get(result, 'error')) {
+            return reject(new OauthError(`Get access token error: ${result.error}`, 400, result.error));
           }
 
           resolve({
@@ -190,7 +187,13 @@ class GenericOauth {
 
 
   _buildAccessTokenParams () {
-    return _.extend({}, _.get(this.config, 'accessTokenParams'));
+    let params = _.extend({}, _.get(this.config, 'accessTokenParams'));
+
+    let callbackParamName = _.get(this.config, 'callbackParam', 'redirect_uri');
+
+    params[callbackParamName] = this.callbackURL;
+
+    return params;
   }
 
 
