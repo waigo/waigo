@@ -67,6 +67,38 @@ class GenericOauth {
   }
 
 
+  * handleAuthorizationCallback() {
+    let user = this._user();
+
+    yield this.context.record('oauth_callback', user || 'anon', {
+      provider: this.provider,
+      query: this.context.request.query,
+    });
+
+    try {
+      let errorMsg = this.context.request.query.error,
+        errorDesc = this.context.request.query.error_description;
+
+      if (errorMsg) {
+        throw new OauthError(errorMsg, 400, errorDesc);
+      }
+      
+      // we got the code!
+      let code = this.context.request.query.code;
+
+      if (!code) {
+        throw new OauthError('Failed to obtain OAuth code', 400);
+      }
+
+      let response = yield this.getAccessToken(code);
+
+      yield this._handlePostAuthorizationSuccess(response);
+    } catch (err) {
+      yield this._handleError(err);
+    }
+  }
+
+
   /**
    * Get OAuth access token.
    * @param {String} code Code returned by OAuth provider.
@@ -145,6 +177,12 @@ class GenericOauth {
       throw new OauthError(`${this.provider}: apiBaseUrl must be provided`);
     }
 
+    url = apiBaseUrl + url;
+
+    queryParams = qs.stringify(queryParams || {});
+
+    if (queryParams.length) {
+      url += '?' + queryParams;
     }
 
     return url;
@@ -212,6 +250,11 @@ class GenericOauth {
 
   _user () {
     return _.get(this.context, 'currentUser', {});
+  }
+
+
+  * _handlePostAuthorizationSuccess (accessTokenResponse) {
+    yield this.context.redirect("/");
   }
 
 

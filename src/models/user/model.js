@@ -32,13 +32,26 @@ class Model extends RethinkDbModel {
 
 
   /** 
+   * Get user by username.
+   * @return {User}
+   */
+  * getByUsername (username) {
+    let ret = yield this._native.filter(function(user) {
+      return user('username').eq(username);
+    }).execute();
+
+    return this._wrap(_.get(ret, '0'));
+  }
+
+
+
+  /** 
    * Get user by email address.
    * @return {User}
    */
   * getByEmail (email) {
     let ret = yield this._native.filter(function(user) {
-      return user('username').eq(email)
-        || user('emails')('email').eq(email)
+      return user('emails')('email').eq(email)
     }).execute();
 
     return this._wrap(_.get(ret, '0'));
@@ -99,22 +112,36 @@ class Model extends RethinkDbModel {
    */
   * register (properties) {
     // create user
-    let user = yield this._insert({
+    let attrs = {
       username: properties.username,
       profile: _.extend({
         displayName: properties.username,
       }, properties.profile),
-      auth: [
+      roles: properties.roles,
+    };
+
+    if (properties.email) {
+      attrs.emails = [
+        {
+          email: properties.email,
+          verified: !!properties.emailVerified,
+        }
+      ];
+    }
+
+    if (properties.password) {
+      attrs.auth = [
         {
           type: 'password',
           token: yield this.generatePasswordHash(properties.password),
         }
-      ],
-      roles: properties.roles,
-    });
+      ];
+    }
+
+    let user = yield this._insert(attrs);
 
     if (!user) {
-      throw new Error('Error creating new user: ' + properties.email);
+      throw new Error('Error creating new user: ' + properties.username);
     }
 
     // log activity

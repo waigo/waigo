@@ -41,7 +41,7 @@ class Model extends RethinkDbModel {
 
     if (!actor || !actor.id) {
       actor = {
-        displayName: actor || 'system'
+        displayName: (typeof actor === 'string' ? actor : 'system')
       }
     } else {
       actor = {
