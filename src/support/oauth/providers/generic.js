@@ -249,7 +249,7 @@ class GenericOauth {
 
 
   _user () {
-    return _.get(this.context, 'currentUser', {});
+    return this.context.currentUser;
   }
 
 

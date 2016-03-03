@@ -32,11 +32,11 @@ module.exports = {
     },
     emails: { 
       type: [EmailSchema],
-      required: false,
+      required: true,
     },
     auth: { 
       type: [AuthSchema], 
-      required: false,
+      required: true,
     },
     roles: { 
       type: [String], 

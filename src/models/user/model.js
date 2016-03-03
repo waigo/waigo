@@ -114,6 +114,8 @@ class Model extends RethinkDbModel {
     // create user
     let attrs = {
       username: properties.username,
+      emails: [],
+      auth: [],
       profile: _.extend({
         displayName: properties.username,
       }, properties.profile),
@@ -121,21 +123,21 @@ class Model extends RethinkDbModel {
     };
 
     if (properties.email) {
-      attrs.emails = [
+      attrs.emails.push(
         {
           email: properties.email,
           verified: !!properties.emailVerified,
         }
-      ];
+      );
     }
 
     if (properties.password) {
-      attrs.auth = [
+      attrs.auth.push(
         {
           type: 'password',
           token: yield this.generatePasswordHash(properties.password),
         }
-      ];
+      );
     }
 
     let user = yield this._insert(attrs);
@@ -149,7 +151,7 @@ class Model extends RethinkDbModel {
 
     // notify admins
     if (this.app.sendNotification) {
-      yield this.app.sendNotification('admins', `New user: ${user.username} - ${user.username}`);
+      yield this.app.sendNotification('admins', `New user: ${user.getId()} - ${user.username}`);
     }
 
     return user;

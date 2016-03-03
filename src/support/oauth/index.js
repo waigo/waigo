@@ -28,7 +28,7 @@ exports.load = function*(ctx, provider, tokens) {
   try {
     Impl = waigo.load(`support/oauth/providers/${provider}`);
   } catch (err) {
-    ctx.logger.warn(`No OAuth implementation found for "${provider}", using generic.`);
+    ctx.logger.warn(`No OAuth implementation found for "${provider}", using generic.`, err);
   }
 
   return new Impl(ctx, provider, tokens);

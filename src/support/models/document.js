@@ -79,21 +79,9 @@ class Document {
     self.__newDoc = {};
     self.__marked = {};
 
+    // from doc
     for (let key in self.__doc) {
-      // if property not yet defined
-      if (!Object.getOwnPropertyDescriptor(self, key)) {
-        // ...then define it!
-        Object.defineProperty(self, key, {
-          enumerable: true,
-          configurable: true,
-          get: function() {
-            return _.has(self.__newDoc, key) ? self.__newDoc[key] : self.__doc[key];
-          },
-          set: function(val) {
-            self.__newDoc[key] = val;
-          }
-        });
-      }
+      self._defineProperty(key);
     }
 
     // delete any extraneous properties
@@ -102,6 +90,26 @@ class Document {
         delete self[key];
       }
     });
+  }
+
+
+  _defineProperty (key) {
+    let self = this;
+
+    // if property not yet defined
+    if (!Object.getOwnPropertyDescriptor(self, key)) {
+      // ...then define it!
+      Object.defineProperty(self, key, {
+        enumerable: true,
+        configurable: true,
+        get: function() {
+          return _.has(self.__newDoc, key) ? self.__newDoc[key] : self.__doc[key];
+        },
+        set: function(val) {
+          self.__newDoc[key] = val;
+        }
+      });
+    }
   }
 
 
@@ -153,7 +161,7 @@ class Document {
 
     let ret = {};
 
-    Object.keys(this).forEach(function(key) {
+    Object.keys(this).forEach(function(key) {      
       if (!_.isFunction(self[key])) {
         if ( (self.__doc[key] !== self[key]) 
                 || self.__marked[key] ) {
@@ -198,7 +206,7 @@ class Document {
   * save () {
     let changes = this.changes();
 
-    yield this.__model._update(this[this.__model.pk], this, changes);
+    yield this.__model._update(this.getId(), changes, this);
 
     // reset properties
     this._resetProperties(this.toJSON());
@@ -210,7 +218,7 @@ class Document {
    * Remove this document from the model.
    */
   * remove () {
-    yield this.__model._remove(this[this.__model.pk]);
+    yield this.__model._remove(this.getId());
   }
 
 
@@ -219,7 +227,7 @@ class Document {
    * Reload this document from the model.
    */
   * reload () {
-    let doc = yield this.__model._get(this[this.__model.pk]);
+    let doc = yield this.__model._get(this.getId());
 
     this._resetProperties(doc);
   }

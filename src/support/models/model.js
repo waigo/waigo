@@ -45,7 +45,7 @@ class Model {
     throw new Error('Not yet implemented');
   }
 
-  * _update (id, document, changes) {
+  * _update (id, changes, document) {
     throw new Error('Not yet implemented');
   }
 
@@ -163,25 +163,23 @@ class RethinkDbModel extends Model {
     let ret = yield this.db.r.table(this.name).insert(rawDoc).run();
 
     let newDoc = _.extend({}, rawDoc);
-    rawDoc[this.pk] = ret[this.pk];
+    rawDoc[this.pk] = ret.generated_keys[0];
 
     return this._createDoc(newDoc);
   }
 
 
-  * _update (id, document, changes) {
-    let toUpdate = _.without(document.toJSON(), this.pk);
-
-    yield this.schema.validate(toUpdate, {
+  * _update (id, changes, document) {
+    yield this.schema.validate(changes, {
       ignoreMissing: true,
     });
 
-    yield this.db.r.table(this.name).get(id).update(toUpdate).run();
+    yield this.db.r.table(this.name).get(id).update(changes).run();
   }
 
 
   * _remove (id) {
-    yield this.db.r.table(this.name).get(id).delete(toUpdate).run();
+    yield this.db.r.table(this.name).get(id).delete().run();
   }
 
 

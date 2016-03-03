@@ -43,7 +43,7 @@ module.exports = {
    * @param {Object} context waigo client request context.
    */
   login: function*(context) {
-    this.__logger.debug('Logging in user', this.username);
+    this.__logger.debug(`Logging in user: ${this.getId()} = ${this.username}`);
 
     context.session.user = {
       id: this.getId(),
@@ -70,6 +70,7 @@ module.exports = {
     theEmail.verified = true;
 
     // save
+    this.markChanged('emails');
     yield this.save();
 
     // record
@@ -108,6 +109,7 @@ module.exports = {
     theEmail.verified = true;
 
     // save
+    this.markChanged('emails');
     yield this.save();
 
     // record
@@ -134,6 +136,7 @@ module.exports = {
     passAuth.token = yield this.__model().generatePasswordHash(newPassword);
 
     // save
+    this.markChanged('auth');
     yield this.save();
 
     // record
@@ -171,7 +174,7 @@ module.exports = {
    * @param {Object} data Data.
    */
   saveAuth: function*(type, data) {
-    this.__logger.debug('Save user auth', this.id, type);
+    this.__logger.debug('Save user auth', this.getId(), type, data);
 
     let existing = _.find(this.auth, function(a) {
       return type === a.type;
@@ -188,10 +191,11 @@ module.exports = {
     existing.data = data;
 
     // save
+    this.markChanged('auth');
     yield this.save();
 
     // record
-    yield this.__app.record('save_oauth', this, _.pick(existing, 'type', 'token'));
+    yield this.__app.record('save_oauth', this, _.pick(existing, 'type', 'access_token'));
   },
   /**
    * Get whether user can access given resource.
