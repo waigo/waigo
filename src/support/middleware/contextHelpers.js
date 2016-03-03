@@ -74,6 +74,8 @@ const processAlertMessage = exports.processAlertMessage = function(ctx) {
 
   // set alert msg for next page show
   ctx.showAlert = function*(msg) {
+    ctx.logger.debug('set alert message', msg);
+    
     ctx.session.alertMsg = msg;
   };
 }
