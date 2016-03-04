@@ -151,7 +151,7 @@ class Model extends RethinkDbModel {
 
     // notify admins
     if (this.app.sendNotification) {
-      yield this.app.sendNotification('admins', `New user: ${user.getId()} - ${user.username}`);
+      yield this.app.sendNotification('admins', `New user: ${user.id} - ${user.username}`);
     }
 
     return user;

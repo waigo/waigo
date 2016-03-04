@@ -6,6 +6,9 @@ const waigo = global.waigo,
 
 
 
+
+
+
 /**
  * Represents a document within a model.
  *
@@ -47,6 +50,11 @@ class Document {
         writable: true,
         value: {}
       },
+      __keyConfig: {
+        enumerable: false,
+        writable: true,
+        value: {}
+      },
       __marked: {
         enumerable: false,
         writable: true,
@@ -81,8 +89,16 @@ class Document {
 
     // from doc
     for (let key in self.__doc) {
-      self._defineProperty(key);
+      if (self.__model.pk !== key) {
+        self._defineProperty(key);
+      }
     }
+
+    // set id
+    self.__defineProperty('id', {
+      realKey: self.__model.pk,
+      readOnly: true,
+    });
 
     // delete any extraneous properties
     Object.keys(this).forEach(function(key) {
@@ -93,8 +109,15 @@ class Document {
   }
 
 
-  _defineProperty (key) {
+  _defineProperty (key, options) {
     let self = this;
+
+    options = _.extend({
+      realKey: key,
+      readOnly: false,
+    }, options);
+
+    if (self.__keyConfig[key]) = options;
 
     // if property not yet defined
     if (!Object.getOwnPropertyDescriptor(self, key)) {
@@ -103,19 +126,21 @@ class Document {
         enumerable: true,
         configurable: true,
         get: function() {
-          return _.has(self.__newDoc, key) ? self.__newDoc[key] : self.__doc[key];
+          return _.has(self.__newDoc, options.realKey) 
+            ? self.__newDoc[options.realKey] 
+            : self.__doc[options.realKey];
         },
         set: function(val) {
-          self.__newDoc[key] = val;
+          if (options.readOnly) {
+            throw new Error(`Cannot modify ${key}: read-only`);
+          }
+
+          self.__newDoc[options.realKey] = val;
         }
       });
     }
   }
 
-
-  getId () {
-    return this[this.__model.pk];
-  }
 
 
   /**
@@ -136,7 +161,10 @@ class Document {
   }
 
 
-
+  /**
+   * Get JSON representation of this doc.
+   * @return {Object}
+   */
   toJSON () {
     let self = this;
 
@@ -162,6 +190,7 @@ class Document {
     let ret = {};
 
     Object.keys(this).forEach(function(key) {      
+      // if not a function
       if (!_.isFunction(self[key])) {
         if ( (self.__doc[key] !== self[key]) 
                 || self.__marked[key] ) {
@@ -206,7 +235,16 @@ class Document {
   * save () {
     let changes = this.changes();
 
-    yield this.__model._update(this.getId(), changes, this);
+    // set actual key names where needed
+    _.each(self.__keyConfig, function(options, keyName) {
+      if (undefined !== changes[keyName] && options.realKey !== keyName) {
+        changes[options.realKey] = changes[keyName];
+
+        delete changes[keyName];
+      }
+    });
+
+    yield this.__model._update(this.id, changes, this);
 
     // reset properties
     this._resetProperties(this.toJSON());
@@ -218,7 +256,7 @@ class Document {
    * Remove this document from the model.
    */
   * remove () {
-    yield this.__model._remove(this.getId());
+    yield this.__model._remove(this.id);
   }
 
 
@@ -227,7 +265,7 @@ class Document {
    * Reload this document from the model.
    */
   * reload () {
-    let doc = yield this.__model._get(this.getId());
+    let doc = yield this.__model._get(this.id);
 
     this._resetProperties(doc);
   }

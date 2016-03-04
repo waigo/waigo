@@ -43,10 +43,10 @@ module.exports = {
    * @param {Object} context waigo client request context.
    */
   login: function*(context) {
-    this.__logger.debug(`Logging in user: ${this.getId()} = ${this.username}`);
+    this.__logger.debug(`Logging in user: ${this.id} = ${this.username}`);
 
     context.session.user = {
-      id: this.getId(),
+      id: this.id,
       username: this.username,
     };
 
@@ -174,7 +174,7 @@ module.exports = {
    * @param {Object} data Data.
    */
   saveAuth: function*(type, data) {
-    this.__logger.debug('Save user auth', this.getId(), type, data);
+    this.__logger.debug('Save user auth', this.id, type, data);
 
     let existing = _.find(this.auth, function(a) {
       return type === a.type;
