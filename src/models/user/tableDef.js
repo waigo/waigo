@@ -53,7 +53,7 @@ module.exports = {
     },
     {
       name: 'email',
-      fn: function(doc) {
+      def: function(doc) {
         return doc('emails')('email');
       },
       options: {

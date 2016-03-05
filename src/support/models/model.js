@@ -126,7 +126,7 @@ class RethinkDbModel extends Model {
 
     for (let index of this.indexes) {
       this._native.ensureIndex(
-        index.name, index.fn, index.options
+        index.name, index.def, index.options
       );
     }
   }

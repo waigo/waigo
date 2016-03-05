@@ -47,7 +47,7 @@ module.exports = {
     },
     { 
       name: 'actor',
-      fn: function(doc) {
+      def: function(doc) {
         return doc('actor')('id');
       },
     },
