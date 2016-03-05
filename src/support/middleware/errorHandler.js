@@ -48,7 +48,7 @@ module.exports = function() {
 var render = function*(config, err) {
   this.status = err.status || 500;
 
-  let error = yield err[viewObjects.METHOD_NAME].call(err, this);
+  let error = yield viewObjects.toViewObjectYieldable(this, err);
 
   error.status = this.status;
   error.request = {
@@ -62,11 +62,11 @@ var render = function*(config, err) {
 
   try {
     yield this.render('error', error);
-  } catch (err) {
-    this.app.emit('error', err);
+  } catch (anotherError) {
+    this.app.emit('error', anotherError);
 
     this.type = 'json';
-    this.body = err;
+    this.body = anotherError;
   }
 };
 

@@ -120,7 +120,7 @@ exports.MultipleError = MultipleError;
  * @return {Object} Plain object.
  */
 MultipleError.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
-  let ret = RuntimeError.prototype[viewObjects.METHOD_NAME].call(this, ctx);
+  let ret = yield RuntimeError.prototype[viewObjects.METHOD_NAME].call(this, ctx);
 
   ret.details = {};
 

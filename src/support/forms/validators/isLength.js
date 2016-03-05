@@ -15,11 +15,16 @@ const waigo = global.waigo,
  * 
  * @throws Error If not an email address.
  */
-module.exports = function(options = {}) {
+module.exports = function(options) {
+  options = _.extend({
+    min: 0,
+    max: 10000000,
+  }, options);
+
   return function*(context, field, value) {
     let len = _.get(value, 'length', 0);
-    let min = options.min || 0;
-    let max = options.max || 10000000;
+    let min = options.min;
+    let max = options.max;
 
     if (min > len || max < len) {
       throw new FieldValidationError('Must be between ' 

@@ -25,8 +25,8 @@ exports.create = function(logger) {
 
       templateVars = templateVars || {};
 
-      if (!_.isPlainObject(templateVars)) {
-        throw new JsonRenderError('Plain object required for JSON output format');
+      if (!_.isObject(templateVars)) {
+        throw new JsonRenderError('Object required for JSON output format');
       }
 
       this.body = templateVars;

@@ -163,9 +163,9 @@ class RethinkDbModel extends Model {
     let ret = yield this.db.r.table(this.name).insert(rawDoc).run();
 
     let newDoc = _.extend({}, rawDoc);
-    rawDoc[this.pk] = ret.generated_keys[0];
+    newDoc[this.pk] = ret.generated_keys[0];
 
-    return this._createDoc(newDoc);
+    return this._wrap(newDoc);
   }
 
 
