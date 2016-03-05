@@ -95,7 +95,7 @@ class Document {
     }
 
     // set id
-    self.__defineProperty('id', {
+    self._defineProperty('id', {
       realKey: self.__model.pk,
       readOnly: true,
     });
@@ -117,7 +117,7 @@ class Document {
       readOnly: false,
     }, options);
 
-    if (self.__keyConfig[key]) = options;
+    self.__keyConfig[key] = options;
 
     // if property not yet defined
     if (!Object.getOwnPropertyDescriptor(self, key)) {
