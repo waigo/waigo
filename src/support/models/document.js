@@ -236,7 +236,7 @@ class Document {
     let changes = this.changes();
 
     // set actual key names where needed
-    _.each(self.__keyConfig, function(options, keyName) {
+    _.each(this.__keyConfig, function(options, keyName) {
       if (undefined !== changes[keyName] && options.realKey !== keyName) {
         changes[options.realKey] = changes[keyName];
 

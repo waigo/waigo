@@ -31,8 +31,31 @@ class Model {
     throw new Error('Not yet implemented');
   }
 
+  /** 
+   * Get item by id
+   * @return {Document}
+   */
+  * getById (id) {
+    throw new Error('Not yet implemented');
+  }
+
+
+  /**
+   * Listen for changes to this model's data.
+   * 
+   * @param  {Function} cb Callback
+   */
+  onChange (cb) {
+    throw new Error('Not yet implemented');
+  }
+
+
+  /** 
+   * Get columns to display in admin list view
+   * @return {Array}
+   */
   getAdminListViewColumns () {
-    let columns = _.get(this.adminConfig, 'listView.columns');
+    let columns = _.get(this.adminConfig, 'listView.columns', []);
 
     if (!_.get(columns, 'length')) {
       columns = [this.pk];
@@ -41,14 +64,38 @@ class Model {
     return columns;
   }
 
+  /**
+   * Get native query object for running a query against the db model.
+   * @return {Object}
+   */
+  _qry () {
+    throw new Error('Not yet implemented');
+  }
+
+
+  /**
+   * Insert new record.
+   * @param {Object} rawDoc raw data of record.
+   * @return {Document}
+   */
   * _insert (rawDoc) {
     throw new Error('Not yet implemented');
   }
 
+  /**
+   * Update record with given id
+   *
+   * @param {String} id
+   * @param {Object} changes The changed data.
+   * @param {Document} [document] The document instance.
+   */
   * _update (id, changes, document) {
     throw new Error('Not yet implemented');
   }
 
+  /**
+   * Remove record with given id.
+   */
   * _remove (id) {
     throw new Error('Not yet implemented');
   }
@@ -148,7 +195,7 @@ class RethinkDbModel extends Model {
    * @param  {Function} cb Callback
    */
   onChange (cb) {
-    this.db.r.table(this.name).changes()
+    this._qry().changes()
       .then(cb)
       .error((err) => {
         this.app.logger.error(`${this.name} changes error`, err);
@@ -156,11 +203,15 @@ class RethinkDbModel extends Model {
   }
 
 
+  _qry () {
+    return this.db.r.table(this.name);
+  }
+
 
   * _insert (rawDoc) {
     yield this.schema.validate(rawDoc);
 
-    let ret = yield this.db.r.table(this.name).insert(rawDoc).run();
+    let ret = yield this._qry().insert(rawDoc).run();
 
     let newDoc = _.extend({}, rawDoc);
     newDoc[this.pk] = ret.generated_keys[0];
@@ -174,12 +225,12 @@ class RethinkDbModel extends Model {
       ignoreMissing: true,
     });
 
-    yield this.db.r.table(this.name).get(id).update(changes).run();
+    yield this._qry().get(id).update(changes).run();
   }
 
 
   * _remove (id) {
-    yield this.db.r.table(this.name).get(id).delete().run();
+    yield this._qry().get(id).delete().run();
   }
 
 
@@ -189,14 +240,14 @@ class RethinkDbModel extends Model {
     }
 
     return this._wrap(
-      yield this.db.r.table(this.name).get(id).run()
+      yield this._qry().get(id).run()
     );
   }
 
 
   * _getAll () {
     return this._wrap(
-      yield this.db.r.table(this.name).run()
+      yield this._qry().run()
     );
   }
 

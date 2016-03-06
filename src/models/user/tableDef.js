@@ -49,7 +49,7 @@ module.exports = {
   },
   indexes: [
     {
-      name: 'email',
+      name: 'username',
     },
     {
       name: 'email',
