@@ -1,5 +1,9 @@
 "use strict";
 
+const waigo = global.waigo,
+  _ = waigo._;
+
+
 
 const ProfileSchema = {
   displayName: { type: String, required: true },
@@ -46,6 +50,13 @@ module.exports = {
       type: Date, 
       required: false,
     },
+  },
+  virtuals: {
+    isAdmin: {
+      get: function() {
+        return 0 <= _.includes(this.roles, 'admin');
+      }
+    }
   },
   indexes: [
     {

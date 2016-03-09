@@ -18,9 +18,10 @@ class Model {
     this.cfg = cfg;
     this.name = cfg.name;
     this.docMethods = _.get(cfg, 'docMethods', {});
+    this.docVirtuals = _.get(cfg, 'def.virtuals', {});
     this.pk = _.get(cfg, 'pk', 'id');
-    this.schema = schemaBuilder(cfg.schema);
-    this.indexes = cfg.indexes || [];
+    this.schema = schemaBuilder(_.get(cfg, 'def.schema', {});
+    this.indexes = _.get(cfg,'def.indexes', [];
     this.adminConfig = _.get(cfg, 'adminConfig');
   }
 
@@ -134,11 +135,11 @@ class Model {
       doc = new Document(this, doc);
 
       _.each(this.docMethods, (method, key) => {
-        if (_.isGen(method)) {
-          doc[key] = _.bindGen(method, doc);
-        } else {
-          doc[key] = _.bind(method, doc);
-        }
+        doc[key] = _.bindGen(method, doc);
+      });
+
+      _.each(this.docVirtuals, (cfg, key) => {
+        doc.addVirtual(key, cfg);
       });
     }
 

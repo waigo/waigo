@@ -21,8 +21,7 @@ class Model extends RethinkDbModel {
   constructor (app) {
     super(app, app.db, {
       name: "Cron",
-      schema: tableDef.schema,
-      indexes: tableDef.indexes,
+      def: tableDef,
       adminConfig: adminConfig,
       docMethods: docMethods,
     });

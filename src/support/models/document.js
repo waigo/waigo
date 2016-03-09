@@ -2,7 +2,8 @@
 
 const waigo = global.waigo,
   _ = waigo._,
-  Q = waigo.load('support/promise');
+  Q = waigo.load('support/promise'),
+  viewObjects = waigo.load('support/viewObjects');
 
 
 
@@ -102,7 +103,14 @@ class Document {
 
     // delete any extraneous properties
     Object.keys(this).forEach(function(key) {
-      if (!_.isFunction(self[key]) && !self.__doc.hasOwnProperty(key)) {
+      let keyConfig = _.get(self.__keyConfig, key, {});
+
+      // if virtual or a function then skip
+      if (keyConfig.virtual || _.isFunction(self[key])) {
+        return;
+      }
+
+      if (!self.__doc.hasOwnProperty(key)) {
         delete self[key];
       }
     });
@@ -142,6 +150,34 @@ class Document {
   }
 
 
+  /**
+   * Add a virtual field definition.
+   *
+   * Virtual fields get included when converting to JSON representation.
+   * 
+   * @param {String} key    Accessor name.
+   * @param {Object} config Field configuration
+   * @param {Object} config.get Field getter
+   * @param {Object} [config.set] Field setter
+   */
+  addVirtual(key, config) {
+    var self = this;
+
+    self.__keyConfig[key] = {
+      virtual: true,
+      config: config,
+    };
+
+    Object.defineProperty(self, key, {
+      enumerable: true,
+      configurable: true,
+      get: _.bind(config.get, self),
+      set: config.set ? _.bind(config.set, self) : function() {
+        throw new Error(`Cannot set ${key}: read-only virtual`);
+      }
+    });
+  }
+
 
   /**
    * Mark a property as having changed.
@@ -171,6 +207,7 @@ class Document {
     let ret = {};
 
     Object.keys(this).forEach(function(key) {
+      // if it's not a function (virtuals are ok!)
       if (!_.isFunction(self[key])) {
         ret[key] = self[key];
       }
@@ -190,12 +227,16 @@ class Document {
     let ret = {};
 
     Object.keys(this).forEach(function(key) {      
-      // if not a function
-      if (!_.isFunction(self[key])) {
-        if ( (self.__doc[key] !== self[key]) 
-                || self.__marked[key] ) {
-          ret[key] = self[key];
-        }
+      let keyConfig = _.get(self.__keyConfig, key, {});
+
+      // if virtual or a function then skip
+      if (keyConfig.virtual || _.isFunction(self[key])) {
+        return;
+      }
+
+      if ( (self.__doc[key] !== self[key]) 
+              || self.__marked[key] ) {
+        ret[key] = self[key];
       }
     });
 
@@ -213,12 +254,19 @@ class Document {
     let self = this;
 
     Object.keys(this).forEach(function(key) {
+      let keyConfig = _.get(self.__keyConfig, key, {});
+
+      // if virtual or a function then skip
+      if (keyConfig.virtual || _.isFunction(self[key])) {
+        return;
+      }
+
       // if it's an original property
       if (self.__doc.hasOwnProperty(key)) {
         delete self.__newDoc[key];
       }
-      else if (!_.isFunction(self[key])) {
-        // if it's a newly added one
+      // if it's a newly added one
+      else {
         delete self[key];
       }
     });
@@ -237,6 +285,11 @@ class Document {
 
     // set actual key names where needed
     _.each(this.__keyConfig, function(options, keyName) {
+      // if it's virtual then skip
+      if (options.virtual) {
+        return;
+      }
+
       if (undefined !== changes[keyName] && options.realKey !== keyName) {
         changes[options.realKey] = changes[keyName];
 
@@ -270,6 +323,16 @@ class Document {
     this._resetProperties(doc);
   }
 }
+
+
+/** 
+ * Create view object representation of this document.
+ * @param {Object} ctx Request context.
+ * @return {Object}
+ */
+Document.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
+  return this.toJSON();
+};
 
 
 module.exports = Document;

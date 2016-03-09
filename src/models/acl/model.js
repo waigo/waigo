@@ -16,8 +16,7 @@ class AclModel extends RethinkDbModel {
   constructor (app) {
     super(app, app.db, {
       name: "Acl",
-      schema: tableDef.schema,
-      indexes: tableDef.indexes,
+      def: tableDef,
       adminConfig: adminConfig,
       docMethods: docMethods,
     });
