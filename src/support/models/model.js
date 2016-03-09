@@ -20,8 +20,8 @@ class Model {
     this.docMethods = _.get(cfg, 'docMethods', {});
     this.docVirtuals = _.get(cfg, 'def.virtuals', {});
     this.pk = _.get(cfg, 'pk', 'id');
-    this.schema = schemaBuilder(_.get(cfg, 'def.schema', {});
-    this.indexes = _.get(cfg,'def.indexes', [];
+    this.schema = schemaBuilder(_.get(cfg, 'def.schema', {}));
+    this.indexes = _.get(cfg,'def.indexes', []);
     this.adminConfig = _.get(cfg, 'adminConfig');
   }
 

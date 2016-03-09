@@ -2,6 +2,7 @@
 
 
 const waigo = global.waigo,
+  _ = waigo._,
   Q = waigo.load('support/promise'),
   errors = waigo.load('support/errors'),
   Document = waigo.load('support/models/document'),
@@ -70,6 +71,20 @@ class Model extends RethinkDbModel {
     }).execute();
 
     return this._wrap(ret);
+  }
+
+
+  * getLatest (verb, actorId) {
+    let r = this.db.r;
+
+    let ret = yield this._qry().filter(function(doc) {
+      return doc('user')('id').eq(actorId) && doc('verb').eq(verb);
+    })
+      .orderBy(r.desc('published'))
+      .limit(1)
+      .run();
+
+    return this._wrap(_.get(ret, '0'));
   }
 
 }

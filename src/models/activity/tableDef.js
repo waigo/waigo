@@ -3,7 +3,7 @@
 
 const UserSchema = {
   // unique id (if null then by the system)
-  _id: {    
+  id: {    
     type: String,
     required: false,
   },
