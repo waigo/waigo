@@ -215,7 +215,10 @@ class RethinkDbModel extends Model {
     let ret = yield this._qry().insert(rawDoc).run();
 
     let newDoc = _.extend({}, rawDoc);
-    newDoc[this.pk] = ret.generated_keys[0];
+
+    if (!newDoc[this.pk] && ret.generated_keys) {
+      newDoc[this.pk] = ret.generated_keys[0];
+    }
 
     return this._wrap(newDoc);
   }
