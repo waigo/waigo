@@ -54,7 +54,7 @@ module.exports = {
   virtuals: {
     isAdmin: {
       get: function() {
-        return 0 <= _.includes(this.roles, 'admin');
+        return true === _.includes(this.roles, 'admin');
       }
     }
   },
