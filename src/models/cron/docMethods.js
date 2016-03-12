@@ -46,7 +46,7 @@ module.exports = {
     try {
       // always reload data at the start in case other app instances have 
       // executed the task recently
-      let dbData = yield this.getModel().get(this.id);
+      let dbData = yield this.__model.getById(this.id);
 
       // if disabled then don't run
       if (dbData.disabled) {
