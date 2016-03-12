@@ -3,7 +3,7 @@
 /**
  * @fileOverview
  *
- * Email admins some user stats:
+ * Notify admins about user stats:
  * - users signed up in past 7 days
  */
 
