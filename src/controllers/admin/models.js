@@ -113,9 +113,7 @@ exports.doc = function*() {
   let model = this.models[modelName];
 
   // get data
-  let row = yield model.findOne({
-    id: rowId
-  });
+  let row = yield model.getById(rowId);
 
   yield this.render('/admin/models/doc', {
     doc: JSON.stringify(row)

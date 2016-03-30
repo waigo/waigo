@@ -1,7 +1,7 @@
 "use strict";
 
 
-const thinky = require('thinky');
+const rethinkdb = require('rethinkdbdash');
 
 const waigo = global.waigo,
   _ = waigo._,
@@ -28,14 +28,14 @@ var _connections = [];
 exports.create = function*(logger, dbConfig) {
   logger.log('Connecting to RethinkDB', dbConfig.name);
 
-  const db = thinky(_.extend({ 
-    db: dbConfig.name 
-  }, dbConfig.poolConfig));
+  const db = rethinkdb(dbConfig.serverConfig);
+
+  // yield db.connect();
 
   yield new Q((resolve, reject) => {
     let connected = false;
 
-    db.r.getPoolMaster().on('available-size', (size) => {
+    db.getPoolMaster().on('available-size', (size) => {
       if (connected) {
         return;
       }
@@ -46,9 +46,9 @@ exports.create = function*(logger, dbConfig) {
       resolve();
     });
 
-    db.r.getPoolMaster()._flushErrors = () => {};
+    db.getPoolMaster()._flushErrors = () => {};
 
-    db.r.getPoolMaster().on('healthy', (healthy) => {
+    db.getPoolMaster().on('healthy', (healthy) => {
       if (healthy) {
         logger.trace(`RethinkDB connected (${dbConfig.name})`);
       } else {
@@ -74,8 +74,8 @@ exports.closeAll = function*(logger) {
   logger.debug('Close all connections');
 
   yield _.map(connections, (db) => {
-    return db.r.getPool.drain();
-  })
+    return db.getPoolMaster().drain();
+  });
 };
 
 

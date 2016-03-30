@@ -117,21 +117,19 @@ class ActionTokens {
       _throw('This action token has expired.', 403);
     }
 
-    var user = yield this.app.models.User.findOne({
-      id: userId
-    });
+    var user = yield this.app.models.User.getById(userId);
 
     if (!user) {
       _throw('Unable to find user information related to action token', 404);
     }
 
     // check if we've already executed this request before
-    var activity = yield this.app.models.Activity.findOne({
-      type: type,
+    var activity = yield this.app.models.Activity.getByFilter({
+      type: type, 
       'details.salt': salt
     });
 
-    if (activity) {
+    if (activity.length) {
       _throw('This action token has already been processed and is no longer valid.', 403);
     }
 

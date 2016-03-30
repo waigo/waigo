@@ -64,18 +64,25 @@ class Model extends RethinkDbModel {
   }
 
 
+  * getByFilter (filter) {
+    let ret = yield this._qry().filter(filter).run();
+
+    return this._wrap(ret);
+  }
+
+
 
   * getRegistrationsSince (date) {
-    let ret = yield this._native.filter(function(doc) {
+    let ret = yield this._qry().filter(function(doc) {
       return doc('published').ge(date) && doc('verb').eq('register');
-    }).execute();
+    }).run();
 
     return this._wrap(ret);
   }
 
 
   * getLatest (verb, actorId) {
-    let r = this.db.r;
+    const r = this.db;
 
     let ret = yield this._qry().filter(function(doc) {
       return doc('user')('id').eq(actorId) && doc('verb').eq(verb);

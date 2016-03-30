@@ -40,7 +40,7 @@ module.exports = {
       let User = ctx.app.models.User;
 
       // load user
-      let user = yield User.getByEmail(this.fields.email.value);
+      let user = yield User.getByEmailOrUsername(this.fields.email.value);
 
       // check user and password
       if (!user 

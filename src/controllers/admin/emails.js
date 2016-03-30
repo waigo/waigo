@@ -17,9 +17,7 @@ exports.render = function*() {
 
   this.app.logger.debug('Render email template');
 
-  let user = yield this.app.models.User.findOne({
-    id: userId
-  });
+  let user = yield this.app.models.User.getById(userId);
 
   if (!user) {
     this.throw('User not found', 404);

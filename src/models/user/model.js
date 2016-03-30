@@ -35,9 +35,9 @@ class Model extends RethinkDbModel {
    * @return {User}
    */
   * getByUsername (username) {
-    let ret = yield this._native.filter(function(user) {
+    let ret = yield this._qry().filter(function(user) {
       return user('username').eq(username);
-    }).execute();
+    }).run();
 
     return this._wrap(_.get(ret, '0'));
   }
@@ -49,12 +49,26 @@ class Model extends RethinkDbModel {
    * @return {User}
    */
   * getByEmail (email) {
-    let ret = yield this._native.filter(function(user) {
+    let ret = yield this._qry().filter(function(user) {
       return user('emails')('email').eq(email)
-    }).execute();
+    }).run();
 
     return this._wrap(_.get(ret, '0'));
   }
+
+
+  /** 
+   * Get user by email address or username.
+   * @return {User}
+   */
+  * getByEmailOrUsername (str) {
+    let ret = yield this._qry().filter(function(user) {
+      return user('emails')('email').eq(str).or(user('username').eq(str));
+    }).run();
+
+    return this._wrap(_.get(ret, '0'));
+  }
+
 
 
   /**
@@ -62,9 +76,9 @@ class Model extends RethinkDbModel {
    * @return {Array}
    */
   * findAdminUsers () {
-    let ret = yield this._native.filter(function(user) {
+    let ret = yield this._qry().filter(function(user) {
       return user('roles').contains('admin')
-    }).execute();
+    }).run();
 
     return this._wrap(ret);
   }
@@ -75,9 +89,9 @@ class Model extends RethinkDbModel {
    * @return {Number}
    */
   * haveAdminUsers () {
-    let count = yield this._native.count(function(user) {
+    let count = yield this._qry().count(function(user) {
       return user('roles').contains('admin')
-    }).execute();
+    }).run();
 
     return count > 0;
   }

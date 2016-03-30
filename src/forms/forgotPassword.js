@@ -29,23 +29,7 @@ module.exports = {
       let User = app.models.User;
 
       // load user
-      let user = yield User.findOne({
-        $or: [
-          {
-            username: this.fields.email.value,
-          },
-          {
-            'emails.email': this.fields.email.value,
-          }
-        ]
-      }, {
-        fields: {
-          id: 1,
-          username: 1,
-          profile: 1,
-          emails: 1,
-        }
-      });
+      let user = yield User.getByEmailOrUsername(this.fields.email.value);
 
       if (!user) {
         ctx.throw(ForgotPasswordError, 'User not found', 404);

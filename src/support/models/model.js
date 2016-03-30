@@ -169,13 +169,24 @@ class RethinkDbModel extends Model {
 
 
   * init () {
-    // create indexes
-    this._native = this.db.createModel(this.name, {});
+    // get list of tables
+    let tables = yield this.db.tableList();
+
+    if (0 > tables.indexOf(this.name)) {
+      yield this.db.tableCreate(this.name, {
+        primaryKey: this.cfg.pk,
+      });
+    }
+
+    // create indices
+    let existingIndices = yield this._qry().indexList();
 
     for (let index of this.indexes) {
-      this._native.ensureIndex(
-        index.name, index.def, index.options
-      );
+      if (0 > existingIndices.indexOf(index.name)) {
+        yield this._qry().indexCreate(
+          index.name, index.def, index.options
+        );
+      }
     }
   }
 
@@ -205,7 +216,7 @@ class RethinkDbModel extends Model {
 
 
   _qry () {
-    return this.db.r.table(this.name);
+    return this.db.table(this.name);
   }
 
 

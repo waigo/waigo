@@ -133,7 +133,7 @@ module.exports = {
     }
 
     // update password
-    passAuth.token = yield this.__model().generatePasswordHash(newPassword);
+    passAuth.token = yield this.__model.generatePasswordHash(newPassword);
 
     // save
     this.markChanged('auth');

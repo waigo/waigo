@@ -40,11 +40,11 @@
     "oauth": "^0.9.14",
     "pluralize": "^1.1.0",
     "query-string": "^3.0.1",
+    "rethinkdbdash": "^2.2.18",
     "semver": "^5.1.0",
     "shelljs": "^0.3.0",
     "simple-mongo-schema": "^0.8.1",
     "slack-node": "^0.2.0",
-    "thinky": "^2.2.4",
     "validator": "^5.0.0"
   },
   "devDependencies": {
