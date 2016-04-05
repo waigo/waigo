@@ -132,8 +132,6 @@ module.exports = function(config) {
       // currently supported: rethinkdb
       type: 'rethinkdb',
       serverConfig: {
-        // don't poo if WAIGO_WORKERS>1
-        // pool: false,
         // name of db
         db: 'waigo',
         // servers to connect to

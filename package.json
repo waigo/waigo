@@ -122,7 +122,7 @@
   },
   "scripts": {
     "prepublish": "npm prune",
-    "dev": "WAIGO_WORKERS=1 gulp",
+    "dev": "gulp",
     "test": "NODE_ENV=test gulp test"
   },
   "engines": {

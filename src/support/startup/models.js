@@ -1,8 +1,7 @@
 "use strict";
 
 
-const path = require('path'),
-  thinky = require('thinky')();
+const path = require('path');
 
 const waigo = global.waigo,
   _ = waigo._,

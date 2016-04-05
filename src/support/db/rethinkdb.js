@@ -30,8 +30,6 @@ exports.create = function*(logger, dbConfig) {
 
   const db = rethinkdb(dbConfig.serverConfig);
 
-  // yield db.connect();
-
   yield new Q((resolve, reject) => {
     let connected = false;
 
