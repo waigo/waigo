@@ -371,7 +371,7 @@ commands.
 # Configuration
 
 Configuration for your application is loaded during [startup](#startup) and is 
-always accessible at `this.app.config` within your controllers.
+always accessible at `app.config` within your backend code and through the `config` variable within your view templates.
 
 The `config` folder path within your application holds the configuration files.
 Each configuration file exports a function which accepts the current
@@ -390,20 +390,19 @@ production, testing, etc.
 
 ## File load order
 
-The `config/index` module file is the configuration loader. It looks for and 
-loads configuration module files in the following order:
+The `config/index.js` file is the configuration loader. It looks for and 
+loads configuration files in the following order:
 
-1. `config/base`
-2. `config/<node environment>`
-3. `config/<node environment>.<current user>`
+1. `config/base.js` - **required**
+2. `config/<NODE_ENV>.js`
+3. `config/<NODE_ENV>.<current user>.js`
 
-The `config/base` module file sets the configuration common to all modes in 
+The `config/base.js` file sets the configuration common to all modes in 
 which the application may run.
 
 The configuration module files following this one are optional. Which ones get
 loaded depends on the value of the `NODE_ENV` environment variable. If this is
-not set then we assume that the application is being run in development mode
-(i.e. we assume its value to be `development`).
+not set then we assume its value to be `development`.
 
 _Note: When running your application in a production environment ensure you
 set the `NODE_ENV` environment variable to `production` or something similar._
@@ -416,20 +415,24 @@ further customise the configuration according to their own needs.
 Let's look at a concrete example...
 
 Let's say `NODE_ENV` is set to `test` mode and that the user id of the process 
-is `www-data`. The configuration loader will initialise an object 
-configuration object and then pass it to each of the following files in the 
+is `www-data`. The configuration loader will initialise a configuration object and then pass it to each of the following files in the 
 given order:
  
-1. `config/base`
-1. `config/test`
-2. `config/test.www-data`
+1. `config/base.js`
+1. `config/test.js`
+2. `config/test.www-data.js`
 
-Let's say we want to provide `config/base` in our app but that we want to re-use
-some of the configuration provided by the framework's version of this file.
-We can easily do this as follows:
+_Note: The application mode is always accessible at `config.user`
+and the id of the user owning the process at `config.user`._
+
+
+## Re-using framework version
+
+Let's say we want to provide `config/base.js` in our app but that we want to re-use
+some of the configuration provided by Waigo's version of this file. We can easily do this as follows:
 
 ```javascript
-// file: <app folder>/src/config/base.js
+// file: <app folder>/config/base.js
 
 module.exports = function(config) {
   // re-use config/base from framework
@@ -441,33 +444,6 @@ module.exports = function(config) {
 };
 ```
 
-_Note: The application mode is always accessible at `app.config.mode`
-and the id of the user owning the process at `app.config.user`._
-
-## Runtime modification
-
-Sometimes we may want to modify the configuration when it gets loaded at
-runtime, beyond what's in our configuration files. For example, we may wish to 
-modify the configuration according to command-line parameters which have 
-been passed in.
-
-The `Application.start()` accepts an options object. One of the options is a 
-`postConfig` function which behaves the same as a configuration file. It will 
-get passed the configuration object once all configuation files have already 
-been loaded and executed:
-
-```javascript
-let App = yield* waigo.load('application');
-
-App.start({
-  // This function gets passed the final config object returned by the 
-  // configuration loader
-  postConfig: function(config) {
-    config.baseURL = ...;
-    // ...etc
-  }
-});
-```
 
 
 # Startup and Shutdown
@@ -509,8 +485,23 @@ module.exports = function*(app) {
 ```
 
 This particular startup step sets up the middleware that will apply to *all*
-incoming requests. You can customise the middleware for a particular route in 
-the [routing configuration](#routing).
+incoming requests. 
+
+You set which startup steps get run by editing your config:
+
+```javascript
+// file:	<app folder>/config/base.js
+
+module.exports = function(config) {
+	...
+	config.startupSteps = [
+		'step1',
+		'step2',
+		'step3',
+	];	
+	...
+}
+```
 
 The default startup steps can all be found under the `support/startup` file path
 and can all be overridden within your app. And of course, you can add your own
@@ -527,7 +518,7 @@ mdoule.exports = function*(app) {
 ```
 
 We then tell Waigo to load and execute this startup step in `development` mode 
-by modifying the appropriate configuration file:
+by creating/modifying the appropriate configuration file:
 
 ```javascript
 // file:  <app folder>/config/development.js
@@ -543,87 +534,109 @@ module.exports = function(config) {
 };
 ```
 
-## Built-in startup steps
+## Default steps
 
 The following startup steps come with Waigo:
 
-* `logging` - *Default: Enabled*. This setups logging available through `app.logger`.
-* `database`- *Default: Disabled*. This sets up the database connection using the configuration found at the `app.config.db`.
-* `models` - *Default: Disabled*. This sets up data model instances based on files found under the `models/` file path inside the application folder.
-* `middleware` - *Default: Enabled*. This sets up the default middleware which gets executed for every request.
-* `routes` - *Default: Enabled*. This maps URL routes contained in `routes.js` to controllers.
-* `listener` - *Default: Enabled*. This starts the HTTP server and is usually the last start step to be run.
+* `database`- This sets up the [database](#database) connection using the configuration found at `app.config.db`.
+* `models` - This sets up [data model](#reactive-data) instances based on files found under `models/`.
+* `forms`- This sets up convenient accessors for using [forms](#forms).
+* `activityRecorder` - This sets up convenient accessor for recording activities to the [activity stream](#activity-stream).
+application folder.
+* `acl` - Sets up the [access control](#access-control) list.
+* `middleware` - This sets up the default [middleware](#middleware) which gets executed for every request.
+* `routes` - This maps URL [routes](#routing) to their handlers.
+* `staticResources` - This sets up the static resources folder and copies Waigo framework-level frontend assets into it.
+* `actionTokens` - This sets up the interface for [action tokens](#access-tokens).
+* `mailer` - [Email system](#email-system) setup.
+* `cron` - Sets up [cron jobs](#cron-jobs) system.
+* `appTemplateVars` - Ensures useful data (e.g. `app.config`) gets exposed to app view templates.
+* `listener` - This starts the HTTP server and is usually the last start step to be run.
 
 ## Shutdown steps
 
-Similar to startup steps, Waigo also allows for _shutdown steps_, tasks which 
-get executed when `Application.shutdown()` is called. 
+Similar to startup steps, Waigo also has _shutdown steps_ - tasks which 
+get executed when `waigo.load('application').shutdown()` is called. 
 
-The default shutdown steps can all be found under the `support/shutdown` file path
-and can all be overridden within your app. And of course, you can add your own steps.
+Shutdown steps especially useful to have if you're doing automated tests with a Waigo app and need start and stop an app multiple times.
 
-Waigo provides a `listener` shutdown step which stops the HTTP server.
+The default shutdown steps can all be found under the `support/shutdown` file path:
 
+* `database`- This closes the [database](#database) connection.
+* `listener` - This stops the HTTP server.
 
 
 # Routing
 
-Waigo's router provides a user-friendly mapping syntax as well as per-route
-middleware customisation.
+Waigo's router provides a user-friendly mapping syntax as well as per-route and per-sub-route middleware customisation. Routes are specified in files under the `routes/` path and are processed once by the `routes` startup step. 
 
-Routes are specified as a mapping in the `routes` module file in the following
-format:
+An example:
 
 ```javascript
-// file: <app folder>/src/routes.js
+// file: <waigo npm folder>/src/routes/admin.js
 
-module.exports = {
-  'GET /' : 'main.index',
-  'PUT /newUser/:id': ['sanitizeValue', 'checkRequestBodySize', 'main.newUser'],
-  ...
+"use strict";
+
+
+module.exports = { 
+  '/admin': {
+    pre: [
+      'assertUser',
+      'admin.index.configureMenu',
+    ],
+
+    GET: 'admin.index.main',
+
+    '/routes': {
+      pre: [
+        { 
+          id: 'assertUser', 
+          canAccess: 'admin',
+        },
+      ],
+
+      GET: 'admin.routes.index'
+    },
+    
+    ...
+	}
 };
 ```
 
-The key specifies the HTTP method. This must be one of: `GET`, `POST`, `PUT`,
-`DEL`, `OPTIONS` and `HEAD`. The second part of the key is the route URL
-relative to `app.config.baseURL`. 
+The above route mapping specifies the following:
+
+* The base path is `/admin`
+* The `/admin` path and all of its subpaths will have 2 common middleware applied:
+  * `waigo.load('support/middleware/assertUser')`  - will check that the user is logged in.
+  * `waigo.load('controllers/admin/index').configureMenu)` - will configure the admin menu for rendering.
+* `GET /admin` will be handled by `waigo.load('controllers/admin/index').main`.
+* The `/admin/routes` path and all of its subpaths will have 1 common middlware applied:
+  * `waigo.load('support/middleware/assertUser')({canAccess: 'admin'})` - will check that the user is an admin.
+* `GET /admin/routes` will be handled by  `waigo.load('controllers/admin/routes').index`.
+
+In general, if the middleware name has a period (`.`) within it then it is assumed to
+refer to a controller file path and a the name of a method within the controller. Otherwise it is
+assumed to be the name of a [middleware](#middleware) file.
+
+If we wanted to we could also specify a middleware "chain" for a particular individual route and HTTP method, e.g:
+
+```javascript
+module.exports = {
+  'POST /signup' : [ { id: 'bodyParser', limit: '1kb' }, 'main.signup' ]
+};
+```
+
+In the above example, the `bodyParser` middleware (initialized with 1 KB limit) will first process each `POST /signup` request gets sent to the `main` controller's `signup` method.
+
+
+_Note: The middleware specified within the route mappings always get executed after the 
+[common middleware](#common-middleware) setup for each HTTP method._
+
 
 _Note: Parameterized and regex routing is also supported. See [trie-
 router](https://github.com/koajs/trie-router) for more information._
 
-The value mapped to a key specifies the middleware chain that will handle that
-route. If the middleware name has a period (`.`) within it then it is assumed to
-refer to a controller module file and a method name within. Otherwise it is
-assumed to be the name of a [middleware](#middleware) module file.
 
-For the above example, Waigo will process a `PUT` request made to `/newUser` as
-follows:
-
-1. Load `support/middleware/sanitizeValue` and pass request to its exported
-method. 
-2. Load `support/middleware/checkRequestBodySize` and pass request to its
-exported method. 
-3. Load `controllers/main` and pass request to its `newUser` method.
-
-The middleware chain specified for a route gets executed after the 
-[common middleware](#common-middleware).
-
-If you wish to initialise a particular middleware with options then you can
-specify it as an object:
-
-```javascript
-// in routes.js
-
-module.exports = {
-  'POST /signup' : [ { id: 'bodyParser', limit: '1kb' }, 'main.signup' ]
-  ...
-};
-```
-
-In the above configuration the `bodyParser` middleware will get initialized with
-the request body size limit of `1KB`. For performance reasons this
-initialization process only happens once, when the routes are first parsed and
-processed.
 
 # Middleware
 
