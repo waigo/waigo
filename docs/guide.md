@@ -127,6 +127,8 @@ exports.main = function*() {
 Inside your app folder create `controllers/index.js`:
 
 ```javascript
+// file: <app folder>/controllers/index.js
+
 exports.main = function*() {
   this.body = 'Hello world!';
 };
@@ -185,22 +187,21 @@ exports.handleSubmission = function*() {... }
 
 Note that the module loader does not scan the following sub paths within each folder tree:
 
-* `src/views/emailTemplates`
-* `cli/data` - this contains data for use by the [command-line](#command-line) tools
+* `src/views/emailTemplates` - [mailer](#email-system) templates
+* `src/frontend` - all frontend stuff
+* `cli/data` - data for use by [cli](#command-line) commands
 
 
 ## Plugins
 
 As mentioned earlier, You can make anything you build re-useable by bundling it 
-up as a plugin.
+up as a plugin. Plugins are just NPM modules and are thus very easy to share with others, and come with all the benefits that are available to normal NPM modules.
 
 By separating non-core functionality into plugins (which can then be thoroughly 
 documented and tested) we encourage code re-use across projects. Plugins help 
 us to keep the core framework more focussed, flexible and increase the overall 
 quality of code in the Waigo ecosystem.
 
-Since plugins are just NPM modules they are very easy to share with others,
-and come with all the benefits that are available to normal NPM modules.
 
 ### Loading plugins
 
@@ -246,7 +247,7 @@ npm install --save waigo-sitemap
 You can of course override any module file the plugin provides with your own:
 
 ```javascript
-// in file: <app folder>/src/support/cronTasks/submitSitemap.js
+// file: <app folder>/src/support/cronTasks/submitSitemap.js
 
 module.exports = {
   schedule: '0 0 0 * * *',  // every day at midnight
@@ -275,14 +276,13 @@ example, if you wanted Waigo to use the implementation provided by `waigo-
 plugin1` then you would do:
 
 ```javascript
-// in file: <app folder>/path/to/file
+// file: <app folder>/path/to/file
 
 var waigo = require('waigo');
 
 // use the implementation from waigo-plugin1
 module.exports = waigo.load('waigo-plugin1:path/to/file');    
 ```
-
 
 
 ### Publishing
@@ -366,96 +366,6 @@ All CLI commands must be implemented as concrete subclasses of
 base class provides a number of useful utility methods for use by actual 
 commands.
 
-
-# Startup
-
-When the application starts up - i.e. when`waigo.load('application').start()` 
-is called - Waigo runs the configured startup steps.
-
-```javascript
-// file: <waigo framework>/src/application.js
-
-App.start = function*(...) {
-  ...
-
-  for (let idx in app.config.startupSteps) {
-    let stepName = app.config.startupSteps[idx];
-    ...
-    yield* waigo.load('support/startup/' + stepName)(app);
-  }
-};
-```
-
-Startup modules are responsible for initialising the
-various aspects of your application. For example, here is the `middleware`
-startup step:
-
-
-```javascript
-// file: <waigo framework>/src/support/startup/middleware.js
-
-module.exports = function*(app) {
-  for (let idx in app.config.middleware) {
-    let m = app.config.middleware[idx];
-    ...
-    app.use(waigo.load('support/middleware/' + m.id)(m.options));
-  }
-};
-```
-
-This particular startup step sets up the middleware that will apply to *all*
-incoming requests. You can customise the middleware for a particular route in 
-the [routing configuration](#routing)_.
-
-The default startup steps can all be found under the `support/startup` file path
-and can all be overridden within your app. And of course, you can add your own
-startup steps.
-
-For example, lets add a step which simply outputs the current date and time:
-
-```javascript
-// file:  <app folder>/src/support/startup/timeAndDate.js
-
-mdoule.exports = function*(app) {
-  console.log(new Date().toString());
-};
-```
-
-We then tell Waigo to load and execute this startup step in `development` mode 
-by modifying the appropriate configuration file:
-
-```javascript
-// file:  <app folder>/src/config/development.js
-
-module.exports = function(config) {
-  config.startupSteps = [
-    'logging',
-    'middleware',
-    'routes',
-    'listener',
-    'timeAndDate'
-  ];
-};
-```
-
-The following startup steps come with Waigo:
-
-* `logging` - *Default: Enabled*. This setups logging available through `app.logger`.
-* `database`- *Default: Disabled*. This sets up the database connection using the configuration found at the `app.config.db`.
-* `models` - *Default: Disabled*. This sets up data model instances based on files found under the `models/` file path inside the application folder.
-* `middleware` - *Default: Enabled*. This sets up the default middleware which gets executed for every request.
-* `routes` - *Default: Enabled*. This maps URL routes contained in `routes.js` to controllers.
-* `listener` - *Default: Enabled*. This starts the HTTP server and is usually the last start step to be run.
-
-## Shutdown steps
-
-Similar to startup steps, Waigo also allows for _shutdown steps_, tasks which 
-get executed when `Application.shutdown()` is called. 
-
-The default shutdown steps can all be found under the `support/shutdown` file path
-and can all be overridden within your app. And of course, you can add your own steps.
-
-Waigo provides a `listener` shutdown step which stops the HTTP server.
 
 
 # Configuration
@@ -559,6 +469,103 @@ App.start({
 });
 ```
 
+
+# Startup and Shutdown
+
+When the application starts up, Waigo runs the configured startup steps.
+
+```javascript
+// file: <waigo npm module>/src/application.js
+
+App.start = function*(...) {
+  ...
+
+  for (let stepName of app.config.startupSteps) {
+    ...
+    yield* waigo.load('support/startup/' + stepName)(app);
+  }
+};
+```
+
+Startup modules are responsible for initialising the
+various aspects of your application. For example, here is the `middleware`
+startup step:
+
+
+```javascript
+// file: <waigo npm module>/src/support/startup/middleware.js
+
+module.exports = function*(app) {
+  app.logger.debug('Setting up common middleware');
+
+  for (let m of app.config.middleware.ALL._order) {
+    app.logger.debug(`Loading middleware: ${m}`);
+
+    app.use(waigo.load(`support/middleware/${m}`)(
+      _.get(app.config.middleware.ALL, m, {})
+    ));
+  }
+};
+```
+
+This particular startup step sets up the middleware that will apply to *all*
+incoming requests. You can customise the middleware for a particular route in 
+the [routing configuration](#routing).
+
+The default startup steps can all be found under the `support/startup` file path
+and can all be overridden within your app. And of course, you can add your own
+startup steps.
+
+For example, lets add a step which simply outputs the current date and time:
+
+```javascript
+// file:  <app folder>/support/startup/timeAndDate.js
+
+mdoule.exports = function*(app) {
+  console.log(new Date().toString());
+};
+```
+
+We then tell Waigo to load and execute this startup step in `development` mode 
+by modifying the appropriate configuration file:
+
+```javascript
+// file:  <app folder>/config/development.js
+
+module.exports = function(config) {
+  config.startupSteps = [
+    'logging',
+    'middleware',
+    'routes',
+    'listener',
+    'timeAndDate'
+  ];
+};
+```
+
+## Built-in startup steps
+
+The following startup steps come with Waigo:
+
+* `logging` - *Default: Enabled*. This setups logging available through `app.logger`.
+* `database`- *Default: Disabled*. This sets up the database connection using the configuration found at the `app.config.db`.
+* `models` - *Default: Disabled*. This sets up data model instances based on files found under the `models/` file path inside the application folder.
+* `middleware` - *Default: Enabled*. This sets up the default middleware which gets executed for every request.
+* `routes` - *Default: Enabled*. This maps URL routes contained in `routes.js` to controllers.
+* `listener` - *Default: Enabled*. This starts the HTTP server and is usually the last start step to be run.
+
+## Shutdown steps
+
+Similar to startup steps, Waigo also allows for _shutdown steps_, tasks which 
+get executed when `Application.shutdown()` is called. 
+
+The default shutdown steps can all be found under the `support/shutdown` file path
+and can all be overridden within your app. And of course, you can add your own steps.
+
+Waigo provides a `listener` shutdown step which stops the HTTP server.
+
+
+
 # Routing
 
 Waigo's router provides a user-friendly mapping syntax as well as per-route
@@ -647,7 +654,7 @@ additional options from the `app.config.middleware` configuration object get
 passed to the middleware  constructor:
 
 ```javascript
-// in file: <app folder>/src/config/base.js
+// file: <app folder>/src/config/base.js
 module.exports = function(config) {
   ...
   config.middleware = {
@@ -1091,7 +1098,7 @@ a file under the `forms/` path, the file name being the id of the form.
 For example, here is how you might specify a simple signup form:
 
 ```javascript
-// in file: forms/signup.js
+// file: forms/signup.js
 
 module.exports = {
   fields: [
@@ -1210,7 +1217,7 @@ specified on a per-field basis in the form configuration. Let's trim all user
 input to our signup form:
 
 ```javascript
-// in file: forms/signup.js
+// file: forms/signup.js
 
 module.exports = {
   fields: [
@@ -1292,7 +1299,7 @@ Once form field values have been set we can validate them by calling
 form configuration. Let's validate our signup form:
 
 ```javascript
-// in file: forms/signup.js
+// file: forms/signup.js
 
 module.exports = {
   fields: [
