@@ -11,7 +11,7 @@ Quick overview:
  * [Reactive data](#reactive-data) model layer
  * Easily build REST/JSON APIs using [output formats](#views-and-output-formats)
  * Flexible routing with [per-route](#routing) and [per-http-method](#routing) middleware customisation
- * Built-in [user account](#user-accounts) management + [OAuth](#oauth) architecture
+ * Built-in [user account](#user-accounts) management + [OAuth](#oauth) support
  * Flexible user [access control](#access-control) list with reactive updates
  * Easily build [forms](#forms) and process submissions with customizable validation
  * Built-in [cron job](#cron) functionality
@@ -44,12 +44,11 @@ $ npm install -g waigo
 
 ## Running it
 
-If your project folder is located at e.g. `/dev/myapp` then Waigo will by 
+If your app folder is located at e.g. `/dev/myapp` then Waigo will by 
 default assume that the source code for your app will be located in a 
-`src` subfolder, i.e. at `/dev/myapp/src`. This folder will from now on be 
-referred to as your _"app folder"_. The folder containing it (i.e. `/dev/myapp`) will be referred to as the _"project folder"_.
+`src` subfolder, i.e. at `/dev/myapp/src`.
 
-Inside your project folder run the following command:
+Inside your app folder run the following command:
 
 ```bash
 $ waigo init
@@ -91,7 +90,7 @@ However, every log line is prefixed with the pid of the specific worker doing th
 (RamMacbookPro.local-78163) [2016-04-06 11:01:41.450] [INFO] [app] - Startup complete
 ```
 
-This has important implications for your application. When a frontend client requests a backend resource it does not know which specific worker process will serve it. 
+Clustering has implications for how you structure your application. When a frontend client requests a backend resource it does not know which specific worker process will serve it. 
 
 Thus, **application-level data should not be stored within the Node.js worker process, but within an externally accessible datasource instead, e.g. the database.**
 
@@ -124,10 +123,10 @@ exports.main = function*() {
 };
 ```
 
-Inside your app folder create `controllers/index.js`:
+Inside your app folder create `src/controllers/index.js`:
 
 ```javascript
-// file: <app folder>/controllers/index.js
+// file: <app folder>/src/controllers/index.js
 
 exports.main = function*() {
   this.body = 'Hello world!';
@@ -140,9 +139,9 @@ In order to understand why this happened we need to understand what Waigo's modu
 
 ## Module loader
 
-During the startup phase Waigo will index its NPM folder, [plugin](#plugins) folders and finally your app folder for all `.js` and `.jade` files. 
+During the startup phase Waigo will index its NPM module folder, [plugin](#plugins) folders and finally your app folder for all `.js` files. 
 
-When a particular file needs to be loaded at runtime the convention is to call `waigo.load()` with the relative path to the file. In the above example Waigo will call internally `waigo.load("controllers/index")` to load the `index` controller. At this point the actual file which gets loaded and returned will be based on the first available location in order:
+When a particular file needs to be loaded at runtime the convention is to call `waigo.load()` with the relative path to the file. In the above example Waigo will internally call `waigo.load("controllers/index")` to load the `index` controller. At this point the actual file which gets loaded and returned will be based on the first available location, in order:
 
 * `<app folder>/src/controllers/index.js`
 * `<plugin1 npm module>/src/controllers/index.js`
@@ -185,7 +184,7 @@ module.exports = waigo.load('waigo:controllers/index');
 exports.handleSubmission = function*() {... }
 ```
 
-Note that the module loader does not scan the following sub paths within each folder tree:
+Note that the module loader also scans for [view templates](#views-and-output-formats), allowing you to re-use view templates provided by the Waigo framework and plugins. However the module loader does not scan the following sub paths within each folder tree:
 
 * `src/views/emailTemplates` - [mailer](#email-system) templates
 * `src/frontend` - all frontend stuff
@@ -198,9 +197,7 @@ As mentioned earlier, You can make anything you build re-useable by bundling it
 up as a plugin. Plugins are just NPM modules and are thus very easy to share with others, and come with all the benefits that are available to normal NPM modules.
 
 By separating non-core functionality into plugins (which can then be thoroughly 
-documented and tested) we encourage code re-use across projects. Plugins help 
-us to keep the core framework more focussed, flexible and increase the overall 
-quality of code in the Waigo ecosystem.
+documented and tested) we encourage code re-use across projects. Plugins help to keep the core Waigo framework more focussed, flexible and increase the overall quality of code in the Waigo ecosystem.
 
 
 ### Loading plugins
@@ -266,7 +263,7 @@ What would happen if you had two plugins which both provided the same
 file? in this case the call to `waigo.init()` would fail with an error:
 
 ```bash
-Error: Module "path/to/file" has more than one plugin implementation to choose from: waigo-plugin1, waigo-plugin2, ...
+Error: Path "path/to/file" has more than one plugin implementation to choose from: waigo-plugin1, waigo-plugin2, ...
 ```
 
 If you need to use both plugins (maybe because they provide other useful
@@ -291,7 +288,7 @@ To create and publish your own plugin to the wider community please follow
 these guidelines:
 
 * Check to see if what you've made is worth putting into a plugin. For instance 
-it's very easy to re-use [koa](http://koajs.com) middleware in Waigo without 
+it's very easy to re-use existing [koa](http://koajs.com) middleware in Waigo without 
 needing to create plugins.
 * Ensure your plugin name is prefixed with `waigo-` so that users and Waigo 
 itself can easily find it and use it.
@@ -325,7 +322,6 @@ $ waigo --help
 
   Usage: waigo [options] [command]
 
-
   Commands:
 
     init-gulp   Initialise and create a skeleton Gulpfile and associated tasks
@@ -358,7 +354,7 @@ scanned by the Waigo [module loader](#module-loader).
 
 ## Custom commands
 
-Every CLI command is implemented a file within `<waigo npm folder>/src/cli`. If you wish to add your own commands or override the defaults then you must also place your implementations within the `cli/` path inside your app folder. The 
+Every CLI command is implemented a file within `<waigo npm folder>/src/cli`. If you wish to add your own commands or override the defaults then you must also place your implementations within `<app folder>/src/cli`. The 
 CLI executable scans this path at startup and loads in all available commands. 
 
 All CLI commands must be implemented as concrete subclasses of 
@@ -373,7 +369,7 @@ commands.
 Configuration for your application is loaded during [startup](#startup) and is 
 always accessible at `app.config` within your backend code and through the `config` variable within your view templates.
 
-The `config` folder path within your application holds the configuration files.
+The `src/config` folder path holds the configuration files.
 Each configuration file exports a function which accepts the current
 configuration object as a parameter. This object can then be modified:
 
@@ -385,7 +381,7 @@ module.exports = function(config) {
 
 Each successively loaded configuration file gets passed the same configuration
 object. As we'll see in the next section this makes it easy to customise the
-application configuration depending on the mode in which we're running it -
+application configuration depending on the mode in which we're running in -
 production, testing, etc.
 
 ## File load order
@@ -422,8 +418,7 @@ given order:
 1. `config/test.js`
 2. `config/test.www-data.js`
 
-_Note: The application mode is always accessible at `config.user`
-and the id of the user owning the process at `config.user`._
+_Note: Once stared the application mode is accessible at `config.user`and the id of the user owning the process at `config.user`._
 
 
 ## Re-using framework version
@@ -432,7 +427,7 @@ Let's say we want to provide `config/base.js` in our app but that we want to re-
 some of the configuration provided by Waigo's version of this file. We can easily do this as follows:
 
 ```javascript
-// file: <app folder>/config/base.js
+// file: <app folder>/src/config/base.js
 
 module.exports = function(config) {
   // re-use config/base from framework
@@ -490,7 +485,7 @@ incoming requests.
 You set which startup steps get run by editing your config:
 
 ```javascript
-// file:	<app folder>/config/base.js
+// file:	<app folder>/src/config/base.js
 
 module.exports = function(config) {
 	...
@@ -510,7 +505,7 @@ startup steps.
 For example, lets add a step which simply outputs the current date and time:
 
 ```javascript
-// file:  <app folder>/support/startup/timeAndDate.js
+// file:  <app folder>/src/support/startup/timeAndDate.js
 
 mdoule.exports = function*(app) {
   console.log(new Date().toString());
@@ -521,7 +516,7 @@ We then tell Waigo to load and execute this startup step in `development` mode
 by creating/modifying the appropriate configuration file:
 
 ```javascript
-// file:  <app folder>/config/development.js
+// file:  <app folder>/src/config/development.js
 
 module.exports = function(config) {
   config.startupSteps = [
@@ -538,7 +533,7 @@ module.exports = function(config) {
 
 The following startup steps come with Waigo:
 
-* `database`- This sets up the [database](#database) connection using the configuration found at `app.config.db`.
+* `database`- This sets up the [database](#database-and-models) connection using the configuration found at `app.config.db`.
 * `models` - This sets up [data model](#reactive-data) instances based on files found under `models/`.
 * `forms`- This sets up convenient accessors for using [forms](#forms).
 * `activityRecorder` - This sets up convenient accessor for recording activities to the [activity stream](#activity-stream).
@@ -562,7 +557,7 @@ Shutdown steps especially useful to have if you're doing automated tests with a 
 
 The default shutdown steps can all be found under the `support/shutdown` file path:
 
-* `database`- This closes the [database](#database) connection.
+* `database`- This closes the [database](#database-and-models) connection.
 * `listener` - This stops the HTTP server.
 
 
@@ -618,19 +613,23 @@ In general, if the middleware name has a period (`.`) within it then it is assum
 refer to a controller file path and a the name of a method within the controller. Otherwise it is
 assumed to be the name of a [middleware](#middleware) file.
 
-If we wanted to we could also specify a middleware "chain" for a particular individual route and HTTP method, e.g:
+If we wanted to we could also specify a middleware "chain" for a particular individual route and HTTP method, e.g we can rewrite the above route mappings as follows:
+
 
 ```javascript
 module.exports = {
-  'POST /signup' : [ { id: 'bodyParser', limit: '1kb' }, 'main.signup' ]
+  '/admin': {
+    GET: [ 'assertUser', 'admin.index.configureMenu', 'admin.index.main' ],
+    '/routes': {
+      POST: [ 'assertUser', 'admin.index.configureMenu', { id: 'assertUser', canAccess: 'admin' }, 'admin.routes.index' ],
+    }
+  }
 };
 ```
 
-In the above example, the `bodyParser` middleware (initialized with 1 KB limit) will first process each `POST /signup` request gets sent to the `main` controller's `signup` method.
-
 
 _Note: The middleware specified within the route mappings always get executed after the 
-[common middleware](#common-middleware) setup for each HTTP method._
+[common middleware](#common-middleware)._
 
 
 _Note: Parameterized and regex routing is also supported. See [trie-
@@ -644,7 +643,7 @@ Waigo middleware works the same as Koa middleware. All middleware module files
 can be found under the `support/middleware` path. Additional middleware provided
 by your app and/or plugins should also sit under this path.
 
-A middleware module file is expected to export a 'constructor' function which,
+A middleware module file is expected to export an "initializer" function which,
 when called will returns a generator function to add to the Koa middleware
 layer. For example:
 
@@ -662,40 +661,70 @@ module.exports = function(options) {
 **Thus, existing koa middleware can easily be used with Waigo with little 
 extra work.**
 
-If a given middleware is being initialised during startup (i.e. see below) then
-additional options from the `app.config.middleware` configuration object get
-passed to the middleware  constructor:
+If a given middleware is being initialised during [startup](#startup-and-shutdown) (i.e. see below) then
+additional options from the `app.config.middleware.ALL` configuration object get
+passed to the middleware initializer:
 
 ```javascript
 // file: <app folder>/src/config/base.js
 module.exports = function(config) {
   ...
-  config.middleware = {
+  config.middleware.ALL = {
     /* Order in which middleware gets run */
-    order: [
+    _order: [
       'errorHandler',
-      'example',
+      'staticResources',
     ],
     /* Options for each middleware */
-    options: {
-      example: {
-        // everything in here gets passed to the 'example' middleware constructor
-      }
-    }
+    errorHandler: {},
+    staticResources: {
+      // relative to app folder
+      folder: '/static',
+    },
   };
   ...
 }
 ```
 
+Given the above configuration, the `staticResources` middleware initializer will get passed the options: `{ folder: '/static' }`.
+
+
+
 ## Common middleware
 
-During the `middleware` startup step, by default the following middleware
-modules are initialised so that all incoming requests get processed by them:
+The [app configuration](#configuration) file may specify middleware that is to apply to all incoming requests. For example:
 
-* `errorHandler` - catch and handle all errors thrown during request processing
-* `staticResources` - handle requests made to [static resources](#static-resources)
-* `outputFormats` - setup the response [output format](#views-and-output-formats)
-* `sessions` - create and retrieve the active client [session](#sessions)
+```javascript
+// file:	<app folder>/src/config/base.js
+
+module.exports = function(config) {
+  ...
+  config.middleware = {};
+
+  config.middleware.ALL = {
+    _order: [
+      'errorHandler',
+    ],
+  };
+
+  config.middleware.POST = config.middleware.PUT = {
+    _order: [
+      'bodyParser',
+    ],
+    bodyParser: {
+      limit: '16mb',
+    },
+  };
+  ...
+};
+```
+
+The above configuration states that:
+
+* The `errorHandler` middleware will apply to _all_ incoming requests. 
+* The `bodyParser` middlware will only apply to incoming requests using the `PUT` and `POST` HTTP methods.
+
+Once a request has been processed by common middleware the middleware specific to the trigger [route](#routing) will be executed.
 
 
 # Controllers
@@ -716,6 +745,19 @@ exports.index = function*(next) {
 A controller must either send some output or pass control to the `next`
 middleware in the request chain. The `this.render()` call is provided by the 
 [output formats](#views-and-output-formats) middleware.
+
+Controllers can be nested within subfolders within the `controllers` path. For example, Waigo's default [admin dashboard](#admin-dashboard) controllers are located at:
+
+* `<waigo npm folder>/src/controllers/admin/index.js`
+* `<waigo npm folder>/src/controllers/admin/routes.js`
+* ...
+
+To load the admin `routes` controller:
+
+```javascript
+waigo.load('controllers/admin/routes');
+```
+
 
 # Database and Models
 
