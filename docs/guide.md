@@ -761,22 +761,97 @@ waigo.load('controllers/admin/routes');
 
 # Database and Models
 
-By default Waigo does not initialise a lot connection during startup and
-nor does it dictate what type of storage you should or shouldn't use. There is
-also no default model layer since that would probably depend on the type of
-database (or lack thereof) used by your app.
+At present Waigo comes with a built-in database connector and 4 built-in models:
 
-This design choice reflects the fact there are already plenty of existing
-components - e.g. Mongoose, JugglingDB - that already provide for rich model
-layers with various back-ends.
+* `User` - represents a [user account](#user-accounts).
+* `Activity` - represents an event in the [activity stream](#activity-stream).
+* `Acl` - represents an entry in the [access control list](#access-control).
+* `Cron` - represents a scheduled cron job.
 
-So use whatever you want. Check to see if there are already
-[plugins](https://www.npmjs.org/search?q=waigo) for your preferred storage and
-model layers. If not maybe you can build one!
+As with everything else in Waigo you can choose to extend or replace these models with your own, or use a completely different model layer of your choosing.
 
-Some available plugins:
+## Database connection
 
-* [waigo-mongo](https://www.npmjs.org/package/waigo-mongo) - Connect to MongoDB via mongoose.
+_Note: At present only RethinkDB is supported. Mongo support is in the pipeline._
+
+The `database` [startup](#startup-and-shutdown) step is responsible for creating a connection to databases. It gets its configuration information from `app.config.db`:
+
+```javascript
+// file: <app folder>/src/config.base.js
+
+module.exports = function(config) {
+  ...
+  config.db = {
+    mydb: {
+      type: 'rethinkdb',
+      serverConfig: {
+        db: 'waigo',
+        servers: [
+          {
+            host: '127.0.0.1',
+            port: 28015,
+          }
+        ],
+      }
+    }
+  };
+  ...
+};
+```
+
+The above configuration tells Waigo to create a connection called `mydb` to a RethinkDB database named `waigo`, with a single server to connect to - `127.0.0.1:28015`. Waigo internally relies on [rethinkdbdash](https://github.com/neumino/rethinkdbdash) for managing the connections.
+
+Once setup, this database connection will be accessible at `app.dbs.mydb`.
+
+It is possible to connect to multiple databases within a single app, e.g:
+
+```javascript
+// file: <app folder>/src/config.base.js
+
+module.exports = function(config) {
+  ...
+  config.db = {
+    primary: {
+      type: 'rethinkdb',
+      serverConfig: {
+        db: 'waigo',
+        servers: [
+          {
+            host: '127.0.0.1',
+            port: 28015,
+          }
+        ],
+      }
+    },
+    secondary: {
+      type: 'rethinkdb',
+      serverConfig: {
+        db: 'logs',
+        servers: [
+          {
+            host: '127.0.0.1',
+            port: 28016,
+          }
+        ],
+      }
+    }        
+  };
+  ...
+};
+```
+
+Regardless of the no. of database connections specified, the first connection is always considered to be the main one, and will be made accessible at `app.db` (i.e. `app.db === app.dbs.primary` in the above example).
+
+
+## Using models
+
+
+
+
+## Reactive data
+
+
+
 
 # Sessions
 
