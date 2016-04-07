@@ -18,6 +18,7 @@ var _connections = [];
 /**
  * Create a database connection.
  *
+ * @param {Object} id Database id.
  * @param {Object} logger The app logger
  * @param {Object} dbConfig configuration
  * @param {String} dbConfig.poolConfig connection pool config
@@ -25,8 +26,8 @@ var _connections = [];
  *
  * @return {Object} db connection.
  */
-exports.create = function*(logger, dbConfig) {
-  logger.log('Connecting to RethinkDB', dbConfig.name);
+exports.create = function*(id, logger, dbConfig) {
+  logger.log('Connecting to RethinkDB', id);
 
   const db = rethinkdb(dbConfig.serverConfig);
 
@@ -38,7 +39,7 @@ exports.create = function*(logger, dbConfig) {
         return;
       }
 
-      logger.debug(`RethinkDB connected (${dbConfig.name})`);
+      logger.debug(`RethinkDB connected (${id})`);
 
       connected = true;
       resolve();
@@ -48,14 +49,28 @@ exports.create = function*(logger, dbConfig) {
 
     db.getPoolMaster().on('healthy', (healthy) => {
       if (healthy) {
-        logger.trace(`RethinkDB connected (${dbConfig.name})`);
+        logger.trace(`RethinkDB connected (${id})`);
       } else {
-        reject(new Error(`RethinkDB connection failed: (${dbConfig.name})`));
+        reject(new Error(`RethinkDB connection failed: (${id})`));
       }
     });
   });
 
   _connections.push(db);
+
+  // check that db exists
+  let dbList = yield db.dbList();
+  if (0 > dbList.indexOf(dbConfig.serverConfig.db)) {
+    try {
+      logger.debug(`Create database: ${dbConfig.serverConfig.db}`);
+
+      yield db.dbCreate(dbConfig.serverConfig.db);
+    } catch (err) {
+      logger.error(`Unable to create database: ${dbConfig.serverConfig.db}`);
+
+      throw err;
+    }
+  }
 
   return db;
 };

@@ -24,14 +24,17 @@ if (semver.lt(process.version, '4.0.0')) {
 
 var cluster = require('cluster');
 
-var numWorkers = parseInt(process.env.WAIGO_WORKERS || 0) 
-  || require('os').cpus().length;
 
 var _log = function(workerId, msg) {
   console.log('[worker' + workerId + '] ' + msg);
 };
 
 if (cluster.isMaster) {
+  var numWorkers = process.env.WAIGO_WORKERS ? '' + process.env.WAIGO_WORKERS : '1';
+  numWorkers = (numWorkers.toLowerCase()==='max_cpus' ? require('os').cpus().length : parseInt(numWorkers));
+
+  console.log('No. of worker processes: ' + numWorkers);
+
   cluster.on('exit', function(worker, code, signal) {
     _log(worker.id, 'exited: ' + code + ', ' + signal);
 

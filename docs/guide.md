@@ -845,6 +845,11 @@ Regardless of the no. of database connections specified, the first connection is
 
 ## Using models
 
+A model is an interface between your Waigo app and a datasource - usually this means a database table. What this means is that the other parts of your app (e.g. controllers) should never be accessing the database directly.
+
+By encapsulating database access within models you gain the ability to control all database access through the model's interface and can even change the underlying datasource in future without affecting the rest of your app.
+
+
 
 
 
