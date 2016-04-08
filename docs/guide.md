@@ -6,7 +6,6 @@ Waigo is a Node.js framework for building **reactive**, **scalable** and
 Quick overview:
 
  * Based on [koa](http://koajs.com/), uses promises and ES6 generators - no callbacks
- * Comes with [Node.js clustering](#scalable-clustering) enabled by default for scalability
  * Front-end agnostic - build whatever kind of front-end you want
  * [Reactive data](#reactive-data) model layer
  * Easily build REST/JSON APIs using [output formats](#views-and-output-formats)
@@ -18,6 +17,7 @@ Quick overview:
  * Ready-made [admin dashboard](#admin-dashboard) which is fully customizable
  * Command-line interface for [easy setup](#getting-started)
  * [Extend](#extend-and-override) or override _any_ part of the core framework
+ * [Scalability built-in](#scalable-clustering) with Node.js clustering
  * Bundle up functionality into re-usable [plugins](#plugins)
  * And much, much more...keep reading!
  
@@ -29,6 +29,8 @@ Waigo provides you with a sensible directory layout for your Koa app and a clean
 But the best part is that you don't have to use anything you don't want to. Almost every part of Waigo can be **cleanly** [extended and overridden](#extend-and-override) within your app. Waigo gets out of your way when you need it to.
 
 In addition to this, if you do build some functionality you wish to share between different Waigo projects you can make it re-usable by bundling it up as a [plugin](#plugins). Check out the [current list of plugins](https://www.npmjs.org/browse/keyword/waigo) to see what's already available.
+
+
 
 # Getting started
 
@@ -69,40 +71,20 @@ $ ./start-app.js
 You will see something like:
 
 ```bash
-(RamMacbookPro.local-78163) [2016-04-06 11:01:41.450] [INFO] [app] - Startup complete
-```
-
-You may notice repeated lines in the output. This is due to the [scalable clustering](#scalable-clustering) mechanism in Waigo. 
-
-# Scalable clustering
-
-Waigo uses [Node's built-in clustering](https://nodejs.org/api/cluster.html) mechanim to automatically launch as many instances as there as cores in your CPU. This is to utilize your CPU as maximally as possible for scalability purposes. This is why during the startup phase you may see what look like repeated logs. 
-
-However, every log line is prefixed with the pid of the specific worker doing the logging:
-
-```bash
-[worker1] started, pid: 78163
-[worker2] started, pid: 78164
-[worker3] started, pid: 78166
 ...
-(RamMacbookPro.local-78164) [2016-04-06 11:01:41.413] [INFO] [app] - Startup complete
-(RamMacbookPro.local-78166) [2016-04-06 11:01:41.438] [INFO] [app] - Startup complete
 (RamMacbookPro.local-78163) [2016-04-06 11:01:41.450] [INFO] [app] - Startup complete
 ```
 
-Clustering has implications for how you structure your application. When a frontend client requests a backend resource it does not know which specific worker process will serve it. 
+## Code conventions
 
-Thus, **application-level data should not be stored within the Node.js worker process, but within an externally accessible datasource instead, e.g. the database.**
+When building your Waigo app keep in mind the following conventions:
 
-If you adhere to this rule you will be able to easily scale your application and even have instances of it running on other servers without there being any problems.
+* Class fields variables and/or methods prefixed with one or more underscores (e.g. `_doc`) are considered "internal" should not be accessed and/or relied upon externally.
 
-If you wish to disable auto-clustering or change the no. of workers which get launched you can do so using the `WAIGO_WORKERS` environment variable:
+* If calling a function which only accepts callbacks wrap it within a Promise and use it in that manner instead. In the same way, don't write methods which take callbacks - they should either return Promises or be generator functions.
 
-```bash
-$ WAIGO_WORKERS=1 ./start-app.js 
-```
+* Waigo uses and exposes the [lodash](https://lodash.com/docs) utility library so you don't have to import it separately. Access it using `require('waigo')._`.
 
-The above call will launch the app with just a single worker process. Note that even in this case 2 processes will be launched - the main parent process and the single worker process. The main parent process does not process requests or do anything special - it simply manages the worker processes.
 
 
 # Extend and Override
@@ -692,7 +674,7 @@ Given the above configuration, the `staticResources` middleware initializer will
 
 ## Common middleware
 
-The [app configuration](#configuration) file may specify middleware that is to apply to all incoming requests. For example:
+The [app configuration](#configuration) file may specify middleware that applies to all incoming requests. For example:
 
 ```javascript
 // file:	<app folder>/src/config/base.js
@@ -730,15 +712,15 @@ Once a request has been processed by common middleware the middleware specific t
 # Controllers
 
 Controllers in Waigo expose route handling methods which work as they do in koa.
-The default controller generated by the `init` [CLI](#command-line) command - `controllers/main` - simply has:
+The default `index` controller simply has:
 
 ```javascript
-// file: <waigo framework>/src/controllers/main.js
+// file: <waigo framework>/src/controllers/index
 
-exports.index = function*(next) {
-  yield this.render('index', {
-    title: 'Hello Waigo!'
-  });
+"use strict";
+
+exports.main = function*(next) {
+  yield this.render('index');
 };
 ```
 
@@ -752,7 +734,7 @@ Controllers can be nested within subfolders within the `controllers` path. For e
 * `<waigo npm folder>/src/controllers/admin/routes.js`
 * ...
 
-To load the admin `routes` controller:
+So to load the admin `routes` controller:
 
 ```javascript
 waigo.load('controllers/admin/routes');
@@ -761,20 +743,11 @@ waigo.load('controllers/admin/routes');
 
 # Database and Models
 
-At present Waigo comes with a built-in database connector and 4 built-in models:
-
-* `User` - represents a [user account](#user-accounts).
-* `Activity` - represents an event in the [activity stream](#activity-stream).
-* `Acl` - represents an entry in the [access control list](#access-control).
-* `Cron` - represents a scheduled cron job.
-
-As with everything else in Waigo you can choose to extend or replace these models with your own, or use a completely different model layer of your choosing.
-
 ## Database connection
 
 _Note: At present only RethinkDB is supported. Mongo support is in the pipeline._
 
-The `database` [startup](#startup-and-shutdown) step is responsible for creating a connection to databases. It gets its configuration information from `app.config.db`:
+The `database` [startup](#startup-and-shutdown) step is responsible for creating connections to databases. It gets its configuration information from `app.config.db`:
 
 ```javascript
 // file: <app folder>/src/config.base.js
@@ -799,7 +772,7 @@ module.exports = function(config) {
 };
 ```
 
-The above configuration tells Waigo to create a connection called `mydb` to a RethinkDB database named `waigo`, with a single server to connect to - `127.0.0.1:28015`. Waigo internally relies on [rethinkdbdash](https://github.com/neumino/rethinkdbdash) for managing the connections.
+The above configuration tells Waigo to create a connection called `mydb` to a RethinkDB database named `waigo`, with a single server to connect to - `127.0.0.1:28015`.
 
 Once setup, this database connection will be accessible at `app.dbs.mydb`.
 
@@ -843,14 +816,243 @@ module.exports = function(config) {
 Regardless of the no. of database connections specified, the first connection is always considered to be the main one, and will be made accessible at `app.db` (i.e. `app.db === app.dbs.primary` in the above example).
 
 
-## Using models
+## Models
 
 A model is an interface between your Waigo app and a datasource - usually this means a database table. What this means is that the other parts of your app (e.g. controllers) should never be accessing the database directly.
 
 By encapsulating database access within models you gain the ability to control all database access through the model's interface and can even change the underlying datasource in future without affecting the rest of your app.
 
+The Waigo model architecture is effectively that of an _Object Document Mapper (ODM)_. - it maps objects to documents within the database.
+
+### Using models
+
+To illustrate how models can be used, let's create an example `User` model for representing users. In this example every user has a usernamd and password and a timestamp indicating the last time they logged in.
+
+```javascript
+// file:	<app folder>/src/models/user/model.js
+
+"use strict";
+
+const waigo = global.waigo,
+  _ = waigo._,
+  Q = waigo.load('support/promise'),
+  errors = waigo.load('support/errors'),
+  RethinkDbModel = waigo.load('support/models/model').RethinkDbModel;
 
 
+const TABLE_DEF = {
+  schema: {
+    username: { 
+      type: String, 
+      required: true,
+    },
+    password: { 
+      type: String, 
+      required: true,
+    },
+    lastLogin: { 
+      type: Date, 
+      required: false,
+    },
+  },
+  virtuals: {
+    hasLoggedInBefore: {
+      get: function() {
+        return !!this.lastLogin;
+      }
+    }
+  },
+  indexes: [
+    {
+      name: 'username',
+    },
+    {
+      name: 'lastLogin',
+    },
+  ]
+};
+
+const DOC_METHODS = {
+  isPasswordCorrect: function*(password) {
+    return this.password === password;
+  },
+  login: function*(context) {
+    // update last-login timestamp
+    this.lastLogin = new Date();
+    yield this.save();
+  },
+};
+
+class Model extends RethinkDbModel {
+  constructor (app) {
+    super(app, app.db, {
+      name: "User",
+      def: TABLE_DEF,
+      docMethods: DOC_METHODS,
+    });
+  }
+
+  * getByUsername (username) {
+    let ret = yield this._qry().filter(function(user) {
+      return user('username').eq(username);
+    }).run();
+
+    return this._wrap(_.get(ret, '0'));
+  }
+
+  * register (username, password) {
+    let user = yield this._insert({
+      username: username,
+      password: password,
+    });
+
+    if (!user) {
+      throw new Error('Error creating new user: ' + username);
+    }
+
+    return user;
+  }
+}
+
+module.exports = Model;
+```
+
+_Note: The code example above is explained in the [Defining a model](#defining-a-model) section._
+
+The above model will be instantiated once and then made accessible at `app.models.User`. The name of the model is determined by its filepath. E.g. if the file was instead located at `<app folder>/src/models/bee/model.js` then it would be `app.models.Bee`.
+
+To register a new user:
+
+```javascript
+let user =  app.models.User.register('username', 'password');
+```
+
+The returned result is an instance of a `User` "document", i.e. it is an object which encapsulates a single row within the backend database table.
+
+We can now access this document's fields quite easily:
+
+```javascript
+console.log( user.username );
+console.log( user.password );
+console.log( user.lastLogin );
+console.log( user.hasLoggedInBefore );
+```
+
+We can check for a password match:
+
+```javascript
+console.log( yield user.isPasswordCorrect('user entered passwd');
+```
+
+We can also call `login()` to update the login timestamp:
+
+```javascript
+// user.hasLoggedInBefore === false
+yield user.login();
+// user.hasLoggedInBefore === true
+```
+
+Back to the Model. We can fetch a user by id:
+
+```javascript
+let user = yield app.models.User.getById('user id');
+```
+
+_Note: The `getById()` is automatically available on all models._
+
+We can also get a user by username:
+
+```javascript
+let user = yield app.models.User.getByUsername('username');
+```
+
+Now let's go through the above model and explain how it all fits together to give you this API.
+
+### Defining a model
+
+Ever Model consists of a database schema, database indexes, model methods, and document methods.
+
+Our `Model` class extends `RethinkDBModel` to indiciate that this Model is backed by a RethinkDB table.
+
+The `super()` call in the constructor specifies that the model is to be used with the default database (`app.db`) and that the RethinkDB table is to be named `User`.
+
+We then pass in `TABLE_DEF` which consists of the schema for the RethinkDB table, indexes we want RethinkDB to maintain, and finally any required "virtual" fields (see below).
+
+The schema specifies three fields for the database table - `username`, `password` and `lastLogin` - with the first two fields being mandatory for any new rows that are to be inserted into the table.
+
+We've asked for two indexes - one on the `username` field and one on the `lastLogin` field. 
+
+If we wish to explicitly set which field should be the primary key for the database table we can specify it using the `pk` parameter, e.g:
+
+```javascript
+super(app, app.db, {
+  name: "User",
+  pk: 'username',	// username field is now the primary key
+  def: TABLE_DEF,
+  docMethods: DOC_METHODS,
+});
+```
+
+
+_Note: More complex compound indexes are supported - check out Waigo's built-in models for real examples._
+
+**Model methods**
+
+Model methods are the methods available on the model itself. The `getById()` method is automatically available to on model instances. Beyond that a model must define its own additional methods within the `Model` class itself.
+
+In our example model we have defined two: `getByUsername` and `register`.
+
+You'll notice that within our example we call a couple of internal methods: `_qry()` and `_insert()`. These are provided by the `RethinkDBModel` base class and perform the actual work of talking to the database and processing results.
+
+The available internal methods are:
+
+* `_qry()` - construct a RethinkDB query object - basically `r.table('table name')`.
+* `_insert()` - insert a new record and return a document instance.
+* `_update()` - update a record.
+* `_remove()` - remove a record.
+* `_get()` - equivalent to RethinkDb's [get()](https://www.rethinkdb.com/api/javascript/#get).
+* `_getAll()` - equivalent to RethinkDb's [get()](https://www.rethinkdb.com/api/javascript/#getAll).
+* `_wrap()` - process query results array (or single result object) by encapsulating each raw query result in a document instance.
+* `_createDoc()` - encapsulate given raw query result in a document instance (this gets called by `_wrap()`).
+
+These internal methods give you all the tools you need to build out model and document methods.
+
+
+**Document methods**
+
+Document methods are the methods available on an instance of a "document" returned by the model.
+
+
+**Virtual fields**
+
+Virtual fields are fields which appear in the Model's interface as normal fields but which aren't actually stored in the database. They're essentially another way of doing model instance methods.
+
+
+The `TABLE_DEF` constant defines the database schema, database indexes and _virtual_ fields.
+
+
+
+
+### Using a model
+
+### Built-in models
+
+At present Waigo comes with 4 built-in models:
+
+* `User` - represents a [user account](#user-accounts).
+* `Activity` - represents an event in the [activity stream](#activity-stream).
+* `Acl` - represents an entry in the [access control list](#access-control).
+* `Cron` - represents a scheduled [cron job](#cron-jobs).
+
+If you look at the [source code for the User model](https://github.com/waigo/waigo/tree/master/src/models/user) you will notice that the `model.js` file is not monolothic. Instead, the configuration has been split out across several files:
+
+* `adminConfig.js`
+* `tableDef.js`
+* `docMethods.js`
+
+
+
+As with everything else in Waigo you can choose to extend or replace these models with your own, or use a completely different model layer of your choosing.
 
 
 ## Reactive data
@@ -1840,6 +2042,45 @@ var ValidationErrors = errors.define('ValidationErrors', ProcessingErrors);
 
 
 To find out more about this and how you can configure it check out the [Scalable Clustering](#scalable-clustering) section of this guide.
+
+
+# Scalable clustering
+
+Clustering enables you to better scale your application on a single server by having dividing up your app's workload amongst multiple processes.
+
+Waigo supports [Node's built-in clustering](https://nodejs.org/api/cluster.html) mechanim. By default Waigo will only launch 1 worker process to handle requests. But you can tell it launch more than 1 or as many workers as there as cores in your CPU.   
+
+For example, to have Waigo launch 2 worker processes:
+
+```bash
+$ WAIGO_WORKERS=3 ./start-app.js
+```
+
+During the startup phase you may see what look like repeated logs. However, every log line is prefixed with the pid of the specific worker doing the logging:
+
+```bash
+No. of worker processes: 3
+[worker1] started, pid: 78163
+[worker2] started, pid: 78164
+[worker3] started, pid: 78166
+...
+(RamMacbookPro.local-78164) [2016-04-06 11:01:41.413] [INFO] [app] - Startup complete
+(RamMacbookPro.local-78166) [2016-04-06 11:01:41.438] [INFO] [app] - Startup complete
+(RamMacbookPro.local-78163) [2016-04-06 11:01:41.450] [INFO] [app] - Startup complete
+```
+
+You can also tell Waigo to launch as many worker processes as there are CPUs on your machine:
+
+```bash
+$ WAIGO_WORKERS=MAX_CPUS ./start-app.js
+```
+
+Clustering has implications for how you structure your application. When a frontend client requests a backend resource it does not know which specific worker process will serve it. 
+
+Thus, **application-level data should not be stored within the Node.js worker process, but within an externally accessible datasource instead, e.g. the database.**
+
+If you adhere to this rule you will be able to easily scale your application and even have instances of it running on other servers without there being any problems.
+
 
 
 # Debugging
