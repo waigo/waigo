@@ -20,7 +20,9 @@ module.exports = function*(app) {
 
   app.server = app.listen(app.config.port);
 
-  let msg = `Server (process:${process.pid}, worker:${cluster.worker.id}) started - listening in ${app.config.mode} mode on port ${app.config.port} (baseURL: ${app.config.baseURL})`;
+  let workerInfo = (cluster.worker) ? ` worker: ${cluster.worker.id}` : '';
+
+  let msg = `Server (process:${process.pid} ${workerInfo}) started - listening in ${app.config.mode} mode on port ${app.config.port} (baseURL: ${app.config.baseURL})`;
 
   app.logger.info(msg);
 

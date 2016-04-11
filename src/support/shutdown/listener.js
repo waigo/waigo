@@ -1,5 +1,7 @@
 "use strict";
 
+const Q = require('bluebird');
+
 
 
 /**
