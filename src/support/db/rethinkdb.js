@@ -86,7 +86,7 @@ exports.create = function*(id, logger, dbConfig) {
 exports.closeAll = function*(logger) {
   logger.debug('Close all connections');
 
-  yield _.map(connections, (db) => {
+  yield _.map(_connections, (db) => {
     return db.getPoolMaster().drain();
   });
 };
