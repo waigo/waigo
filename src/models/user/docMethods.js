@@ -98,7 +98,7 @@ module.exports = {
       return email === e.email;
     });
 
-    return !!item.verified,
+    return !!item.verified;
   },
   /**
    * Add an email address.
