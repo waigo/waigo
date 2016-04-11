@@ -89,6 +89,18 @@ module.exports = {
     });
   },
   /**
+   * Check whether user has verified given email address.
+   * @param {String} email Email address to check.
+   * @return {Boolean}
+   */
+  isEmailVerified: function*(email) {
+    let item = _.find(this.emails || [], function(e) {
+      return email === e.email;
+    });
+
+    return !!item.verified,
+  },
+  /**
    * Add an email address.
    * @param {String} email Email address to verify.
    * @param {Boolea} verified Whether address is verified.
