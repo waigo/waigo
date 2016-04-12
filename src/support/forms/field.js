@@ -100,7 +100,7 @@ class Field {
       def = def.id;
     }
 
-    this.validators.push(
+    this.sanitizers.push(
       waigo.load(`support/forms/sanitizers/${def}`)(options)
     );
   }
