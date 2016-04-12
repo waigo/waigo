@@ -4,6 +4,7 @@
 const debug = require('debug')('waigo application'),
   koa = require('koa'),
   log4js = require('log4js'),
+  EventEmitter = require('eventemitter3'),
   path = require('path');
 
 
@@ -135,6 +136,9 @@ Application.start = function*(options) {
 
   // run startup steps
   let app = Application.app;
+
+  // setup events
+  app.events = new EventEmitter();
 
   for (let stepName of app.config.startupSteps) {
     app.logger.debug(`Running startup step: ${stepName}`);

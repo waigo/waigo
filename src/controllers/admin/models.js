@@ -147,7 +147,7 @@ exports.docCreate = function*() {
   let newDoc = yield model.insert(doc);
 
   // record activity
-  yield this.app.record('insert_doc', this.currentUser, {
+  this.app.events.emit('record', 'insert_doc', this.currentUser, {
     model: modelName,
     id: newDoc.id
   });
@@ -186,7 +186,7 @@ exports.docUpdate = function*() {
   }, doc);
 
   // record activity
-  yield this.app.record('update_doc', this.currentUser, {
+  this.app.events.emit('record', 'update_doc', this.currentUser, {
     model: modelName,
     id: rowId
   });
@@ -213,7 +213,7 @@ exports.docDelete = function*() {
   });
 
   // record activity
-  yield this.app.record('delete_doc', this.currentUser, {
+  this.app.events.emit('record', 'delete_doc', this.currentUser, {
     model: modelName,
     id: rowId
   });

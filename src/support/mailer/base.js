@@ -186,7 +186,7 @@ class Mailer {
         var ret = yield self._nodeMailer.send(sendOptions);
 
         // record
-        yield self.app.record('email', recipient, {
+        self.app.events.emit('record', 'email', recipient, {
           subject: sendOptions.subject
         });
 

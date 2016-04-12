@@ -134,7 +134,7 @@ class ActionTokens {
     }
 
     // record activity
-    yield this.app.record('action_token_processed', user, {
+    this.app.events.emit('record', 'action_token_processed', user, {
       type: type,
       salt: salt,
     });

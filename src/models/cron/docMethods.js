@@ -102,14 +102,14 @@ module.exports = {
 
       _config.logger.info(`Run complete: ${duration}ms`);
 
-      yield this.__app.record('run_pass', 'cron', {
+      this.__app.events.emit('record', 'run_pass', 'cron', {
         task: this.id,
         duration: duration,
         by: runByUser
       });
 
     } catch (err) {
-      yield this.__app.record('run_fail', 'cron', {
+      this.__app.events.emit('record', 'run_fail', 'cron', {
         task: this.id,
         err: err.stack,
         by: runByUser

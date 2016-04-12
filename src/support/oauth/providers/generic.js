@@ -70,7 +70,7 @@ class GenericOauth {
   * handleAuthorizationCallback() {
     let user = this._user();
 
-    yield this.context.record('oauth_callback', user || 'anon', {
+    this.context.events.emit('record', 'oauth_callback', user || 'anon', {
       provider: this.provider,
       query: this.context.request.query,
     });
@@ -261,7 +261,7 @@ class GenericOauth {
   * _handleError (err, attrs) {
     this.logger.error(err);
 
-    yield this.context.record('oauth_request', this._user() || 'anon', _.extend({}, attrs, {
+    this.context.events.emit('record', 'oauth_request', this._user() || 'anon', _.extend({}, attrs, {
       type: 'error',
       provider: this.provider,
       message: err.message,

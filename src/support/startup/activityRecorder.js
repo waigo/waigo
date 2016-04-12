@@ -1,5 +1,7 @@
 "use strict";
 
+const co = require('co');
+
 const waigo = global.waigo,
   _ = waigo._;
 
@@ -15,8 +17,10 @@ const waigo = global.waigo,
  * @param {Object} app The application.
  */
 module.exports = function*(app) {
-  app.logger.debug('Setting up Activity recorder');
+  app.logger.debug('Setting up Activity recording');
 
-  app.record = _.bindGen(app.models.Activity.record, app.models.Activity);
+  app.actions.on('record', co(function*() {
+    yield app.models.Activity.record.apply(app.models.Activity, arguments);
+  }));
 };
 

@@ -40,8 +40,7 @@ module.exports = function*(app) {
     };
   }
 
-  // convenience method
-  app.sendNotification = function*(id, messageOrObject) {
+  app.actions.on('notify', co(function*(id, messageOrObject) {
     if (!app.notifiers[id]) {
       return app.logger.warn(`Skipping invalid notifier target: ${id}`);
     }
@@ -51,7 +50,7 @@ module.exports = function*(app) {
     yield _.map(app.notifiers[id].transports, (t) => {
       return t(messageOrObject);
     });
-  };
+  }));
 };
 
 

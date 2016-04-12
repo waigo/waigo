@@ -17,6 +17,7 @@
     "cron": "^1.0.9",
     "debug": "^2.2.0",
     "email-templates": "^2.1.0",
+    "eventemitter3": "^1.2.0",
     "findit": "^2.0.0",
     "findup-sync": "^0.3.0",
     "generator-compose": "^0.1.0",

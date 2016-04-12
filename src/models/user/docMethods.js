@@ -74,7 +74,7 @@ module.exports = {
     yield this.save();
 
     // record
-    yield this.__app.record('verify_email', this, {
+    this.__app.events.emit('record', 'verify_email', this, {
       email: email
     });
   },
@@ -125,7 +125,7 @@ module.exports = {
     yield this.save();
 
     // record
-    yield this.__app.record('add_email', this, {
+    this.__app.events.emit('record', 'add_email', this, {
       email: email
     });
   },
@@ -152,7 +152,7 @@ module.exports = {
     yield this.save();
 
     // record
-    yield this.__app.record('update_password', this);
+    this.__app.events.emit('record', 'update_password', this);
   },
   /**
    * Get OAuth data.
@@ -207,7 +207,7 @@ module.exports = {
     yield this.save();
 
     // record
-    yield this.__app.record('save_oauth', this, _.pick(existing, 'type', 'access_token'));
+    this.__app.events.emit('record', 'save_oauth', this, _.pick(existing, 'type', 'access_token'));
   },
   /**
    * Get whether user can access given resource.

@@ -160,12 +160,10 @@ class Model extends RethinkDbModel {
     }
 
     // log activity
-    yield this.app.record('register', user);
+    this.app.events.emit('record', 'register', user);
 
     // notify admins
-    if (this.app.sendNotification) {
-      yield this.app.sendNotification('admins', `New user: ${user.id} - ${user.username}`);
-    }
+    this.app.events.emit('notify', 'admins', `New user: ${user.id} - ${user.username}`);
 
     return user;
   }

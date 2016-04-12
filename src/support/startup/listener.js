@@ -26,9 +26,7 @@ module.exports = function*(app) {
 
   app.logger.info(msg);
 
-  if (app.sendNotification) {
-    yield app.sendNotification('admins', msg);
-  }
+  app.events.emit('notify', 'admins', msg);
 };
 
 

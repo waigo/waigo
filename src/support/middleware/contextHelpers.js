@@ -29,11 +29,10 @@ module.exports = function() {
 
     // convenient accessors
     this.logger = this.app.logger;
+    this.events = this.app.events;
     this.acl = this.app.acl;
     this.models = this.app.models;
     this.form = this.app.form;
-    this.record = this.app.record;
-    this.sendNotification = this.app.sendNotification;
 
     processAlertMessage(this);
 
