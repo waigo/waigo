@@ -1,4 +1,6 @@
 "use strict";
 
+const waigo = global.waigo,
+  TextField = waigo.load('support/forms/fields/text');
 
-module.exports = require('./text');
+module.exports = TextField;
