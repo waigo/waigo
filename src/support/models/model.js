@@ -205,9 +205,11 @@ class RethinkDbModel extends Model {
    * Listen for changes to this model's data.
    * 
    * @param  {Function} cb Callback
+   *
+   * @return {Cursor}
    */
   onChange (cb) {
-    this._qry().changes()
+    return this._qry().changes()
       .then(cb)
       .error((err) => {
         this.app.logger.error(`${this.name} changes error`, err);

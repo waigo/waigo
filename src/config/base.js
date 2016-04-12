@@ -101,6 +101,7 @@ module.exports = function(config) {
    * Each of these corresponds to a module file under the `support/shutdown` path.
    */
   config.shutdownSteps = [
+    'acl',
     'listener',
     'database',
   ];

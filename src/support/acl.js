@@ -20,7 +20,7 @@ class ACL {
   /**
    * Initialise ACL
    */
-  * init () {
+  * startup () {
     this.logger.info('Initialising');
 
     yield this.reload();
@@ -39,9 +39,16 @@ class ACL {
     }
 
     // get notified of ACL updates
-    this.app.models.Acl.onChange(() => {
-      this.onAclUpdated();
-    });
+    this.app.models.Acl.onChange(_.bind(this.onAclUpdated, this));
+  }
+
+
+  * shutdown () {
+    if (this._changeFeedCursor) {
+      yield this._changeFeedCursor.close();
+
+      this._changeFeedCursor = null;
+    }
   }
 
 
@@ -79,7 +86,11 @@ class ACL {
   /**
    * Callback for collection watcher.
    */
-  onAclUpdated () {
+  onAclUpdated (cursor) {
+    if (!this._changeFeedCursor) {
+      this._changeFeedCursor = cursor;
+    }
+
     this.app.logger.info('Detected ACL rules change...reloading');
 
     co(this.reload())
@@ -155,7 +166,7 @@ class ACL {
 exports.init = function*(app) {
   var a = new ACL(app);
 
-  yield a.init();
+  yield a.startup();
 
   return a;
 };
