@@ -1,8 +1,10 @@
 "use strict";
 
+const co = require('co');
 
 const waigo = global.waigo,
   _ = waigo._;
+
 
 
 
