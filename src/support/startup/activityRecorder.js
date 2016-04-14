@@ -19,7 +19,7 @@ const waigo = global.waigo,
 module.exports = function*(app) {
   app.logger.debug('Setting up Activity recording');
 
-  app.actions.on('record', co(function*() {
+  app.events.on('record', co(function*() {
     yield app.models.Activity.record.apply(app.models.Activity, arguments);
   }));
 };
