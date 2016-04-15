@@ -49,9 +49,13 @@ class Model extends RethinkDbModel {
    * @return {User}
    */
   * getByEmail (email) {
-    let ret = yield this._qry().filter(function(user) {
-      return user('emails')('email').eq(email)
-    }).run();
+    const r = this.db;
+
+    let ret = yield this._qry().filter(
+      r.row('emails').contains(function(e) {
+        return e('email').eq(email);
+      })
+    ).run();
 
     return this._wrap(_.get(ret, '0'));
   }
