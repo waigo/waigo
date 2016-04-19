@@ -4,14 +4,24 @@
 const waigo = global.waigo,
   _ = waigo._,
   viewObjects = waigo.load('support/viewObjects'),
-  Field = waigo.load('support/forms/fields/hidden');
+  HiddenField = waigo.load('support/forms/fields/hidden');
+
+
+
+const checkCSRF = function*(context, field, value) {
+  try {
+    context.assertCSRF(value);
+  } catch (err) {
+    throw new Error('CSRF token check failed');
+  }
+};
 
 
 
 /**
  * A Cross-site request forgery prevention field.
  */
-class Csrf extends Field {
+class Csrf extends HiddenField {
   /**
    * Construct.
    * 
@@ -22,15 +32,7 @@ class Csrf extends Field {
   constructor (form, config) {
     super(form, config);
 
-    this._addValidator(
-      function* checkCSRF(context, field, value) {
-        try {
-          context.assertCSRF(value);
-        } catch (err) {
-          throw new Error('Token check failed');
-        }
-      }
-    );
+    this._addValidator(checkCSRF);
   }
 }
 
@@ -39,9 +41,8 @@ class Csrf extends Field {
  * @override
  */
 Csrf.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
-  let ret = yield Field.prototype[viewObjects.METHOD_NAME].call(this, ctx);
+  let ret = yield HiddenField.prototype[viewObjects.METHOD_NAME].call(this, ctx);
 
-  ret.type = 'hidden';
   ret.value = ctx.csrf;
 
   return ret;

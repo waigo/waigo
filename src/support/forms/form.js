@@ -98,7 +98,7 @@ class Form {
     this.context = options.context;
     this.logger = this.context.app.logger.create('Form[' + this.config.id + ']');
 
-    // CSRF enabled?
+    // CSRF enabled (set by koa-csrf package)?
     if (!!_.get(this.context, 'assertCSRF')) {
       this.logger.debug('Adding CSRF field');
 

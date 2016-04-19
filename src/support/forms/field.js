@@ -67,11 +67,11 @@ class Field {
    * @param {String|Object|GeneratorFunction} def 
    */
   _addValidator (def) {
-    if (_.isFunction(def)) {
+    if (_.isGen(def)) {
       return this.validators.push(def);
     }
 
-    var options = {}
+    var options = {};
 
     if (def.id) {
       options = _.omit(def, 'id');
@@ -89,7 +89,7 @@ class Field {
    * @param {String|Object|GeneratorFunction} def 
    */
   _addSanitizer (def) {
-    if (_.isFunction(def)) {
+    if (_.isGen(def)) {
       return this.sanitizers.push(def);
     }
 
