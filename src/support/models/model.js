@@ -111,13 +111,13 @@ class Model {
       if (_.isArray(result)) {
         return _.map(result, (doc) => {
           if (doc) {
-            return this._createDoc(doc);
+            return this.wrapDoc(doc);
           } else {
             return doc;
           }
         });
       } else {
-        return this._createDoc(result);
+        return this.wrapDoc(result);
       }
     } else {
       return result;
@@ -126,11 +126,11 @@ class Model {
 
 
   /**
-   * Wrap given raw doc in a `Document` instance.
+   * Wrap given raw doc in a `Document` instance of this model.
    * @param  {Object} doc
    * @return {Document}
    */
-  _createDoc (doc) {
+  wrapDoc (doc) {
     if (doc) {
       doc = new Document(this, doc);
 
