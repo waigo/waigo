@@ -16,10 +16,7 @@ const waigo = global.waigo,
   NodeMailer = waigo.load('support/mailer/engines/nodeMailer').NodeMailer,
   viewObjects = waigo.load('support/viewObjects');
 
-
-const emailTemplates = Q.promisify(require('email-templates'));
-
-
+const EmailTemplate = require('email-templates').EmailTemplate;
 const MailerError = errors.define('MailerError');
 
 
@@ -36,10 +33,6 @@ class Mailer {
 
   * _init (transport) {
     this._nodeMailer = new NodeMailer(this.app.logger, this.config, transport);
-
-    this._emailBuilder = yield emailTemplates(
-      path.join(waigo.getAppFolder(), 'views', 'emailTemplates')
-    );
   }
 
 
@@ -47,15 +40,17 @@ class Mailer {
   _renderEmailTemplate (templateName, templateVars) {
     this.logger.debug('Rendering template ' + templateName);
 
+    let templatePath = 
+      path.dirname( waigo.getPath(`emails/${templateName}/html.jade`) );
+
+    let emailTemplate = new EmailTemplate(templatePath);
+
     return new Q((resolve, reject) => {
-      this._emailBuilder(templateName, templateVars, function(err, html, text) {
+      emailTemplate.render(templateVars, function(err, result) {
         if (err) {
           reject(err);
         } else {
-          resolve({
-            html: html,
-            text: text
-          });          
+          resolve(result);
         }
       });
     });
@@ -68,17 +63,8 @@ class Mailer {
       interpolate: /{{([\s\S]+?)}}/img
     });
 
-    var content = marked(compiled(templateVars || {}));
-
-    var templateVars = _.extend({}, this.app.templateVars, templateVars, {
-      content: content
-    });
-
-    var body = yield this._renderEmailTemplate('layout', templateVars);
-
-    return body.html;
+    return marked(compiled(templateVars || {}));
   }
-
 
 
   * _renderBodyTemplate (templateName, templateVars) {
@@ -89,13 +75,22 @@ class Mailer {
 
 
 
-
   * _renderBody (mailOptions, templateVars) {
+    let content;
+
     if (mailOptions.bodyTemplate) {
-      return yield this._renderBodyTemplate(mailOptions.bodyTemplate, templateVars);
+      content = yield this._renderBodyTemplate(mailOptions.bodyTemplate, templateVars);
     } else {
-      return yield this._renderBodyMarkdown(mailOptions.body, templateVars);
+      content = yield this._renderBodyMarkdown(mailOptions.body, templateVars);
     }
+
+    var templateVars = _.extend({}, this.app.templateVars, templateVars, {
+      content: content
+    });
+
+    var body = yield this._renderEmailTemplate('_layout', templateVars);
+
+    return body.html;
   }
 
 

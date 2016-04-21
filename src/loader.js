@@ -220,8 +220,8 @@ loader.init = function*(options) {
     );
 
     _.extend(moduleMap, yield _walk(sourcePaths[sourceName], {
-        // only want files from views/, but not ones which are prefixed with an underscore
-        matchFiles: /^views\/(.*\/)?(((?!_)[A-Za-z0-9_]+)\.?\w+)$/i,
+        // only want files from views/ and emails/, but not ones which are prefixed with an underscore
+        matchFiles: /^(views|emails)\/(.*\/)?(((?!_)[A-Za-z0-9_]+)\.?\w+)$/i,
         // may have many view templates with same names but different extensions
         keepExtensions: true,
       })

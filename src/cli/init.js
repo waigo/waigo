@@ -62,7 +62,6 @@ class Command extends AbstractCommand {
 
     yield this.copyFile(path.join(FRAMEWORK_FOLDER, 'start-app.js'), 'start-app.js');
     
-    yield this.copyFolder(path.join(WAIGO_FOLDER, 'views', 'emailTemplates'), 'src/views');
     yield this.copyFile(path.join(WAIGO_FOLDER, 'config', 'base.js'), 'src/config/base.js');
   }
 }
