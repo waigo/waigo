@@ -92,9 +92,11 @@ Application.setupLogger = function*(cfg) {
   app.logger = log4js.getLogger(cfg.category);
   app.logger.setLevel(cfg.minLevel);
 
-  process.on('uncaughtException', function(err) {
+  app.onUncaughtException = function(err) {
     app.logger.error('Uncaught exception', err.stack ? err.stack : err);
-  });
+  };
+
+  process.on('uncaughtException', app.onUncaughtException);
 
   app.on('error', function(err, ctx){
     app.logger.error(err.stack ? err.stack : err);
@@ -164,6 +166,9 @@ Application.shutdown = function*() {
   if (!_.get(app.config, 'shutdownSteps')) {
     throw new ShutdownError('Application not started');
   }
+
+  // remove uncaught exception handler
+  process.removeListener('uncaughtException', app.onUncaughtException);
 
   // run shutdown steps
   for (let stepName of app.config.shutdownSteps) {
