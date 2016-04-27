@@ -42,7 +42,7 @@ module.exports = function*(app) {
     };
   }
 
-  app.events.on('notify', co(function*(id, messageOrObject) {
+  app.events.on('notify', co.wrap(function*(id, messageOrObject) {
     if (!app.notifiers[id]) {
       return app.logger.warn(`Skipping invalid notifier target: ${id}`);
     }
