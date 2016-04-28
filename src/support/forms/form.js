@@ -98,22 +98,23 @@ class Form {
     this.context = options.context;
     this.logger = this.context.app.logger.create('Form[' + this.config.id + ']');
 
-    // CSRF enabled (set by koa-csrf package)?
-    if (!!_.get(this.context, 'assertCSRF')) {
-      this.logger.debug('Adding CSRF field');
-
-      this.config.fields.push({
-        name: '__csrf',
-        label: 'CSRF',
-        type: 'csrf'
-      });
-    }
-
     // setup fields
     this._fields = {}
     for (let idx in this.config.fields) {
       let def = this.config.fields[idx];
       this._fields[def.name] = Field.new(this, def);
+    }
+
+    // CSRF enabled (set by koa-csrf package)?
+    if (!!_.get(this.context, 'assertCSRF')) {
+      this.logger.debug('Adding CSRF field');
+
+      this._fields.__csrf = Field.new(this, {
+        name: '__csrf',
+        label: 'CSRF',
+        type: 'csrf',
+        required: true,
+      });
     }
 
     // initial state
