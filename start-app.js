@@ -51,6 +51,7 @@ if (cluster.isMaster) {
   require(IS_WAIGO_FRAMEWORK ? './' : 'waigo')._bootstrap()
     .catch(function(err) {
       console.error(err.stack);
+      process.exit(-1);
     });
 }
 
