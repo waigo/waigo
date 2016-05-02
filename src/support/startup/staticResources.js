@@ -21,7 +21,10 @@ module.exports = function*(app) {
   
   let logger = app.logger.create('StaticResources');
   
-  let tmpFolder = path.join(shell.tempdir(), 'waigo-app-' + Date.now());
+  let tmpFolder = path.join(shell.tempdir(), 'waigo-app');
+
+  // clean old stuff from tmp folder
+  shell.rm('-rf', tmpFolder);
 
   logger.debug('Copy static resources into', tmpFolder);
 
@@ -51,6 +54,9 @@ module.exports = function*(app) {
   logger.debug('Copy ' + tmpFolder + ' -> ' + destFolder);
   shell.mkdir('-p', destFolder);
   shell.cp('-Rf', path.join(tmpFolder, '*'), destFolder);
+
+  // done with tmp folder
+  shell.rm('-rf', tmpFolder);
 
   // Static URL helper
   app.staticUrl = _.curry(_staticUrl, 2)(logger);
