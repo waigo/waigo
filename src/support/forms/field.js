@@ -68,7 +68,9 @@ class Field {
    */
   _addValidator (def) {
     if (_.isGen(def)) {
-      return this.validators.push(def);
+      return this.validators.push({
+        fn: def
+      });
     }
 
     var options = {};
@@ -78,9 +80,10 @@ class Field {
       def = def.id;
     }
 
-    this.validators.push(
-      waigo.load(`support/forms/validators/${def}`)(options)
-    );
+    this.validators.push({
+      fn: waigo.load(`support/forms/validators/${def}`)(options),
+      msg: options.msg,
+    });
   }
 
 
@@ -90,7 +93,9 @@ class Field {
    */
   _addSanitizer (def) {
     if (_.isGen(def)) {
-      return this.sanitizers.push(def);
+      return this.sanitizers.push({
+        fn: def
+      });
     }
 
     var options = {}
@@ -100,9 +105,10 @@ class Field {
       def = def.id;
     }
 
-    this.sanitizers.push(
-      waigo.load(`support/forms/sanitizers/${def}`)(options)
-    );
+    this.sanitizers.push({
+      fn: waigo.load(`support/forms/sanitizers/${def}`)(options),
+      msg: options.msg,
+    });
   }
 
 
@@ -150,11 +156,14 @@ class Field {
    * @throws FieldSanitizationError If any errors occur.
    */
   * setSanitizedValue (val) {
-    for (let sanitizerFn of this.sanitizers) {
+    for (let sanitizer of this.sanitizers) {
+      let fn = sanitizer.fn,
+        msg = sanitizer.msg;
+
       try {
-        val = yield sanitizerFn(this, val);
+        val = yield fn(this, val);
       } catch (e) {
-        throw new FieldSanitizationError(e.message);
+        throw new FieldSanitizationError(msg || e.message);
       }
     }
 
@@ -193,13 +202,14 @@ class Field {
         errors.push('Must be set');
       }
     } else {
-      for (let idx in this.validators) {
-        let validatorFn = this.validators[idx];
+      for (let validator of this.validators) {
+        let fn = validator.fn,
+          msg = validator.msg;
 
         try {
-          yield validatorFn(context, this, this.value);
+          yield fn(context, this, this.value);
         } catch (err) {
-          errors.push(err.message);
+          errors.push(msg || err.message);
         }
       }    
     }
