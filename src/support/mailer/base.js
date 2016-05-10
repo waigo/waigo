@@ -11,6 +11,7 @@ const co = require('co'),
 
 const waigo = global.waigo,
   _ = waigo._,
+  logger = waigo.load('support/logger'),
   Q = waigo.load('support/promise'),
   errors = waigo.load('support/errors'),
   NodeMailer = waigo.load('support/mailer/engines/nodeMailer').NodeMailer,
@@ -26,13 +27,16 @@ const MailerError = errors.define('MailerError');
 class Mailer {
   constructor (app, config, typeString) {
     this.app = app;
-    this.logger = app.logger.create(`Mailer-${typeString}`);
+    this.logger = logger.create(`Mailer-${typeString}`);
     this.config = config;
   }
 
 
   * _init (transport) {
-    this._nodeMailer = new NodeMailer(this.app.logger, this.config, transport);
+    this._nodeMailer = new NodeMailer(
+      this.logger.create('NodeMailer'), 
+      this.config, transport
+    );
   }
 
 

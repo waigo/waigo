@@ -21,7 +21,7 @@ module.exports = function() {
       this.app.logger.debug('Current user', this.session.user);
 
       this.currentUser =  
-        yield this.app.models.User.getById(this.session.user.id);
+        yield this.app.models.User.get(this.session.user.id);
     }
 
     yield next;

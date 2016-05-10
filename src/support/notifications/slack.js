@@ -4,12 +4,13 @@ const Slack = require('slack-node');
 
 const waigo = global.waigo,
   _ = waigo._,
+  logger = waigo.load('support/logger').create('SlackNotifier'),
   Q = waigo.load('support/promise');
 
 
 
 module.exports = function*(app, id, config) {
-  let logger = app.logger.create(`SlackNotifier[${id}]`);
+  let _logger = logger.create(id);
 
   let slack = new Slack();
 
@@ -18,7 +19,7 @@ module.exports = function*(app, id, config) {
   return function*(messageOrObject) {
     let msg = (typeof messageOrObject === 'string' ? messageOrObject : JSON.stringify(messageOrObject));
     
-    logger.debug(`Notify`);
+    _logger.debug(`Notify`);
 
     return new Q(function(resolve, reject) {
       slack.webhook({
@@ -28,7 +29,7 @@ module.exports = function*(app, id, config) {
         text: msg,
       }, function(err, response) {
         if (err) {
-          logger.error(err);
+          _logger.error(err);
 
           return reject(new Error('' + err));
         } else {

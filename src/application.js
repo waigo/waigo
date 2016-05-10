@@ -10,6 +10,7 @@ const debug = require('debug')('waigo application'),
 
 const waigo = global.waigo,
   _ = waigo._,
+  logger = waigo.load('support/logger'),
   errors = waigo.load('support/errors');
 
 
@@ -85,12 +86,7 @@ Application.setupLogger = function*(cfg) {
   
   debug('Setup logging');
 
-  log4js.configure({
-    appenders: cfg.appenders || [],
-  });
-
-  app.logger = log4js.getLogger(cfg.category);
-  app.logger.setLevel(cfg.minLevel);
+  app.logger = logger.init(cfg);
 
   app.onUncaughtException = function(err) {
     app.logger.error('Uncaught exception', err.stack ? err.stack : err);
@@ -101,15 +97,6 @@ Application.setupLogger = function*(cfg) {
   app.on('error', function(err, ctx){
     app.logger.error(err.stack ? err.stack : err);
   });
-
-  // allow easy creation of other-category loggers
-  app.logger.create = function(category) {
-    var logger = log4js.getLogger(category);
-
-    logger.setLevel(cfg.minLevel);
-
-    return logger;
-  };
 };
 
 

@@ -4,6 +4,7 @@ const crypto = require('crypto');
 
 const waigo = global.waigo,
   _ = waigo._,
+  logger = waigo.load('support/logger'),
   errors = waigo.load('support/errors');
 
 
@@ -20,7 +21,7 @@ class ActionTokens {
     this.app = app;
     this.config = config;
 
-    this.logger = app.logger.create('ActionTokens');
+    this.logger = logger.create('ActionTokens');
 
     this.logger.debug(`encryption key is: ${this.config.encryptionKey}`);
   }

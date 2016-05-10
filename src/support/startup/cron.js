@@ -3,7 +3,8 @@
 const path = require('path');
 
 const waigo = global.waigo,
-  _ = waigo._;
+  _ = waigo._,
+  logger = waigo.load('support/logger').create('Cron');
 
 
 
@@ -13,8 +14,6 @@ const waigo = global.waigo,
  * @param {Object} app The application.
  */
 module.exports = function*(app) {
-  let logger = app.logger.create('Cron');
-  
   app.cron = {};
 
   let cronTasks = waigo.getItemsInFolder('support/cronTasks');

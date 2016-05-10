@@ -4,6 +4,7 @@ const co = require('co');
 
 const waigo = global.waigo,
   _ = waigo._,
+  logger = waigo.load('support/logger'),
   errors = waigo.load('support/errors');
 
 
@@ -13,7 +14,7 @@ const AclError = exports.AclError = errors.define('AclError');
 class ACL {
   constructor (app) {
     this.app = app;
-    this.logger = app.logger.create('ACL');
+    this.logger = logger.create('ACL');
   }
 
 
@@ -58,7 +59,7 @@ class ACL {
   * reload () {
     this.logger.debug('Reloading rules from db');
 
-    let data = yield this.app.models.Acl.load();
+    let data = yield this.app.models.Acl.getAll();
 
     let res = this.res = {},
       users = this.users = {},

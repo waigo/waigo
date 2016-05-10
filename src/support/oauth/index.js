@@ -19,7 +19,7 @@ exports.load = function*(ctx, provider, tokens) {
     let user = ctx.currentUser;
 
     if (user) {
-      tokens = user.getOauth(provider);
+      tokens = yield user.getOauth(provider);
     }
   }
 

@@ -2,6 +2,7 @@
 
 const waigo = global.waigo,
   _ = waigo._,
+  logger = waigo.load('support/logger').create('OutputFormats'),
   errors = waigo.load('support/errors'),
   viewObjects = waigo.load('support/viewObjects');
 
@@ -28,8 +29,7 @@ const OutputFormatError = errors.define('OutputFormatError');
  * @return {Function} Express middleware.
  */
 module.exports = function(options) {
-  let app = waigo.load('application').app,
-    logger = app.logger.create('OutputFormats');
+  let app = waigo.load('application').app;
 
   let enabledFormats = {};
 
@@ -38,7 +38,7 @@ module.exports = function(options) {
   for (let format of formatNames) {
     enabledFormats[format] = 
       waigo.load(`support/outputFormats/${format}`).create(
-        app.logger.create(`OutputFormats/${format}`), 
+        logger.create(format), 
         options.formats[format]
       );
   }

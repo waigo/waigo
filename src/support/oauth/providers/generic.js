@@ -6,6 +6,7 @@ const qs = require('query-string'),
 
 const waigo = global.waigo,
   _ = waigo._,
+  logger = waigo.load('support/logger'),
   Q = waigo.load('support/promise'),
   OauthError = waigo.load('support/oauth/error');
 
@@ -28,7 +29,7 @@ class GenericOauth {
     this.context = context;
     this.provider = provider;
     this.app = this.context.app;
-    this.logger = context.logger.create(`Oauth-${provider}`);
+    this.logger = logger.create(`Oauth-${provider}`);
 
     this.config = _.get(this.app.config.oauth, this.provider, {});
     this.callbackURL = this.app.routeUrl('oauth_callback', {

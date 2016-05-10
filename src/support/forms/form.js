@@ -5,6 +5,7 @@ const compose = require('generator-compose');
 
 const waigo = global.waigo,
   _ = waigo._,
+  logger = waigo.load('support/logger'),
   errors = waigo.load('support/errors'),
   FieldExports = waigo.load('support/forms/field'),
   Field = FieldExports.Field,
@@ -96,7 +97,7 @@ class Form {
     this.config = _.extend({}, config);
 
     this.context = options.context;
-    this.logger = this.context.app.logger.create('Form[' + this.config.id + ']');
+    this.logger = logger.create('Form[' + this.config.id + ']');
 
     // setup fields
     this._fields = {}

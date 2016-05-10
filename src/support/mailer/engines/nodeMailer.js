@@ -21,7 +21,7 @@ const NodeMailerError = exports.NodeMailerError =
 
 class NodeMailer {
   constructor (logger, config, transportImpl) {
-    this.logger = logger.create('NodeMailer');
+    this.logger = logger;
     this._transport = nodemailer.createTransport(transportImpl);
     this._transport.use('compile', htmlToText());
     this._send = Q.promisify(this._transport.sendMail, this._transport);

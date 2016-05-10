@@ -6,6 +6,7 @@ const route = require('koa-trie-router'),
 
 const waigo = global.waigo,
   _ = waigo._,
+  logger = waigo.load('support/logger').create('RouteMapper'),
   errors = waigo.load('support/errors');
 
 
@@ -163,8 +164,6 @@ var loadCommonMiddleware = function(logger, middleware) {
  * @throws RouteError if there are any problems.
  */
 exports.map = function(app, routes) {
-  let logger = app.logger.create('RouteMapper');
-
   let possibleMappings = [];
 
   // resolve middleware for different HTTP methods

@@ -46,6 +46,8 @@
     "shelljs": "^0.3.0",
     "simple-mongo-schema": "^0.8.1",
     "slack-node": "^0.2.0",
+    "thinodium": "^1.1.1",
+    "thinodium-rethinkdb": "^1.1.0",
     "validator": "^5.0.0"
   },
   "devDependencies": {

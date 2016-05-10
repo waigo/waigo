@@ -5,7 +5,8 @@ const path = require('path'),
 
 
 const waigo = global.waigo,
-  _ = waigo._;
+  _ = waigo._,
+  logger = waigo.load('support/logger').create('StaticResources');
 
 
 
@@ -18,8 +19,6 @@ const waigo = global.waigo,
  */
 module.exports = function*(app) {
   app.logger.debug('Copying static resources into public folder');
-  
-  let logger = app.logger.create('StaticResources');
   
   let tmpFolder = path.join(shell.tempdir(), 'waigo-app');
 

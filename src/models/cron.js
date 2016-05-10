@@ -6,11 +6,99 @@ const co = require('co'),
 
 const waigo = global.waigo,
   _ = waigo._,
-  $EXTRA = waigo.load('models/cron/symbols').$EXTRA;
+  viewObjects = waigo.load('support/viewObjects');
+
+
+const $EXTRA = Symbol('cron extra data');
+
+
+const LastRunSchema = {
+  when: {
+    type: Date,
+    required: true,
+  },
+  by: {
+    type: String,
+    required: true,
+  },
+};
+
+
+exports.schema = {
+  id: { 
+    type: String, 
+    required: true,
+  },
+  disabled: {
+    type: Boolean,
+    required: true,
+  },
+  lastRun: {
+    type: LastRunSchema,
+    required: false,
+  },
+};
+
+
+exports.indexes = [
+  {
+    name: 'name',
+  },
+];
+
+
+exports.modelMethods = {
+  /**
+   * Create a cron task.
+   *
+   * This will create a new `Cron` and save it to the db (if it isn't 
+   * already saved).
+   * 
+   * @param  {String} id Unique id for job.
+   * @param  {String} crontab Crontab spec.
+   * @param  {Function} handler  The job handler.
+   * 
+   * @return {Cron} new cron task instance.
+   */
+  create: function*(id, crontab, handler) {
+    let cron = yield this.get(id);
+
+    if (!cron) {
+      cron = yield this.insert({
+        id: id,
+        disabled: false,
+      });
+    }
+
+    cron[$EXTRA] = {
+      logger: this._logger().create(id),
+      handler: handler,
+    };
+
+    // start the cron job
+    cron.startScheduler(crontab);
+
+    // override view object method
+    cron[viewObjects.METHOD_NAME] = function*(ctx) {
+      let json = {
+        id: this.id,
+        disabled: this.disabled,
+        lastRun: this.lastRun ? this.lastRun.when : 'never',
+      };
+
+      json.schedule = crontab;
+      json.nextRun = cron[$EXTRA].job.nextDate().toDate();
+
+      return json;
+    };
+
+    return cron;
+  },
+};
 
 
 
-module.exports = {
+exports.docMethods = {
   /**
    * Start the cron scheduler for this job.
    */
@@ -46,7 +134,7 @@ module.exports = {
     try {
       // always reload data at the start in case other app instances have 
       // executed the task recently
-      let dbData = yield this.__model.getById(this.id);
+      let dbData = yield this.__model.get(this.id);
 
       // if disabled then don't run
       if (dbData.disabled) {
@@ -96,20 +184,20 @@ module.exports = {
     try {
       let start = Date.now();
 
-      yield _config.handler(this.__app);
+      yield _config.handler(this._app());
 
       let duration = Date.now() - start;
 
       _config.logger.info(`Run complete: ${duration}ms`);
 
-      this.__app.events.emit('record', 'run_pass', 'cron', {
+      this._app().events.emit('record', 'run_pass', 'cron', {
         task: this.id,
         duration: duration,
         by: runByUser
       });
 
     } catch (err) {
-      this.__app.events.emit('record', 'run_fail', 'cron', {
+      this._app().events.emit('record', 'run_fail', 'cron', {
         task: this.id,
         err: err.stack,
         by: runByUser
@@ -131,3 +219,4 @@ module.exports = {
     yield this.save();
   },
 };
+
