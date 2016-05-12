@@ -46,7 +46,7 @@ exports.send = function*() {
   let users = yield this.app.models.User.findWithIds(userIds);
 
   if (users.length !== userIds.length) {
-    this.throw('Some users could not be found', 404);
+    this.throw(`${userIds.length - users.length} users could not be found`, 404);
   }
 
   yield this.app.mailer.send({

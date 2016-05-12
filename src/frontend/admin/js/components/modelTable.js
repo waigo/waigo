@@ -183,21 +183,23 @@ module.exports = React.createClass({
         }
         // else if value is an array
         else if (Array.isArray(value)) {
-          // extract sub key
-          if (col.subKey) {
-            value = _.map(value, col.subKey);
-          }
+          value = JSON.stringify(value);
+          // TODO: fix
+          // // extract sub key
+          // if (col.subKey) {
+          //   value = _.map(value, col.subKey);
+          // }
 
-          // construct list
-          value = value.map(function(v) {
-            return (<li key={v}>{v}</li>);
-          });
+          // // construct list
+          // value = value.map(function(v) {
+          //   return (<li key={v}>{v}</li>);
+          // });
 
-          value = (<ul>{value}</ul>);
+          // value = (<ul>{value}</ul>);
 
         }
         // stringify objects
-        else if ('object' === typeof value) {
+        else if ('Object' === col.type || 'object' === typeof value) {
           value = JSON.stringify(value);
         }
 

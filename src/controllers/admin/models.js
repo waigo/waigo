@@ -23,13 +23,24 @@ exports.columns = function*() {
   let model = this.models[modelName],
     schema = model._cfg.schema;
 
+  let pkFound = false;
+
   // return columns as array of objects, each object defining column properties
   let columns = _.map(schema, function(def, name) {
+    pkFound = ('id' === model.pk);
+
     return {
-      type: def.type,
+      type: 'Object', /* for now! */
       name: name,
     };
   });
+
+  if (!pkFound) {
+    columns.push({
+      type: 'String',
+      name: models.pk,
+    });
+  }
 
   yield this.render('/admin/models/columns', {
     columns: columns
@@ -125,12 +136,12 @@ exports.docCreate = function*() {
     this.throw('Cannot create an empty document', 403);
   }
 
+  let model = this.models[modelName];
+
   // don't allow id to be updated
   if (doc.id) {
-    this.throw('Cannot override id', 403);
+    this.throw('Cannot override primary key', 403);
   }
-
-  let model = this.models[modelName];
 
   doc = model.schema.typeify(doc);
 

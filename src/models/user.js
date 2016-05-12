@@ -365,9 +365,11 @@ exports.modelMethods = {
    * @return {User}
    */
   findWithIds: function*(ids) {
-    let ret = yield this.rawQry().getAll(ids, { index: 'id' }).run();
+    let qry = this.rawQry();
 
-    return this.wrapRaw(ret);
+    qry = qry.getAll.apply(qry, ids.concat([{index: 'id'}]));
+
+    return this.wrapRaw(yield qry.run());
   },
   /**
    * Find all admin users.
