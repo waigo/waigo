@@ -40,9 +40,9 @@ exports.columns = function*() {
 
 exports.rows = function*() {
   let modelName = this.request.body.name,
-    filter = JSON.parse(this.request.body.filter),
+    filter = this.request.body.filter,
     excludeIds = JSON.parse(this.request.body.excludeIds),
-    sort = JSON.parse(this.request.body.sort),
+    sort = this.request.body.sort,
     limit = parseInt(this.request.body.perPage),
     page = parseInt(this.request.body.page);
 
@@ -54,40 +54,38 @@ exports.rows = function*() {
     this.throw('Unable to find model', 404);
   }
 
-  const listViewColumns = _.keys(model._cfg.schema);
+  // get count
+  let countQry = model.rawQry();
 
-  // [a,b,c] => {a:1, b:1, c:1}
-  let fieldsToInclude = {};
-  _.each(listViewColumns, function(c) {
-    fieldsToInclude[c] = 1;
-  });
-  fieldsToInclude.id = 1;  // always include id field
+  if (filter && filter.length) {
+    countQry = countQry.filter(new Function('row', filter));
+  }
+  
+  let count = yield countQry.count().run();
 
-  // exclude certain ids?
-  if (excludeIds && excludeIds.length) {
-    filter = {
-      $and: [
-        filter, {
-          id: {
-            $nin: excludeIds.map(function(id) {
-              return id;
-            })
-          }
-        }
-      ]
-    };
+  // get rows
+  let rowsQry = model.rawQry();
+
+  if (filter && filter.length) {
+    rowsQry = rowsQry.filter(new Function('row', filter));
   }
 
-  // get count
-  let count = yield model.count(filter);
+// TODO: excluded ids
+  // if (excludeIds && excludeIds.length) {
+  //   let r = yield model.db;
 
-  // get data
-  let rows = yield model.find(filter, {
-    fields: fieldsToInclude,
-    sort: sort,
-    limit: limit,
-    skip: ((page - 1) * limit),
-  });
+  //   rowsQry = rowsQry.filter(function(row) {
+  //     return r.expr(excludeIds).contains(row('id')).not();
+  //   })
+  // }
+
+  if (sort && sort.length) {
+    rowsQry = rowsQry.orderBy(sort)
+  }
+
+  rowsQry = rowsQry.limit(limit).skip((page - 1) * limit);
+
+  let rows = yield rowsQry.run();
 
   yield this.render('/admin/models/rows', {
     count: count,
@@ -106,7 +104,7 @@ exports.doc = function*() {
   let model = this.models[modelName];
 
   // get data
-  let row = yield model.getById(rowId);
+  let row = yield model.get(rowId);
 
   yield this.render('/admin/models/doc', {
     doc: JSON.stringify(row)
@@ -174,9 +172,7 @@ exports.docUpdate = function*() {
   doc = model.schema.typeify(doc);
 
   // update data
-  yield model.update({
-    id: rowId
-  }, doc);
+  yield model.rawUpdatre(rowId, doc);
 
   // record activity
   this.app.events.emit('record', 'update_doc', this.currentUser, {
@@ -201,9 +197,7 @@ exports.docDelete = function*() {
   let model = this.models[modelName];
 
   // delete data
-  yield model.remove({
-    id: rowId
-  });
+  yield model.rawRemove(rowId);
 
   // record activity
   this.app.events.emit('record', 'delete_doc', this.currentUser, {

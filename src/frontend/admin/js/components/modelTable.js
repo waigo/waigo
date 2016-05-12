@@ -30,8 +30,8 @@ module.exports = React.createClass({
       shouldFetch: true,  // by default fetch
       error: null,
       perPage: 10,
-      filter: {},
-      sort: {},
+      filter: "",
+      sort: "",
       page: 1,
       newFilter: "",
       newSort: "",
@@ -313,9 +313,9 @@ module.exports = React.createClass({
         method: 'POST',
         data: {
           name: self.props.modelName,
-          filter: JSON.stringify(self.state.filter),
+          filter: self.state.filter,
           excludeIds: JSON.stringify(excludeIds),
-          sort: JSON.stringify(self.state.sort),
+          sort: self.state.sort,
           perPage: self.state.perPage,
           page: self.state.page,
         }
