@@ -14,8 +14,7 @@ module.exports = React.createClass({
         <FilterList
           ajaxUrl='/admin/models?format=json'
           ajaxResponseDataMapper={this._mapAjaxData}
-          itemDisplayNameFormatter={this._getItemDisplayName}
-          itemRoute="model" />
+          itemDisplayNameFormatter={this._getItemDisplayName} />
       </div>
     );
   },
@@ -27,6 +26,7 @@ module.exports = React.createClass({
       return {
         key: r,
         name: r,
+        routePath: encodeURIComponent(r),
       };
     });
   },

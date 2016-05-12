@@ -27,7 +27,7 @@ exports.columns = function*() {
   let columns = _.map(schema, function(def, name) {
     return {
       type: def.type,
-      name: c
+      name: name,
     };
   });
 

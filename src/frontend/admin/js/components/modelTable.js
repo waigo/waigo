@@ -33,8 +33,8 @@ module.exports = React.createClass({
       filter: {},
       sort: {},
       page: 1,
-      newFilter: {},
-      newSort: {},
+      newFilter: "",
+      newSort: "",
       newPerPage: 10,
     };
   },

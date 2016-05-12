@@ -360,6 +360,15 @@ exports.modelMethods = {
 
     return this.wrapRaw(_.get(ret, '0'));
   },
+  /** 
+   * Get user by email address or username.
+   * @return {User}
+   */
+  findWithIds: function*(ids) {
+    let ret = yield this.rawQry().getAll(ids, { index: 'id' }).run();
+
+    return this.wrapRaw(ret);
+  },
   /**
    * Find all admin users.
    * @return {Array}

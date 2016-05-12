@@ -14,32 +14,27 @@ var _ = require('lodash'),
 
 module.exports = React.createClass({
   contextTypes: {
-    router: React.PropTypes.func
+    router: React.PropTypes.object,
+    params: React.PropTypes.object,
   },
 
   mixins: [GuardedStateMixin],
 
   getInitialState: function() {
     return {
-      modelName: decodeURIComponent(this.context.router.getCurrentParams().key),
+      modelName: decodeURIComponent(this.context.params.key),
       columns: null,
     };
   },
 
 
   _onRowClick: function(item) {
-    this.context.router.transitionTo('modelRow', {
-      key: this.context.router.getCurrentParams().key,
-      id: item.id
-    });
+    this.context.router.transitionTo(`${this.context.params.key}/${item.id}`);
   },
 
 
   _onAddClick: function() {
-    this.context.router.transitionTo('modelRow', {
-      key: this.context.router.getCurrentParams().key,
-      id: 'new'
-    });
+    this.context.router.transitionTo(`${this.context.params.key}/new`);
   },
 
 

@@ -17,7 +17,7 @@ exports.render = function*() {
 
   this.app.logger.debug('Render email template');
 
-  let user = yield this.app.models.User.getById(userId);
+  let user = yield this.app.models.User.get(userId);
 
   if (!user) {
     this.throw('User not found', 404);
@@ -43,13 +43,7 @@ exports.send = function*() {
 
   this.app.logger.debug('Send email to users', userIds);
 
-  let users = yield this.app.models.User.find({
-    id: {
-      $in: userIds.map(function(v) {
-        return v;
-      })
-    }
-  });
+  let users = yield this.app.models.User.findWithIds(userIds);
 
   if (users.length !== userIds.length) {
     this.throw('Some users could not be found', 404);
