@@ -1,8 +1,7 @@
+import { IndexRoute, Route, Router, hashHistory } from 'react-router';
+
 var React = require('react');
-var Router = require('react-router');
-var DefaultRoute = Router.DefaultRoute;
-var RouteHandler = Router.RouteHandler;
-var Route = Router.Route;
+const ReactDOM = require('react-dom');
 
 var PageRoutes = require('./routes');
 var PageRoute = require('./route');
@@ -10,25 +9,31 @@ var PageRoute = require('./route');
 
 exports.init = function(rootElem) {
 
-  var App = React.createClass({
+  const App = React.createClass({
+    childContextTypes: {
+      location: React.PropTypes.object,
+      params: React.PropTypes.object,
+    },
+
+    getChildContext: function() {
+      return { 
+        location: this.props.location,
+        params: this.props.params,
+      };
+    },
+
     render: function() {
-      return (
-        <RouteHandler {...this.props}/>
-      );
+      return this.props.children;
     }
   });
 
-
-  var routes = (
-    <Route handler={App}>
-      <DefaultRoute name="routes" handler={PageRoutes} />
-      <Route name="route" path=":key" handler={PageRoute} />
-    </Route>
-  );
-
-
-  Router.run(routes, Router.HashLocation, function(Handler, state) {
-    React.render(<Handler routes={state.routes} params={state.params} query={state.query} />, rootElem);
-  });
+  ReactDOM.render((
+    <Router history={hashHistory}>
+      <Route path="/" component={App}>
+        <IndexRoute component={PageRoutes} />
+        <Route path="/:key" component={PageRoute} />
+      </Route>
+    </Router>
+  ), rootElem);
 
 };

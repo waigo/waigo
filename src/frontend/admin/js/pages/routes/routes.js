@@ -1,8 +1,5 @@
 var React = require('react');
 
-var Router = require('react-router'),
-  Link = Router.Link;
-
 var FilterList = require('../../components/filterList'),
   RenderUtils = require('../../utils/renderUtils');
 
@@ -15,8 +12,7 @@ module.exports = React.createClass({
         <FilterList
           ajaxUrl='/admin/routes?format=json'
           ajaxResponseDataMapper={this._mapAjaxData}
-          itemDisplayNameFormatter={this._getItemDisplayName}
-          itemRoute="route" />
+          itemDisplayNameFormatter={this._getItemDisplayName} />
       </div>
     );
   },
@@ -27,6 +23,8 @@ module.exports = React.createClass({
     return (data.routes || []).map(function(r) {
       // GET /example/path  -- >  get/example/path
       r.key = r.method.toLowerCase() + r.url.toLowerCase();
+
+      r.routePath = encodeURIComponent(r.key);
 
       return r;
     });

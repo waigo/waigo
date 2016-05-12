@@ -6,7 +6,7 @@ var _ = require('lodash'),
   Loader = require('./loader'),
   RenderUtils = require('../utils/renderUtils'),
   Collapsible  = require('./collapsible'),
-  JsonEditor  = require('./jsonEditor'),
+  CodeEditor  = require('./codeEditor'),
   Pagination = require('./pagination'),
   SubmitButton = require('./submitButton'),
   GuardedStateMixin = require('../mixins/guardedState');
@@ -124,7 +124,7 @@ module.exports = React.createClass({
           <form onSubmit={this._onSubmitSettingsForm}>
             <div className="filter">
               <label>Filter:</label>
-              <JsonEditor 
+              <CodeEditor 
                 value={this.state.newFilter}
                 onChange={this._onFilterChange}
                 height="100px"
@@ -132,7 +132,7 @@ module.exports = React.createClass({
             </div>
             <div className="filter">
               <label>Sort:</label>
-              <JsonEditor 
+              <CodeEditor 
                 value={this.state.newSort}
                 onChange={this._onSortChange}
                 height="100px"

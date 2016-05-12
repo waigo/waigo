@@ -1,4 +1,5 @@
 var React = require('react');
+const ReactDOM = require('react-dom');
 
 var _ = require('lodash');
 
@@ -72,7 +73,7 @@ exports.init = function(rootElem) {
   });
 
   
-  React.render(<App />, rootElem);
+  ReactDOM.render(<App />, rootElem);
 };
 
 

@@ -21,7 +21,7 @@ module.exports = React.createClass({
     };
   },
   onInput: function() {
-    var currentContent = React.findDOMNode(this.refs.editorDiv).value;
+    var currentContent = this.refs.editorDiv.value;
 
     if (this.props.onChange) {
       this.props.onChange(currentContent);
@@ -56,6 +56,6 @@ module.exports = React.createClass({
     );
   },
   clear: function() {
-    React.findDOMNode(this.refs.editorDiv).value = '';
+    this.refs.editorDiv.value = '';
   }
 });

@@ -4,21 +4,22 @@ var Router = require('react-router');
 
 var Loader = require('../../components/loader'),
   SubmitBtn = require('../../components/submitButton'),
-  JsonEditor  = require('../../components/jsonEditor'),
+  CodeEditor  = require('../../components/codeEditor'),
   CodeView = require('../../components/codeView'),
   RenderUtils = require('../../utils/renderUtils'),
+  Utils = require('../../utils/general'),
   GuardedStateMixin = require('../../mixins/guardedState');
   
 
 module.exports = React.createClass({
   contextTypes: {
-    router: React.PropTypes.func
+    params: React.PropTypes.object
   },
 
   mixins: [GuardedStateMixin],
 
   getInitialState: function() {
-    var key = decodeURIComponent(this.context.router.getCurrentParams().key),
+    var key = decodeURIComponent(this.context.params.key),
       slashPos = key.indexOf('/'),
       method = key.substr(0, slashPos).toUpperCase(),
       url = key.substr(slashPos);
@@ -26,9 +27,8 @@ module.exports = React.createClass({
     return {
       url: url,
       method: method,
-      reqQuery: {},
-      reqBody: {},
-      canSubmit: true,
+      reqQuery: "{}",
+      reqBody: "{}",
     };
   },
 
@@ -37,8 +37,8 @@ module.exports = React.createClass({
 
     var self = this;
 
-    var qryStr = $.param(this.state.reqQuery),
-      body = this.state.reqBody;
+    var qryStr = this.state.reqQuery.length ? $.param(JSON.parse(this.state.reqQuery)) : {};
+    var body = this.state.reqBody.length ? JSON.parse(this.state.reqBody) : {};
 
     this.setState({
       result: null,
@@ -112,43 +112,38 @@ module.exports = React.createClass({
 
 
   _onQueryStringChange: function(val) {
-    try {
-      this.setState({
-        reqQuery: val.length ? JSON.parse(val) : {},
-        canSubmit: true,
-      });      
-    } catch (err) {
-      this.setState({
-        reqQuery: {},
-        canSubmit: false
-      });
-    }
+    this.setState({
+      reqQuery: val.length ? val : "{}",
+    });      
   },
 
 
   _onBodyChange: function(val) {
-    try {
-      this.setState({
-        reqBody: val.length ? JSON.parse(val) : {},
-        canSubmit: true,
-      });      
-    } catch (err) {
-      this.setState({
-        reqBody: {},
-        canSubmit: false
-      });
-    }
+    this.setState({
+      reqBody: val.length ? val : "{}",
+    });      
   },
 
 
 
   _buildRequestForm: function() {
+    let canSubmit = true;
+
     var body = '';
     if ('POST' === this.state.method || 'PUT' === this.state.method) {
+      var bodyStatus;
+
+      if (!Utils.isValidJSON(this.state.reqBody)) {
+        bodyStatus = <span className="invalid">Invalid, please fix!</span>;
+        canSubmit = false;
+      } else {
+        bodyStatus = null;
+      }
+      
       body = (
         <div className="form-group">
-          <label>Form body (JSON)</label>
-          <JsonEditor 
+          <label>Form body (JSON): <strong>{bodyStatus}</strong></label>
+          <CodeEditor 
             onChange={this._onBodyChange}
             value={this.state.reqBody} 
             height="300px" />
@@ -156,27 +151,32 @@ module.exports = React.createClass({
       );
     }
 
-    var urlQryStr = $.param(this.state.reqQuery);
+    var urlQryStr;
+
+    if (!Utils.isValidJSON(this.state.reqQuery)) {
+      urlQryStr = <span className="invalid">Invalid, please fix!</span>;
+      canSubmit = false;
+    } else {
+      urlQryStr = $.param(JSON.parse(this.state.reqQuery));
+    }
 
     return (
       <form onSubmit={this.onSubmit}>
         <div className="form-group">
           <label>Query string (JSON): <strong>{urlQryStr}</strong></label>
-          <JsonEditor 
+          <CodeEditor 
             onChange={this._onQueryStringChange}
             height="100px"
             value={this.state.reqQuery} />
         </div>
-        {{body}}
-        <SubmitBtn label="Run" disabled={!this.state.canSubmit} />
+        {body}
+        <SubmitBtn label="Run" disabled={!canSubmit} />
       </form>
     );
   },
 
 
   render: function() {
-    var error = (this.state.error ? <div className="error">{this.state.error}</div> : '');
-
     return (
       <div className="page-route">
         <h2>{this.state.method} {this.state.url}</h2>

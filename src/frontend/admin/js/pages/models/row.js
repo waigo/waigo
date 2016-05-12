@@ -4,7 +4,7 @@ var Link = Router.Link;
 
 var Loader = require('../../components/loader'),
   Button = require('../../components/button'),
-  JsonEditor  = require('../../components/jsonEditor'),
+  CodeEditor  = require('../../components/codeEditor'),
   Modal = require('../../components/modal'),
   RenderUtils = require('../../utils/renderUtils'),
   GuardedStateMixin = require('../../mixins/guardedState');
@@ -33,7 +33,7 @@ module.exports = React.createClass({
     return (
       <div className="page-modelRow">
         <h2 className="title">
-          <Link to="model" params={{key: this.state.modelName}}>
+          <Link to={`/${this.state.modelName}`}>
             {this.state.modelName}
           </Link>
           <span> / {this.state.id}</span>
@@ -70,7 +70,7 @@ module.exports = React.createClass({
     
     return (
       <div>
-        <JsonEditor 
+        <codeEditor 
           onChange={this._onDataChange}
           value={json}
           height="400px" 

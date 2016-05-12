@@ -1733,10 +1733,14 @@ main.container {
   display: inline-block;
   margin: 0 0.5em;
 }
-.json-editor {
+.code-editor {
   border: 1px solid #ccc;
   font-family: monospace;
   font-weight: normal;
+}
+.code-editor .ReactCodeMirror,
+.code-editor .CodeMirror {
+  height: 100%;
 }
 .model-table .model-filters .filter {
   display: inline-block;
@@ -1778,6 +1782,9 @@ main#admin_container #admin_content .page-routes .collection-item a span.method 
 }
 main#admin_container #admin_content .page-routes .collection-item a span.url {
   display: inline-block;
+}
+main#admin_container #admin_content .page-route .invalid {
+  color: #f00;
 }
 main#admin_container #admin_content .page-route .result {
   margin-top: 2em;

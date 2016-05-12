@@ -17,7 +17,7 @@ module.exports = React.createClass({
 
   componentDidMount: function() {
     Prism.highlightElement(
-      React.findDOMNode(this.refs.code)
+      this.refs.code
     );
   },
 

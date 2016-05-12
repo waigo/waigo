@@ -56,13 +56,13 @@ module.exports = React.createClass({
 
 
   open: function() {
-    $(React.findDOMNode(this.refs.modalElem)).openModal({
+    $(this.refs.modalElem).openModal({
       open: this.props.onOpen
     });
   },
 
   close: function() {
-    $(React.findDOMNode(this.refs.modalElem)).closeModal();
+    $(this.refs.modalElem).closeModal();
   }
 
 });

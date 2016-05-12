@@ -21,20 +21,14 @@ exports.columns = function*() {
 
   // iterate through schema
   let model = this.models[modelName],
-    schema = model.getAdminListViewColumns(),
-    listViewColumns = _.get(model, 'admin.listView', []);
+    schema = model._cfg.schema;
 
   // return columns as array of objects, each object defining column properties
-  let columns = listViewColumns.map(function(c) {
-    if (!c.name) {
-      c = {
-        name: c
-      };
-    }
-
-    c.type = _.get(schema[c.name], 'type', String);
-
-    return c;
+  let columns = _.map(schema, function(def, name) {
+    return {
+      type: def.type,
+      name: c
+    };
   });
 
   yield this.render('/admin/models/columns', {
@@ -54,19 +48,18 @@ exports.rows = function*() {
 
   this.logger.debug('get rows', modelName);
 
-  let model = this.models[modelName],
-    listViewColumns = _.get(model, 'admin.listView');
+  let model = this.models[modelName];
 
   if (!model) {
     this.throw('Unable to find model', 404);
   }
 
+  const listViewColumns = _.keys(model._cfg.schema);
+
   // [a,b,c] => {a:1, b:1, c:1}
   let fieldsToInclude = {};
   _.each(listViewColumns, function(c) {
-    let name = c.name || c;
-
-    fieldsToInclude[name] = 1;
+    fieldsToInclude[c] = 1;
   });
   fieldsToInclude.id = 1;  // always include id field
 

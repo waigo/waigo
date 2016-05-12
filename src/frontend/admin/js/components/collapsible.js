@@ -46,7 +46,7 @@ module.exports = React.createClass({
 
   componentDidUpdate: function() {
     if (!this.state.initialised) {
-      $(React.findDOMNode(this.refs.collapsible)).collapsible();
+      $(this.refs.collapsible).collapsible();
 
       this.setState({
         initialised: true

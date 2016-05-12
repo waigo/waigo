@@ -38,7 +38,7 @@ module.exports = React.createClass({
     var itemDisplay = this.props.itemDisplayNameFormatter(item);
 
     return (
-      <Link to={this.props.itemRoute} params={rParams} className="item">
+      <Link to={item.routePath} className="item">
         {itemDisplay}
       </Link>
     );

@@ -45,7 +45,7 @@ module.exports = {
           }
         }
       } else {
-        lines = (<strong>{err}</strong>);
+        lines.push(<strong>{err}</strong>);
       }
 
       return(

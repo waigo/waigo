@@ -218,7 +218,7 @@ module.exports = React.createClass({
 
         // clear inputs
         self.refs.body.clear();
-        React.findDOMNode(self.refs.subject).value = '';
+        self.refs.subject.value = '';
 
         self.setStateIfMounted({
           subject: '',

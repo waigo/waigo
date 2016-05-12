@@ -57,6 +57,7 @@
     "chai": "~1.8.1",
     "chai-as-promised": "~4.1.1",
     "clockmaker": "^2.0.0",
+    "codemirror": "^5.14.2",
     "coffee-script": "^1.9.2",
     "event-stream": "^3.3.0",
     "font-awesome-stylus": "^1.2.0",
@@ -77,8 +78,10 @@
     "mocha": "~1.14.0",
     "nib": "^1.1.0",
     "pagination": "git://github.com/hiddentao/pagination.git",
-    "react": "^0.13.1",
-    "react-router": "git://github.com/rackt/react-router.git#0abb852520ea26b6a57198d8e7c4fbdf3baa7a90",
+    "react": "^15.0.2",
+    "react-codemirror": "^0.2.6",
+    "react-dom": "^15.0.2",
+    "react-router": "^2.4.0",
     "reactify": "~1.1.1",
     "request": "~2.27.0",
     "rimraf": "~2.2.6",
@@ -98,7 +101,7 @@
     ]
   },
   "browser": {
-    "react-router": "./node_modules/react-router/lib/umd/ReactRouter.js",
+    "react-router": "./node_modules/react-router/umd/ReactRouter.js",
     "prism": "./public/lib/prism/prism.js"
   },
   "keywords": [

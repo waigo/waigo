@@ -66,7 +66,7 @@ module.exports = React.createClass({
       <div className="page-model">
         <Button icon="plus-circle" label="Add" className="add-button" onClick={this._onAddClick} />
         <h2>
-          <Link to="models">Collection</Link>
+          <Link to="/">Collection</Link>
           <span> / {this.state.modelName}</span>
         </h2>
         {result}

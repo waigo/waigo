@@ -16,6 +16,7 @@ module.exports = (params) ->
       .pipe gulpIf(options.minifiedBuild, minifyCss())
       .pipe gulp.dest(outputDir)
 
+  _process()
+
   if options.watchForChanges and globWatch
     gulp.watch watchGlob, _process
-

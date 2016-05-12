@@ -1,3 +1,6 @@
+runSequence = require 'run-sequence'
+
 module.exports = (paths, options = {}) ->
-  deps: ['dev-frontend', 'dev-server']
+  handler: (cb) ->
+    runSequence 'dev-frontend', 'dev-server', cb
 

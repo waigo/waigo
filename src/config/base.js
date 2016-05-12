@@ -244,8 +244,6 @@ module.exports = function(config) {
       path: '/admin/routes',
       canAccess: 'admin',
     },
-/*    
-TEMPORARILY DISABLED WHILST WE FIX THINGS FOR RETHINKDB
     {
       label: 'Data',
       path: '/admin/models',
@@ -256,7 +254,6 @@ TEMPORARILY DISABLED WHILST WE FIX THINGS FOR RETHINKDB
       path: '/admin/emails',
       canAccess: 'admin',
     },
-*/    
     {
       label: 'Cron tasks',
       path: '/admin/cron',
