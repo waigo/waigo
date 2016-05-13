@@ -93,7 +93,7 @@ html {
   font-size: 16px;
 }
 body {
-  font-family: 'Roboto', Arial, Verdana, sans-serif;
+  font-family: Arial, Verdana, sans-serif;
   background-color: #fff;
   color: #000;
 }
@@ -119,6 +119,10 @@ ul li {
 }
 main.container {
   padding: 0 1em 1em;
+}
+main.container .logged_in {
+  font-style: italic;
+  font-weight: bold;
 }
 form {
   margin: 1em 0;

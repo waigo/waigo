@@ -233,33 +233,6 @@ module.exports = function(config) {
   };
 
 
-  // admin menu
-  config.adminMenu = [
-    {
-      label: 'Dashboard',
-      path: '/admin',
-    },
-    {
-      label: 'Routes',
-      path: '/admin/routes',
-      canAccess: 'admin',
-    },
-    {
-      label: 'Data',
-      path: '/admin/models',
-      canAccess: 'admin',
-    },
-    {
-      label: 'Send email',
-      path: '/admin/emails',
-      canAccess: 'admin',
-    },
-    {
-      label: 'Cron tasks',
-      path: '/admin/cron',
-      canAccess: 'admin',
-    },
-  ];
 
 
   /**

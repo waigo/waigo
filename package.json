@@ -51,16 +51,13 @@
     "validator": "^5.0.0"
   },
   "devDependencies": {
-    "babelify": "~6.3.0",
     "bluebird": "~2.9.25",
     "browserify": "~11.0.1",
     "chai": "~1.8.1",
     "chai-as-promised": "~4.1.1",
     "clockmaker": "^2.0.0",
-    "codemirror": "^5.14.2",
     "coffee-script": "^1.9.2",
     "event-stream": "^3.3.0",
-    "font-awesome-stylus": "^1.2.0",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^2.1.0",
     "gulp-concat": "^2.4.3",
@@ -73,16 +70,9 @@
     "gulp-stylus": "^2.0.0",
     "gulp-uglify": "^1.1.0",
     "gulp-util": "^3.0.4",
-    "jshint": "~2.5.1",
     "mkdirp": "~0.3.5",
     "mocha": "~1.14.0",
     "nib": "^1.1.0",
-    "pagination": "git://github.com/hiddentao/pagination.git",
-    "react": "^15.0.2",
-    "react-codemirror": "^0.2.6",
-    "react-dom": "^15.0.2",
-    "react-router": "^2.4.0",
-    "reactify": "~1.1.1",
     "request": "~2.27.0",
     "rimraf": "~2.2.6",
     "run-sequence": "~1.1.2",
@@ -93,16 +83,6 @@
     "waigo-test-utils": "git://github.com/waigo/test-utils.git",
     "watchify": "~3.4.0",
     "yargs": "^3.4.4"
-  },
-  "browserify": {
-    "transform": [
-      "babelify",
-      "reactify"
-    ]
-  },
-  "browser": {
-    "react-router": "./node_modules/react-router/umd/ReactRouter.js",
-    "prism": "./public/lib/prism/prism.js"
   },
   "keywords": [
     "reactive",

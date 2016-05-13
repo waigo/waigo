@@ -13,9 +13,14 @@ block main_content
 
       Replace this page by creating a template: `views/index.jade`.
 
-    ul
-      li
-        a(href="/admin") Goto Admin dashboard
-      li
-        a(href="http://waigojs.com") Read documentation
+    if currentUser
+      p.logged_in You are logged in as: #{currentUser.username}
+      a(href="/user/logout") Logout
+    else
+      p 
+        a(href="/user/login") Login
+      p 
+        a(href="/user/register") Register
+
+
 
