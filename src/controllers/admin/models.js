@@ -23,22 +23,45 @@ exports.columns = function*() {
   let model = this.models[modelName],
     schema = model._cfg.schema;
 
+  let columns = [];
+
   let pkFound = false;
 
-  // return columns as array of objects, each object defining column properties
-  let columns = _.map(schema, function(def, name) {
-    pkFound = ('id' === model.pk);
+  _.each(schema, (def, name) => {
+    pkFound = (model.pk === name);
 
-    return {
-      type: 'Object', /* for now! */
-      name: name,
-    };
+    if (!_.get(def, 'adminViewOptions.hide')) {
+      let type = def.type;
+
+      switch (def.type) {
+        case String:
+        case Boolean:
+        case Date:
+        case Number:
+        case Object:
+        case Array:
+          break;
+        default:
+          if (def.type instanceof Array) {
+            type = Array;
+          } else {
+            type = Object;
+          }
+          break;
+      }
+
+      columns.push({
+        type: type,
+        name: name,
+        options: def.adminViewOptions,
+      });
+    }
   });
 
   if (!pkFound) {
-    columns.push({
+    columns.unshift({
       type: 'String',
-      name: models.pk,
+      name: model.pk,
     });
   }
 
@@ -143,7 +166,9 @@ exports.docCreate = function*() {
     this.throw('Cannot override primary key', 403);
   }
 
-  doc = model.schema.typeify(doc);
+  doc = model.schema.typeify(doc, {
+    limitTypes: [Date]
+  });
 
   // update data
   let newDoc = yield model.insert(doc);
@@ -180,10 +205,12 @@ exports.docUpdate = function*() {
 
   let model = this.models[modelName];
 
-  doc = model.schema.typeify(doc);
+  doc = model.schema.typeify(doc, {
+    limitTypes: [Date]
+  });
 
   // update data
-  yield model.rawUpdatre(rowId, doc);
+  yield model.rawUpdate(rowId, doc);
 
   // record activity
   this.app.events.emit('record', 'update_doc', this.currentUser, {

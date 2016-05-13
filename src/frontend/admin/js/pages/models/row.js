@@ -4,7 +4,7 @@ var Link = Router.Link;
 
 var Loader = require('../../components/loader'),
   Button = require('../../components/button'),
-  CodeEditor  = require('../../components/codeEditor'),
+  CodeEditor = require('../../components/codeEditor'),
   Modal = require('../../components/modal'),
   RenderUtils = require('../../utils/renderUtils'),
   GuardedStateMixin = require('../../mixins/guardedState');
@@ -12,18 +12,20 @@ var Loader = require('../../components/loader'),
 
 module.exports = React.createClass({
   contextTypes: {
-    router: React.PropTypes.func
+    params: React.PropTypes.object,
+    router: React.PropTypes.object,
   },
 
   mixins: [GuardedStateMixin],
 
   getInitialState: function() {
-    var params = this.context.router.getCurrentParams();
+    var params = this.context.params;
 
     return {
-      modelName: decodeURIComponent(params.key),
-      id: decodeURIComponent(params.id),
+      modelName: params.key,
+      id: params.id,
       error: null,
+      jsonStr: "{}",
     };
   },
 
@@ -55,7 +57,7 @@ module.exports = React.createClass({
       return (<Loader text="Loading data" />);
     }
 
-    var json = this.state.jsonStr ? JSON.parse(this.state.jsonStr): null;
+    var json = this.state.jsonStr;
 
     var deleteButton = null,
       saveBtnLabel = 'Create';
@@ -70,7 +72,7 @@ module.exports = React.createClass({
     
     return (
       <div>
-        <codeEditor 
+        <CodeEditor 
           onChange={this._onDataChange}
           value={json}
           height="400px" 
@@ -118,7 +120,7 @@ module.exports = React.createClass({
     // if creating a new item then no need to fetch data to start with
     if ('new' === this.state.id) {
       return this.setState({
-        jsonStr: {}
+        jsonStr: "{}"
       });
     }
 
@@ -137,7 +139,7 @@ module.exports = React.createClass({
         delete doc.id;
 
         self.setStateIfMounted({
-          jsonStr: JSON.stringify(doc)
+          jsonStr: JSON.stringify(doc, null, 2)
         });
       })
       .fail(function(xhr) {
@@ -249,8 +251,8 @@ module.exports = React.createClass({
       .then(function() {
         Materialize.toast('Delete successful', 2000, 'rounded');
 
-        self.context.router.transitionTo('model', {
-          key: self.context.router.getCurrentParams().key,
+        self.context.router.push({
+          pathname: self.context.params.key,
         });
       })
       .fail(function(xhr) {

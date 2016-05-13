@@ -42,10 +42,16 @@ exports.schema = {
   emails: { 
     type: [EmailSchema],
     required: true,
+    adminViewOptions: {
+      viewSubKey: 'email'
+    },
   },
   auth: { 
     type: [AuthSchema], 
     required: true,
+    adminViewOptions: {
+      viewSubKey: 'type'
+    },
   },
   roles: { 
     type: [String], 
@@ -469,4 +475,8 @@ exports.modelMethods = {
     return yield this.get(userId);
   },
 };
+
+
+
+
 

@@ -38,6 +38,9 @@ exports.schema = {
   // additional details
   details: {
     type: Object,
+    adminViewOptions: {
+      hide: true,
+    },
   },
 };
 

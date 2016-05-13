@@ -29,12 +29,16 @@ module.exports = React.createClass({
 
 
   _onRowClick: function(item) {
-    this.context.router.transitionTo(`${this.context.params.key}/${item.id}`);
+    this.context.router.push({
+      pathname: `${this.context.params.key}/${item.id}`,
+    });
   },
 
 
   _onAddClick: function() {
-    this.context.router.transitionTo(`${this.context.params.key}/new`);
+    this.context.router.push({
+      pathname: `${this.context.params.key}/new`,
+    });
   },
 
 

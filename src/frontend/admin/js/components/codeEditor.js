@@ -48,7 +48,7 @@ module.exports = React.createClass({
           onChange={this.props.onChange} 
           options={{
             mode: this.props.language,
-            lineNumbers: true,
+            lineNumbers: false,
             tabSize: 2,
             indentUnit: 2,
             smartIndent: true,

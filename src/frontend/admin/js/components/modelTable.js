@@ -29,10 +29,10 @@ module.exports = React.createClass({
       loading: true, 
       shouldFetch: true,  // by default fetch
       error: null,
-      perPage: 10,
+      page: 1,
       filter: "",
       sort: "",
-      page: 1,
+      perPage: 10,
       newFilter: "",
       newSort: "",
       newPerPage: 10,
@@ -79,34 +79,21 @@ module.exports = React.createClass({
   },
 
   _onFilterChange: function(val) {
-    try {
-      this.setState({
-        newFilter: JSON.parse(val)
-      });
-    } catch (err) {
-      this.setState({
-        newFilter: null
-      });
-    }
+    this.setState({
+      newFilter: val,
+    });
   },
 
   _onSortChange: function(val) {
-    try {
-      this.setState({
-        newSort: JSON.parse(val),
-      });
-    } catch (err) {
-      this.setState({
-        newSort: null
-      });
-    }
+    this.setState({
+      newSort: val,
+    });
   },
 
   _canSubmitSettingsForm: function() {
     return (null !== this.state.newFilter 
       && null !== this.state.newSort
-      && null !== this.state.newPerPage
-      );
+      && null !== this.state.newPerPage);
   },
 
   _buildTableFilter: function() {
@@ -181,26 +168,21 @@ module.exports = React.createClass({
         else if ('Boolean' === col.type) {
           value = '' + false;
         }
-        // else if value is an array
-        else if (Array.isArray(value)) {
-          value = JSON.stringify(value);
-          // TODO: fix
-          // // extract sub key
-          // if (col.subKey) {
-          //   value = _.map(value, col.subKey);
-          // }
+        // arrays
+        else if ('Array' === col.type) {
+          let viewSubKey = _.get(col, 'options.viewSubKey');
 
-          // // construct list
-          // value = value.map(function(v) {
-          //   return (<li key={v}>{v}</li>);
-          // });
+          if (viewSubKey) {
+            value = _.map(value, (v, idx) => 
+              (<li key={idx}>{v[viewSubKey]}</li>)
+            );
+          }
 
-          // value = (<ul>{value}</ul>);
-
+          value = <ul>{value}</ul>;          
         }
-        // stringify objects
+        // objects
         else if ('Object' === col.type || 'object' === typeof value) {
-          value = JSON.stringify(value);
+          value = <pre>{JSON.stringify(value, null, 2)}</pre>;
         }
 
         return (<td key={col.name} dataFlipValue={flipValue}>{value}</td>);
