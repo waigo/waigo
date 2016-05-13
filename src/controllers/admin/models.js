@@ -104,15 +104,6 @@ exports.rows = function*() {
     rowsQry = rowsQry.filter(new Function('row', filter));
   }
 
-// TODO: excluded ids
-  // if (excludeIds && excludeIds.length) {
-  //   let r = yield model.db;
-
-  //   rowsQry = rowsQry.filter(function(row) {
-  //     return r.expr(excludeIds).contains(row('id')).not();
-  //   })
-  // }
-
   if (sort && sort.length) {
     rowsQry = rowsQry.orderBy(sort)
   }
@@ -120,6 +111,12 @@ exports.rows = function*() {
   rowsQry = rowsQry.limit(limit).skip((page - 1) * limit);
 
   let rows = yield rowsQry.run();
+
+  if (excludeIds && excludeIds.length) {
+    rows = _.filter(rows, (row) => {
+      return !_.includes(excludeIds, row.id);
+    });
+  }
 
   yield this.render('/admin/models/rows', {
     count: count,
