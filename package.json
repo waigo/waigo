@@ -44,7 +44,6 @@
     "rethinkdbdash": "^2.3.2",
     "semver": "^5.1.0",
     "shelljs": "^0.3.0",
-    "simple-mongo-schema": "^0.8.1",
     "slack-node": "^0.2.0",
     "thinodium": "^1.1.2",
     "thinodium-rethinkdb": "^1.1.1",
