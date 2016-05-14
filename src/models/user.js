@@ -361,7 +361,7 @@ exports.modelMethods = {
    */
   getByEmailOrUsername: function*(str) {
     let ret = yield this.rawQry().filter(function(user) {
-      return user('emails')('email').eq(str).or(user('username').eq(str));
+      return user('emails')('email')(0).eq(str).or(user('username').eq(str));
     }).run();
 
     return this.wrapRaw(_.get(ret, '0'));

@@ -118,7 +118,7 @@ class ActionTokens {
       _throw('This action token has expired.', 403);
     }
 
-    var user = yield this.app.models.User.getById(userId);
+    var user = yield this.app.models.User.get(userId);
 
     if (!user) {
       _throw('Unable to find user information related to action token', 404);

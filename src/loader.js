@@ -199,7 +199,25 @@ loader.init = function*(options) {
   };
 
   _.each(options.plugins.names, function(name) {
-    sourcePaths[name] = path.join( path.dirname(require.resolve(name)), 'src' );
+    let fullPath;
+
+    try {
+      fullPath = path.dirname(require.resolve(name));
+    } catch (err) {
+      if (process.env.PLUGIN_SEARCH_FOLDER) {
+        fullPath = path.join(process.env.PLUGIN_SEARCH_FOLDER, name);
+
+        let stat = fs.statSync(fullPath);
+
+        if (!stat.isDirectory()) {
+          throw err;
+        }
+      } else {
+        throw err;
+      }
+    }
+
+    sourcePaths[name] = path.join(fullPath, 'src');
   });
 
   let scanOrder = ['waigo'].concat(options.plugins.names, 'app');
@@ -443,3 +461,4 @@ loader.getAppFolder = function() {
 
 
 
+ 
