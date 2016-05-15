@@ -8,10 +8,9 @@ block main_content
   #home
     h1 Welcome!
 
-    :markdown
-      Your new Waigo app is running correctly!
+    p Your new Waigo app is running correctly!
 
-      Replace this page by creating a template: `views/index.jade`.
+    p Replace this page by creating a template: `views/index.pug`.
 
     if currentUser
       p.logged_in You are logged in as: #{currentUser.username}

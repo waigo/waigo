@@ -204,12 +204,12 @@ module.exports = function(config) {
       formats: {
         html: {
           // Default view template filename extension when not explicitly provided. */
-          ext: 'jade',
+          ext: 'pug',
           // Whether compiled templates should be cached in memory (not all template engines honour this)
           cache: false,
           // Map file extension to rendering engine
           engine: {
-            'jade': 'jade'
+            'pug': 'pug',
           }
         },
         json: {}

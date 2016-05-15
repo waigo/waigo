@@ -15,7 +15,7 @@ block main_content
     pre #{stack.join("\n")}
 
     if !_.isEmpty(details)
-      - each data, key in details
+      each data, key in details
         strong #{key}:
         pre= data
 

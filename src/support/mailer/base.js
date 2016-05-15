@@ -45,7 +45,7 @@ class Mailer {
     this.logger.debug('Rendering template ' + templateName);
 
     let templatePath = 
-      path.dirname( waigo.getPath(`emails/${templateName}/html.jade`) );
+      path.dirname( waigo.getPath(`emails/${templateName}/html.pug`) );
 
     let emailTemplate = new EmailTemplate(templatePath);
 

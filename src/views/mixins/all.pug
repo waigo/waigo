@@ -22,16 +22,16 @@ mixin form(form, error)
           if error.details
             ul
               if 'FormValidationError' === error.type
-                - each fieldErrors, fieldName in error.details
-                  - each fieldError in fieldErrors
+                each fieldErrors, fieldName in error.details
+                  each fieldError in fieldErrors
                     li #{form.fields[fieldName].label || fieldName}: #{fieldError}
               else
-                - each detail in error.details
+                each detail in error.details
                   li #{ detail }
         if !_.isEmpty(error.stack)
           pre #{error.stack}
       .fields
-        - each fieldName in form.order
+        each fieldName in form.order
           - var field = form.fields[fieldName]
           - var fieldErrors = _.get(error, 'details.' + fieldName, [])
           - var value = field.value || ''
@@ -40,7 +40,7 @@ mixin form(form, error)
             .row
               .input-field.col.m6.s12
                 label #{field.label}
-                - each errorMsg in fieldErrors
+                each errorMsg in fieldErrors
                   +msg('error', errorMsg, { compact: true })
                 input(name=field.name, type=field.type, value=value)
           else if (field.type == 'hidden')

@@ -36,7 +36,7 @@ test['html'] = {
           folder: 'views', 
           ext: 'js',
           engine: {
-            'js': 'jade'
+            'js': 'pug'
           }
         };
       })

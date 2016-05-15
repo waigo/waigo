@@ -68,7 +68,7 @@ test['init command'] = {
           path.join(dataFolder, 'start-app.js'), 'start-app.js'
         );
         copyFileSpy.should.have.been.calledWithExactly(
-          path.join(dataFolder, 'index.jade'), 'src/views/index.jade'
+          path.join(dataFolder, 'index.pug'), 'src/views/index.pug'
         );
         copyFileSpy.should.have.been.calledWithExactly(
           path.join(dataFolder, 'main.controller.js'), 'src/controllers/main.js'

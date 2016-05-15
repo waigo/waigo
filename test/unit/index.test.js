@@ -20,3 +20,5 @@ test['exports lodash'] = function() {
   testUtils.waigo._.should.eql(_);
 };
 
+
+test['bootstrap']

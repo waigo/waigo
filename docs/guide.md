@@ -59,7 +59,7 @@ $ waigo init
 [waigo-cli] NPM install co
 ... 
 [waigo-cli] Creating: start-app.js
-[waigo-cli] Creating: src/views/index.jade
+[waigo-cli] Creating: src/views/index.pug
 ```
 
 You can now start your application by running:
@@ -1131,8 +1131,8 @@ exports.index = function*(next) {
 };
 ```
 
-When this gets executed Waigo will look for and load `<app folder>/views/index.jade`, 
-pass it to the [Jade](jade-lang.com) template engine for rendering, and pass 
+When this gets executed Waigo will look for and load `<app folder>/views/index.pug`, 
+pass it to the [Pug](jade-lang.com) template engine for rendering, and pass 
 the result to the client.
 
 However, if the incoming request has the `format` query parameter set to 'json' 
@@ -1168,10 +1168,10 @@ module.exports = function(config) {
         // Folder relative to application root folder, in which to look for view templates.
         folder: 'views',
         // Default view template filename extension when not explicitly provided.
-        ext: 'jade'
+        ext: 'pug'
         // Map file extension to rendering engine
         engine: {
-          'jade': 'jade'
+          'pug': 'pug'
         }
       },
       json: {}
@@ -1398,7 +1398,7 @@ module.exports = function(config) {
 
 Within your Jade template the `prettyDate` function would now be available:
 
-```jade
+```pug
 #{ prettyDate(mydate) }
 ```
 
