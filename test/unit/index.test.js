@@ -21,4 +21,4 @@ test['exports lodash'] = function() {
 };
 
 
-test['bootstrap']
+test['bootstrap'] = 
