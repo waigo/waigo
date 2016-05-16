@@ -1,16 +1,17 @@
-var Q = require('bluebird');
+"use strict";
 
-waigo = require('../src');
+const testUtils = require('waigo-test-utils');
+
+const waigo = require('../src');
 
 module.exports = function(_module) {
-  var _testUtils = require('waigo-test-utils')(_module);
-  _testUtils.utils.waigo = waigo;
-
-  waigo.initAsync = Q.coroutine(function*(){
-    return yield* waigo.init({
-      appFolder: _testUtils.utils.appFolder
-    });
+  return testUtils.create(_module, {
+    extraDataAndMethods: {
+      initWaigo: function*() {
+        yield waigo.init({
+          appFolder: this.appFolder,
+        });
+      }
+    }
   });
-
-  return _testUtils;
 };

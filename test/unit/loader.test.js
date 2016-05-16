@@ -1,17 +1,12 @@
-var _ = require('lodash'),
+"use strict";
+
+const _ = require('lodash'),
   path = require('path'),
   Q = require('bluebird');
 
 
-
-var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
-  test = _testUtils.test,
-  testUtils = _testUtils.utils,
-  assert = testUtils.assert,
-  expect = testUtils.expect,
-  should = testUtils.should,
-  waigo = testUtils.waigo;
-
+const test = require(path.join(process.cwd(), 'test', '_base'))(module);
+const waigo = global.waigo;
 
 // waigo = waigo.load('loader') but we do this just to make sure the loader can load itself
 var loader = require('../../src/loader');
@@ -29,7 +24,7 @@ test['app folder'] = {
 
 test['waigo folder'] = {
   'get': function() {
-    expectedFolder = path.join(__dirname + '/../../', 'src');
+    expectedFolder = path.join(__dirname, '..', '..', 'src');
     loader.getWaigoFolder().should.eql(expectedFolder);
   }
 };
