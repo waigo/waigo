@@ -340,13 +340,13 @@ test['init()'] = {
 
 
 
-test['load()'] = {
+test['getPath()'] = {
   beforeEach: function() {
     loader.reset();
   },
   'fails if not initialised': function*(){
     this.expect(() => {
-      loader.load();
+      loader.getPath();
     }).to.throw('Please initialise Waigo first');
   },
   'once inititialised': {
@@ -369,37 +369,127 @@ test['load()'] = {
       this.deleteTestFolders();
     },
     'app overrides core': function() {
-      loader.load('support/errors').should.eql('app');
+      loader.getPath('support/errors').should.eql(
+        path.resolve(this.appFolder + '/support/errors.js')
+      );
     },
     'load core version': function() {
-      loader.load('waigo:support/lodashMixins').should.eql(require(path.resolve(__dirname + '/../../src/support/lodashMixins.js')));
+      loader.getPath('waigo:support/lodashMixins').should.eql(
+        path.resolve(__dirname + '/../../src/support/lodashMixins.js')
+      );
     },
     'not in app - core fallback': function() {
-      loader.load('routes/index').should.eql(require(path.resolve(__dirname + '/../../src/routes/index')));
+      loader.getPath('routes/index').should.eql(
+        path.resolve(__dirname + '/../../src/routes/index.js')
+      );
     },
     'load plugin version': function() {
-      loader.load('waigo-plugin-1_TESTPLUGIN:support/errors').should.eql('waigo-plugin-1_TESTPLUGIN');
+      loader.getPath('waigo-plugin-1_TESTPLUGIN:support/errors').should.eql(
+        path.resolve(this.pluginsFolder + '/waigo-plugin-1_TESTPLUGIN/src/support/errors.js')
+      );
     },
     'app overrides plugin': function() {
-      loader.load('support/appoverride').should.eql('app');
+      loader.getPath('support/appoverride').should.eql(
+        path.resolve(this.appFolder + '/support/appoverride.js')
+      );
     },
     'not in app - plugin fallback': function() {
-      loader.load('support/onlyme').should.eql('waigo-plugin-2_TESTPLUGIN');
+      loader.getPath('support/onlyme').should.eql(
+        path.resolve(this.pluginsFolder + '/waigo-plugin-2_TESTPLUGIN/src/support/onlyme.js')
+      );
     },
-    'module not found': function() {
+    'file not found': function() {
       this.expect(function() {
-        loader.load(':support/errors34');        
+        loader.getPath(':support/errors34');        
       }).to.throw('File not found: support/errors34');
     },
-    'module source missing': function() {
-      loader.load('support/errors').should.eql('app');
-    },
-    'module source not found': function() {
+    'file source not found': function() {
       this.expect(function() {
-        loader.load('random2:support/errors');        
+        loader.getPath('random2:support/errors');        
       }).to.throw('File source not found: random2');
     },
   },
+};
+
+
+test['load()'] = {
+  beforeEach: function*() {
+    loader.reset();
+
+    this.deleteTestFolders();
+    this.createTestFolders();
+    this.createAppModules(['support/errors']);
+  },
+  'calls getPath()': function*() {
+    this.mocker.stub(loader, 'getPath', (fileName) => {
+      return path.resolve(this.appFolder + '/support/errors.js');
+    });
+
+    loader.load('support/none').should.eql('app');
+  },
+};
+
+
+
+test['getSources()'] = {
+  beforeEach: function*() {
+    this.deleteTestFolders();
+    this.createTestFolders();
+    this.createPluginModules('waigo-plugin-1_TESTPLUGIN', ['support/errors']);
+    this.createPluginModules('waigo-plugin-2_TESTPLUGIN', ['support/onlyme', 'support/errors']);
+    this.createPluginModules('another-plugin_TESTPLUGIN', ['support/appoverride']);
+    this.createAppModules(['support/errors', 'support/appoverride']);
+
+    yield loader.init({
+      appFolder: this.appFolder,
+      plugins: {
+        names: ['waigo-plugin-1_TESTPLUGIN', 'waigo-plugin-2_TESTPLUGIN', 'another-plugin_TESTPLUGIN']
+      }
+    });
+  },
+
+  'returns sources': function*() {
+    let sources = loader.getSources();
+
+    sources.waigo.should.eql(loader.getWaigoFolder());
+    sources.app.should.eql(loader.getAppFolder());
+    sources['waigo-plugin-1_TESTPLUGIN'].should.eql(path.resolve(this.pluginsFolder + '/waigo-plugin-1_TESTPLUGIN/src'));
+    sources['waigo-plugin-2_TESTPLUGIN'].should.eql(path.resolve(this.pluginsFolder + '/waigo-plugin-2_TESTPLUGIN/src'));
+    sources['another-plugin_TESTPLUGIN'].should.eql(path.resolve(this.pluginsFolder + '/another-plugin_TESTPLUGIN/src'));
+  },
+};
+
+
+test['getItemsInFolder()'] = {
+  beforeEach: function*() {
+    this.deleteTestFolders();
+    this.createTestFolders();
+    this.createPluginModules('waigo-plugin-1_TESTPLUGIN', ['support/items/errors1']);
+    this.createPluginModules('waigo-plugin-2_TESTPLUGIN', ['support/onlyme', 'support/items/errors2']);
+    this.createPluginModules('another-plugin_TESTPLUGIN', ['support/items/appoverride']);
+    this.createAppModules(['support/items/errors3', 'support/appoverride']);
+
+    yield loader.init({
+      appFolder: this.appFolder,
+      plugins: {
+        names: ['waigo-plugin-1_TESTPLUGIN', 'waigo-plugin-2_TESTPLUGIN', 'another-plugin_TESTPLUGIN']
+      }
+    });
+  },
+
+  'returns items': function*() {
+    let items = loader.getItemsInFolder('support/items');
+
+    items.sort();
+
+    items.should.eql([
+      'support/items/appoverride',
+      'support/items/errors1',
+      'support/items/errors2',
+      'support/items/errors3',
+    ]);
+  },
+
 };
 
 
