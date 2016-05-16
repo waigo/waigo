@@ -268,7 +268,43 @@ test['init()'] = {
         path.join(loader.getAppFolder(), 'support', 'errors.js')
       );
     }
-  }
+  },
+
+  'scans for files': {
+    'ignores frontend/': function*() {
+      this.writeFile(path.join(this.appFolder, 'frontend', 'test.js'));
+
+      yield loader.init({
+        appFolder: this.appFolder,
+      });
+
+      this.expect(function() {
+        loader.load('frontend/test');        
+      }).to.throw.Error;
+    },
+    'ignores views/': function*() {
+      this.writeFile(path.join(this.appFolder, 'views', 'test.js'));
+
+      yield loader.init({
+        appFolder: this.appFolder,
+      });
+
+      this.expect(function() {
+        loader.load('views/test');        
+      }).to.throw.Error;
+    },
+    'ignores cli/data/': function*() {
+      this.writeFile(path.join(this.appFolder, 'cli', 'data', 'test.js'));
+
+      yield loader.init({
+        appFolder: this.appFolder,
+      });
+
+      this.expect(function() {
+        loader.load('cli/data/test');
+      }).to.throw.Error;
+    },
+  },
 };
 
 
