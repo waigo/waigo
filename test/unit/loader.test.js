@@ -148,6 +148,30 @@ test['init()'] = {
         }
       }
     },
+    'plugin not found': {
+      beforeEach: function*() {
+        this.options.plugins.config.dependencies['waigo-plugin-3_TESTPLUGIN'] = '0.0.1';
+      },
+      afterEach: function*() {
+        delete process.env.PLUGIN_SEARCH_FOLDER;
+      },
+      'throws error': function*() {
+        co(loader.init(this.options))
+          .should.be.rejectedWith("Cannot find module 'waigo-plugin-3_TESTPLUGIN'");
+      },
+      'unless present in additional search path': function*() {
+        let folder = path.join(this.appFolder, 'extra', 'waigo-plugin-3_TESTPLUGIN', 'src');
+
+        this.createFolder(folder);
+
+        this.writeFile(path.join(folder, 'package.json'), '{ "name": "waigo-plugin-3_TESTPLUGIN", "version": "0.0.1" }');
+        this.writeFile(path.join(folder, 'index.js'), 'module.exports = {}');
+
+        process.env.PLUGIN_SEARCH_FOLDER = path.join(this.appFolder, 'extra');
+
+        yield loader.init(this.options);
+      },
+    },
     'custom globbing pattern': function*() {
       var options = this.options;
 
