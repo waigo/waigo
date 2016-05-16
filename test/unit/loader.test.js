@@ -304,6 +304,36 @@ test['init()'] = {
         loader.load('cli/data/test');
       }).to.throw.Error;
     },
+    'when loading view templates': {
+      'ignores files in emails/ prefixed with _': function*() {
+        this.writeFile(path.join(this.appFolder, 'emails', 'test1.pug'));
+        this.writeFile(path.join(this.appFolder, 'emails', '_test2.pug'));
+
+        yield loader.init({
+          appFolder: this.appFolder,
+        });
+
+        loader.load('emails/test1.pug');
+
+        this.expect(function() {
+          loader.load('emails/_test2.pug');
+        }).to.throw.Error;        
+      },
+      'ignores files in views/ prefixed with _': function*() {
+        this.writeFile(path.join(this.appFolder, 'views', 'test1.pug'));
+        this.writeFile(path.join(this.appFolder, 'views', '_test2.pug'));
+
+        yield loader.init({
+          appFolder: this.appFolder,
+        });
+
+        loader.load('views/test1.pug');
+
+        this.expect(function() {
+          loader.load('views/_test2.pug');
+        }).to.throw.Error;        
+      },
+    },
   },
 };
 
