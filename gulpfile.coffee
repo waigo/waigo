@@ -12,7 +12,6 @@ options =
   dontExitOnError: false
 
 
-
 if options.minifiedBuild
   console.log 'MINIFIED build'
 else
