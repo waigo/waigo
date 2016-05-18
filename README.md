@@ -51,7 +51,7 @@ This will run all the tests. To limit testing to one more test files use the
 `--only-test` option:
 
 ```bash
-$ gulp test --only-test unit/src/support/*.test.js
+$ gulp test --only-test test/unit/src/support/*.test.js
 ```
 
 
