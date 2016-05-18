@@ -201,3 +201,94 @@ test['startup'] = {
 };
 
 
+
+test['shutdown'] = {
+  beforeEach: function*() {    
+    this.createAppModules({
+      'support/shutdown/step1': 'module.exports = function*(app) { app.step1 = "shutdown1"; }',
+      'support/shutdown/step2': 'module.exports = function*(app) { app.step2 = "shutdown2"; }',
+    });
+
+    let postConfig = this.postConfig = {
+      startupSteps: [],
+      shutdownSteps: ["step1", "step2"],
+      logging: {
+        category: "test",
+        minLevel: 'DEBUG',
+        appenders: [],
+      },      
+    };
+
+    this.startOptions = {
+      postConfig: function(cfg) {
+        _.extend(cfg, postConfig);
+      }
+    };
+
+  },
+
+  'application must be started': function*() {
+    yield this.initApp();
+
+    delete this.Application.app.config;
+
+    try {
+      yield this.Application.shutdown();
+      throw -1;
+    } catch (err) {
+      err.message.should.eql('Application not started');
+    }
+  },
+
+  'ok': {
+    beforeEach: function*() {
+      yield this.initApp();
+
+      yield this.Application.start(this.startOptions);
+    },
+
+    'runs steps': function*() {
+      let app = this.Application.app;
+
+      yield this.Application.shutdown();
+
+      app.step1.should.eql('shutdown1');
+      app.step2.should.eql('shutdown2');
+    },
+
+    'resets koa app': function*() {
+      let app = this.Application.app;
+
+      yield this.Application.shutdown();
+
+      this.Application.app.should.not.eql(app);
+    },
+  },
+
+  'fail': {
+    beforeEach: function*() {
+      this.createAppModules({
+        'support/shutdown/step3': 'module.exports = function*(app) { throw new Error("fail98"); }',
+      });
+
+      this.postConfig.shutdownSteps = ["step1", "step3"];
+
+      yield this.initApp();
+
+      yield this.Application.start(this.startOptions);
+    },
+
+    'throws error': function*() {
+      try {
+        yield this.Application.shutdown();
+        throw -1;
+      } catch (err) {
+        err.message.should.eql('fail98');
+      }
+    },
+  },
+};
+
+
+
+
