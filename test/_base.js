@@ -10,11 +10,13 @@ module.exports = function(_module) {
   return testUtils.mocha(_module, {
     extraDataAndMethods: {
       initApp: function*() {
+        waigo.reset();
+        
         yield waigo.init({
           appFolder: this.appFolder,
         });
 
-        this.application = waigo.load('application');
+        this.Application = waigo.load('application');
       }
     }
   });

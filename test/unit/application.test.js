@@ -24,7 +24,7 @@ test.afterEach = function*() {
 test['exports koa app'] = function*() {
   yield this.initApp();
 
-  this.application.app.should.be.instanceof(require('koa'));
+  this.Application.app.should.be.instanceof(require('koa'));
 };
 
 
@@ -39,21 +39,21 @@ test['load config'] = {
   },
 
   'loads config': function*() {
-    yield this.application.loadConfig();
+    yield this.Application.loadConfig();
 
-    this.application.app.config.should.eql({
+    this.Application.app.config.should.eql({
       done: 1
     });
   },
 
   'post config function': function*() {
-    yield this.application.loadConfig({
+    yield this.Application.loadConfig({
       postConfig: function(cfg) {
         cfg.again = 2;
       }
     });
 
-    this.application.app.config.should.eql({
+    this.Application.app.config.should.eql({
       done: 1,
       again: 2,
     });
@@ -62,7 +62,62 @@ test['load config'] = {
 
 
 
+test['setup logger'] = {
+  beforeEach: function*() {
+    yield this.initApp();
+  },
 
+  'sets app.logger': function*() {
+    let Application = this.Application,
+      app = Application.app;
+
+    yield Application.setupLogger({});
+
+    app.logger.error.should.be.a.function;
+    app.logger.warn.should.be.a.function;
+    app.logger.info.should.be.a.function;
+    app.logger.debug.should.be.a.function;
+    app.logger.trace.should.be.a.function;
+  },
+
+  'uncaught exception handler': function*() {
+    let Application = this.Application,
+      app = Application.app;
+
+    yield Application.setupLogger({});
+
+    let spy = this.mocker.stub(app.logger, 'error');
+
+    let err = { stack: 'abc' };
+    
+    app.onUncaughtException(err);
+
+    spy.should.have.been.calledWith('Uncaught exception', 'abc');    
+
+    app.onUncaughtException('another');
+
+    spy.should.have.been.calledWith('Uncaught exception', 'another');    
+  },
+
+  'on app "error" event': function*() {
+    let Application = this.Application,
+      app = Application.app;
+
+    yield Application.setupLogger({});
+
+    let spy = this.mocker.stub(app.logger, 'error');
+
+    let err = { stack: 'abc' };
+    
+    app.emit('error', err);
+
+    spy.should.have.been.calledWith('abc');    
+
+    app.emit('error', 'another');
+
+    spy.should.have.been.calledWith('another');        
+  }
+};
 
 
 
