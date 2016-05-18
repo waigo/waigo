@@ -1,6 +1,7 @@
 "use strict";
 
-const Q = require('bluebird');
+const waigo = global.waigo,
+  Q = waigo.load('support/promise');
 
 
 exports.schema = {
@@ -23,7 +24,7 @@ exports.schema = {
 
 exports.modelMethods = {
   onChange:function(cb) {
-    return Q.resolve(this.rawQry().changes())
+    return Promise.resolve(this.rawQry().changes())
       .then(cb)
       .catch((err) => {
         this._logger().error(`${this.name} changes error`, err);

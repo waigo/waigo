@@ -1,6 +1,7 @@
 "use strict";
 
-const Q = require('bluebird');
+const waigo = global.waigo,
+  Q = waigo.load('support/promise');
 
 
 
