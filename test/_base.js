@@ -9,10 +9,12 @@ const waigo = require('../src');
 module.exports = function(_module) {
   return testUtils.mocha(_module, {
     extraDataAndMethods: {
-      initWaigo: function*() {
+      initApp: function*() {
         yield waigo.init({
           appFolder: this.appFolder,
         });
+
+        this.application = waigo.load('application');
       }
     }
   });
