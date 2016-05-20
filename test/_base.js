@@ -9,7 +9,7 @@ const waigo = require('../src');
 
 
 module.exports = function(_module) {
-  return testUtils.mocha(_module, {
+  let test = testUtils.mocha(_module, {
     extraDataAndMethods: {
       initApp: function*() {
         waigo.reset();
@@ -22,4 +22,19 @@ module.exports = function(_module) {
       }
     }
   });
+
+  test.beforeEach = function*() {
+    this.deleteTestFolders();
+    this.createTestFolders();
+  };
+
+  test.afterEach = function*() {
+    this.deleteTestFolders();
+  };
+
+  let tests = {};
+
+  test.tests = tests;
+
+  return tests;
 };

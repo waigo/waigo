@@ -24,9 +24,10 @@ const METHOD_NAME = exports.METHOD_NAME = 'toViewObject';
  * @return A yieldable value.
  */
 const toViewObjectYieldable = exports.toViewObjectYieldable = function(ctx, inputObject) {
+
   if (inputObject) {
     // if it's one of our model schema types
-    // (see https://github.com/hiddentao/simple-mongo-schema)
+    // (see https://github.com/hiddentao/simple-nosql-schema)
     switch (inputObject) {
       case String:
         return Q.resolve('String');

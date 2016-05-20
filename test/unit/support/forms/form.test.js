@@ -1,110 +1,67 @@
-var _ = require('lodash'),
+"use strict";
+
+const _ = require('lodash'),
   co = require('co'),
-  moment = require('moment'),
   path = require('path'),
   Q = require('bluebird');
 
-var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
-  test = _testUtils.test,
-  testUtils = _testUtils.utils,
-  assert = testUtils.assert,
-  expect = testUtils.expect,
-  should = testUtils.should,
-  waigo = testUtils.waigo;
+
+const test = require(path.join(process.cwd(), 'test', '_base'))(module);
+const waigo = global.waigo;
 
 
-var form = null,
+let form = null,
   field = null,
   errors = null,
+  toViewObjectYieldable = null,
   viewObjectMethodName = null;
 
 
+
 test['forms'] = {
-  beforeEach: function(done) {
-    waigo.__modules = {};
-    waigo.initAsync()
-      .then(function() {
-        form = waigo.load('support/forms/form');
-        field = waigo.load('support/forms/field');
-        errors = waigo.load('support/errors');
-        viewObjectMethodName = waigo.load('support/viewObjects').methodName;
-      })
-      .nodeify(done);
+  beforeEach: function*() {
+    yield this.initApp();
+
+    form = waigo.load('support/forms/form');
+    field = waigo.load('support/forms/field');
+    errors = waigo.load('support/errors');
+    viewObjectMethodName = waigo.load('support/viewObjects').METHOD_NAME;
+    toViewObjectYieldable = waigo.load('support/viewObjects').toViewObjectYieldable;
   },
 
   'FormValidationError': {
-    'extends MultipleError': function() {
-      var e = new form.FormValidationError();
+    'extends MultipleError': function*() {
+      let e = new form.FormValidationError();
+
       e.should.be.instanceOf(errors.MultipleError);
     },
-    'default toViewObject': function(done) {
-      var e = new form.FormValidationError('test', 400, {
-        field1: new field.FieldValidationError('field1', 400, {
-          val1: new Error('blah1'),
-          val2: new Error('blah2')
-        }),
-        field2: new field.FieldValidationError('field2', 400, {
-          val1: new Error('blah3'),
-          val2: new Error('blah4')
-        })
+    'default toViewObject': function*() {
+      let e = new form.FormValidationError('test', 400, {
+        field1: {
+          val1: 'blah1',
+          val2: 'blah2',
+        },
+        field2: {
+          val1: 'blah3',
+          val2: 'blah4',
+        },
       });
 
-      var actualViewObject = null;
+      let actualViewObject = yield toViewObjectYieldable(null, e);
 
-      testUtils.spawn(e.toViewObject, e)
-        .then(function(viewObject) {
-          actualViewObject = viewObject;
+      let me = new errors.MultipleError('test', 400, e.details);
 
-          var me = new errors.MultipleError('test', 400, e.errors);
-          return testUtils.spawn(me.toViewObject, me);
-        })
-        .then(function(expectedViewObject) {
-          expectedViewObject.type = 'FormValidationError';
+      let expectedViewObject = yield toViewObjectYieldable(null, me);
 
-          expect(actualViewObject).to.eql(expectedViewObject);
-        })
-        .nodeify(done);
+      expectedViewObject.type = 'FormValidationError';
+
+      this.expect(actualViewObject).to.eql(expectedViewObject);
     },
-    'lean view object': function(done) {
-      var e = new form.FormValidationError('test', 400, {
-        field1: new field.FieldValidationError('field1', 400, {
-          val1: new Error('blah1'),
-          val2: new Error('blah2')
-        }),
-        field2: new field.FieldValidationError('field2', 400, {
-          val1: new Error('blah3'),
-          val2: new Error('blah4')
-        })
-      });
-
-      testUtils.spawn(e.toViewObject, e, {
-        request: {
-          leanErrors: true
-        }
-      })
-        .then(function(viewObject) {
-          expect(viewObject).to.eql({
-            type: 'FormValidationError',
-            msg: 'test',
-            fields: {
-              'field1': [
-                'blah1',
-                'blah2'
-              ],
-              'field2': [
-                'blah3',
-                'blah4'
-              ]
-            }
-          });
-        })
-        .nodeify(done);
-    }
   },
 
   'Form': {
-    'beforeEach': function() {
-      this.newFieldSpy = test.mocker.stub(field.Field, 'new', function(form, def) {
+    'beforeEach': function*() {
+      this.newFieldSpy = this.mocker.stub(field.Field, 'new', function(form, def) {
         return {
           name: def.name + ' created'
         };
@@ -123,13 +80,14 @@ test['forms'] = {
         ]
       }
 
-      this.form = new form.Form(this.formConfig);
+      this.form = yield form.create(this.formConfig);
     },
 
     'construction': {
-      'initialises state': function() {
-        var f = new form.Form(this.formConfig);
-        expect(f.state).to.eql({ 
+      'initialises state': function*() {
+        var f = yield form.create(this.formConfig);
+
+        this.expect(f.state).to.eql({ 
           email: { 
             value: undefined 
           }, 
@@ -139,15 +97,16 @@ test['forms'] = {
         });
       },
 
-      'initialises config': function() {
-        var f = new form.Form(this.formConfig);
-        expect(f.config).to.eql(this.formConfig);        
+      'initialises config': function*() {
+        var f = yield form.create(this.formConfig);
+
+        this.expect(f.config).to.eql(this.formConfig);        
       },
 
-      'initialises fields': function() {
+      'initialises fields': function*() {
         var f = this.form;
 
-        expect(f._fields).to.eql({
+        this.expect(f._fields).to.eql({
           email: {name: 'email created'},
           age: {name: 'age created'}
         });
@@ -157,54 +116,56 @@ test['forms'] = {
         this.newFieldSpy.should.have.been.calledWithExactly(f, f.config.fields[1]);
       },
 
-      'can re-use stuff from existing Form': function() {
+      'can re-use stuff from existing Form': function*() {
         this.form.state = {
           email: 'test',
           age: 12
         };
 
-        var f = new form.Form(this.form);
+        var f = yield form.create(this.form);
 
-        expect(f.config).to.eql(this.form.config);
-        expect(f._fields).to.eql(this.form.fields);
+        this.expect(f.config).to.eql(this.form.config);
+        this.expect(f._fields).to.eql(this.form.fields);
 
-        expect(f.state).to.eql(this.form.state);
+        this.expect(f.state).to.eql(this.form.state);
       },
 
-      'but can pass in state to override state from existing Form': function() {
+      'but can pass in state to override state from existing Form': function*() {
         this.form.state = {
           email: 'test',
           age: 12
         };
 
-        var f = new form.Form(this.form, {
-          email: 'blah',
-          age: 23
+        var f = yield form.create(this.form, {
+          state: {
+            email: 'blah',
+            age: 23
+          },
         });
 
-        expect(f.config).to.eql(this.form.config);
-        expect(f._fields).to.eql(this.form.fields);
+        this.expect(f.config).to.eql(this.form.config);
+        this.expect(f._fields).to.eql(this.form.fields);
 
-        expect(f.state).to.eql({
+        this.expect(f.state).to.eql({
           email: 'blah',
           age: 23
         });
       }      
     },
 
-    'get fields': function() {
+    'get fields': function*() {
       var f = this.form;
       f._fields = 'test';
-      expect(f.fields).to.eql('test');
+      this.expect(f.fields).to.eql('test');
     },
 
-    'get state': function() {
+    'get state': function*() {
       var f = this.form;
       f._state = 'test';
-      expect(f.state).to.eql('test');        
+      this.expect(f.state).to.eql('test');        
     },
 
-    'set state': function() {
+    'set state': function*() {
       var f = this.form;
 
       var state = {
@@ -218,7 +179,7 @@ test['forms'] = {
 
       f.state = state;
 
-      expect(f.state).to.eql({
+      this.expect(f.state).to.eql({
         email: {
           value: 123
         },
@@ -231,7 +192,7 @@ test['forms'] = {
       });
     },
 
-    'set field values': function(done) {
+    'set field values': function*() {
       var f = this.form;
 
       var values = {};
@@ -241,38 +202,30 @@ test['forms'] = {
         };
       });
 
-      testUtils.spawn(function*() {
-        yield f.setValues({
-          email: '123',
-          age: '546'
-        });
-      })
-        .then(function() {
-          expect(values).to.eql({
-            email: '123',
-            age: '546'
-          });
-        })
-        .nodeify(done);
+      yield f.setValues({
+        email: '123',
+        age: '546'
+      });
+
+      this.expect(values).to.eql({
+        email: '123',
+        age: '546'
+      });
     },
 
-    'set field original values': function(done) {
+    'set field original values': function*() {
       var f = this.form;
 
-      testUtils.spawn(function*() {
-        yield f.setOriginalValues({
-          email: '123',
-          age: '546'
-        });
-      })
-        .then(function() {
-          expect(f.fields.email.originalValue).to.eql('123');
-          expect(f.fields.age.originalValue).to.eql('546');
-        })
-        .nodeify(done);
+      yield f.setOriginalValues({
+        email: '123',
+        age: '546'
+      });
+
+      this.expect(f.fields.email.originalValue).to.eql('123');
+      this.expect(f.fields.age.originalValue).to.eql('546');
     },
 
-    'check if dirty': function() {
+    'check if dirty': function*() {
       var f = this.form,
         fields = f.fields;
 
@@ -302,45 +255,78 @@ test['forms'] = {
     },
 
     'validate': {
-      'pass': function(done) {
+      'pass': function*() {
         var f = this.form;
 
-        _.each(f.fields, function(field, name) {
-          field.validate = function*() {};
+        _.each(f.fields, function(_field, name) {
+          _field.validate = function*() {};
         });
 
-        testUtils.spawn(f.validate, f)
-          .nodeify(done);
+        yield f.validate();
       },
 
-      'fail': function(done) {
+      'fail': function*() {
         var f = this.form;
 
-        _.each(f.fields, function(field, name) {
-          field.validate = function*() {
-            throw new Error(name + ' failed');
+        _.each(f.fields, function(_field, name) {
+          _field.validate = function*() {
+            throw new field.FieldValidationError('fail', 400, [
+              `${name} failed`,
+            ]);
           };
         });
 
-        new Q(function(resolve, reject) {
-          testUtils.spawn(f.validate, f)
-            .then(reject)
-            .catch(function(err) {
-              try {
-                expect(err).to.be.instanceOf(form.FormValidationError);
-                expect(err.errors.email.toString()).to.eql('Error: email failed');
-                expect(err.errors.age.toString()).to.eql('Error: age failed');
-                resolve();
-              } catch (err2) {
-                reject(err2);
-              }
-            });
-        })
-          .nodeify(done);
+        try {
+          yield f.validate();
+          throw -1;
+        } catch (err) {
+          this.expect(err).to.be.instanceOf(form.FormValidationError);
+          this.expect(err.details.email).to.eql(['email failed']);
+          this.expect(err.details.age).to.eql(['age failed']);
+        }
       }
     },
 
-    'to view object': function(done) {
+    'process the form': {
+      beforeEach: function*() {
+        this.markers = [];
+
+        let fn = (val) => () => {
+          this.markers.push(val);
+          return Q.resolve();
+        };
+
+        this.mocker.stub(this.form, 'setValues', fn(1));
+        this.mocker.stub(this.form, 'validate', fn(3));
+        this.mocker.stub(this.form, 'runHook', fn(5));
+      },
+
+      'request body must be set': function*() {
+        try {
+          yield this.form.process();
+          throw -1;
+        } catch (err) {
+          this.expect(err + '').to.contain('No request body available');
+        }
+      },
+
+      'calls other functions in order': function*() {
+        this.form.context = {
+          request: {
+            body: 2
+          },
+        };
+
+        yield this.form.process();
+
+        this.markers.should.eql([1, 3, 5]);
+
+        this.form.setValues.should.have.been.calledWithExactly(2);
+        this.form.runHook.should.have.been.calledWithExactly('postValidation');
+      },
+    },
+
+    'to view object': function*() {
       var f = this.form;
       f.config.id = 'testForm';
 
@@ -356,53 +342,59 @@ test['forms'] = {
         dummy: true
       };
 
-      testUtils.spawn(f[viewObjectMethodName], f, ctx)
-        .then(function(viewObject) {
-          expect(viewObject).to.eql({
-            id: 'testForm',
-            fields: {
-              email: {
-                name: 'email',
-                dummy: true
-              },
-              age: {
-                name: 'age',
-                dummy: true
-              }
-            },
-            order: ['email', 'age']
-          })
-        })
-        .nodeify(done);
+      let viewObject = yield toViewObjectYieldable(ctx, f);
+
+      this.expect(viewObject).to.eql({
+        id: 'testForm',
+        fields: {
+          email: {
+            name: 'email',
+            dummy: true
+          },
+          age: {
+            name: 'age',
+            dummy: true
+          }
+        },
+        order: ['email', 'age']
+      });
     },
   },
 
 
   'create new Form': {
-    beforeEach: function() {
+    beforeEach: function*() {
       var formDef = this.formDef = {};
 
-      this.formSpy = test.mocker.spy(form, 'Form');
-
-      this.waigoLoadStub = test.mocker.stub(waigo, 'load', function(){
+      this.waigoLoadStub = this.mocker.stub(waigo, 'load', function(){
         return formDef;
       });
     },
 
-    'loads form definition to create the form': function() {
+    'loads form definition to create the form': function*() {
       this.formDef.dummy =  true;
 
-      var f = form.Form.new('blah');
+      var f = yield form.create('blah');
 
       this.waigoLoadStub.should.have.been.calledOnce;
       this.waigoLoadStub.should.have.been.calledWithExactly('forms/blah');
 
-      expect(f.config).to.eql({
+      this.expect(f.config).to.eql({
         id: 'blah',
         dummy: true
       });
 
-      expect(f.state).to.eql({});
-    }
+      this.expect(f.state).to.eql({});
+    },
+
+    'calls postCreation hook': function*() {
+      this.mocker.stub(form.Form.prototype, 'runHook').returns(Q.resolve());
+
+      let f = yield form.create({ fields: [] });
+
+      f.runHook.should.have.been.calledOnce;
+      f.runHook.should.have.been.calledWithExactly('postCreation');
+    },
+
   }
 };

@@ -42,7 +42,6 @@ var cache = {};
  * @param {Object} [options] Additional options.
  * @param {Object} [options.context] The current request context.
  * @param {Object} [options.state] The internal state to set for this form.
- * @param {Boolean} [options.submitted] Form instance is being created to handle a submission.
  */
 exports.create = function*(config, options) {
   if (_.isString(config)) {
@@ -85,7 +84,6 @@ class Form {
     options = _.extend({
       context: null,
       state: null,
-      submitted: false,
     }, options);
 
     if (config instanceof Form) {
@@ -206,7 +204,7 @@ class Form {
         yield field.validate(this.context);
       } catch (err) {
         if (!errors) {
-          errors = {}
+          errors = {};
         }
 
         errors[fieldName] = err.details;
@@ -252,6 +250,8 @@ class Form {
   }
 
 }
+
+exports.Form = Form;
 
 
 /**
