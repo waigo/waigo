@@ -202,7 +202,6 @@ test['form fields'] = {
 
         f.sanitizers = [
           {
-            id: 'test',
             fn: function*(field, v) {
               return v + '123';
             }
@@ -213,33 +212,45 @@ test['form fields'] = {
 
         this.expect(f.value).to.eql('abc123');
       },
-      // FIX: failing test
-      // 'sanitization fail': function*() {
-      //   var f = this.field;
 
-      //   f.sanitizers = [
-      //     {
-      //       id: 'test',
-      //       fn: function*(field, v) {
-      //         throw new Error('blah');
-      //       }
-      //     }
-      //   ]
+      'sanitization fail': function*() {
+        var f = this.field;
 
-      //   new Q(function(resolve, reject){
-      //     testUtils.spawn(f.setSanitizedValue, f, 'abc')
-      //       .catch(function(err) {
-      //         try {
-      //           err.should.be.instanceOf(field.FieldSanitizationError);
-      //           err.message.should.eql('blah');
-      //         } catch (err2) {
-      //           reject(err2);
-      //         }
-      //       })
-      //       .then(reject);
-      //   })
-      //     .nodeify(done);
-      // }      
+        f.sanitizers = [
+          {
+            fn: function*(field, v) {
+              throw new Error('blah');
+            }
+          }
+        ]
+
+        try {
+          yield f.setSanitizedValue('abc');
+        } catch (err) {
+          err.should.be.instanceOf(field.FieldSanitizationError);
+          err.message.should.eql('blah'); 
+        }
+      },
+
+      'sanitization fail - override msg': function*() {
+        var f = this.field;
+
+        f.sanitizers = [
+          {
+            msg: 'holla',
+            fn: function*(field, v) {
+              throw new Error('blah');
+            }
+          }
+        ]
+
+        try {
+          yield f.setSanitizedValue('abc');
+        } catch (err) {
+          err.should.be.instanceOf(field.FieldSanitizationError);
+          err.message.should.eql('holla'); 
+        }
+      },
     },
 
 
@@ -404,7 +415,32 @@ test['form fields'] = {
           this.expect(err).to.be.instanceOf(field.FieldValidationError);
           this.expect(err.details).to.eql(['blah123']);
         }
-      }      
+      },
+
+      'override error message': function*() {
+        var f = this.field;
+        f.config.required = true;
+        f.value = 123;
+
+        f.validators = [
+          {
+            id: 'testv',
+            msg: 'hoola',
+            fn: function*(field, v) {
+              throw new Error('blah' + 123);
+            }
+          }
+        ];
+
+        try {
+          yield f.validate();
+          throw -1;
+        } catch (err) {
+          this.expect(err).to.be.instanceOf(field.FieldValidationError);
+          this.expect(err.details).to.eql(['hoola']);
+        }
+      }, 
+
     },
 
     'to view object': function*() {
