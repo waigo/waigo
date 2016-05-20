@@ -1,78 +1,65 @@
-var _ = require('lodash'),
+"use strict";
+
+const _ = require('lodash'),
   co = require('co'),
-  moment = require('moment'),
   path = require('path'),
   Q = require('bluebird');
 
-var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
-  test = _testUtils.test,
-  testUtils = _testUtils.utils,
-  assert = testUtils.assert,
-  expect = testUtils.expect,
-  should = testUtils.should,
-  waigo = testUtils.waigo;
+
+const test = require(path.join(process.cwd(), 'test', '_base'))(module);
+const waigo = global.waigo;
 
 
-var validator = null;
+let validator = null;
 
 
 test['notEmpty'] = {
-  beforeEach: function(done) {
-    waigo.__modules = {};
-    waigo.initAsync()
-      .then(function() {
-        validator = waigo.load('support/forms/validators/notEmpty');
-      })
-      .nodeify(done);
+  beforeEach: function*() {
+    yield this.initApp();
+
+    validator = waigo.load('support/forms/validators/notEmpty');
   },
 
-  'null': function(done) {
+  'null': function*() {
     var fn = validator();
 
-    testUtils.spawn(fn, fn, null, null)
-      .should.be.rejectedWith('Must not be empty')
-      .and.notify(done);
+    co(fn(null, null, null))
+      .should.be.rejectedWith('Must not be empty');
   },
-  'undefined': function(done) {
+  'undefined': function*() {
     var fn = validator();
 
-    testUtils.spawn(fn, fn, null, undefined)
-      .should.be.rejectedWith('Must not be empty')
-      .and.notify(done);
+    co(fn(null, null, undefined))
+      .should.be.rejectedWith('Must not be empty');
   },
-  'empty string': function(done) {
+  'empty string': function*() {
     var fn = validator();
 
-    testUtils.spawn(fn, fn, null, '')
-      .should.be.rejectedWith('Must not be empty')
-      .and.notify(done);
+    co(fn(null, null, ''))
+      .should.be.rejectedWith('Must not be empty');
   },
-  'non-empty string': function(done) {
+  'non-empty string': function*() {
     var fn = validator();
 
-    testUtils.spawn(fn, fn, null, 'a')
-      .should.be.fulfilled
-      .and.notify(done);
+    co(fn(null, null, 'a'))
+      .should.be.fulfilled;
   },
-  'number': function(done) {
+  'number': function*() {
     var fn = validator();
 
-    testUtils.spawn(fn, fn, null, 123)
-      .should.be.fulfilled
-      .and.notify(done);
+    co(fn(null, null, 0))
+      .should.be.fulfilled;
   },
-  'boolean: true': function(done) {
+  'boolean: true': function*() {
     var fn = validator();
 
-    testUtils.spawn(fn, fn, null, true)
-      .should.be.fulfilled
-      .and.notify(done);
+    co(fn(null, null, true))
+      .should.be.fulfilled;
   },
-  'boolean: false': function(done) {
+  'boolean: false': function*() {
     var fn = validator();
 
-    testUtils.spawn(fn, fn, null, false)
-      .should.be.fulfilled
-      .and.notify(done);
+    co(fn(null, null, false))
+      .should.be.fulfilled;
   }
 };
