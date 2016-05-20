@@ -7,7 +7,9 @@ const waigo = global.waigo,
 
 
 /**
- * Validator to check whether given string is at least of given length.
+ * Validator to check whether number is within given range. 
+ * 
+ * Expect atleast one of `min` or `max`.
  *
  * @param options {Object} Options.
  * @param options.min {Object} Minimum length.
@@ -26,7 +28,6 @@ module.exports = function(options) {
     
     if ( (undefined !== min && value < min) 
           || (undefined !== max && value > max) ) {
-
       if (undefined !== min) {
         if (undefined !== max) {
           throw new FieldValidationError(`Must be between ${min} and ${max} inclusive`);
