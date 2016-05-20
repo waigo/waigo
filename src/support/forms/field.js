@@ -67,7 +67,7 @@ class Field {
    * @param {String|Object|GeneratorFunction} def 
    */
   _addValidator (def) {
-    if (_.isGen(def)) {
+    if (_.isGenFn(def)) {
       return this.validators.push({
         fn: def
       });
@@ -92,7 +92,7 @@ class Field {
    * @param {String|Object|GeneratorFunction} def 
    */
   _addSanitizer (def) {
-    if (_.isGen(def)) {
+    if (_.isGenFn(def)) {
       return this.sanitizers.push({
         fn: def
       });

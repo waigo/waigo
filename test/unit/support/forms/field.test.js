@@ -1,50 +1,38 @@
-var _ = require('lodash'),
+"use strict";
+
+const _ = require('lodash'),
   co = require('co'),
-  moment = require('moment'),
   path = require('path'),
   Q = require('bluebird');
 
-var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
-  test = _testUtils.test,
-  testUtils = _testUtils.utils,
-  assert = testUtils.assert,
-  expect = testUtils.expect,
-  should = testUtils.should,
-  waigo = testUtils.waigo;
+
+const test = require(path.join(process.cwd(), 'test', '_base'))(module);
+const waigo = global.waigo;
 
 
-var form = null,
+let form = null,
   field = null,
   errors = null,
+  toViewObjectYieldable = null,
   viewObjectMethodName = null;
 
 
 test['form fields'] = {
-  beforeEach: function(done) {
-    testUtils.deleteTestFolders()
-      .then(testUtils.createTestFolders)
-      .then(function() {
-        return testUtils.createAppModules({
-          'support/forms/sanitizers/test': 'module.exports = function() { return function*(fo,fi,v) { return v; }; };',
-          'support/forms/sanitizers/test_wo': 'module.exports = function(o) { return function*(fo,fi,v) { return [o, v]; }; };',
-          'support/forms/validators/testv': 'module.exports = function() { return function*(fo,fi,v) { return v; }; };',
-          'support/forms/validators/testv_wo': 'module.exports = function(o) { return function*(fo,fi,v) { return [o, v]; }; };'
-        });
-      })
-      .then(function() {
-        waigo.__modules = {};
-        return waigo.initAsync();
-      })
-      .then(function() {
-        form = waigo.load('support/forms/form');
-        field = waigo.load('support/forms/field');
-        errors = waigo.load('support/errors');
-        viewObjectMethodName = waigo.load('support/viewObjects').methodName;
-      })
-      .nodeify(done);
-  },
-  afterEach: function(done) {
-    testUtils.deleteTestFolders().nodeify(done);
+  beforeEach: function*() {
+    this.createAppModules({
+      'support/forms/sanitizers/test': 'module.exports = function() { return function*(fo,fi,v) { return v; }; };',
+      'support/forms/sanitizers/test_wo': 'module.exports = function(o) { return function*(fo,fi,v) { return [o, v]; }; };',
+      'support/forms/validators/testv': 'module.exports = function() { return function*(fo,fi,v) { return v; }; };',
+      'support/forms/validators/testv_wo': 'module.exports = function(o) { return function*(fo,fi,v) { return [o, v]; }; };'
+    });
+
+    yield this.initApp();
+
+    form = waigo.load('support/forms/form');
+    field = waigo.load('support/forms/field');
+    errors = waigo.load('support/errors');
+    viewObjectMethodName = waigo.load('support/viewObjects').METHOD_NAME;
+    toViewObjectYieldable = waigo.load('support/viewObjects').toViewObjectYieldable;
   },
 
   'FieldValidationError': {
@@ -62,11 +50,11 @@ test['form fields'] = {
   },
 
   'Field': {
-    beforeEach: function() {
-      this.form = new form.Form({
+    beforeEach: function*() {
+      this.form = yield form.create({
         fields: [
           {
-            name: 'name',
+            name: 'test',
             type: 'text'
           }
         ]
@@ -74,81 +62,75 @@ test['form fields'] = {
         test: {}        
       });
 
-      this.field = new field.Field(this.form, {
-        name: 'test'
+      this.field = field.Field.new(this.form, {
+        name: 'test',
+        type: 'text',
       });      
     },
 
     'construction': {
       'sets properties': function() {
-        var f = new field.Field(this.form, {});
-        expect(f.form).to.eql(this.form);        
-        expect(f.config).to.eql({});
-        expect(f.sanitizers).to.eql([]);
-        expect(f.validators).to.eql([]);
+        var f = field.Field.new(this.form, {
+          type: 'text',
+        });
+        this.expect(f.form).to.eql(this.form);        
+        this.expect(f.config).to.eql({ type: 'text', });
+        this.expect(f.sanitizers).to.eql([]);
+        this.expect(f.validators).to.eql([]);
       },
 
-      'initialises sanitizers': function(done) {
-        var f = new field.Field(this.form, {
+      'initialises sanitizers': function*() {
+        var f = field.Field.new(this.form, {
+          type: 'text',
           sanitizers: ['test', { id: 'test_wo', option1: true }]
         });
 
-        expect(f.sanitizers.length).to.eql(2);
+        this.expect(f.sanitizers.length).to.eql(2);
 
-        expect(f.sanitizers[0].id).to.eql('test');
         var fn1 = f.sanitizers[0].fn;
 
-        expect(f.sanitizers[1].id).to.eql('test_wo');
         var fn2 = f.sanitizers[1].fn;
 
-        testUtils.spawn(function*() {
-          return [
-            yield fn1(null, null, 256),
-            yield fn2(null, null, 512)
-          ];
-        })
-          .then(function(results) {
-            expect(results[0]).to.eql(256);
-            expect(results[1]).to.eql([
-              { id: 'test_wo', option1: true },
-              512
-            ]);
-          })
-          .nodeify(done);
+        let results = yield [
+          fn1(null, null, 256),
+          fn2(null, null, 512)
+        ];
+
+        this.expect(results[0]).to.eql(256);
+        this.expect(results[1]).to.eql([
+          { option1: true },
+          512
+        ]);
       },
 
-      'initialises validators': function(done) {
-        var f = new field.Field(this.form, {
+      'initialises validators': function*() {
+        var f = field.Field.new(this.form, {
+          type: 'text',
           validators: ['testv', { id: 'testv_wo', option1: true }]
         });
 
-        expect(f.validators.length).to.eql(2);
+        this.expect(f.validators.length).to.eql(2);
 
-        expect(f.validators[0].id).to.eql('testv');
         var fn1 = f.validators[0].fn;
 
-        expect(f.validators[1].id).to.eql('testv_wo');
         var fn2 = f.validators[1].fn;
 
-        testUtils.spawn(function*() {
-          return [
-            yield fn1(null, null, 256),
-            yield fn2(null, null, 512)
-          ];
-        })
-          .then(function(results) {
-            expect(results[0]).to.eql(256);
-            expect(results[1]).to.eql([
-              { id: 'testv_wo', option1: true },
-              512
-            ]);
-          })
-          .nodeify(done);
+        let results = yield [
+          fn1(null, null, 256),
+          fn2(null, null, 512)
+        ];
+
+        this.expect(results[0]).to.eql(256);
+        this.expect(results[1]).to.eql([
+          { option1: true },
+          512
+        ]);
       }
     },
 
     'get name': function() {
-      var f = new field.Field(this.form, {
+      var f = field.Field.new(this.form, {
+        type: 'text',
         name: 'test'
       });
 
@@ -156,7 +138,8 @@ test['form fields'] = {
     },
 
     'get value': function() {
-      var f = new field.Field(this.form, {
+      var f = field.Field.new(this.form, {
+        type: 'text',
         name: 'test'
       });
 
@@ -168,7 +151,8 @@ test['form fields'] = {
     },
 
     'set value': function() {
-      var f = new field.Field(this.form, {
+      var f = field.Field.new(this.form, {
+        type: 'text',
         name: 'test'
       });
 
@@ -184,7 +168,8 @@ test['form fields'] = {
     },
 
     'get/set original value': function() {
-      var f = new field.Field(this.form, {
+      var f = field.Field.new(this.form, {
+        type: 'text',
         name: 'test'
       });
 
@@ -193,7 +178,8 @@ test['form fields'] = {
     },
 
     'check if dirty': function() {
-      var f = new field.Field(this.form, {
+      var f = field.Field.new(this.form, {
+        type: 'text',
         name: 'test'
       });
 
@@ -211,7 +197,7 @@ test['form fields'] = {
     },
 
     'set sanitized value': {
-      'sanitization pass': function(done) {
+      'sanitization pass': function*() {
         var f = this.field;
 
         f.sanitizers = [
@@ -223,14 +209,12 @@ test['form fields'] = {
           }
         ]
 
-        testUtils.spawn(f.setSanitizedValue, f, 'abc')
-          .then(function() {
-            expect(f.value).to.eql('abc123');
-          })
-          .nodeify(done);
+        yield f.setSanitizedValue('abc');
+
+        this.expect(f.value).to.eql('abc123');
       },
       // FIX: failing test
-      // 'sanitization fail': function(done) {
+      // 'sanitization fail': function*() {
       //   var f = this.field;
 
       //   f.sanitizers = [
@@ -261,7 +245,7 @@ test['form fields'] = {
 
     'validate': {
       'not required and not set': {
-        'null': function(done) {
+        'null': function*() {
           var f = this.field;
           f.config.required = false;
           f.value = null;
@@ -275,10 +259,9 @@ test['form fields'] = {
             }
           ];
 
-          testUtils.spawn(f.validate, f)
-            .nodeify(done);
+          yield f.validate();
         },
-        'undefined': function(done) {
+        'undefined': function*() {
           var f = this.field;
           f.config.required = false;
           f.value = undefined;
@@ -292,10 +275,9 @@ test['form fields'] = {
             }
           ];
 
-          testUtils.spawn(f.validate, f)
-            .nodeify(done);
+          yield f.validate();
         },
-        'empty string': function(done) {
+        'empty string': function*() {
           var f = this.field;
           f.config.required = false;
           f.value = '';
@@ -309,12 +291,11 @@ test['form fields'] = {
             }
           ];
 
-          testUtils.spawn(f.validate, f)
-            .nodeify(done);
+          yield f.validate();
         },
       },
       'required and not set': {
-        'null': function(done) {
+        'null': function*() {
           var f = this.field;
           f.config.required = true;
           f.value = null;
@@ -330,22 +311,15 @@ test['form fields'] = {
             }
           ];
 
-          new Q(function(resolve, reject) {
-            testUtils.spawn(f.validate, f)
-              .then(reject)
-              .catch(function(err) {
-                try {
-                  expect(err).to.be.instanceOf(field.FieldValidationError);
-                  expect(err.errors.required.toString()).to.eql('Error: Must be set');
-                  resolve();
-                } catch (err2) {
-                  reject(err2);
-                }
-              });
-          })
-            .nodeify(done);
+          try {
+            yield f.validate();
+            throw -1;
+          } catch (err) {
+            this.expect(err).to.be.instanceOf(field.FieldValidationError);
+            this.expect(err.details).to.eql(['Must be set']);
+          }
         },
-        'undefined': function(done) {
+        'undefined': function*() {
           var f = this.field;
           f.config.required = true;
           f.value = undefined;
@@ -361,22 +335,15 @@ test['form fields'] = {
             }
           ];
 
-          new Q(function(resolve, reject) {
-            testUtils.spawn(f.validate, f)
-              .then(reject)
-              .catch(function(err) {
-                try {
-                  expect(err).to.be.instanceOf(field.FieldValidationError);
-                  expect(err.errors.required.toString()).to.eql('Error: Must be set');
-                  resolve();
-                } catch (err2) {
-                  reject(err2);
-                }
-              });
-          })
-            .nodeify(done);
+          try {
+            yield f.validate();
+            throw -1;
+          } catch (err) {
+            this.expect(err).to.be.instanceOf(field.FieldValidationError);
+            this.expect(err.details).to.eql(['Must be set']);
+          }
         },
-        'empty string': function(done) {
+        'empty string': function*() {
           var f = this.field;
           f.config.required = true;
           f.value = '';
@@ -392,23 +359,16 @@ test['form fields'] = {
             }
           ];
 
-          new Q(function(resolve, reject) {
-            testUtils.spawn(f.validate, f)
-              .then(reject)
-              .catch(function(err) {
-                try {
-                  expect(err).to.be.instanceOf(field.FieldValidationError);
-                  expect(err.errors.required.toString()).to.eql('Error: Must be set');
-                  resolve();
-                } catch (err2) {
-                  reject(err2);
-                }
-              });
-          })
-            .nodeify(done);
+          try {
+            yield f.validate();
+            throw -1;
+          } catch (err) {
+            this.expect(err).to.be.instanceOf(field.FieldValidationError);
+            this.expect(err.details).to.eql(['Must be set']);
+          }
         },
       },
-      'pass': function(done) {
+      'pass': function*() {
         var f = this.field;
         f.config.required = true;
         f.value = 123;
@@ -420,11 +380,10 @@ test['form fields'] = {
           }
         ];
 
-        testUtils.spawn(f.validate, f)
-          .nodeify(done);
+        yield f.validate();
       },
 
-      'fail': function(done) {
+      'fail': function*() {
         var f = this.field;
         f.config.required = true;
         f.value = 123;
@@ -438,24 +397,17 @@ test['form fields'] = {
           }
         ];
 
-        new Q(function(resolve, reject) {
-          testUtils.spawn(f.validate, f)
-            .then(reject)
-            .catch(function(err) {
-              try {
-                expect(err).to.be.instanceOf(field.FieldValidationError);
-                expect(err.errors.testv.toString()).to.eql('Error: blah123');
-                resolve();
-              } catch (err2) {
-                reject(err2);
-              }
-            });
-        })
-          .nodeify(done);
+        try {
+          yield f.validate();
+          throw -1;
+        } catch (err) {
+          this.expect(err).to.be.instanceOf(field.FieldValidationError);
+          this.expect(err.details).to.eql(['blah123']);
+        }
       }      
     },
 
-    'to view object': function(done) {
+    'to view object': function*() {
       var f = this.field;
       f.config.type = 'text';
       f.config.label = 'Name';
@@ -467,28 +419,26 @@ test['form fields'] = {
       f.value = 87;
       f.originalValue = 98;
 
-      testUtils.spawn(f[viewObjectMethodName], f)
-        .then(function(viewObject) {
-          expect(viewObject).to.eql({
-            type: 'text',
-            name: 'test',
-            label: 'Name',
-            helpText: 'bla bla bla',
-            meta: {
-              multiline: true,
-              dummyKey: 1,
-            },
-            value: 87,
-            originalValue: 98
-          });
-        })
-        .nodeify(done);
+      let viewObject = yield toViewObjectYieldable(null, f);
+
+      this.expect(viewObject).to.eql({
+        type: 'text',
+        name: 'test',
+        label: 'Name',
+        helpText: 'bla bla bla',
+        meta: {
+          multiline: true,
+          dummyKey: 1,
+        },
+        value: 87,
+        originalValue: 98
+      });
     }
   },
 
   'create new Field': {
-    'loads field class and constructs and instance': function() {
-      var newForm = new form.Form({
+    'loads field class and constructs and instance': function*() {
+      var newForm = yield form.create({
         fields: [{
           name: 'blah2',
           type: 'text'
@@ -500,9 +450,9 @@ test['form fields'] = {
       });
 
       f.should.be.instanceOf(field.Field);
-      f.should.be.instanceOf(waigo.load('support/forms/fields/text').Field);
+      f.should.be.instanceOf(waigo.load('support/forms/fields/text'));
 
-      expect(f.config).to.eql({
+      this.expect(f.config).to.eql({
         name: 'blah',
         type: 'text'
       });
