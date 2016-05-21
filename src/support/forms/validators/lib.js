@@ -12,7 +12,8 @@ const waigo = global.waigo,
  * @throws Error If not an email address.
  */
 module.exports = function(options) {
-  let { method, args } = options;
+  let method = options.method,
+    args = options.args;
 
   args = args || [];
 
