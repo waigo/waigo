@@ -1,48 +1,40 @@
-var _ = require('lodash'),
+"use strict";
+
+const _ = require('lodash'),
   co = require('co'),
-  moment = require('moment'),
   path = require('path'),
   Q = require('bluebird');
 
-var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
-  test = _testUtils.test,
-  testUtils = _testUtils.utils,
-  assert = testUtils.assert,
-  expect = testUtils.expect,
-  should = testUtils.should,
-  waigo = testUtils.waigo;
+
+const test = require(path.join(process.cwd(), 'test', '_base'))(module);
+const waigo = global.waigo;
 
 
-var sanitizer = null,
-  sanitizerResult = undefined;
+let sanitizer = null;
 
 
 test['trim'] = {
-  beforeEach: function(done) {
-    this.spy = test.mocker.stub(require('validator'), 'trim', function() { 
-      return sanitizerResult; 
-    });
+  beforeEach: function*() {
+    yield this.initApp();
 
-    waigo.__modules = {};
-    waigo.initAsync()
-      .then(function() {
-        sanitizer = waigo.load('support/forms/sanitizers/trim');
-      })
-      .nodeify(done);
+    sanitizer = waigo.load('support/forms/sanitizers/trim');
   },
 
-  'calls through to validator module trim()': function(done) {
-    var self = this;
+  'trims string': function*() {
     var fn = sanitizer();
 
-    sanitizerResult = 123;
+    this.expect(yield fn(null, '  test ')).to.eql('test');
+  },
 
-    testUtils.spawn(fn, fn, null, 'test')
-      .then(function(val) {
-        self.spy.should.have.been.calledWithExactly('test');
-        expect(val).to.eql(123);
-      })
-      .nodeify(done);
+  'leaves non string stuff alone': function*() {
+    var fn = sanitizer();
+
+    this.expect(yield fn(null, 12)).to.eql(12);
+    this.expect(yield fn(null, null)).to.eql(null);
+    this.expect(yield fn(null, undefined)).to.eql(undefined);
+    this.expect(yield fn(null, true)).to.eql(true);
+    this.expect(yield fn(null, [])).to.eql([]);
+    this.expect(yield fn(null, {})).to.eql({});
   }
 
 };
