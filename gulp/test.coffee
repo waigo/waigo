@@ -13,7 +13,8 @@ module.exports = (paths, options = {}) ->
     )
       .pipe mocha(
         reporter: 'spec'
-        ui: 'exports'  
+        ui: 'exports'
+        timeout: 10000  
       )
       # .once 'error', (-> 
       #   process.exit(1);

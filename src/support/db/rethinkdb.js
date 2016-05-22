@@ -10,7 +10,7 @@ const waigo = global.waigo,
 
 
 // keep track of connections
-var _connections = [];
+var _connections = {};
 
 
 

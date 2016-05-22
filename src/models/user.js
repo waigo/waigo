@@ -430,7 +430,7 @@ exports.modelMethods = {
       profile: _.extend({
         displayName: properties.username,
       }, properties.profile),
-      roles: properties.roles,
+      roles: properties.roles || [],
     };
 
     if (properties.email) {
