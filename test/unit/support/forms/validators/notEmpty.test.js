@@ -23,43 +23,36 @@ test['notEmpty'] = {
   'null': function*() {
     var fn = validator();
 
-    co(fn(null, null, null))
-      .should.be.rejectedWith('Must not be empty');
+    yield this.shouldThrow(fn(null, null, null), 'Must not be empty');
   },
   'undefined': function*() {
     var fn = validator();
 
-    co(fn(null, null, undefined))
-      .should.be.rejectedWith('Must not be empty');
+    yield this.shouldThrow(fn(null, null, undefined), 'Must not be empty');
   },
   'empty string': function*() {
     var fn = validator();
 
-    co(fn(null, null, ''))
-      .should.be.rejectedWith('Must not be empty');
+    yield this.shouldThrow(fn(null, null, ''), 'Must not be empty');
   },
   'non-empty string': function*() {
     var fn = validator();
 
-    co(fn(null, null, 'a'))
-      .should.be.fulfilled;
+    yield fn(null, null, 'a');
   },
   'number': function*() {
     var fn = validator();
 
-    co(fn(null, null, 0))
-      .should.be.fulfilled;
+    yield fn(null, null, 0);
   },
   'boolean: true': function*() {
     var fn = validator();
 
-    co(fn(null, null, true))
-      .should.be.fulfilled;
+    yield fn(null, null, true);
   },
   'boolean: false': function*() {
     var fn = validator();
 
-    co(fn(null, null, false))
-      .should.be.fulfilled;
+    yield fn(null, null, false);
   }
 };

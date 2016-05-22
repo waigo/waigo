@@ -10,14 +10,11 @@ const test = require(path.join(process.cwd(), 'test', '_base'))(module);
 const waigo = global.waigo;
 
 
-let validator = null,
-  validationResult = undefined;
+let validator = null;
 
 
 test['isLength'] = {
   beforeEach: function*() {
-    this.spy = this.mocker.spy(require('validator'), 'isLength');
-
     yield this.initApp();
 
     validator = waigo.load('support/forms/validators/isLength');
@@ -26,11 +23,7 @@ test['isLength'] = {
   'defaults': function*() {
     var fn = validator();
 
-    co(fn(null, null, 0)).should.be.fulfilled;
-    co(fn(null, null, -1)).should.be.rejectedWith('Must be between 5 and 10000000 characters');
-
-    co(fn(null, null, 10000000)).should.be.fulfilled;
-    co(fn(null, null, 10000001)).should.be.rejectedWith('Must be between 5 and 10000000 characters');
+    yield fn(null, null, 'test');
   },
 
   'too short': function*() {
@@ -38,8 +31,8 @@ test['isLength'] = {
       min: 5
     });
 
-    co(fn(null, null, 'test'))
-      .should.be.rejectedWith('Must be between 5 and 10000000 characters');
+    yield this.shouldThrow(fn(null, null, 'test'), 'Must be between 5 and 10000000 characters');
+    yield fn(null, null, 'teste');
   },
 
   'too long': function*() {
@@ -47,18 +40,8 @@ test['isLength'] = {
       max: 3
     });
 
-    co(fn(null, null, 'test'))
-      .should.be.rejectedWith('Must be between 0 and 3 characters');
+    yield this.shouldThrow(fn(null, null, 'test'), 'Must be between 0 and 3 characters');
+    yield fn(null, null, 'tes');
   },
-
-
-  'pass': function*() {
-    var fn = validator({
-      min: 4, 
-      max: 5,
-    });
-
-    yield fn(null, null, 'test');
-  }
 
 };

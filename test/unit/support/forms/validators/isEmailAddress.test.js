@@ -41,7 +41,7 @@ test['isEmailAddress'] = {
     var fn = validator();
     validationResult = false;
 
-    co(fn(null, null, 'test')).should.be.rejectedWith('Must be an email address');
+    yield this.shouldThrow(fn(null, null, 'test'), 'Must be an email address');
   },
 
   'pass': function*() {

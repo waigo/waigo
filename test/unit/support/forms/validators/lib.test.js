@@ -35,13 +35,9 @@ test['lib'] = {
       args: [3, 4],
     });
 
-    co(fn(null, null, 'ab'))
-      .should.be.rejectedWith('Validation failed: isLength');
-    co(fn(null, null, 'abc'))
-      .should.be.fulfilled;
-    co(fn(null, null, 'abcd'))
-      .should.be.rejectedWith('Must be less than or equal to 3');
-    co(fn(null, null, 'abcde'))
-      .should.be.rejectedWith('Validation failed: isLength');
+    yield this.shouldThrow(fn(null, null, 'ab'), 'Validation failed: isLength');
+    yield this.shouldThrow(fn(null, null, 'abcde'), 'Validation failed: isLength');
+    yield fn(null, null, 'abcd');
+    yield fn(null, null, 'abc');
   },
 };

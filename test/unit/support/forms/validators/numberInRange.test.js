@@ -10,14 +10,11 @@ const test = require(path.join(process.cwd(), 'test', '_base'))(module);
 const waigo = global.waigo;
 
 
-let validator = null,
-  validationResult = undefined;
+let validator = null;
 
 
 test['isLength'] = {
   beforeEach: function*() {
-    this.spy = this.mocker.spy(require('validator'), 'isLength');
-
     yield this.initApp();
 
     validator = waigo.load('support/forms/validators/numberInRange');
@@ -28,10 +25,8 @@ test['isLength'] = {
       min: 5
     });
 
-    co(fn(null, null, 5))
-      .should.be.fulfilled;
-    co(fn(null, null, 4))
-      .should.be.rejectedWith('Must be greater than or equal to 5');
+    yield fn(null, null, 5);
+    yield this.shouldThrow(fn(null, null, 4), 'Must be greater than or equal to 5');
   },
 
   'too big': function*() {
@@ -39,10 +34,8 @@ test['isLength'] = {
       max: 3
     });
 
-    co(fn(null, null, 3))
-      .should.be.fulfilled;
-    co(fn(null, null, 4))
-      .should.be.rejectedWith('Must be less than or equal to 3');
+    yield fn(null, null, 3);
+    yield this.shouldThrow(fn(null, null, 4), 'Must be less than or equal to 3');
   },
 
 
@@ -52,8 +45,10 @@ test['isLength'] = {
       max: 3
     });
 
-    co(fn(null, null, 4))
-      .should.be.rejectedWith('Must be between 1 and 3 inclusive');
+    yield fn(null, null, 1);
+    yield fn(null, null, 2);
+    yield fn(null, null, 3);
+    yield this.shouldThrow(fn(null, null, 4), 'Must be between 1 and 3 inclusive');
   },
 
 
@@ -63,10 +58,8 @@ test['isLength'] = {
       max: 3
     });
 
-    co(fn(null, null, '2'))
-      .should.be.fulfilled;
-    co(fn(null, null, '4'))
-      .should.be.rejectedWith('Must be between 1 and 3 inclusive');
+    yield fn(null, null, 2);
+    yield this.shouldThrow(fn(null, null, 4), 'Must be between 1 and 3 inclusive');
   },
 
 

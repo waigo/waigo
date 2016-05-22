@@ -10,7 +10,7 @@ const waigo = global.waigo,
  *
  * @param {Object} options Options.
  * @param {String} options.field Field to compare to.
- * @param {String} options.comparison `gt`, `gte`, `lt`, `lte`, or `eq`.
+ * @param {String} options.comparison `gt`, `gte`, `lt`, `lte`, `neq` or `eq`.
  * 
  * @throws Error If not an email address.
  */
@@ -42,6 +42,11 @@ module.exports = function(options) {
       case 'lt':
         if (value >= otherField.value) {
           throw new FieldValidationError('Must be less than ' + otherField.label);
+        }
+        break;
+      case 'neq':
+        if (value === otherField.value) {
+          throw new FieldValidationError('Must not be equal to ' + otherField.label);
         }
         break;
       default:

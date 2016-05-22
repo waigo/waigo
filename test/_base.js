@@ -7,10 +7,19 @@ const waigo = require('../src');
 
 
 
-
 module.exports = function(_module) {
   let test = testUtils.mocha(_module, {
     extraDataAndMethods: {
+      shouldThrow: function*(gen, err) {
+        try {
+          yield gen;
+        } catch (e) {
+          (function() { throw e; }).should.throw(err);
+          return;
+        }
+        
+        throw new Error('Expected error not thrown: ' + err);
+      },
       initApp: function*() {
         waigo.reset();
 
@@ -19,7 +28,7 @@ module.exports = function(_module) {
         });
 
         this.Application = waigo.load('application');
-      }
+      },
     }
   });
 

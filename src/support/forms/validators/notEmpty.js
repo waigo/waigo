@@ -14,7 +14,10 @@ const waigo = global.waigo,
  */
 module.exports = function() {
   return function*(context, field, value) {
-    if (_.get(value, 'length', 0) < 1) {
+    if (null === value 
+        || undefined === value 
+        || (typeof value === 'string' && !value.length)
+    ) {
       throw new FieldValidationError('Must not be empty');
     }
   }
