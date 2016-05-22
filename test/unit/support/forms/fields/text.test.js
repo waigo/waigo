@@ -1,47 +1,20 @@
-var _ = require('lodash'),
+"use strict";
+
+const _ = require('lodash'),
   co = require('co'),
-  moment = require('moment'),
   path = require('path'),
   Q = require('bluebird');
 
-var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
-  test = _testUtils.test,
-  testUtils = _testUtils.utils,
-  assert = testUtils.assert,
-  expect = testUtils.expect,
-  should = testUtils.should,
-  waigo = testUtils.waigo;
+
+const test = require(path.join(process.cwd(), 'test', '_base'))(module);
+const waigo = global.waigo;
 
 
-var text = null,
-  field = null;
 
+test['text field'] = function*() {
+  yield this.initApp();
 
-test['text field'] = {
-  beforeEach: function(done) {
-    waigo.__modules = {};
-    waigo.initAsync()
-      .then(function() {
-        field = waigo.load('support/forms/field');
-        text = waigo.load('support/forms/fields/text');
-      })
-      .nodeify(done);
-  },
-
-  'inherits from base Field class': function() {
-    var f = new text.Field(123, {});
-    f.should.be.instanceOf(field.Field);
-  },
-
-  'construction': {
-    'calls base class constructor': function() {
-      test.mocker.stub(text.Field, 'super_');
-
-      var f = new text.Field(123, {});
-
-      text.Field.super_.should.have.been.calledOnce;
-      text.Field.super_.should.have.been.calledWithExactly(123, {});
-    }
-  }
-
+  waigo.load('support/forms/fields/text').should.eql(
+    waigo.load('support/forms/field').Field
+  );
 };
