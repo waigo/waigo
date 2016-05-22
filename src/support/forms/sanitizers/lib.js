@@ -10,7 +10,7 @@ const waigo = global.waigo,
  * Sanitizer which excutes a function from valiator lib
  */
 module.exports = function(options) {
-  let method = options.methods,
+  let method = options.method,
     args = options.args;
 
   args = args || [];
