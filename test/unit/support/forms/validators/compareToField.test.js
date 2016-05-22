@@ -37,7 +37,6 @@ test['compareToFielda'] = {
     });
 
     this.field = this.form.fields.field2;
-
   },
 
   'field not found': function*() {

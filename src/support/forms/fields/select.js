@@ -3,7 +3,7 @@
 
 const waigo = global.waigo,
   _ = waigo._,
-  errors = waigo.load('errors'),
+  errors = waigo.load('support/errors'),
   viewObjects = waigo.load('support/viewObjects'),
   FieldExports = waigo.load('support/forms/field'),
   Field = FieldExports.Field, 

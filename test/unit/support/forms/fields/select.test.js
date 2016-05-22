@@ -1,260 +1,130 @@
-var _ = require('lodash'),
+"use strict";
+
+const _ = require('lodash'),
   co = require('co'),
-  moment = require('moment'),
   path = require('path'),
   Q = require('bluebird');
 
-var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
-  test = _testUtils.test,
-  testUtils = _testUtils.utils,
-  assert = testUtils.assert,
-  expect = testUtils.expect,
-  should = testUtils.should,
-  waigo = testUtils.waigo;
+
+const test = require(path.join(process.cwd(), 'test', '_base'))(module);
+const waigo = global.waigo;
 
 
-var text = null,
-  field = null;
 
+test['select'] = {
+  beforeEach: function*() {
+    yield this.initApp();
 
-test['select field'] = {
-  beforeEach: function(done) {
-    var self = this;
+    let form = waigo.load('support/forms/form'),
+      field = waigo.load('support/forms/field');
 
-    waigo.__modules = {};
-    waigo.initAsync()
-      .then(function() {
-        field = waigo.load('support/forms/field');
-        select = waigo.load('support/forms/fields/select');
-      })
-      .nodeify(done);
-  },
-
-  'inherits from base Field class': function() {
-    var f = new select.Field(123, {});
-    f.should.be.instanceOf(field.Field);
-  },
-
-  'construction': {
-    'calls base class constructor': function() {
-      test.mocker.spy(select.Field, 'super_');
-
-      var f = new select.Field(123, {});
-
-      select.Field.super_.should.have.been.calledOnce;
-      select.Field.super_.should.have.been.calledWithExactly(123, {});
-    },
-
-    'set up default validator': {
-      'adds it to validator list': function() {
-        var f = new select.Field(123, {});
-
-        f.validators.length.should.eql(1);
-      },
-
-      'it ensures value is one of the valid options': {
-        single: {
-          beforeEach: function() {
-            var f = this._field = new select.Field(123, {
-              name: 'test'
-            });
-            f.form = {
-              state: {
-                test: {
-                  value: null
-                }
-              }
-            }
-
-            test.mocker.stub(f, 'getOptions', function*() {
-              return {
-                1: 'item1',
-                2: 'item2'
-              };
-            });
+    this.form = yield form.create({
+      fields: [
+        {
+          name: 'field1',
+          type: 'select',
+          options: {
+            key1: 'label1',
+            key2: 'label2',
           },
-
-          'when not valid': function(done) {
-            this._field.value = 3;
-
-            testUtils.spawn(this._field.validate, this._field)
-              .then(function() {
-                done(new Error('should not be here'));
-              })
-              .catch(function(err) {
-                try {
-                  err.should.be.instanceOf(field.FieldValidationError);
-                  expect(_.get(err, 'errors.validOption.message')).to.eql('Must be one of: item1, item2');
-                  done();
-                } catch (err2) {
-                  done(err2);
-                }
-              });
-          },
-
-          'when multiple given': function(done) {
-            this._field.value = [1, 2];
-
-            testUtils.spawn(this._field.validate, this._field)
-              .then(function() {
-                done(new Error('should not be here'));
-              })
-              .catch(function(err) {
-                try {
-                  err.should.be.instanceOf(field.FieldValidationError);
-                  expect(_.get(err, 'errors.validOption.message')).to.eql('Must be one of: item1, item2');
-                  done();
-                } catch (err2) {
-                  done(err2);
-                }
-              });
-          },
-
-          'when valid': function(done) {
-            this._field.value = 1;
-
-            testUtils.spawn(this._field.validate, this._field)
-              .nodeify(done);
-          }
         },
-
-        multiple: {
-          beforeEach: function() {
-            var f = this._field = new select.Field(123, {
-              name: 'test',
-              multiple: true,
-            });
-            f.form = {
-              state: {
-                test: {
-                  value: null
-                }
-              }
-            }
-
-            test.mocker.stub(f, 'getOptions', function*() {
-              return {
-                1: 'item1',
-                2: 'item2'
-              };
-            });
-          },
-
-          'when not valid': function(done) {
-            this._field.value = 3;
-
-            testUtils.spawn(this._field.validate, this._field)
-              .then(function() {
-                done(new Error('should not be here'));
-              })
-              .catch(function(err) {
-                try {
-                  err.should.be.instanceOf(field.FieldValidationError);
-                  expect(_.get(err, 'errors.validOption.message')).to.eql('Must be one or more of: item1, item2');
-                  done();
-                } catch (err2) {
-                  done(err2);
-                }
-              });
-          },
-
-          'when one invalid': function(done) {
-            this._field.value = [1, 3];
-
-            testUtils.spawn(this._field.validate, this._field)
-              .then(function() {
-                done(new Error('should not be here'));
-              })
-              .catch(function(err) {
-                try {
-                  err.should.be.instanceOf(field.FieldValidationError);
-                  expect(_.get(err, 'errors.validOption.message')).to.eql('Must be one or more of: item1, item2');
-                  done();
-                } catch (err2) {
-                  done(err2);
-                }
-              });
-          },
-
-          'when valid': function(done) {
-            this._field.value = [1, 2];
-
-            testUtils.spawn(this._field.validate, this._field)
-              .nodeify(done);
-          }
-        }
-      }
-    }
-  },
-
-
-  'get options': {
-    'can be generator function': function(done) {
-      var f = new select.Field(123, {});
-
-      f.config.options = function*() {
-        return {
-          1: 'item1',
-          2: 'item2'
-        };
-      };
-
-      testUtils.spawn(f.getOptions, f)
-        .should.eventually.eql({
-          1: 'item1',
-          2: 'item2'
-        })
-        .and.notify(done);
-    },
-
-    'can be an array': function(done) {
-      var f = new select.Field(123, {});
-
-      f.config.options = {
-        1: 'item1',
-        2: 'item2'
-      };
-
-      testUtils.spawn(f.getOptions, f)
-        .should.eventually.eql({
-          1: 'item1',
-          2: 'item2'
-        })
-        .and.notify(done);
-    }
-  },
-
-
-  'to view object': function(done) {
-    var f = new select.Field(123, {});
-
-    f.config.options = {
-      1: 'item1',
-      2: 'item2'
-    };
-
-    var toViewObjectSpy = test.mocker.stub(field.Field.prototype, 'toViewObject', function*() {
-      return {
-        dummy: true
-      };
+      ]
     });
 
-    var ctx = { req: false }
+    this.field = this.form.fields.field1;
+  },
 
-    testUtils.spawn(f.toViewObject, f, ctx)
-      .then(function(viewObj) {
-        expect(viewObj).to.eql({
-          dummy: true,
-          options: {
-            1: 'item1',
-            2: 'item2'
-          }
-        });
+  'extends field': function*() {
+    let SelectField = waigo.load('support/forms/fields/select'),
+      Field = waigo.load('support/forms/field').Field;
 
-        toViewObjectSpy.should.have.been.calledOnce;
-        toViewObjectSpy.should.have.been.calledWithExactly(ctx);
-      })
-      .nodeify(done);
-  }
+    this.field.should.be.instanceof(SelectField);
+    this.field.should.be.instanceof(Field);
+  },
 
+  'has options': {
+    'object': function*() {
+      this.field.config.options = {
+        key1: 'label1',
+        key2: 'label2',        
+      };
+
+      (yield this.field.getOptions()).should.eql({
+        key1: 'label1',
+        key2: 'label2',        
+      });
+    },
+    'function': function*() {
+      this.field.config.options = function*() {
+        return 234;
+      };
+
+      (yield this.field.getOptions()).should.eql(234);      
+    },
+  },
+
+  'view object': function*() {
+    let toViewObjectYieldable = waigo.load('support/viewObjects').toViewObjectYieldable;
+
+    this.mocker.stub(this.field, 'getOptions').returns(Q.resolve(123));
+
+    (yield toViewObjectYieldable(null, this.field)).options.should.eql(123);
+  },
+
+  'validate': {
+    'single-select': {
+      'pass': function*() {
+        yield this.field.setSanitizedValue('key1');
+
+        yield this.field.validate();
+      },
+      'fail - invalid': function*() {
+        yield this.field.setSanitizedValue('key3');
+
+        try {
+          yield this.field.validate();
+          throw -1;
+        } catch (err) {
+          this.expect(err.details).to.eql(['Must be one of: label1, label2']);
+        }
+      },
+      'fail - multi': function*() {
+        yield this.field.setSanitizedValue(['key1', 'key2']);
+
+        try {
+          yield this.field.validate();
+          throw -1;
+        } catch (err) {
+          this.expect(err.details).to.eql(['Must be one of: label1, label2']);
+        }
+      },
+    },
+    'multi-select': {
+      beforeEach: function*() {
+        this.field.config.multiple = true;
+      },
+      'pass - single': function*() {
+        yield this.field.setSanitizedValue('key1');
+
+        yield this.field.validate();
+      },
+      'pass - multi': function*() {
+        yield this.field.setSanitizedValue(['key1', 'key2']);
+
+        yield this.field.validate();
+      },
+      'fail - invalid': function*() {
+        yield this.field.setSanitizedValue(['key1', 'key3']);
+
+        try {
+          yield this.field.validate();
+          throw -1;
+        } catch (err) {
+          this.expect(err.details).to.eql(['Must be one or more of: label1, label2']);
+        }
+      },
+    },
+  },
 };
+
+
