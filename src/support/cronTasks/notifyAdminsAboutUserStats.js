@@ -15,21 +15,18 @@ exports.schedule = '0 0 3 * * 1';   // every monday morning at 3am
 
 exports.handler = function*(app) {
   // get admins
-  let  admins = yield app.models.User.findAdminUsers();
+  let admins = yield app.models.User.findAdminUsers();
 
   if (!admins.length) {
     return;
   }
 
+  // get users recently registered
   let lastWeek = moment().add('days', -7);
 
-  let activities = yield app.models.Activity.getRegistrationsSince(
+  let users = yield app.models.User.getUsersCreatedSince(
     lastWeek.toDate()
   );
-
-  let users = activities.map(function(a) {
-    return a.actor;
-  });
 
   yield app.mailer.send({
     to: admins,

@@ -57,6 +57,10 @@ exports.schema = {
     type: [String], 
     required: false,
   },
+  created: {
+    type: Date,
+    required: true,
+  },
   lastLogin: { 
     type: Date, 
     required: false,
@@ -451,6 +455,8 @@ exports.modelMethods = {
       );
     }
 
+    attrs.created = new Date();
+
     let user = yield this.insert(attrs);
 
     if (!user) {
@@ -473,6 +479,13 @@ exports.modelMethods = {
     }
 
     return yield this.get(userId);
+  },
+  getUsersCreatedSince: function*(date) {
+    let ret = yield this.rawQry().filter(function(doc) {
+      return doc('created').ge(date)
+    }).run();
+
+    return this.wrapRaw(ret);
   },
 };
 

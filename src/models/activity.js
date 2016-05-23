@@ -102,13 +102,6 @@ exports.modelMethods = {
 
     return this.wrapRaw(ret);
   },
-  getRegistrationsSince: function*(date) {
-    let ret = yield this.rawQry().filter(function(doc) {
-      return doc('published').ge(date) && doc('verb').eq('register');
-    }).run();
-
-    return this.wrapRaw(ret);
-  },
   getLatest: function*(verb, actorId) {
     const r = this.db;
 
