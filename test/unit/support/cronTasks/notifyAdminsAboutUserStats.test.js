@@ -28,6 +28,8 @@ test['notify admins about user stats'] = {
   },
 
   afterEach: function*() {
+    yield this.clearDb();
+    
     yield this.Application.shutdown();
   },
 
