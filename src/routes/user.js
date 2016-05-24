@@ -7,6 +7,7 @@ module.exports = {
       POST: 'user.register_submit'
     },
     '/login': {
+      name: 'user_login',
       GET: 'user.login',
       POST: 'user.login_submit',
     },

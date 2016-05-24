@@ -1,7 +1,5 @@
 "use strict";
 
-const querystring = require('querystring');
-
 
 const waigo = global.waigo,
   _ = waigo._,
@@ -43,12 +41,12 @@ module.exports = function(options) {
       if (options.redirectToLogin) {
         this.app.logger.debug('redirect to login');
 
-        var qryStr = querystring.stringify({
-          r: err.message,
-          u: this.request.url,
-        });
-
-        return yield this.redirect(`/user/login?${qryStr}`);
+        return yield this.redirect(
+          this.app.routeUrl('user_login', null, {
+            r: err.message,
+            u: this.request.url,            
+          })
+        );
       }
       // else show error
       else {

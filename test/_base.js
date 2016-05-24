@@ -3,6 +3,11 @@
 require('co-mocha');  /* enable generator test functions */
 const testUtils = require('waigo-test-utils');
 
+const Q = require('bluebird');
+Q.config({
+  longStackTraces: true
+});
+
 const waigo = require('../src'),
   _ = waigo._;
 
