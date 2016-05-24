@@ -11,7 +11,7 @@ const test = require(path.join(process.cwd(), 'test', '_base'))(module);
 const waigo = global.waigo;
 
 
-test['notify admins about user stats'] = {
+test['base'] = {
   beforeEach: function*() {
     yield this.initApp();
 
@@ -39,6 +39,7 @@ test['notify admins about user stats'] = {
     };
 
     this.MailerBase = waigo.load('support/mailer/base');
+    this.NodeMailer = waigo.load('support/mailer/engines/nodeMailer').NodeMailer;
   },
 
   afterEach: function*() {
@@ -97,6 +98,73 @@ test['notify admins about user stats'] = {
       _.get(ret, 'body').should.contain('Hey,');
       _.get(ret, 'body').should.contain('Waigo administrators');
       _.get(ret, 'body').should.contain('successfully reset your password');
+    },
+  },
+
+  'got NodeMailer instance': function*() {
+    this.app.mailer._nodeMailer.should.be.instanceof(this.NodeMailer);
+  },
+
+  'sending': {
+    beforeEach: function*() {
+      this.spy = this.mocker.stub(this.app.mailer._nodeMailer, '_send', () => Q.resolve());
+    },
+
+    'sends to nodemailer': function*() {
+      let spy = this.spy;
+
+      yield this.app.mailer._send({
+        to: [this.users.user1, this.users.user2, this.users.user3],
+        subject: 'subj',
+        body: '**body**',
+      });
+
+      _.map(spy.args || [], (arg) => _.get(arg, '0.to')).should.eql([
+        'user1@waigojs.com', 
+        'user2@waigojs.com',
+        'user3@waigojs.com',
+      ]); 
+
+      _.map(spy.args || [], (arg) => _.get(arg, '0.from')).should.eql([
+        'System <waigo@localhost>',
+        'System <waigo@localhost>',
+        'System <waigo@localhost>',
+      ]); 
+
+      _.map(spy.args || [], (arg) => _.get(arg, '0.replyTo')).should.eql([
+        'System <waigo@localhost>',
+        'System <waigo@localhost>',
+        'System <waigo@localhost>',
+      ]); 
+
+      _.map(spy.args || [], (arg) => _.get(arg, '0.subject')).should.eql([
+        'subj',
+        'subj',
+        'subj',
+      ]);
+
+      _.get(spy.args, '0.0.html').should.contain('<div><p><strong>body</strong></p>\n</div>');
+    },
+    'records activity': function*() {
+      let spy = this.mocker.spy();
+
+      this.app.events.on('record', spy);
+
+      yield this.app.mailer._send({
+        to: [this.users.user1, this.users.user2, this.users.user3],
+        subject: 'subj',
+        body: '**body**',
+      });
+
+      spy.should.have.been.calledWith('email', this.users.user1, {
+        subject: 'subj',
+      });
+      spy.should.have.been.calledWith('email', this.users.user2, {
+        subject: 'subj',
+      });
+      spy.should.have.been.calledWith('email', this.users.user3, {
+        subject: 'subj',
+      });
     },
   },
 

@@ -18,7 +18,7 @@ class Console extends Mailer {
   }
 
   * send (params) {
-    let result = yield this._send(params);
+    return yield this._send(params);
   }
 
 }

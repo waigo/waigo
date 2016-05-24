@@ -11,7 +11,7 @@ const test = require(path.join(process.cwd(), 'test', '_base'))(module);
 const waigo = global.waigo;
 
 
-test['notify admins about user stats'] = {
+test['console'] = {
   beforeEach: function*() {
     yield this.initApp();
 
@@ -42,8 +42,8 @@ test['notify admins about user stats'] = {
       }),
     };
 
+    this.Base = waigo.load('support/mailer/base');
     this.Console = waigo.load('support/mailer/console').Console;
-    this.NodeMailer = waigo.load('support/mailer/engines/nodeMailer').NodeMailer;
   },
 
   afterEach: function*() {
@@ -54,46 +54,15 @@ test['notify admins about user stats'] = {
 
   'app.mailer instance': function*() {
     this.app.mailer.should.be.instanceof(this.Console);
+    this.app.mailer.should.be.instanceof(this.Base);
   },
 
-  'got NodeMailer instance': function*() {
-    this.app.mailer._nodeMailer.should.be.instanceof(this.NodeMailer);
-  },
+  'send calls to base class': function*() {
+    let spy = this.mocker.stub(this.app.mailer, '_send', () => Q.resolve());
 
-  'sends to nodemailer': function*() {
-    let spy = this.mocker.stub(this.app.mailer._nodeMailer, '_send', () => Q.resolve());
+    yield this.app.mailer.send(123);
 
-    yield this.app.mailer.send({
-      to: [this.users.user1, this.users.user2, this.users.user3],
-      subject: 'subj',
-      body: '**body**',
-    });
-
-    _.map(spy.args || [], (arg) => _.get(arg, '0.to')).should.eql([
-      'user1@waigojs.com', 
-      'user2@waigojs.com',
-      'user3@waigojs.com',
-    ]); 
-
-    _.map(spy.args || [], (arg) => _.get(arg, '0.from')).should.eql([
-      'test@waigojs.com',
-      'test@waigojs.com',
-      'test@waigojs.com',
-    ]); 
-
-    _.map(spy.args || [], (arg) => _.get(arg, '0.replyTo')).should.eql([
-      'test@waigojs.com',
-      'test@waigojs.com',
-      'test@waigojs.com',
-    ]); 
-
-    _.map(spy.args || [], (arg) => _.get(arg, '0.subject')).should.eql([
-      'subj',
-      'subj',
-      'subj',
-    ]);
-
-    _.get(spy.args, '0.0.html').should.contain('<div><p><strong>body</strong></p>\n</div>');
+    spy.should.have.been.calledWith(123);
   },
 
 };
