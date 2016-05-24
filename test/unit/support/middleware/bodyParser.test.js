@@ -1,40 +1,36 @@
-var co = require('co'),
-  moment = require('moment'),
+"use strict";
+
+const _ = require('lodash'),
+  co = require('co'),
   path = require('path'),
+  moment = require('moment'),
   Q = require('bluebird');
 
-var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
-  test = _testUtils.test,
-  testUtils = _testUtils.utils,
-  assert = testUtils.assert,
-  expect = testUtils.expect,
-  should = testUtils.should,
-  waigo = testUtils.waigo;
+
+const test = require(path.join(process.cwd(), 'test', '_base'))(module);
+const waigo = global.waigo;
 
 
 var bodyParser = null;
 
 
 test['body parser'] = {
-  beforeEach: function(done) {
-    waigo.__modules = {};
-    waigo.initAsync()
-      .then(function() {
-        bodyParser = waigo.load('support/middleware/bodyParser');
-      })
-      .nodeify(done);
+  beforeEach: function*() {
+    yield this.initApp();
+
+    bodyParser = waigo.load('support/middleware/bodyParser');
   },
 
-  'uses co-body': function() {
-    expect(bodyParser._bodyParser).to.eql(require('co-body'));
+  'uses co-body': function*() {
+    this.expect(bodyParser._bodyParser).to.eql(require('co-body'));
   },
 
-  'parses the body': function(done) {
+  'parses the body': function*() {
     var ctx = {
       request: {}
     };
 
-    bodyParser._bodyParser = test.mocker.stub().returns({
+    bodyParser._bodyParser = this.mocker.stub().returns({
       dummy: true
     });
 
@@ -42,13 +38,12 @@ test['body parser'] = {
       ctx.nextCalled = 1;
     };
 
-    testUtils.spawn(bodyParser(), ctx, next)
-      .then(function() {
-        expect(ctx.request.body).to.eql({
-          dummy: true
-        });
-        expect(ctx.nextCalled).to.eql(1);
-      })
-      .nodeify(done);
+    yield bodyParser().call(ctx, next);
+
+    this.expect(ctx.request.body).to.eql({
+      dummy: true
+    });
+
+    this.expect(ctx.nextCalled).to.eql(1);
   }
 };
