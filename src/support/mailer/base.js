@@ -155,7 +155,7 @@ class Mailer {
     return yield _.map(mailOptions.to, (recipient) => {
       return co.wrap(function*() {
         // email address
-        var email = _.get(recipient, 'emails.0.email', recipient);
+        var email = _.get(recipient, 'emailAddress', recipient);
 
         self.logger.debug('Email ' + email + ': ' + mailOptions.subject);
 

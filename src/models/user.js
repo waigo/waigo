@@ -100,6 +100,16 @@ exports.docVirtuals = {
       return true === _.includes(this.roles, 'admin');
     }
   },
+  emailAddress: {
+    get: function() {
+      return _.get(this.emails, '0.email');
+    }
+  },
+  emailAddresses: {
+    get: function() {
+      return _.map(this.emails || [], 'email');
+    }
+  },
 };
 
 
