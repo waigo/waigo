@@ -63,7 +63,7 @@ var render = function*(config, err) {
   try {
     yield this.render('error', error);
   } catch (anotherError) {
-    this.app.emit('error', anotherError);
+    this.app.emit('error', anotherError.stack);
 
     this.type = 'json';
     this.body = anotherError;

@@ -1,91 +1,137 @@
-var co = require('co'),
-  moment = require('moment'),
+"use strict";
+
+const _ = require('lodash'),
+  co = require('co'),
   path = require('path'),
+  moment = require('moment'),
   Q = require('bluebird');
 
-var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
-  test = _testUtils.test,
-  testUtils = _testUtils.utils,
-  assert = testUtils.assert,
-  expect = testUtils.expect,
-  should = testUtils.should,
-  waigo = testUtils.waigo;
+
+const test = require(path.join(process.cwd(), 'test', '_base'))(module);
+const waigo = global.waigo;
 
 
-var errors = null,
-  errorHandler = null;
+var middleware = null,
+  errors = null;
 
 
-test['error handler middleware'] = {
-  beforeEach: function(done) {
-    waigo.__modules = {};
-    waigo.initAsync()
-      .then(function() {
-        errors = waigo.load('support/errors');
-        errorHandler = waigo.load('support/middleware/errorHandler');
-      })
-      .nodeify(done);
+test['context helpers'] = {
+  beforeEach: function*() {
+    let self = this;
+
+    middleware = null;
+
+    this._init = function*() {
+      yield self.initApp();
+
+      yield self.startApp({
+        startupSteps: ['database', 'models'],
+        shutdownSteps: ['database'],
+      });
+
+      middleware = waigo.load('support/middleware/errorHandler');
+      errors = waigo.load('support/errors');
+    };
   },
 
-  'returns middleware': function() {
-    var fn = errorHandler();
-
-    expect(testUtils.isGeneratorFunction(fn)).to.be.true;
+  afterEach: function*() {
+    if (middleware) {
+      yield this.Application.shutdown();
+    }
   },
 
-  'default handling': function(done) {
-    var fn = errorHandler();
+  'throw()': {
+    beforeEach: function*() {
+      yield this._init();
 
-    var ctx = {
-      app: waigo.load('application').app
-    };
-    ctx.app.logger = {
-      error: test.mocker.spy()
-    };
+      this.ctx = {
+        app: this.app,
+      };
 
-    var e = new errors.RuntimeError('bla bla bla', 403);
+      yield middleware().call(this.ctx, Q.resolve());
+    },
+    'default': function*() {
+      try {
+        this.ctx.throw('default error', 502);
+        throw -1;
+      } catch (err) {
+        err.should.be.instanceof(errors.RuntimeError);
+        err.status.should.eql(502);
+        err.message.should.eql('default error');
+      }
+    },
+    'custom class': function*() {
+      let MyError = errors.define('MyError');
 
-    testUtils.spawn(fn, ctx, function*(){ 
-      throw e;
-    })
-      .then(function() {
-        ctx.status.should.eql(403);
-        ctx.body.should.eql({
-          type: 'RuntimeError',
-          msg: 'bla bla bla'
+      try {
+        this.ctx.throw(MyError, 'default error', 502);
+        throw -1;
+      } catch (err) {
+        err.should.be.instanceof(MyError);
+        err.status.should.eql(502);
+        err.message.should.eql('default error');
+      }
+    },
+  },
+
+  'renders error page': {
+    beforeEach: function*() {
+      yield this._init();
+
+      this.ctx = {
+        app: this.app,
+        request: {
+          url: '/test',
+          method: 'del',
+        },
+        render: this.mocker.spy(() => Q.resolve()),
+      };
+    },
+
+    'error page ok': function*() {
+      yield middleware().call(this.ctx, function*() {
+        throw new errors.RuntimeError('mega', 502, {
+          dummy: true,
         });
-        expect(ctx.body.stack).to.be.undefined;
-        ctx.type.should.eql('json');
+      });
 
-        ctx.app.logger.error.should.have.been.calledOnce;
-        ctx.app.logger.error.should.have.been.calledWithExactly(e.stack);
-      })
-      .nodeify(done);
+      this.ctx.render.should.have.been.calledWith('error');
+      let err = this.ctx.render.getCall(0).args[1];
+
+      err.status.should.eql(502);
+      this.ctx.status.should.eql(502);
+      err.msg.should.eql('mega');
+      err.request.should.eql(this.ctx.request);
+      err.details.should.eql({ dummy: true });
+      err.stack.should.be.defined;
+    },
+
+
+    'error page fail': function*() {
+      let err = new errors.RuntimeError('mega', 502, {
+        dummy: true,
+      });
+
+      let err2 = new Error('blah');
+
+      this.ctx.render = this.mocker.spy(() => Q.reject(err2));
+
+      let spy = this.mocker.spy();
+
+      this.ctx.app.on('error', spy);
+
+      yield middleware().call(this.ctx, function*() {
+        throw err;
+      });
+
+      this.ctx.render.should.have.been.calledWith('error');
+
+      spy.should.have.been.calledTwice;
+      spy.getCall(0).args[0].should.eql(err.stack);      
+      spy.getCall(1).args[0].should.eql(err2.stack);      
+      spy.getCall(1).args[0].should.eql(this.ctx.body.stack);
+      this.ctx.type.should.eql('json');
+    },
   },
-
-  'show stack': function(done) {
-    var app = waigo.load('application').app;
-    
-    var fn = errorHandler({
-      showStack: true
-    });
-
-    var ctx = {
-      app: app
-    };
-    ctx.app.logger = {
-      error: test.mocker.spy()
-    };
-
-    var e = new errors.RuntimeError('bla bla bla', 403);
-
-    testUtils.spawn(fn, ctx, function*(){ 
-      throw e;
-    })
-      .then(function() {
-        expect(ctx.body.stack).to.not.be.undefined;
-      })
-      .nodeify(done);
-  }
 
 };
