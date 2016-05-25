@@ -4,7 +4,6 @@
  * @fileOverview Setup context-level convenient accessors and template helpers
  */
 
-const URL = require('url');
 
 
 const waigo = global.waigo,
@@ -25,7 +24,6 @@ module.exports = function() {
     // request template vars
     this.templateVars = this.templateVars || {};
     this.templateVars.currentUser = this.currentUser;
-    this.templateVars.matchesCurrentUrl = _.bind(matchesCurrentUrl, this);
 
     // convenient accessors
     this.logger = this.app.logger;
@@ -34,49 +32,9 @@ module.exports = function() {
     this.models = this.app.models;
     this.form = this.app.form;
 
-    processAlertMessage(this);
-
     yield next;
   }
 };
 
-
-
-/** 
- * Get whether given URL path matches current URL path.
- * @param  {String} urlPath URL path.
- * @return {Boolean}  true if so; false otherwise.
- */
-const matchesCurrentUrl = exports.matchesCurrentUrl = function(urlPath) {
-  var parsedURL = URL.parse(this.request.url),
-    parsedPath = URL.parse(urlPath);
-
-  return (parsedURL.pathname === parsedPath.pathname);
-};
-
-
-
-/**
- * Process an alert message.
- * @param  {Object} ctx Request context.
- */
-const processAlertMessage = exports.processAlertMessage = function(ctx) {
-  if (!ctx.session) {
-    return;
-  }
-  
-  // clear current alert message (and save it for templates)
-  if (ctx.session.alertMsg) {
-    ctx.templateVars.alertMsg = ctx.session.alertMsg;
-    ctx.session.alertMsg = null;
-  }
-
-  // set alert msg for next page show
-  ctx.showAlert = function*(msg) {
-    ctx.logger.debug('set alert message', msg);
-    
-    ctx.session.alertMsg = msg;
-  };
-}
 
 
