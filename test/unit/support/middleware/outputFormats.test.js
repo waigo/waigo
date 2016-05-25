@@ -1,65 +1,55 @@
-var co = require('co'),
-  moment = require('moment'),
+"use strict";
+
+const _ = require('lodash'),
+  co = require('co'),
   path = require('path'),
+  moment = require('moment'),
   Q = require('bluebird');
 
-var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
-  test = _testUtils.test,
-  testUtils = _testUtils.utils,
-  assert = testUtils.assert,
-  expect = testUtils.expect,
-  should = testUtils.should,
-  waigo = testUtils.waigo;
+
+const test = require(path.join(process.cwd(), 'test', '_base'))(module);
+const waigo = global.waigo;
 
 
-var app = null,
-  outputFormats = null,
+var outputFormats = null,
   ctx = null;
 
 
-test['output formats middleware'] = {
-  beforeEach: function(done) {
-    testUtils.deleteTestFolders()
-      .then(testUtils.createTestFolders)
-      .then(function() {
-        return testUtils.createAppModules({
-          'support/outputFormats/html2': 'module.exports = { create: function() { return { render: function*() { yield 123; } }; } };'
-        });
-      })
-      .then(function() {
-        return waigo.initAsync();
-      })
-      .then(function() {
-        outputFormats = waigo.load('support/middleware/outputFormats');
-        ctx = {
-          query: {},
-          request: {},
-          formats: {}
-        };
-        app = waigo.load('application').app;
-      })
-      .nodeify(done);
+test['context helpers'] = {
+  beforeEach: function*() {
+    this.createAppModules({
+      'support/outputFormats/html2': 'module.exports = { create: function() { return { render: function*() { this.body = 123; } }; } };'
+    });
+
+    yield this.initApp();
+
+    yield this.startApp({
+      startupSteps: [],
+      shutdownSteps: [],
+    });
+
+    outputFormats = waigo.load('support/middleware/outputFormats');
+    ctx = {
+      request: {},
+      query: {},
+    };
   },
-  afterEach: function(done) {
-    testUtils.deleteTestFolders().nodeify(done);
+
+  afterEach: function*() {
+    yield this.Application.shutdown();
   },
 
   'invalid format in config': function() {
-    expect(function() {
+    this.expect(function() {
       outputFormats({
         formats: {
           html3: true          
         }
       });
-    }).to.throw('Module not found: support/outputFormats/html3');
+    }).to.throw('File not found: support/outputFormats/html3');
   },
 
-  'returns middleware': function() {
-    var fn = outputFormats(ctx);
-    expect(testUtils.isGeneratorFunction(fn)).to.be.true;
-  },
-
-  'uses default format when not specified': function(done) {
+  'uses default format when not specified': function*() {
     var fn = outputFormats({
       paramName: 'format',
       default: 'json',
@@ -68,15 +58,20 @@ test['output formats middleware'] = {
       }
     });
 
-    testUtils.spawn(fn, ctx, function*(){})
-      .then(function() {
-        expect(testUtils.isGeneratorFunction(ctx.render)).to.be.true;
-        expect(ctx.request.outputFormat).to.eql('json');
-      })
-      .nodeify(done);
+    let count = 0;
+
+    yield fn.call(ctx, function*() {
+      count++;
+    });
+
+    count.should.eql(1);
+
+    _.isGenFn(ctx.render).should.be.true;
+
+    this.expect(ctx.request.outputFormat).to.eql('json');
   },
 
-  'invalid format in request': function(done) {
+  'invalid format in request': function*() {
     var fn = outputFormats({
       paramName: 'format',
       default: 'json',
@@ -87,27 +82,17 @@ test['output formats middleware'] = {
 
     ctx.query.format = 'html';
 
-    new Q(function(resolve, reject) {
-      testUtils.spawn(fn, ctx, true)
-        .then(function() {
-          reject(new Error('should have failed'));
-        })
-        .catch(function(err){
-          try {
-            expect(err.message).to.eql('Invalid output format requested: html');
-            expect(err.status).to.eql(400);
-            resolve();
-          } catch (err) {
-            reject(err);
-          }
-        });
-    })
-      .nodeify(done);
+    try {
+      yield fn.call(ctx, Q.resolve());
+      throw -1;
+    } catch (err) {
+      this.expect(err.message).to.eql('Invalid output format requested: html');
+      this.expect(err.status).to.eql(400);      
+    }
   },
 
 
-
-  'custom format': function(done) {
+  'custom format': function*() {
     var fn = outputFormats({
       paramName: 'format',
       default: 'json',
@@ -119,23 +104,19 @@ test['output formats middleware'] = {
 
     ctx.query.format = 'html2';
 
-    testUtils.spawn(fn, ctx, function*() {})
-      .then(function() {
-        expect(testUtils.isGeneratorFunction(ctx.render)).to.be.true;
-        expect(ctx.request.outputFormat).to.eql('html2');
-      })
-      .then(function() {
-        testUtils.spawn(ctx.render, ctx)
-          .then(function(value) {
-            expect(value).to.eql(123);
-          });
-      })
-      .nodeify(done);
+    yield fn.call(ctx, Q.resolve());
+
+    this.expect(_.isGenFn(ctx.render)).to.be.true;
+    this.expect(ctx.request.outputFormat).to.eql('html2');
+
+    yield ctx.render.call(ctx);
+
+    this.expect(ctx.body).to.eql(123);
   },
 
 
-  'converts locals to view objects if possible': function(done) {
-    var toViewObjectMethodName = waigo.load('support/viewObjects').methodName;
+  'converts locals to view objects if possible': function*() {
+    const toViewObjectMethodName = waigo.load('support/viewObjects').METHOD_NAME;
 
     var fn = outputFormats({
       paramName: 'format',
@@ -144,7 +125,6 @@ test['output formats middleware'] = {
         json: true
       }
     });
-
 
     var locals = {
       dummy: true,
@@ -171,32 +151,28 @@ test['output formats middleware'] = {
       };
     };
 
-    testUtils.spawn(fn, ctx, function*() {})
-      .then(function() {
-        expect(testUtils.isGeneratorFunction(ctx.render)).to.be.true;
-      })
-      .then(function() {
-        return testUtils.spawn(ctx.render, ctx, null, locals)
-          .then(function() {
-            expect(ctx.body).to.eql({
-              dummy: true,
-              dummy2: {
-                val: 55
-              },
-              dummy3: [
-                456,
-                [ 1 ],
-                { bar: 999 },
-                { val: 77 }
-              ]
-            });
-          });
-      })
-      .nodeify(done);    
+    yield fn.call(ctx, Q.resolve());
+
+    this.expect(_.isGenFn(ctx.render)).to.be.true;
+
+    yield ctx.render.call(ctx, null, locals);
+
+    this.expect(ctx.body).to.eql({
+      dummy: true,
+      dummy2: {
+        val: 55
+      },
+      dummy3: [
+        456,
+        [ 1 ],
+        { bar: 999 },
+        { val: 77 }
+      ]
+    });
   },
 
 
-  'redirect to url': function(done) {
+  'redirect to url': function*() {
     var fn = outputFormats({
       paramName: 'format',
       default: 'json',
@@ -205,18 +181,14 @@ test['output formats middleware'] = {
       }
     });
 
-    testUtils.spawn(fn, ctx, function*() {})
-      .then(function() {
-        expect(testUtils.isGeneratorFunction(ctx.redirect)).to.be.true;
-      })
-      .then(function() {
-        return testUtils.spawn(ctx.redirect, ctx, 'www.test.com')
-          .then(function() {
-            expect(ctx.body).to.eql({
-              redirectTo: 'www.test.com'
-            });
-          });
-      })
-      .nodeify(done);  
+    yield fn.call(ctx, Q.resolve());
+
+    this.expect(_.isGenFn(ctx.redirect)).to.be.true;
+
+    yield ctx.redirect.call(ctx, 'www.test.com');
+
+    this.expect(ctx.body).to.eql({
+      redirectTo: 'www.test.com'
+    });
   },  
 };
