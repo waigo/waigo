@@ -15,7 +15,7 @@ var outputFormats = null,
   ctx = null;
 
 
-test['context helpers'] = {
+test['output formats'] = {
   beforeEach: function*() {
     this.createAppModules({
       'support/outputFormats/html2': 'module.exports = { create: function() { return { render: function*() { this.body = 123; } }; } };'

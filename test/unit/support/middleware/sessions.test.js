@@ -1,56 +1,57 @@
-var co = require('co'),
-  moment = require('moment'),
+"use strict";
+
+const _ = require('lodash'),
+  co = require('co'),
   path = require('path'),
+  moment = require('moment'),
   Q = require('bluebird');
 
-var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
-  test = _testUtils.test,
-  testUtils = _testUtils.utils,
-  assert = testUtils.assert,
-  expect = testUtils.expect,
-  should = testUtils.should,
-  waigo = testUtils.waigo;
+
+const test = require(path.join(process.cwd(), 'test', '_base'))(module);
+const waigo = global.waigo;
 
 
-test['sessions middleware'] = {
-  beforeEach: function(done) {
-    var self = this;
+var middleware = null,
+  ctx = null;
 
-    testUtils.deleteTestFolders()
-      .then(function() {
-        return testUtils.createAppModules({
-          'support/session/store/testStore': 'module.exports = { create: function(app, cfg) { return cfg; } };'
-        })
-      })
-      .then(function() {
-        waigo.__modules = {};
-        return waigo.initAsync();
-      })
-      .then(function() {
-        self.middleware = waigo.load('support/middleware/sessions');
-        self.app = waigo.load('application').app;
-      })
-      .nodeify(done);      
+
+test['sessions'] = {
+  beforeEach: function*() {
+    this.createAppModules({
+      'support/session/store/testStore': 'module.exports = { create: function(app, cfg) { return cfg; } };'
+    });
+
+    yield this.initApp();
+
+    yield this.startApp({
+      startupSteps: [],
+      shutdownSteps: [],
+    });
+
+    middleware = waigo.load('support/middleware/sessions');
+    ctx = {
+      request: {},
+      query: {},
+    };
   },
-  afterEach: function(done) {
-    testUtils.deleteTestFolders().nodeify(done);
-  },
-  'verifies that cookie signing keys are set': function(done) {
-    var self = this;
 
-    testUtils.spawn(function*() {
-      yield* self.middleware({});
-    })
-      .should.be.rejectedWith('Please specify cookie signing keys in the config file.')
-      .and.notify(done);
+  afterEach: function*() {
+    yield this.Application.shutdown();
   },
-  'default': function() {
-    var self = this;
 
-    var createStoreSpy = test.mocker.spy(waigo.load('support/session/store/testStore'),'create');
+  'verifies that cookie signing keys are set': function*() {
+    this.expect(function() {
+      middleware({});
+    }).to.throw('Please specify cookie signing keys in the config file.');
+  },
+  'default': function*() {
+    var createStoreSpy = this.mocker.spy(
+      waigo.load('support/session/store/testStore'),
+      'create'
+    );
 
     var options = { 
-      app: self.app,
+      app: this.app,
       keys: ['my', 'key'],
       name: 'sessionName',
       store: {
@@ -65,10 +66,10 @@ test['sessions middleware'] = {
       }
     };
 
-    var fn = self.middleware(options);
+    var fn = middleware(options);
 
-    self.app.keys.should.eql(['my', 'key']);
+    this.app.keys.should.eql(['my', 'key']);
     createStoreSpy.should.have.been.calledOnce;
-    createStoreSpy.should.have.been.calledWithExactly(self.app, {hello: 'world'});
+    createStoreSpy.should.have.been.calledWithExactly(this.app, {hello: 'world'});
   }
 };
