@@ -1,33 +1,32 @@
-var co = require('co'),
-  moment = require('moment'),
+"use strict";
+
+const _ = require('lodash'),
+  co = require('co'),
   path = require('path'),
+  moment = require('moment'),
   Q = require('bluebird');
 
-var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
-  test = _testUtils.test,
-  testUtils = _testUtils.utils,
-  assert = testUtils.assert,
-  expect = testUtils.expect,
-  should = testUtils.should,
-  waigo = testUtils.waigo;
+
+const test = require(path.join(process.cwd(), 'test', '_base'))(module);
+const waigo = global.waigo;
+
 
 
 test['static resources middleware'] = {
-  beforeEach: function(done) {
-    waigo.__modules = {};
-    waigo.initAsync().nodeify(done);
+  beforeEach: function*() {
+    yield this.initApp();
   },
 
   'app relative folder': function() {
     var m = waigo.load('support/middleware/staticResources');
 
-    var pathJoinSpy = test.mocker.spy(path, 'join');
+    var pathJoinSpy = this.mocker.spy(path, 'join');
 
     var fn = m({
       folder: 'static'
     });
 
-    expect(testUtils.isGeneratorFunction(fn)).to.be.true;
+    _.isGenFn(fn).should.be.true;
 
     pathJoinSpy.should.have.been.calledWithExactly(waigo.getAppFolder(), 'static');
   }
