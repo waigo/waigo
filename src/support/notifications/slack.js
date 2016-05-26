@@ -21,7 +21,7 @@ module.exports = function*(app, id, config) {
     
     _logger.debug(`Notify`);
 
-    return new Q(function(resolve, reject) {
+    yield new Q(function(resolve, reject) {
       slack.webhook({
         channel: config.channel,
         username: config.username,
