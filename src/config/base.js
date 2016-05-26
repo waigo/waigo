@@ -290,7 +290,7 @@ module.exports = function(config) {
       // one more notification transports
       transports: [
         {
-          type: 'console',
+          type: 'log',
         },
         /*
         {

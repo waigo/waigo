@@ -2,7 +2,7 @@
 
 const waigo = global.waigo,
   _ = waigo._,
-  logger = waigo.load('support/logger').create('ConsoleNotifier');
+  logger = waigo.load('support/logger').create('LogNotifier');
 
 
 

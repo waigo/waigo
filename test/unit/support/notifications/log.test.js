@@ -16,7 +16,7 @@ const waigo = global.waigo;
 var notifier = null;
 
 
-test['console notifier'] = {
+test['log notifier'] = {
   beforeEach: function*() {
     yield this.initApp();
 
@@ -36,7 +36,7 @@ test['console notifier'] = {
       this.log.push(msg);
     });
 
-    notifier = waigo.load('support/notifications/console');
+    notifier = waigo.load('support/notifications/log');
   },
 
   afterEach: function*() {
@@ -50,7 +50,7 @@ test['console notifier'] = {
 
     let logEvent = this.log.pop();
 
-    _.get(logEvent, 'categoryName').should.eql('ConsoleNotifier/test1');
+    _.get(logEvent, 'categoryName').should.eql('LogNotifier/test1');
     _.get(logEvent, 'data').should.eql(['dummydave']);
   },
 
@@ -63,7 +63,7 @@ test['console notifier'] = {
 
     let logEvent = this.log.pop();
 
-    _.get(logEvent, 'categoryName').should.eql('ConsoleNotifier/test1');
+    _.get(logEvent, 'categoryName').should.eql('LogNotifier/test1');
     _.get(logEvent, 'data').should.eql([ JSON.stringify(data) ]);
   },
 };
