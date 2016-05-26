@@ -19,7 +19,7 @@ var AbstractCommand = null,
 
 
 test['init command'] = {
-  beforeEach: function(done) {
+  beforeEach: function*() {
     testUtils.deleteTestFolders()
       .then(function() {
         return testUtils.createTestFolders();
@@ -31,7 +31,7 @@ test['init command'] = {
       })
       .nodeify(done);
   },
-  afterEach: function(done) {
+  afterEach: function*() {
     testUtils.deleteTestFolders().nodeify(done);
   },
 
@@ -46,7 +46,7 @@ test['init command'] = {
     expect(c.options).to.eql([]);
   },
 
-  'run - action handler': function(done) {
+  'run - action handler': function*() {
     var c = new InitCommand();
 
     var installPkgSpy = test.mocker.stub(c, 'installPkgs', function() {

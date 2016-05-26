@@ -1,24 +1,24 @@
-var moment = require('moment'),
+"use strict";
+
+const _ = require('lodash'),
+  co = require('co'),
   path = require('path'),
+  moment = require('moment'),
   Q = require('bluebird');
 
-var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
-  test = _testUtils.test,
-  testUtils = _testUtils.utils,
-  assert = testUtils.assert,
-  expect = testUtils.expect,
-  should = testUtils.should,
-  waigo = testUtils.waigo;
+
+const test = require(path.join(process.cwd(), 'test', '_base'))(module);
+const waigo = global.waigo;
 
 
 test['cookie'] = {
-  beforeEach: function(done) {
-    waigo.initAsync().nodeify(done);
+  beforeEach: function*() {
+    yield this.initApp();
   },
 
   'default': function() {
     var conn = waigo.load('support/session/store/cookie').create(null, {});
     
-    expect(conn).to.eql(null);
+    this.expect(conn).to.eql(null);
   }
 };

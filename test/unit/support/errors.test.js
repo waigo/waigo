@@ -21,7 +21,7 @@ var errors = null;
 
 
 test['errors'] = {
-  beforeEach: function(done) {
+  beforeEach: function*() {
     waigo.initAsync()
       .then(function() {
         errors = waigo.load('support/errors');        
@@ -29,7 +29,7 @@ test['errors'] = {
       .nodeify(done);
   },
 
-  'Error.toViewObject': function(done) {
+  'Error.toViewObject': function*() {
     var err = new Error('test');
 
     testUtils.spawn(err.toViewObject, err)
@@ -62,7 +62,7 @@ test['errors'] = {
       e.status.should.eql(505);
       e.data.should.eql({ blah: true });
     },
-    'view object': function(done) {
+    'view object': function*() {
       var e = new errors.RuntimeError('my msg', 505, {
         blah: true
       });
@@ -113,7 +113,7 @@ test['errors'] = {
       e.status.should.eql(505);
       e.errors.should.eql(multiErrors);
     },
-    'view object': function(done) {
+    'view object': function*() {
       var multiErrors = {
         e1: new errors.RuntimeError('test error 1', 403),
         e2: new Error('bad'),
@@ -188,7 +188,7 @@ test['errors'] = {
       e.status.should.eql(505);
       e.errors.should.eql(errors);
     },
-    'view object - RuntimeError': function(done) {
+    'view object - RuntimeError': function*() {
       var e = new this.RuntimeError2('my msg', 505);
       var eParent = new errors.RuntimeError('my msg', 505);
 
@@ -204,7 +204,7 @@ test['errors'] = {
         })
         .nodeify(done);
     },
-    'view object - MultipleError': function(done) {
+    'view object - MultipleError': function*() {
       var e = new this.MultipleError2('my msg', 505);
       var eParent = new errors.MultipleError('my msg', 505);
 
@@ -224,7 +224,7 @@ test['errors'] = {
 
 
   'convert error to view object': {
-    'Error with method to convert itself': function(done) {
+    'Error with method to convert itself': function*() {
       var err = new Error('test');
 
       test.mocker.stub(err, 'toViewObject', function() {
@@ -237,7 +237,7 @@ test['errors'] = {
         })
         .nodeify(done);
     },
-    'Error without method to convert itself': function(done) {
+    'Error without method to convert itself': function*() {
       var err = new Error('test');
 
       delete err.toViewObject;

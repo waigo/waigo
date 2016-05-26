@@ -18,7 +18,7 @@ var Command = null;
 
 
 test['cli command base class'] = {
-  beforeEach: function(done) {
+  beforeEach: function*() {
     testUtils.deleteTestFolders()
       .then(function() {
         return testUtils.createTestFolders();
@@ -29,7 +29,7 @@ test['cli command base class'] = {
       })
       .nodeify(done);
   },
-  afterEach: function(done) {
+  afterEach: function*() {
     testUtils.deleteTestFolders().nodeify(done);
   },
 
@@ -39,7 +39,7 @@ test['cli command base class'] = {
     c.options.should.eql('blah');
   },
 
-  'run - action handler': function(done) {
+  'run - action handler': function*() {
     var c = new Command();
 
     testUtils.spawn(c.run, c)
@@ -92,7 +92,7 @@ test['cli command base class'] = {
     }
   },
 
-  'copy file': function(done) {
+  'copy file': function*() {
     var c = new Command();
 
     test.mocker.stub(c, '_getProjectFolder', function() {
@@ -116,7 +116,7 @@ test['cli command base class'] = {
 
 
   'install NPM packages': {
-    'already exists': function(done) {
+    'already exists': function*() {
       var c = new Command();
 
       var npmFolder = c._getNpmFolderLocation();
@@ -142,7 +142,7 @@ test['cli command base class'] = {
         .nodeify(done);    
       
     },
-    'does not yet exist': function(done) {
+    'does not yet exist': function*() {
       var c = new Command();
 
       test.mocker.stub(c, '_getNpmFolderLocation', function() {

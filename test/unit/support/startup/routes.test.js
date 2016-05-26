@@ -13,7 +13,7 @@ var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
 
 
 test['routes'] = {
-  beforeEach: function(done) {
+  beforeEach: function*() {
     var self = this;
 
     testUtils.deleteTestFolders()
@@ -35,10 +35,10 @@ test['routes'] = {
       })
       .nodeify(done);
   },
-  afterEach: function(done) {
+  afterEach: function*() {
     testUtils.deleteTestFolders().nodeify(done);
   },
-  'loads routes': function(done) {
+  'loads routes': function*() {
     var self = this;
 
     testUtils.spawn(function*() {
@@ -51,7 +51,7 @@ test['routes'] = {
       })
       .nodeify(done);
   },
-  'maps routes': function(done) {
+  'maps routes': function*() {
     var self = this;
 
     var routeMapper = waigo.load('support/routeMapper'),
@@ -66,7 +66,7 @@ test['routes'] = {
       })
       .nodeify(done);
   },
-  'enables Koa router': function(done) {
+  'enables Koa router': function*() {
     var self = this;
 
     var appUseSpy = test.mocker.spy(self.app, 'use');

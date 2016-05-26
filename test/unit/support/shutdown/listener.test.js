@@ -1,52 +1,51 @@
-var moment = require('moment'),
+"use strict";
+
+const _ = require('lodash'),
+  co = require('co'),
   path = require('path'),
+  moment = require('moment'),
   Q = require('bluebird');
 
-var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
-  test = _testUtils.test,
-  testUtils = _testUtils.utils,
-  assert = testUtils.assert,
-  expect = testUtils.expect,
-  should = testUtils.should,
-  waigo = testUtils.waigo;
 
+const test = require(path.join(process.cwd(), 'test', '_base'))(module);
+const waigo = global.waigo;
 
 
 test['shutdown listener'] = {
-  beforeEach: function(done) {
-    var self = this;
+  beforeEach: function*() {
+    yield this.initApp();
 
-    waigo.initAsync({
-      appFolder: testUtils.appFolder
-    })
-      .then(function() {
-        self.step = waigo.load('support/shutdown/listener');
-        self.app = waigo.load('application').app;
-        self.app.config = {
-          mode: 'test',
-          port: 3000,
-          baseURL: 'http://dummy:4334'
-        };
-      })
-      .nodeify(done);
+    yield this.startApp({
+      startupSteps: [],
+      shutdownSteps: [],
+    });
+
+    this.step = waigo.load('support/shutdown/listener');
+
+    this.app.confifg = {
+      mode: 'test',
+      port: 3000,
+      baseURL: 'http://dummy:4334'
+    };
   },
 
-  'shuts down HTTP listener': function(done) {
-    var self = this;
+  afterEach: function*() {
+    yield this.Application.shutdown();
+  },
 
+  'shuts down HTTP listener': function*() {
     var closed = 0;
-    self.app.server = {
+
+    this.app.server = {
       close: function(cb) {
         closed += 1;
         cb();
       }
     };
 
-    testUtils.spawn(self.step, self.step, self.app)
-      .then(function() {
-        closed.should.eql(1);
-      })
-      .nodeify(done);
+    yield this.step.call(this.step, this.app);
+
+    closed.should.eql(1);
   }
 
 };

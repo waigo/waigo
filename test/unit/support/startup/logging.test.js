@@ -13,7 +13,7 @@ var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
 
 
 test['logging'] = {
-  beforeEach: function(done) {
+  beforeEach: function*() {
     var self = this;
 
     testUtils.deleteTestFolders()
@@ -41,10 +41,10 @@ test['logging'] = {
       })
       .nodeify(done);
   },
-  afterEach: function(done) {
+  afterEach: function*() {
     testUtils.deleteTestFolders().nodeify(done);
   },
-  'catches uncaught exceptions': function(done) {
+  'catches uncaught exceptions': function*() {
     var self = this;
 
     var processOnSpy = test.mocker.spy(process, 'on');
@@ -67,7 +67,7 @@ test['logging'] = {
       })
       .nodeify(done);
   },
-  'catches app error events': function(done) {
+  'catches app error events': function*() {
     var self = this;
 
     var appOnSpy = test.mocker.spy(self.app, 'on');

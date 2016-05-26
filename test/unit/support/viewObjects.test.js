@@ -15,7 +15,7 @@ var viewObjects = null;
 
 
 test['viewObjects'] = {
-  beforeEach: function(done) {
+  beforeEach: function*() {
     waigo.initAsync()
       .then(function() {
         viewObjects = waigo.load('support/viewObjects');        
@@ -29,7 +29,7 @@ test['viewObjects'] = {
 
   'get view object yieldables': {
 
-    'object': function(done) {
+    'object': function*() {
       var obj1 = {
         def: 1,
         toViewObject: function*(ctx) {
@@ -72,7 +72,7 @@ test['viewObjects'] = {
         .nodeify(done);
     },
 
-    'date items are unchanged': function(done) {
+    'date items are unchanged': function*() {
       var date1 = new Date();
 
       var obj1 = {
@@ -95,7 +95,7 @@ test['viewObjects'] = {
     },
 
 
-    'array': function(done) {
+    'array': function*() {
       var arr1 = [
         {
           def: 1,

@@ -17,7 +17,7 @@ var app = null,
   mapper = null;
 
 test['route mapper'] = {
-  beforeEach: function(done) {
+  beforeEach: function*() {
     routes = {
       'GET /': 'main.index'
     };
@@ -52,7 +52,7 @@ test['route mapper'] = {
       })
       .nodeify(done);
   },
-  afterEach: function(done) {
+  afterEach: function*() {
     testUtils.deleteTestFolders().nodeify(done);
   },
   'URL format': {
@@ -230,7 +230,7 @@ test['route mapper'] = {
     router.get.should.have.been.calledOnce;
     router.get.should.have.been.calledWithExactly(controllerMethod, middleware, controllerMethod);
   },
-  'middleware with options': function(done) {
+  'middleware with options': function*() {
     testUtils.spawn(function*() {
       var mOpts = {
         id: 'test_options',

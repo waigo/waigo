@@ -14,7 +14,7 @@ var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
 
 
 test['middleware'] = {
-  beforeEach: function(done) {
+  beforeEach: function*() {
     var self = this;
 
     testUtils.deleteTestFolders()
@@ -51,10 +51,10 @@ test['middleware'] = {
       })
       .nodeify(done);
   },
-  afterEach: function(done) {
+  afterEach: function*() {
     testUtils.deleteTestFolders().nodeify(done);
   },
-  'loads and initialises middleware': function(done) {
+  'loads and initialises middleware': function*() {
     var self = this;
 
     var useSpy = test.mocker.spy(self.app, 'use');

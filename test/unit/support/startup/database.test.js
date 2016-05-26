@@ -13,7 +13,7 @@ var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
 
 
 test['database'] = {
-  beforeEach: function(done) {
+  beforeEach: function*() {
     var self = this;
 
     testUtils.deleteTestFolders()
@@ -41,10 +41,10 @@ test['database'] = {
       })
       .nodeify(done);
   },
-  afterEach: function(done) {
+  afterEach: function*() {
     testUtils.deleteTestFolders().nodeify(done);
   },
-  'does nothing if no config': function(done) {
+  'does nothing if no config': function*() {
     var self = this;
 
     delete self.app.config.db;
@@ -57,7 +57,7 @@ test['database'] = {
       })
       .nodeify(done);
   },
-  'otherwise sets up the db': function(done) {
+  'otherwise sets up the db': function*() {
     var self = this;
 
     testUtils.spawn(function*() {

@@ -13,7 +13,7 @@ var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
 
 
 test['startup listener'] = {
-  beforeEach: function(done) {
+  beforeEach: function*() {
     var self = this;
 
     waigo.initAsync({
@@ -30,7 +30,7 @@ test['startup listener'] = {
       })
       .nodeify(done);
   },
-  'starts HTTP listener': function(done) {
+  'starts HTTP listener': function*() {
     var self = this;
 
     self.app.listen = test.mocker.stub().returns('abc');

@@ -1,74 +1,48 @@
-var moment = require('moment'),
+"use strict";
+
+const _ = require('lodash'),
+  co = require('co'),
   path = require('path'),
+  moment = require('moment'),
   Q = require('bluebird');
 
-var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
-  test = _testUtils.test,
-  testUtils = _testUtils.utils,
-  assert = testUtils.assert,
-  expect = testUtils.expect,
-  should = testUtils.should,
-  waigo = testUtils.waigo;
+
+const test = require(path.join(process.cwd(), 'test', '_base'))(module);
+const waigo = global.waigo;
 
 
 
 test['database'] = {
-  beforeEach: function(done) {
-    var self = this;
+  beforeEach: function*() {
+    this.createAppModules({
+      'support/db/test': 'module.exports = { create: function*() { return Array.prototype.slice.call(arguments); }, closeAll: function*(logger) { logger.flag += "1"; } }; ',
+      'support/db/test2': 'module.exports = { create: function*() { return Array.prototype.slice.call(arguments); }, closeAll: function*(logger) { logger.flag += "2"; } }; ',
+    });
 
-    testUtils.deleteTestFolders()
-      .then(testUtils.createTestFolders)
-      .then(function() {
-        return testUtils.createAppModules({
-          'support/db/test': 'module.exports = { create: function*() { return Array.prototype.slice.call(arguments); }, shutdown: function*(db) { db.shutdown = true; } }; '
-        });
-      })
-      .then(function() {
-        return waigo.initAsync({
-          appFolder: testUtils.appFolder
-        });
-      })
-      .then(function() {
-        self.shutdownStep = waigo.load('support/shutdown/database');
-        self.app = waigo.load('application').app;
-        self.app.config = {
-          db: {
-            test: {
-              hello: 'world'
-            }
-          }
-        };
-      })
-      .nodeify(done);
+    yield this.initApp();
+
+    yield this.startApp({
+      startupSteps: [],
+      shutdownSteps: [],
+      db: {
+        test: {
+          hello: 'world'
+        }
+      }
+    });
+
+    this.shutdownStep = waigo.load('support/shutdown/database');
+
+    this.app.logger.flag = '';
   },
-  afterEach: function(done) {
-    testUtils.deleteTestFolders().nodeify(done);
+  afterEach: function*() {
+    this.Application.shutdown();
   },
-  'does nothing if no config': function(done) {
-    var self = this;
+  'shuts down the db': function*() {
+    this.app.db = {};
 
-    delete self.app.config.db;
-    self.app.db = {};
+    yield this.shutdownStep(this.app);
 
-    testUtils.spawn(function*() {
-      return yield* self.shutdownStep(self.app);
-    })
-      .then(function() {
-        expect(self.app.db.shutdown).to.not.be.true;
-      })
-      .nodeify(done);
-  },
-  'otherwise shuts down the db': function(done) {
-    var self = this;
-
-    self.app.db = {};
-
-    testUtils.spawn(function*() {
-      return yield* self.shutdownStep(self.app);
-    })
-      .then(function() {
-        self.app.db.shutdown.should.be.true;
-      })
-      .nodeify(done);
+    this.app.logger.flag.should.eql('12');
   }    
 };

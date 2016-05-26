@@ -15,7 +15,7 @@ var _ = require('lodash');
 
 
 test['underscore'] = {
-  beforeEach: function(done) {
+  beforeEach: function*() {
     waigo.initAsync()
       .then(function() {
         _.mixin(waigo.load('support/underscore'));    

@@ -13,7 +13,7 @@ var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
 
 
 test['models'] = {
-  beforeEach: function(done) {
+  beforeEach: function*() {
     var self = this;
 
     utils.deleteTestFolders()
@@ -35,10 +35,10 @@ test['models'] = {
       })
       .nodeify(done);
   },
-  afterEach: function(done) {
+  afterEach: function*() {
     utils.deleteTestFolders().nodeify(done);
   },
-  'loads the modules': function(done) {
+  'loads the modules': function*() {
     var self = this;
 
     utils.spawn(function*() {
