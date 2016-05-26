@@ -19,8 +19,8 @@ test['context helpers'] = {
     yield this.initApp();
 
     yield this.startApp({
-      startupSteps: ['database', 'models'],
-      shutdownSteps: ['database'],
+      startupSteps: ['db', 'models'],
+      shutdownSteps: ['db'],
     });
 
     yield this.clearDb('User');

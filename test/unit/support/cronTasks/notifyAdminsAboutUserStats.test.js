@@ -15,8 +15,8 @@ test['notify admins about user stats'] = {
   beforeEach: function*() {
     yield this.initApp();
     yield this.startApp({
-      startupSteps: ['database', 'models', 'mailer'],
-      shutdownSteps: ['database'],
+      startupSteps: ['db', 'models', 'mailer'],
+      shutdownSteps: ['db'],
     });
     yield this.clearDb('User');
 

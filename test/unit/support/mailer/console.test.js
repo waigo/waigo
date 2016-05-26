@@ -16,8 +16,8 @@ test['console'] = {
     yield this.initApp();
 
     yield this.startApp({
-      startupSteps: ['database', 'models', 'mailer', 'appTemplateVars'],
-      shutdownSteps: ['database'],
+      startupSteps: ['db', 'models', 'mailer', 'appTemplateVars'],
+      shutdownSteps: ['db'],
       mailer: {
         type: 'console',
         from: 'test@waigojs.com',

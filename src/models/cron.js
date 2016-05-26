@@ -123,6 +123,18 @@ exports.docMethods = {
       _config.job.cronTime._getNextDateFrom(nextRunDate).valueOf() - nextRunDate.valueOf();
   },
   /**
+   * Stop the cron scheduler for this job.
+   */
+  stopScheduler: function() {
+    let _config = this[$EXTRA];
+
+    _config.logger.info(`Stopping cron scheduler`);
+
+    if (_config.job) {
+      _config.job.stop();
+    }
+  },
+  /**
    * Callback for cron job when task needs to run.
    * @return {[type]} [description]
    */

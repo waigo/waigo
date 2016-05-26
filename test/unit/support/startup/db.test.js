@@ -12,7 +12,7 @@ const waigo = global.waigo;
 
 
 
-test['database'] = {
+test['db'] = {
   beforeEach: function*() {
     this.createAppModules({
       'support/db/test': 'module.exports = { create: function*() { return Array.prototype.slice.call(arguments); } }; '
@@ -35,7 +35,7 @@ test['database'] = {
       }
     });
 
-    this.setup = waigo.load('support/startup/database');
+    this.setup = waigo.load('support/startup/db');
   },
   afterEach: function*() {
     yield this.Application.shutdown();

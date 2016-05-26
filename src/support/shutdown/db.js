@@ -7,7 +7,7 @@ const waigo = global.waigo,
 
 
 /**
- * Shutdown database connection.
+ * Shutdown database connections.
  *
  * @param {Object} app The application.
  */

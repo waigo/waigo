@@ -16,8 +16,8 @@ test['base'] = {
     yield this.initApp();
 
     yield this.startApp({
-      startupSteps: ['database', 'models', 'mailer', 'appTemplateVars'],
-      shutdownSteps: ['database'],
+      startupSteps: ['db', 'models', 'mailer', 'appTemplateVars'],
+      shutdownSteps: ['db'],
     });
     
     yield this.clearDb('User');

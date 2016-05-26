@@ -77,7 +77,7 @@ module.exports = function(config) {
    * Each of these corresponds to a module file under the `support/startup` path.
    */
   config.startupSteps = [
-    'database',
+    'db',
     'models',
     'forms',
     'activityRecorder',
@@ -101,9 +101,10 @@ module.exports = function(config) {
    * Each of these corresponds to a module file under the `support/shutdown` path.
    */
   config.shutdownSteps = [
-    'acl',
     'listener',
-    'database',
+    'cron',
+    'acl',
+    'db',
   ];
 
 
