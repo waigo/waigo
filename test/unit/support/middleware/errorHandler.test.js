@@ -22,9 +22,9 @@ test['context helpers'] = {
     middleware = null;
 
     this._init = function*() {
-      yield self.initApp();
+      yield this.initApp();
 
-      yield self.startApp({
+      yield this.startApp({
         startupSteps: ['database', 'models'],
         shutdownSteps: ['database'],
       });

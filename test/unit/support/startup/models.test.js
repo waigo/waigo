@@ -14,7 +14,7 @@ var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
 
 test['models'] = {
   beforeEach: function*() {
-    var self = this;
+    
 
     utils.deleteTestFolders()
       .then(utils.createTestFolders)
@@ -30,8 +30,8 @@ test['models'] = {
         });
       })
       .then(function() {
-        self.setup = waigo.load('support/startup/models');
-        self.app = waigo.load('application').app;
+        this.setup = waigo.load('support/startup/models');
+        this.app = waigo.load('application').app;
       })
       .nodeify(done);
   },
@@ -39,13 +39,13 @@ test['models'] = {
     utils.deleteTestFolders().nodeify(done);
   },
   'loads the modules': function*() {
-    var self = this;
+    
 
     utils.spawn(function*() {
-      return yield* self.setup(self.app);
+      return yield* this.setup(this.app);
     })
       .then(function() {
-        self.app.models.should.eql({
+        this.app.models.should.eql({
           Black: {
             modelName: 'Black'
           },

@@ -1,73 +1,62 @@
-var moment = require('moment'),
+"use strict";
+
+const _ = require('lodash'),
+  co = require('co'),
   path = require('path'),
+  moment = require('moment'),
   Q = require('bluebird');
 
-var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
-  test = _testUtils.test,
-  testUtils = _testUtils.utils,
-  assert = testUtils.assert,
-  expect = testUtils.expect,
-  should = testUtils.should,
-  waigo = testUtils.waigo;
+
+const test = require(path.join(process.cwd(), 'test', '_base'))(module);
+const waigo = global.waigo;
 
 
 
 test['database'] = {
   beforeEach: function*() {
-    var self = this;
+    this.createAppModules({
+      'support/db/test': 'module.exports = { create: function*() { return Array.prototype.slice.call(arguments); } }; '
+    });
 
-    testUtils.deleteTestFolders()
-      .then(testUtils.createTestFolders)
-      .then(function() {
-        return testUtils.createAppModules({
-          'support/db/test': 'module.exports = { create: function*() { return Array.prototype.slice.call(arguments); } }; '
-        });
-      })
-      .then(function() {
-        return waigo.initAsync({
-          appFolder: testUtils.appFolder
-        });
-      })
-      .then(function() {
-        self.setup = waigo.load('support/startup/database');
-        self.app = waigo.load('application').app;
-        self.app.config = {
-          db: {
-            test: {
-              hello: 'world'
-            }
-          }
-        };
-      })
-      .nodeify(done);
+    yield this.initApp();
+
+    yield this.startApp({
+      startupSteps: [],
+      shutdownSteps: [],
+      db: {
+        main: {
+          type: 'test',
+          hello: 'world'
+        },
+        main2: {
+          type: 'test',
+          hello: 'world'
+        },
+      }
+    });
+
+    this.setup = waigo.load('support/startup/database');
   },
   afterEach: function*() {
-    testUtils.deleteTestFolders().nodeify(done);
+    yield this.Application.shutdown();
   },
   'does nothing if no config': function*() {
-    var self = this;
+    delete this.app.config.db;
 
-    delete self.app.config.db;
+    yield this.setup(this.app);
 
-    testUtils.spawn(function*() {
-      return yield* self.setup(self.app);
-    })
-      .then(function() {
-        expect(self.app.db).to.be.undefined;
-      })
-      .nodeify(done);
+    this.expect(this.app.db).to.be.undefined;
+    this.expect(this.app.dbs).to.eql({});
   },
   'otherwise sets up the db': function*() {
-    var self = this;
+    yield this.setup(this.app);
 
-    testUtils.spawn(function*() {
-      return yield* self.setup(self.app);
-    })
-      .then(function() {
-        self.app.db.should.eql([
-          { hello: 'world' }
-        ]);
-      })
-      .nodeify(done);
+    _.get(this.app.dbs, 'main.0').should.eql('main');
+    _.get(this.app.dbs, 'main.2').should.eql({ type: 'test', hello: 'world' });
+
+    _.get(this.app.dbs, 'main2.0').should.eql('main2');
+    _.get(this.app.dbs, 'main2.2').should.eql({ type: 'test', hello: 'world' });
+
+    this.app.db.should.eql(this.app.dbs.main);
   }    
 };

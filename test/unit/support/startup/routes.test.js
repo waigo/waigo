@@ -14,7 +14,7 @@ var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
 
 test['routes'] = {
   beforeEach: function*() {
-    var self = this;
+    
 
     testUtils.deleteTestFolders()
       .then(testUtils.createTestFolders)
@@ -30,8 +30,8 @@ test['routes'] = {
         });
       })
       .then(function() {
-        self.setup = waigo.load('support/startup/routes');
-        self.app = waigo.load('application').app;
+        this.setup = waigo.load('support/startup/routes');
+        this.app = waigo.load('application').app;
       })
       .nodeify(done);
   },
@@ -39,44 +39,44 @@ test['routes'] = {
     testUtils.deleteTestFolders().nodeify(done);
   },
   'loads routes': function*() {
-    var self = this;
+    
 
     testUtils.spawn(function*() {
-      return yield* self.setup(self.app);
+      return yield* this.setup(this.app);
     })
       .then(function() {
-        self.app.routes.should.eql({
+        this.app.routes.should.eql({
           'GET /': 'test.index'
         });
       })
       .nodeify(done);
   },
   'maps routes': function*() {
-    var self = this;
+    
 
     var routeMapper = waigo.load('support/routeMapper'),
       mapSpy = test.mocker.spy(routeMapper, 'map');
 
     testUtils.spawn(function*() {
-      return yield* self.setup(self.app);
+      return yield* this.setup(this.app);
     })
       .then(function() {
         mapSpy.should.have.been.calledOnce;
-        mapSpy.should.have.been.calledWithExactly(self.app, self.app.routes);
+        mapSpy.should.have.been.calledWithExactly(this.app, this.app.routes);
       })
       .nodeify(done);
   },
   'enables Koa router': function*() {
-    var self = this;
+    
 
-    var appUseSpy = test.mocker.spy(self.app, 'use');
+    var appUseSpy = test.mocker.spy(this.app, 'use');
 
     testUtils.spawn(function*() {
-      return yield* self.setup(self.app);
+      return yield* this.setup(this.app);
     })
       .then(function() {
         appUseSpy.should.have.been.calledOnce;
-        appUseSpy.should.have.been.calledWithExactly(self.app.router);
+        appUseSpy.should.have.been.calledWithExactly(this.app.router);
       })
       .nodeify(done);
   }

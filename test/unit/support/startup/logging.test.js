@@ -14,7 +14,7 @@ var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
 
 test['logging'] = {
   beforeEach: function*() {
-    var self = this;
+    
 
     testUtils.deleteTestFolders()
       .then(testUtils.createTestFolders)
@@ -29,9 +29,9 @@ test['logging'] = {
         });
       })
       .then(function() {
-        self.setup = waigo.load('support/startup/logging');
-        self.app = waigo.load('application').app;
-        self.app.config = {
+        this.setup = waigo.load('support/startup/logging');
+        this.app = waigo.load('application').app;
+        this.app.config = {
           logging: {
             test: {
               hello: 'world'
@@ -45,12 +45,12 @@ test['logging'] = {
     testUtils.deleteTestFolders().nodeify(done);
   },
   'catches uncaught exceptions': function*() {
-    var self = this;
+    
 
     var processOnSpy = test.mocker.spy(process, 'on');
 
     testUtils.spawn(function*() {
-      yield* self.setup(self.app);
+      yield* this.setup(this.app);
     })
       .then(function() {
         expect(processOnSpy.callCount).to.eql(1);
@@ -58,22 +58,22 @@ test['logging'] = {
 
         handlerFunc = processOnSpy.getCall(0).args[1];
         
-        self.app.logger.error = test.mocker.spy();
+        this.app.logger.error = test.mocker.spy();
         var err = new Error('test');
         handlerFunc.call(process, err);
 
-        self.app.logger.error.should.have.been.calledOnce;
-        self.app.logger.error.should.have.been.calledWithExactly('Uncaught exception', err.stack);
+        this.app.logger.error.should.have.been.calledOnce;
+        this.app.logger.error.should.have.been.calledWithExactly('Uncaught exception', err.stack);
       })
       .nodeify(done);
   },
   'catches app error events': function*() {
-    var self = this;
+    
 
-    var appOnSpy = test.mocker.spy(self.app, 'on');
+    var appOnSpy = test.mocker.spy(this.app, 'on');
 
     testUtils.spawn(function*() {
-      yield* self.setup(self.app);
+      yield* this.setup(this.app);
     })
       .then(function() {
         expect(appOnSpy.callCount).to.eql(1);
@@ -81,12 +81,12 @@ test['logging'] = {
 
         handlerFunc = appOnSpy.getCall(0).args[1];
         
-        self.app.logger.error = test.mocker.spy();
+        this.app.logger.error = test.mocker.spy();
         var err = new Error('test');
-        handlerFunc.call(self.app, err);
+        handlerFunc.call(this.app, err);
 
-        self.app.logger.error.should.have.been.calledOnce;
-        self.app.logger.error.should.have.been.calledWithExactly(err.stack);
+        this.app.logger.error.should.have.been.calledOnce;
+        this.app.logger.error.should.have.been.calledWithExactly(err.stack);
       })
       .nodeify(done);      
   }

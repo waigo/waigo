@@ -64,7 +64,7 @@ test['cli command base class'] = {
 
   'get node modules folder': {
     beforeEach: function() {
-      var self = this;
+      
       
       test.mocker.stub(Command.prototype, '_getProjectFolder', function() {
         return testUtils.appFolder;
@@ -72,7 +72,7 @@ test['cli command base class'] = {
 
       this.foundResult = true;
       this.testSpy = test.mocker.stub(shell, 'test', function() {
-        return self.foundResult;
+        return this.foundResult;
       });
     },
     'found': function() {

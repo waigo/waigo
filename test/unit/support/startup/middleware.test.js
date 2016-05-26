@@ -15,7 +15,7 @@ var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
 
 test['middleware'] = {
   beforeEach: function*() {
-    var self = this;
+    
 
     testUtils.deleteTestFolders()
       .then(testUtils.createTestFolders)
@@ -31,10 +31,10 @@ test['middleware'] = {
         });
       })
       .then(function() {
-        self.setup = waigo.load('support/startup/middleware');
-        self.app = waigo.load('application').app;
-        self.app.config = self.app.config || {};
-        self.app.config.middleware = {
+        this.setup = waigo.load('support/startup/middleware');
+        this.app = waigo.load('application').app;
+        this.app.config = this.app.config || {};
+        this.app.config.middleware = {
           order: [
             'test1',
             'test2'
@@ -55,11 +55,11 @@ test['middleware'] = {
     testUtils.deleteTestFolders().nodeify(done);
   },
   'loads and initialises middleware': function*() {
-    var self = this;
+    
 
-    var useSpy = test.mocker.spy(self.app, 'use');
+    var useSpy = test.mocker.spy(this.app, 'use');
 
-    testUtils.spawn(self.setup, self, self.app)
+    testUtils.spawn(this.setup, self, this.app)
       .then(function() {
         expect(useSpy.callCount).to.eql(2);
       })
