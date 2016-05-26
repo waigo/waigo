@@ -1,86 +1,91 @@
-var co = require('co'),
-  moment = require('moment'),
+"use strict";
+
+const _ = require('lodash'),
+  co = require('co'),
   path = require('path'),
+  moment = require('moment'),
   Q = require('bluebird');
 
-var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
-  test = _testUtils.test,
-  testUtils = _testUtils.utils,
-  assert = testUtils.assert,
-  expect = testUtils.expect,
-  should = testUtils.should,
-  waigo = testUtils.waigo;
+
+const test = require(path.join(process.cwd(), 'test', '_base'))(module);
+const waigo = global.waigo;
 
 
 var json = null;
 
 
 test['json'] = {
-  beforeEach: function(done) {
-    waigo.initAsync()
-      .then(function() {
-        json = waigo.load('support/outputFormats/json');
-      })
-      .nodeify(done);
+  beforeEach: function*() {
+    yield this.initApp();
+
+    yield this.startApp({
+      startupSteps: [],
+      shutdownSteps: [],
+    });
+
+    json = waigo.load('support/outputFormats/json');
   },
 
-  'returns rendering middleware': function() {
-    var obj = json.create();
-    expect(obj.render).to.be.instanceOf(Function);
+  afterEach: function*() {
+    yield this.Application.shutdown();
+  },
+
+  'returns rendering middleware': function*() {
+    var obj = json.create(this.app.logger);
+
+    _.isGenFn(obj.render).should.be.true;
   },
 
   'rendering': {
-    beforeEach: function() {
-      this.render = json.create().render;
+    beforeEach: function*() {
+      this.render = json.create(this.app.logger).render;
+
       this.ctx = {
-        app: {}
+        app: this.app,
       };
     },
-    'must be plain object': function(done) {
+    'must be plain object': function*() {
       var render = this.render, 
         ctx = this.ctx;
 
-      testUtils.spawn(render, ctx, 'test', 'bla')
-        .should.be.rejectedWith('Plain object required for JSON output format')
-        .and.notify(done);
+      yield this.shouldThrow(render.call(ctx, 'test', 'bla'), 'Object required for JSON output format');
     },
-    'renders JSON': function(done) {
+    'renders JSON': function*() {
       var render = this.render, 
         ctx = this.ctx;
 
-      testUtils.spawn(render, ctx, 'test', {
+      yield render.call(ctx, 'test', {
           hello: 'world'
-      })
-        .then(function() {
-          expect(ctx.body).to.eql({
-            hello: 'world'
-          });                     
-          expect(ctx.type).to.eql('json');                     
-        })
-        .nodeify(done);
+      });
+
+
+      this.expect(ctx.body).to.eql({
+        hello: 'world'
+      });                     
+
+      this.expect(ctx.type).to.eql('json');                     
     },
   },
 
   'redirect': {
-    beforeEach: function() {
-      this.redirect = json.create().redirect;
+    beforeEach: function*() {
+      this.redirect = json.create(this.app.logger).redirect;
+
       this.ctx = {
-        app: {}
+        app: this.app,
       };
     },
-    'must be plain object': function(done) {
+    'must be plain object': function*() {
       var redirect = this.redirect, 
         ctx = this.ctx;
 
-      testUtils.spawn(redirect, ctx, 'test')
-        .then(function() {
-          expect(ctx.body).to.eql({
-            redirectTo: 'test'
-          });                     
-          expect(ctx.type).to.eql('json');
-          expect(ctx.status).to.eql(200);
-        })
-        .nodeify(done);
+      yield redirect.call(ctx, 'test');
+
+      this.expect(ctx.body).to.eql({
+        redirectTo: 'test'
+      });                     
+      this.expect(ctx.type).to.eql('json');
+      this.expect(ctx.status).to.eql(200);
     },
 
   },
