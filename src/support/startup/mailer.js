@@ -17,6 +17,10 @@ const waigo = global.waigo,
 module.exports = function*(app) {
   let mailerConfig = _.get(app.config, 'mailer', {});
 
+  if (!_.get(mailerConfig, 'type')) {
+    throw new Error('Mailer type not set');
+  }
+
   app.logger.debug(`Initializing mailer: ${mailerConfig.type}`);
 
   let mailer = waigo.load(`support/mailer/${mailerConfig.type}`);
