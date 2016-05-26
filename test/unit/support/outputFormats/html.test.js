@@ -1,15 +1,14 @@
-var co = require('co'),
-  moment = require('moment'),
+"use strict";
+
+const _ = require('lodash'),
+  co = require('co'),
   path = require('path'),
+  moment = require('moment'),
   Q = require('bluebird');
 
-var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
-  test = _testUtils.test,
-  testUtils = _testUtils.utils,
-  assert = testUtils.assert,
-  expect = testUtils.expect,
-  should = testUtils.should,
-  waigo = testUtils.waigo;
+
+const test = require(path.join(process.cwd(), 'test', '_base'))(module);
+const waigo = global.waigo;
 
 
 var html = null,
@@ -17,75 +16,73 @@ var html = null,
 
 
 test['html'] = {
-  beforeEach: function(done) {
-    testUtils.deleteTestFolders()
-      .then(testUtils.createTestFolders)
-      .then(function() {
-        return testUtils.createAppModules({
-          'views/test': 'p hello!',
-          'views/test_params': 'p hello #{text}!',
-          'views/test_params_2': 'p hello #{text}, #{prettyPrint(text2)}!'
-        });
-      })
-      .then(function() {
-        return waigo.initAsync();
-      })
-      .then(function() {
-        html = waigo.load('support/outputFormats/html')
-        config = { 
-          folder: 'views', 
-          ext: 'js',
-          engine: {
-            'js': 'pug'
-          }
-        };
-      })
-      .nodeify(done);
-  },
-  afterEach: function(done) {
-    testUtils.deleteTestFolders().nodeify(done);
+  beforeEach: function*() {
+    this.createAppModules({
+      'views/test': 'p hello!',
+      'views/test_params': 'p hello #{text}!',
+      'views/test_params_2': 'p hello #{text}, #{prettyPrint(text2)}!'
+    });
+
+    yield this.initApp();
+
+    yield this.startApp({
+      startupSteps: [],
+      shutdownSteps: [],
+    });
+
+    html = waigo.load('support/outputFormats/html');
+
+    config = { 
+      folder: 'views', 
+      ext: 'js',
+      engine: {
+        'js': 'pug'
+      }
+    };
   },
 
-  'returns rendering middleware': function() {
-    var obj = html.create(config);
-    expect(obj.render).to.be.instanceOf(Function);
+  afterEach: function*() {
+    yield this.Application.shutdown();
+  },
+
+  'returns rendering middleware': function*() {
+    var obj = html.create(this.app.logger, config);
+    
+    _.isGenFn(obj.render).should.be.true;
   },
 
   'rendering': {
-    beforeEach: function() {
-      this.render = html.create(config).render;
+    beforeEach: function*() {
+      this.render = html.create(this.app.logger, config).render;
+
       this.ctx = {
-        app: {}
+        app: this.app
       };
     },
-    'renders html to body': function(done) {
+    'renders html to body': function*() {
       var render = this.render, 
         ctx = this.ctx;
 
-      testUtils.spawn(render, ctx, 'test_params')
-        .then(function() {
-          expect(ctx.body).to.eql('<p>hello !</p>');                     
-          expect(ctx.type).to.eql('html');                     
-        })
-        .nodeify(done);
+      yield render.call(ctx, 'test_params');
+
+      this.expect(ctx.body).to.eql('<p>hello !</p>');                     
+      this.expect(ctx.type).to.eql('html');                     
     },
-    'includes template params': function(done) {
+    'includes template params': function*() {
       var render = this.render, 
         ctx = this.ctx;
 
-      testUtils.spawn(render, ctx, 'test_params', { text: 'world' })
-        .then(function() {
-          expect(ctx.body).to.eql('<p>hello world!</p>');                     
-          expect(ctx.type).to.eql('html');                     
-        })
-        .nodeify(done);
+      yield render.call(ctx, 'test_params', { text: 'world' });
+
+      this.expect(ctx.body).to.eql('<p>hello world!</p>');                     
+      this.expect(ctx.type).to.eql('html');                     
     },
-    'template params override context-level params': function(done) {
+    'template params override context-level params': function*() {
       var render = this.render, 
         ctx = this.ctx;
 
-      testUtils.spawn(function*() {
-        ctx.locals = {
+      yield function*() {
+        ctx.templateVars = {
           text: 'sheep',
           text2: 'bee',
           prettyPrint: function(str) {
@@ -94,22 +91,20 @@ test['html'] = {
         };
 
         yield render.call(ctx, 'test_params_2', {
-          text2: 'cow'  // should override app.locals.text2
+          text2: 'cow'  // should override app.templateVars.text2
         });
-      })
-        .then(function() {
-          expect(ctx.body).to.eql('<p>hello sheep, ^cow^!</p>');
-          expect(ctx.type).to.eql('html');                     
-        })
-        .nodeify(done);
+      };
+
+      this.expect(ctx.body).to.eql('<p>hello sheep, ^cow^!</p>');
+      this.expect(ctx.type).to.eql('html');                     
     },
-    'context-level params override application-level params ': function(done) {
+    'context-level params override application-level params ': function*() {
       var render = this.render, 
         ctx = this.ctx;
 
-      testUtils.spawn(function*() {
+      yield function*() {
         ctx.app = {
-          locals: {
+          templateVars: {
             text: 'goat',
             text2: 'bee',
             prettyPrint: function(str) {
@@ -118,39 +113,36 @@ test['html'] = {
           }
         };
 
-        ctx.locals = {
+        ctx.templateVars = {
           text: 'sheep',
         };
 
         yield render.call(ctx, 'test_params_2');
-      })
-        .then(function() {
-          expect(ctx.body).to.eql('<p>hello sheep, ^bee^!</p>');
-          expect(ctx.type).to.eql('html');                     
-        })
-        .nodeify(done);
+      };
+
+      this.expect(ctx.body).to.eql('<p>hello sheep, ^bee^!</p>');
+      this.expect(ctx.type).to.eql('html');                     
     },
   },
 
   'redirect': {
-    beforeEach: function() {
-      this.redirect = html.create(config).redirect;
+    beforeEach: function*() {
+      this.redirect = html.create(this.app.logger, config).redirect;
+
       this.ctx = {
         response: {
-          redirect: test.mocker.spy()
+          redirect: this.mocker.spy()
         }
       };
     },
-    'redirects to url': function(done) {
+    'redirects to url': function*() {
       var redirect = this.redirect, 
         ctx = this.ctx;
 
-      testUtils.spawn(redirect, ctx, 'test_params')
-        .then(function() {
-          ctx.response.redirect.should.have.been.calledOnce;
-          ctx.response.redirect.should.have.been.calledWithExactly('test_params');
-        })
-        .nodeify(done);
+      yield redirect.call(ctx, 'test_params');
+
+      ctx.response.redirect.should.have.been.calledOnce;
+      ctx.response.redirect.should.have.been.calledWithExactly('test_params');
     },
-  }
+  },
 };
