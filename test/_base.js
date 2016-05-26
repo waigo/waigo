@@ -1,5 +1,7 @@
 "use strict";
 
+const path = require('path');
+
 require('co-mocha');  /* enable generator test functions */
 const testUtils = require('waigo-test-utils');
 
@@ -15,6 +17,7 @@ const waigo = require('../src'),
 
 module.exports = function(_module) {
   let test = testUtils.mocha(_module, {
+    name: path.relative(process.cwd(), _module.filename),
     extraDataAndMethods: {
       shouldThrow: function*(gen, err) {
         try {
