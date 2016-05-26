@@ -1,84 +1,67 @@
-var moment = require('moment'),
+"use strict";
+
+const _ = require('lodash'),
+  co = require('co'),
   path = require('path'),
+  moment = require('moment'),
   Q = require('bluebird');
 
-var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
-  test = _testUtils.test,
-  testUtils = _testUtils.utils,
-  assert = testUtils.assert,
-  expect = testUtils.expect,
-  should = testUtils.should,
-  waigo = testUtils.waigo,
-  _ = waigo._;
+
+const test = require(path.join(process.cwd(), 'test', '_base'))(module);
+const waigo = global.waigo;
 
 
 
 test['middleware'] = {
   beforeEach: function*() {
-    
+    this.createAppModules({
+      'support/middleware/test1': 'module.exports = function(options) { return function*() { return ["test1", options, arguments[0]]; }; };',
+      'support/middleware/test2': 'module.exports = function(options) { return function*() { return ["test2", options, arguments[0]]; }; };',
+    });
 
-    testUtils.deleteTestFolders()
-      .then(testUtils.createTestFolders)
-      .then(function() {
-        return testUtils.createAppModules({
-          'support/middleware/test1': 'module.exports = function(options) { return function*() { return ["test1", options, arguments[0]]; }; };',
-          'support/middleware/test2': 'module.exports = function(options) { return function*() { return ["test2", options, arguments[0]]; }; };',
-        });
-      })
-      .then(function() {
-        return waigo.initAsync({
-          appFolder: testUtils.appFolder
-        });
-      })
-      .then(function() {
-        this.setup = waigo.load('support/startup/middleware');
-        this.app = waigo.load('application').app;
-        this.app.config = this.app.config || {};
-        this.app.config.middleware = {
-          order: [
-            'test1',
-            'test2'
-          ],
-          options: {
-            test1: {
-              dummy: 'foo'
-            },
-            test2: {
-              dummy: 'bar'
-            }
-          }
-        };
-      })
-      .nodeify(done);
+    yield this.initApp();
+
+    yield this.startApp({
+      startupSteps: [],
+      shutdownSteps: [],
+    });
+
+    this.app.config.middleware.ALL = {
+      _order: [
+        'test1',
+        'test2'
+      ],
+      test1: {
+        dummy: 'foo'
+      },
+      test2: {
+        dummy: 'bar'
+      }
+    };
+
+    this.setup = waigo.load('support/startup/middleware');
   },
   afterEach: function*() {
-    testUtils.deleteTestFolders().nodeify(done);
+    yield this.Application.shutdown();
   },
+
   'loads and initialises middleware': function*() {
-    
+    let useSpy = this.mocker.spy(this.app, 'use');
 
-    var useSpy = test.mocker.spy(this.app, 'use');
+    yield this.setup(this.app);
 
-    testUtils.spawn(this.setup, self, this.app)
-      .then(function() {
-        expect(useSpy.callCount).to.eql(2);
-      })
-      .then(function() {
-        fn = useSpy.getCall(0).args[0];
+    useSpy.callCount.should.eql(2);
 
-        return testUtils.spawn(fn, null, 128)
-          .then(function(val) {
-            val.should.eql([ 'test1', { dummy: 'foo' }, 128 ]);
-          });
-      })
-      .then(function() {
-        fn = useSpy.getCall(1).args[0];
+    let fn = useSpy.getCall(0).args[0];
 
-        return testUtils.spawn(fn, null, 256)
-          .then(function(val) {
-            val.should.eql([  'test2', { dummy: 'bar' }, 256 ]);
-          });
-      })
-      .nodeify(done);
+    let val = yield fn(128);
+
+    val.should.eql([ 'test1', { dummy: 'foo' }, 128 ]);
+
+    fn = useSpy.getCall(1).args[0];
+
+    val = yield fn(256);
+
+    val.should.eql([  'test2', { dummy: 'bar' }, 256 ]);
   }
 };
