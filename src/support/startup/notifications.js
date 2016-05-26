@@ -13,7 +13,7 @@ const waigo = global.waigo,
  *
  * Upon completion:
  * 
- * * `app.notify` will be callable when you wish to do notification
+ * `app.events.emit('notify')` will trigger a notification.
  * 
  * @param {Object} app The application.
  */
