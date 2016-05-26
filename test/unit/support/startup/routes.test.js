@@ -1,83 +1,119 @@
-var moment = require('moment'),
+"use strict";
+
+const _ = require('lodash'),
+  co = require('co'),
   path = require('path'),
+  moment = require('moment'),
   Q = require('bluebird');
 
-var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
-  test = _testUtils.test,
-  testUtils = _testUtils.utils,
-  assert = testUtils.assert,
-  expect = testUtils.expect,
-  should = testUtils.should,
-  waigo = testUtils.waigo;
+
+const test = require(path.join(process.cwd(), 'test', '_base'))(module);
+const waigo = global.waigo;
 
 
 
 test['routes'] = {
   beforeEach: function*() {
-    
+    this.createAppModules({
+      'routes/index': 'module.exports = { "GET /": "test.index" };',
+      'support/routeMapper': 'module.exports = { map: function() {} };'
+    });
 
-    testUtils.deleteTestFolders()
-      .then(testUtils.createTestFolders)
-      .then(function() {
-        testUtils.createAppModules({
-          'routes': 'module.exports = { "GET /": "test.index" };',
-          'support/routeMapper': 'module.exports = { map: function() {} };'
-        })
-      })
-      .then(function() {
-        return waigo.initAsync({
-          appFolder: testUtils.appFolder
-        });
-      })
-      .then(function() {
-        this.setup = waigo.load('support/startup/routes');
-        this.app = waigo.load('application').app;
-      })
-      .nodeify(done);
+    yield this.initApp();
+
+    yield this.startApp({
+      startupSteps: [],
+      shutdownSteps: [],
+    });
+
+    this.setup = waigo.load('support/startup/routes');
   },
+
   afterEach: function*() {
-    testUtils.deleteTestFolders().nodeify(done);
+    yield this.Application.shutdown();
   },
-  'loads routes': function*() {
-    
 
-    testUtils.spawn(function*() {
-      return yield* this.setup(this.app);
-    })
-      .then(function() {
-        this.app.routes.should.eql({
-          'GET /': 'test.index'
-        });
-      })
-      .nodeify(done);
+  'loads routes': function*() {
+    yield this.setup(this.app);
+
+    this.app.routes['GET /'].should.eql('test.index');
   },
   'maps routes': function*() {
-    
+    let routeMapper = waigo.load('support/routeMapper'),
+      mapSpy = this.mocker.spy(routeMapper, 'map');
 
-    var routeMapper = waigo.load('support/routeMapper'),
-      mapSpy = test.mocker.spy(routeMapper, 'map');
+    yield this.setup(this.app);
 
-    testUtils.spawn(function*() {
-      return yield* this.setup(this.app);
-    })
-      .then(function() {
-        mapSpy.should.have.been.calledOnce;
-        mapSpy.should.have.been.calledWithExactly(this.app, this.app.routes);
-      })
-      .nodeify(done);
+    mapSpy.should.have.been.calledOnce;
+    mapSpy.should.have.been.calledWithExactly(this.app, this.app.routes);
   },
   'enables Koa router': function*() {
-    
+    let appUseSpy = this.mocker.spy(this.app, 'use');
 
-    var appUseSpy = test.mocker.spy(this.app, 'use');
+    yield this.setup(this.app);
 
-    testUtils.spawn(function*() {
-      return yield* this.setup(this.app);
-    })
-      .then(function() {
-        appUseSpy.should.have.been.calledOnce;
-        appUseSpy.should.have.been.calledWithExactly(this.app.router);
-      })
-      .nodeify(done);
-  }
+    appUseSpy.should.have.been.calledOnce;
+    appUseSpy.should.have.been.calledWithExactly(this.app.router);
+  },
+
+
+  'routeUrl': {
+    beforeEach: function*() {
+      yield this.setup(this.app);
+
+      this.app.routes.byName = {
+        'test': {
+          url: '/test/:name/:age'
+        }
+      };
+    },
+
+    'invalid name': function*() {
+      this.expect(() => {
+        this.app.routeUrl('blah')
+      }).to.throw('No route named: blah');
+    },
+
+    'params': function*() {
+      let url = this.app.routeUrl('test', {
+        name: 'john',
+        age: 23,
+        state: 'CO',
+      });
+
+      url.should.eql('/test/john/23');
+    },
+
+    'query': function*() {
+      let url = this.app.routeUrl('test', {
+        name: 'john',
+        age: 23,
+        state: 'CO',
+      }, {
+        master: 'blaster',
+        hood: 'wink'
+      });
+
+      url.should.eql('/test/john/23?hood=wink&master=blaster');
+    },
+
+    'absolute url': function*() {
+      this.app.config.baseURL = 'http://waigojs.com';
+
+      let url = this.app.routeUrl('test', {
+        name: 'john',
+        age: 23,
+        state: 'CO',
+      }, {
+        master: 'blaster',
+        hood: 'wink'
+      }, {
+        absolute: true,
+      });
+
+      url.should.eql('http://waigojs.com/test/john/23?hood=wink&master=blaster');
+    },
+
+
+  },
 };
