@@ -1,57 +1,52 @@
-var moment = require('moment'),
+"use strict";
+
+const _ = require('lodash'),
+  co = require('co'),
   path = require('path'),
+  moment = require('moment'),
   Q = require('bluebird');
 
-var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
-  test = _testUtils.test,
-  testUtils = _testUtils.utils,
-  assert = testUtils.assert,
-  expect = testUtils.expect,
-  should = testUtils.should,
-  waigo = testUtils.waigo;
+
+const test = require(path.join(process.cwd(), 'test', '_base'))(module);
+const waigo = global.waigo;
 
 
 
-test['startup listener'] = {
+test['listener'] = {
   beforeEach: function*() {
-    
+    yield this.initApp();
 
-    waigo.initAsync({
-      appFolder: testUtils.appFolder
-    })
-      .then(function() {
-        this.setup = waigo.load('support/startup/listener');
-        this.app = waigo.load('application').app;
-        this.app.config = {
-          mode: 'test',
-          port: 3000,
-          baseURL: 'http://dummy:4334'
-        };
-      })
-      .nodeify(done);
+    yield this.startApp({
+      startupSteps: [],
+      shutdownSteps: [],
+    });
+
+    this.setup = waigo.load('support/startup/listener');
+
+    this.app.listen = this.mocker.stub().returns('abc');
   },
+  afterEach: function*() {
+    yield this.Application.shutdown();
+  },
+
   'starts HTTP listener': function*() {
-    
+    yield this.setup(this.app);
 
-    this.app.listen = test.mocker.stub().returns('abc');
-    this.app.logger = {
-      info: test.mocker.stub()
-    };
+    this.expect(this.app.server).to.eql('abc');
 
-    testUtils.spawn(function*() {
-      return yield* this.setup(this.app);
-    })
-      .then(function(serverInfo) {
-        expect(serverInfo).to.eql('abc');
+    this.app.listen.should.have.been.calledOnce;
+    this.app.listen.should.have.been.calledWithExactly(3000);
+  },
 
-        expect(this.app.server).to.eql('abc');
+  'notifies admins': function*() {
+    let spy = this.mocker.spy();
 
-        this.app.listen.should.have.been.calledOnce;
-        this.app.listen.should.have.been.calledWithExactly(3000);
+    this.app.events.on('notify', spy);
 
-        this.app.logger.info.should.have.been.calledOnce;
-        this.app.logger.info.should.have.been.calledWithExactly('Server listening in test mode on port 3000 (baseURL: http://dummy:4334)');
-      })
-      .nodeify(done);
-  }
+    yield this.setup(this.app);
+
+    spy.should.have.been.calledOnce;
+    spy.should.have.been.calledWith('admins')
+    _.get(spy, 'args.0.1').should.contain('listening');
+  },
 };
