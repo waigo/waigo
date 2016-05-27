@@ -48,7 +48,7 @@ module.exports = function() {
 var render = function*(config, err) {
   this.status = err.status || 500;
 
-  let error = yield viewObjects.toViewObjectYieldable(this, err);
+  let error = yield viewObjects.toViewObjectYieldable(err, this);
 
   error.status = this.status;
   error.request = {

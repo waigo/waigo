@@ -73,7 +73,7 @@ module.exports = function(options) {
       }
 
       // get yieldables
-      let localsViewObjects = yield viewObjects.toViewObjectYieldable(ctx, locals);
+      let localsViewObjects = yield viewObjects.toViewObjectYieldable(locals, ctx);
 
       // call actual rendering method
       yield enabledFormats[requestedFormat].render.call(ctx, view, localsViewObjects);

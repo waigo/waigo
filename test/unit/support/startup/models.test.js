@@ -55,7 +55,7 @@ test['models'] = {
     doc._logger().info.should.be.a.Function;
 
     let vo = 
-      yield waigo.load('support/viewObjects').toViewObjectYieldable(null, doc);
+      yield waigo.load('support/viewObjects').toViewObjectYieldable(doc);
 
     vo.id.should.be.defined;
     vo.name.should.eql('James');

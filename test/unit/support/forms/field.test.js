@@ -455,7 +455,7 @@ test['form fields'] = {
       f.value = 87;
       f.originalValue = 98;
 
-      let viewObject = yield toViewObjectYieldable(null, f);
+      let viewObject = yield toViewObjectYieldable(f);
 
       this.expect(viewObject).to.eql({
         type: 'text',

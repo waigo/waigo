@@ -43,9 +43,9 @@ test['csrf'] = {
 
     yield this.field.setSanitizedValue('test');
 
-    (yield toViewObjectYieldable({
+    (yield toViewObjectYieldable(this.field, {
       csrf: 'blah',
-    }, this.field)).value.should.eql('blah');
+    })).value.should.eql('blah');
   },
 
   'validate': {

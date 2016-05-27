@@ -139,7 +139,7 @@ class Mailer {
 
     // templateVars common to all recipients
     mailOptions.templateVars = _.extend({}, this.app.templateVars, mailOptions.ctx.templateVars, 
-      yield viewObjects.toViewObjectYieldable(mailOptions.ctx, mailOptions.templateVars)
+      yield viewObjects.toViewObjectYieldable(mailOptions.templateVars, mailOptions.ctx)
     );
 
     return mailOptions;
@@ -161,9 +161,9 @@ class Mailer {
 
         // user-specific templateVars
         var userLocals = _.extend({}, mailOptions.templateVars, 
-          yield viewObjects.toViewObjectYieldable(mailOptions.ctx, {
+          yield viewObjects.toViewObjectYieldable({
             recipient: recipient
-          })
+          }, mailOptions.ctx)
         );
 
         // render body
@@ -208,9 +208,9 @@ class Mailer {
 
     // user-specific templateVars
     var userLocals = _.extend({}, mailOptions.templateVars, 
-      yield viewObjects.toViewObjectYieldable(mailOptions.ctx, {
+      yield viewObjects.toViewObjectYieldable({
         recipient: recipient
-      })
+      }, mailOptions.ctx)
     );
 
     return {

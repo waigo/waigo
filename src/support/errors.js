@@ -20,10 +20,11 @@ Error.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
   let ret = {
     type: this.name || 'Error',
     msg: this.message,
-    details: null,
   };
 
-  ret.details = this.details || this.failures;
+  if (this.details) {
+    ret.details = yield viewObjects.toViewObjectYieldable(this.details, ctx);
+  }
 
   if (this.stack && _.get(ctx, 'app.config.errors.showStack')) {
     ret.stack = this.stack;
@@ -75,7 +76,7 @@ RuntimeError.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
   };
 
   if (this.details) {
-    ret.details = yield viewObjects.toViewObjectYieldable(ctx, this.details);
+    ret.details = yield viewObjects.toViewObjectYieldable(this.details, ctx);
   }
 
   if (this.stack && _.get(ctx, 'app.config.errors.showStack')) {
@@ -130,7 +131,11 @@ MultipleError.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
     let subError = this.details[subErrorKey],
       fn = subError[viewObjects.METHOD_NAME];
 
-    ret.details[subErrorKey] = (fn ? yield fn(ctx) : subError);
+    ret.details[subErrorKey] = (fn ? yield fn.call(subError, ctx) : subError);
+  }
+
+  if (this.stack && _.get(ctx, 'app.config.errors.showStack')) {
+    ret.stack = this.stack;
   }
 
   return ret;

@@ -23,7 +23,7 @@ const METHOD_NAME = exports.METHOD_NAME = 'toViewObject';
  * @param  {*} inputObject The object.
  * @return A yieldable value.
  */
-const toViewObjectYieldable = exports.toViewObjectYieldable = function(ctx, inputObject) {
+const toViewObjectYieldable = exports.toViewObjectYieldable = function(inputObject, ctx) {
 
   if (inputObject) {
     // if it's one of our model schema types
@@ -51,7 +51,7 @@ const toViewObjectYieldable = exports.toViewObjectYieldable = function(ctx, inpu
     else if (_.isArray(inputObject)) {
       // recursive call on all children
       return inputObject.map(function(local) {
-        return toViewObjectYieldable(ctx, local);
+        return toViewObjectYieldable(local, ctx);
       });
     }
     // is an object
@@ -59,7 +59,7 @@ const toViewObjectYieldable = exports.toViewObjectYieldable = function(ctx, inpu
       let yieldables = {};
 
       for (let idx in inputObject) {
-        yieldables[idx] = toViewObjectYieldable(ctx, inputObject[idx]);
+        yieldables[idx] = toViewObjectYieldable(inputObject[idx], ctx);
       }
 
       return yieldables;

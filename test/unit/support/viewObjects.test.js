@@ -52,8 +52,8 @@ test['viewObjects'] = {
 
       var ctx = 5;
 
-      var gen1 = viewObjects.toViewObjectYieldable(ctx, obj1),
-        gen2 = viewObjects.toViewObjectYieldable(ctx, obj2);
+      var gen1 = viewObjects.toViewObjectYieldable(obj1, ctx),
+        gen2 = viewObjects.toViewObjectYieldable(obj2, ctx);
 
       testUtils.spawn(function*() { 
         return yield [gen1, gen2];
@@ -81,7 +81,7 @@ test['viewObjects'] = {
 
       var ctx = 5;
 
-      var gen1 = viewObjects.toViewObjectYieldable(ctx, obj1);
+      var gen1 = viewObjects.toViewObjectYieldable(obj1, ctx);
 
       testUtils.spawn(function*() { 
         return yield [gen1];
@@ -112,7 +112,7 @@ test['viewObjects'] = {
 
       var ctx = 5;
 
-      var y1 = viewObjects.toViewObjectYieldable(ctx, arr1);
+      var y1 = viewObjects.toViewObjectYieldable(arr1, ctx);
 
       testUtils.spawn(function*() {
         return yield y1;
@@ -127,19 +127,19 @@ test['viewObjects'] = {
     },
 
     'null': function() {
-      expect(viewObjects.toViewObjectYieldable(5, null)).to.eql(null);
+      expect(viewObjects.toViewObjectYieldable(null, 5)).to.eql(null);
     },
 
     'string': function() {
-      expect(viewObjects.toViewObjectYieldable(5, 'abc')).to.eql('abc');
+      expect(viewObjects.toViewObjectYieldable('abc', 5)).to.eql('abc');
     },
 
     'number': function() {
-      expect(viewObjects.toViewObjectYieldable(5, 1.2)).to.eql(1.2);
+      expect(viewObjects.toViewObjectYieldable(1.2, 5)).to.eql(1.2);
     },
 
     'boolean': function() {
-      expect(viewObjects.toViewObjectYieldable(5, true)).to.eql(true);
+      expect(viewObjects.toViewObjectYieldable(true, 5)).to.eql(true);
     },
 
   },

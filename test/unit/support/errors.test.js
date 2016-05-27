@@ -1,45 +1,88 @@
-var moment = require('moment'),
+"use strict";
+
+const _ = require('lodash'),
+  co = require('co'),
   path = require('path'),
+  moment = require('moment'),
+  shell = require('shelljs'),
   Q = require('bluebird');
 
-var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
-  test = _testUtils.test,
-  testUtils = _testUtils.utils,
-  assert = testUtils.assert,
-  expect = testUtils.expect,
-  should = testUtils.should,
-  waigo = testUtils.waigo;
+
+const test = require(path.join(process.cwd(), 'test', '_base'))(module);
+const waigo = global.waigo;
 
 
-var app = null,
-  routes = null,
-  router = null,
-  mapper = null;
-
-
-var errors = null;
+var errors,
+  viewObjects;
 
 
 test['errors'] = {
   beforeEach: function*() {
-    waigo.initAsync()
-      .then(function() {
-        errors = waigo.load('support/errors');        
-      })
-      .nodeify(done);
+    yield this.initApp();
+
+    yield this.startApp({
+      startupSteps: [],
+      shutdownSteps: [],
+    });
+
+    errors = waigo.load('support/errors');
+    viewObjects = waigo.load('support/viewObjects');
   },
 
-  'Error.toViewObject': function*() {
-    var err = new Error('test');
+  afterEach: function*() {
+    yield this.shutdownApp();
+  },
 
-    testUtils.spawn(err.toViewObject, err)
-      .then(function(vo) {
-        vo.should.eql({
-          type: 'Error',
-          msg: 'test'
-        });
-      })
-      .nodeify(done);
+  'Error - view object': {
+    'default': function*() {
+      let err = new Error('test');
+
+      let vo = yield viewObjects.toViewObjectYieldable(err);
+
+      vo.should.eql({
+        type: 'Error',
+        msg: 'test'
+      });
+    },
+
+    'with stack': function*() {
+      let err = new Error('test');
+
+      let vo = yield viewObjects.toViewObjectYieldable(err, {
+        app: {
+          config: {
+            errors: {
+              showStack: true
+            }
+          }
+        }
+      });
+
+      vo.should.eql({
+        type: 'Error',
+        msg: 'test',
+        stack: err.stack,
+      });
+    },
+
+    'with details': function*() {
+      let err = new Error('test'),
+        err2 = new Error('test2');
+
+      err.details = {
+        err: err2
+      };
+
+      let vo = yield viewObjects.toViewObjectYieldable(err);
+
+      vo.should.eql({
+        type: 'Error',
+        msg: 'test',
+        details: {
+          err: yield viewObjects.toViewObjectYieldable(err2),
+        },
+      });
+    },
   },
 
 
@@ -60,35 +103,47 @@ test['errors'] = {
       e.message.should.eql('my msg');
       e.name.should.eql('RuntimeError');
       e.status.should.eql(505);
-      e.data.should.eql({ blah: true });
+      e.details.should.eql({ blah: true });
     },
-    'view object': function*() {
-      var e = new errors.RuntimeError('my msg', 505, {
-        blah: true
-      });
+    'view object': {
+      'default': function*() {
+        let e2 = new errors.RuntimeError('my msg', 501);
 
-      var e2 = new errors.RuntimeError('my msg', 505);
+        var e = new errors.RuntimeError('my msg', 505, {
+          blah: e2,
+        });
 
-      testUtils.spawn(e.toViewObject, e)
-        .then(function(viewObject) {
-          viewObject.should.eql({
-            type: 'RuntimeError',
-            msg: 'my msg',
-            data: {
-              blah: true,
-            },
-          });
+        let viewObject = yield viewObjects.toViewObjectYieldable(e);
 
-          return testUtils.spawn(e2.toViewObject, e2);
-        })
-        .then(function(viewObject) {
-          viewObject.should.eql({
-            type: 'RuntimeError',
-            msg: 'my msg',
-          });          
-        })
-        .nodeify(done);
-    }
+        viewObject.should.eql({
+          type: 'RuntimeError',
+          msg: 'my msg',
+          details: {
+            blah: yield viewObjects.toViewObjectYieldable(e2)
+          },
+        });
+      },
+
+      'with stack': function*() {
+        var e = new errors.RuntimeError('my msg', 505);
+
+        let viewObject = yield viewObjects.toViewObjectYieldable(e, {
+          app: {
+            config: {
+              errors: {
+                showStack: true
+              }
+            }
+          }
+        });
+
+        viewObject.should.eql({
+          type: 'RuntimeError',
+          msg: 'my msg',
+          stack: e.stack,
+        });
+      },
+    },
   },
 
   'MultipleError': {
@@ -96,10 +151,10 @@ test['errors'] = {
       var e = new errors.MultipleError();
 
       e.should.be.instanceOf(errors.RuntimeError);
-      e.message.should.eql('Multiple errors occurred');
+      e.message.should.eql('Some errors occurred');
       e.name.should.eql('MultipleError');
       e.status.should.eql(500);
-      e.errors.should.eql({});
+      e.details.should.eql({});
     },
     'with params': function() {
       var multiErrors = {
@@ -111,42 +166,71 @@ test['errors'] = {
       e.message.should.eql('blah');
       e.name.should.eql('MultipleError');
       e.status.should.eql(505);
-      e.errors.should.eql(multiErrors);
+      e.details.should.eql(multiErrors);
     },
-    'view object': function*() {
-      var multiErrors = {
-        e1: new errors.RuntimeError('test error 1', 403),
-        e2: new Error('bad'),
-        e3: new errors.RuntimeError()
-      };
+    'view object': {
+      default: function*() {
+        var multiErrors = {
+          e1: new errors.RuntimeError('test error 1', 403),
+          e2: new Error('bad'),
+          e3: new errors.RuntimeError()
+        };
 
-      var e = new errors.MultipleError('blah', 404, multiErrors);
+        var e = new errors.MultipleError('blah', 404, multiErrors);
 
-      testUtils.spawn(e.toViewObject, e)
-        .then(function(viewObject) {
-          expect(viewObject).to.eql({
-            type: 'MultipleError',
-            msg: 'blah',
-            errors: {
-              e1: {
-                type: 'RuntimeError',
-                msg: 'test error 1'
-              },
-              e2: {
-                type: 'Error',
-                msg: 'bad'
-              },
-              e3: {
-                type: 'RuntimeError',
-                msg: 'An error occurred'
+        let viewObject = yield viewObjects.toViewObjectYieldable(e);
+
+        this.expect(viewObject).to.eql({
+          type: 'MultipleError',
+          msg: 'blah',
+          details: {
+            e1: {
+              type: 'RuntimeError',
+              msg: 'test error 1'
+            },
+            e2: {
+              type: 'Error',
+              msg: 'bad'
+            },
+            e3: {
+              type: 'RuntimeError',
+              msg: 'An error occurred'
+            }
+          }
+        });        
+      },
+      'with stack': function*() {
+        var multiErrors = {
+          e1: new errors.RuntimeError('test error 1', 403),
+        };
+
+        var e = new errors.MultipleError('blah', 404, multiErrors);
+
+        let viewObject = yield viewObjects.toViewObjectYieldable(e, {
+          app: {
+            config: {
+              errors: {
+                showStack: true
               }
             }
-          });
-        })
-        .nodeify(done);
-    }    
-  },
+          }
+        });
 
+        this.expect(viewObject).to.eql({
+          type: 'MultipleError',
+          msg: 'blah',
+          details: {
+            e1: {
+              type: 'RuntimeError',
+              msg: 'test error 1',
+              stack: multiErrors.e1.stack,
+            },
+          },
+          stack: e.stack,
+        });
+      },
+    },
+  },
 
   'define new error': {
     beforeEach: function() {
@@ -166,7 +250,7 @@ test['errors'] = {
       var e = new this.MultipleError2();
 
       e.should.be.instanceOf(errors.MultipleError);
-      e.message.should.eql('Multiple errors occurred');
+      e.message.should.eql('Some errors occurred');
       e.name.should.eql('MultipleError2');
       e.status.should.eql(500);        
     },
@@ -186,73 +270,59 @@ test['errors'] = {
       e.message.should.eql('my msg');
       e.name.should.eql('MultipleError2');
       e.status.should.eql(505);
-      e.errors.should.eql(errors);
+      e.details.should.eql(errors);
     },
     'view object - RuntimeError': function*() {
       var e = new this.RuntimeError2('my msg', 505);
       var eParent = new errors.RuntimeError('my msg', 505);
 
-      Q.all([
-        testUtils.spawn(e.toViewObject, e),
-        testUtils.spawn(eParent.toViewObject, eParent),
-      ])
-        .spread(function(child, parent) {
-          child.type.should.eql('RuntimeError2');
-          delete child.type;
-          delete parent.type;
-          child.should.eql(parent);
-        })
-        .nodeify(done);
+      let child = yield viewObjects.toViewObjectYieldable(e);
+      let parent = yield viewObjects.toViewObjectYieldable(eParent);
+
+      child.type.should.eql('RuntimeError2');
+      delete child.type;
+      delete parent.type;
+      child.should.eql(parent);
     },
     'view object - MultipleError': function*() {
       var e = new this.MultipleError2('my msg', 505);
       var eParent = new errors.MultipleError('my msg', 505);
 
-      Q.all([
-        testUtils.spawn(e.toViewObject, e),
-        testUtils.spawn(eParent.toViewObject, eParent),
-      ])
-        .spread(function(child, parent) {
-          child.type.should.eql('MultipleError2');
-          delete child.type;
-          delete parent.type;
-          child.should.eql(parent);
-        })
-        .nodeify(done);
-    }
-  },
+      let child = yield viewObjects.toViewObjectYieldable(e);
+      let parent = yield viewObjects.toViewObjectYieldable(eParent);
 
+      child.type.should.eql('MultipleError2');
+      delete child.type;
+      delete parent.type;
+      child.should.eql(parent);
+    },
+  },
 
   'convert error to view object': {
     'Error with method to convert itself': function*() {
       var err = new Error('test');
 
-      test.mocker.stub(err, 'toViewObject', function() {
+      this.mocker.stub(err, viewObjects.METHOD_NAME, function() {
         return Q.resolve('blah');
       });
 
-      testUtils.spawn(err.toViewObject, err)
-        .then(function(vo) {
-          vo.should.eql('blah');
-        })
-        .nodeify(done);
+      let vo = yield viewObjects.toViewObjectYieldable(err);
+
+      vo.should.eql('blah');
     },
     'Error without method to convert itself': function*() {
       var err = new Error('test');
 
-      delete err.toViewObject;
+      delete err[viewObjects.METHOD_NAME];
 
-      testUtils.spawn(err.toViewObject, err)
-        .then(function(vo) {
-          vo.should.eql({
-            type: 'Error',
-            msg: 'test'
-          });
-        })
-        .nodeify(done);
-    }
-  }
-  
+      let vo = yield viewObjects.toViewObjectYieldable(err);
+
+      vo.should.eql({
+        type: 'Error',
+        msg: 'test'
+      });
+    },
+  },
 };
 
 

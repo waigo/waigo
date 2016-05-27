@@ -41,7 +41,7 @@ test['hidden'] = {
   'view object': function*() {
     let toViewObjectYieldable = waigo.load('support/viewObjects').toViewObjectYieldable;
 
-    (yield toViewObjectYieldable(null, this.field)).type.should.eql('hidden');
+    (yield toViewObjectYieldable(this.field)).type.should.eql('hidden');
   },
 };
 

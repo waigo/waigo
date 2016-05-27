@@ -55,7 +55,7 @@ test['app template vars'] = {
       this.app.cron.test.should.be.defined;
 
       let viewObject = 
-        yield waigo.load('support/viewObjects').toViewObjectYieldable(null, this.app.cron.test);
+        yield waigo.load('support/viewObjects').toViewObjectYieldable(this.app.cron.test);
 
       viewObject.id.should.eql('test');
       viewObject.disabled.should.be.false;

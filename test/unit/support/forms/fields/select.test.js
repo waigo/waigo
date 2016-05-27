@@ -68,7 +68,7 @@ test['select'] = {
 
     this.mocker.stub(this.field, 'getOptions').returns(Q.resolve(123));
 
-    (yield toViewObjectYieldable(null, this.field)).options.should.eql(123);
+    (yield toViewObjectYieldable(this.field)).options.should.eql(123);
   },
 
   'validate': {

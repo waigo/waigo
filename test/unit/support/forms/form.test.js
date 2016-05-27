@@ -47,11 +47,11 @@ test['forms'] = {
         },
       });
 
-      let actualViewObject = yield toViewObjectYieldable(null, e);
+      let actualViewObject = yield toViewObjectYieldable(e);
 
       let me = new errors.MultipleError('test', 400, e.details);
 
-      let expectedViewObject = yield toViewObjectYieldable(null, me);
+      let expectedViewObject = yield toViewObjectYieldable(me);
 
       expectedViewObject.type = 'FormValidationError';
 
@@ -342,7 +342,7 @@ test['forms'] = {
         dummy: true
       };
 
-      let viewObject = yield toViewObjectYieldable(ctx, f);
+      let viewObject = yield toViewObjectYieldable(f, ctx);
 
       this.expect(viewObject).to.eql({
         id: 'testForm',
