@@ -87,24 +87,131 @@ test['cli command base class'] = {
     }
   },
 
-  'copy file': function*() {
+  'copy file': {
+    beforeEach: function*() {
+      this.c = new Command();
+
+      this.mocker.stub(this.c, '_getProjectFolder', () => {
+        return this.appFolder;
+      });
+    },
+    
+    default: function*() {
+      var src = path.join(this.appFolder, 'test.txt'),
+        dst = path.join('black', 'sheep', 'affair.txt');
+
+      this.writeFile(src, 'hey!');
+
+      yield this.c.copyFile(src, dst);
+
+      let str = this.readFile(path.join(this.appFolder, dst));
+
+      str.should.eql('hey!')      
+    },
+
+    'default no overwrite': function*() {
+      var src = path.join(this.appFolder, 'test.txt'),
+        dst = path.join('black', 'sheep', 'affair.txt');
+
+      this.writeFile(src, 'hey!');
+      this.writeFile(path.join(this.appFolder, dst), 'heya');
+
+      yield this.c.copyFile(src, dst);
+
+      let str = this.readFile(path.join(this.appFolder, dst));
+
+      str.should.eql('heya'); 
+    },
+
+    'explicitly force overwrite': function*() {
+      var src = path.join(this.appFolder, 'test.txt'),
+        dst = path.join('black', 'sheep', 'affair.txt');
+
+      this.writeFile(src, 'hey!');
+      this.writeFile(path.join(this.appFolder, 'dst'), 'heya');
+
+      yield this.c.copyFile(src, dst, true);
+
+      let str = this.readFile(path.join(this.appFolder, dst));
+
+      str.should.eql('hey!');
+    },
+  },
+
+  'copy folder': {
+    beforeEach: function*() {
+      this.c = new Command();
+
+      this.mocker.stub(this.c, '_getProjectFolder', () => {
+        return this.appFolder;
+      });
+    },
+    default: function*() {
+      const srcFolder = path.join(this.appFolder, 'black', 'sheep');
+
+      this.writeFile(path.join(srcFolder, 'skin', 'affair.txt'), 'hey!');
+
+      yield this.c.copyFolder(srcFolder, path.join('white', 'mouse'));
+
+      let str = this.readFile(
+        path.join(this.appFolder, 'white', 'mouse', 'sheep', 'skin', 'affair.txt')
+      );
+
+      str.should.eql('hey!')      
+    },
+    'no overwrite': function*() {
+      const srcFolder = path.join(this.appFolder, 'black', 'sheep');
+
+      this.writeFile(path.join(srcFolder, 'skin', 'affair.txt'), 'hey!');
+
+      const finalDst = path.join(this.appFolder, 'white', 'mouse', 'sheep', 'skin');
+      
+      this.writeFile(path.join(finalDst, 'affair.txt'), 'heya');
+
+      yield this.c.copyFolder(srcFolder, path.join('white', 'mouse'));
+
+      let str = this.readFile(
+        path.join(finalDst, 'affair.txt')
+      );
+
+      str.should.eql('heya')      
+    },
+  },
+
+
+  'file exists': function*() {
     var c = new Command();
 
     this.mocker.stub(c, '_getProjectFolder', () => {
       return this.appFolder;
     });
 
-    var src = path.join(this.appFolder, 'test.txt'),
-      dst = path.join('black', 'sheep', 'affair.txt');
+    const filePath = path.join(this.appFolder, 'test.js');
 
-    this.writeFile(src, 'hey!');
+    c.fileExists('test.js').should.be.false;
 
-    yield c.copyFile(src, dst);
+    this.writeFile(filePath, 'blabla');
 
-    let str = this.readFile(path.join(this.appFolder, dst));
-
-    str.should.eql('hey!')
+    c.fileExists('test.js').should.be.true;
   },
+
+
+  'delete file': function*() {
+    var c = new Command();
+
+    this.mocker.stub(c, '_getProjectFolder', () => {
+      return this.appFolder;
+    });
+
+    const filePath = path.join(this.appFolder, 'test.js');
+
+    this.writeFile(filePath, 'blabla');
+
+    yield c.deleteFile('test.js');
+
+    (!!shell.test('-e', filePath)).should.be.false;
+  },
+
 
   'install NPM packages': {
     beforeEach: function*() {
