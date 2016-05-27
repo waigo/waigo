@@ -34,7 +34,7 @@ class ActionTokens {
    * @param {User} user User this action is for. 
    * @param {Object} [data] Additional data to associate with this action (must be JSON-stringify-able)
    * @param {Object} [options] Additional options.
-   * @param {Number} [options.validForHours] Override default `validForHours` settings with this.
+   * @param {Number} [options.validForSeconds] Override default `validForSeconds` settings with this.
    *
    * @return {String} the action token. 
    */
@@ -42,7 +42,7 @@ class ActionTokens {
     data = data || '';
 
     options = _.extend({
-      validForHours: this.config.validForHours
+      validForSeconds: this.config.validForSeconds
     }, options);
 
     this.logger.debug(`Creating action token: ${type} for user ${user.id}`, data);
@@ -52,7 +52,7 @@ class ActionTokens {
     let salt = _.uuid.v4();
 
     let plaintext = JSON.stringify([ 
-      Date.now() + (options.validForHours * 1000 * 60 * 60), 
+      Date.now() + (options.validForSeconds * 1000), 
       salt, 
       type, 
       user.id, 
@@ -126,8 +126,11 @@ class ActionTokens {
 
     // check if we've already executed this request before
     var activity = yield this.app.models.Activity.getByFilter({
-      type: type, 
-      'details.salt': salt
+      verb: 'action_token_processed',
+      details: {
+        type: type,
+        salt: salt,
+      },
     });
 
     if (activity.length) {
@@ -135,7 +138,7 @@ class ActionTokens {
     }
 
     // record activity
-    this.app.events.emit('record', 'action_token_processed', user, {
+    yield this.app.models.Activity.record('action_token_processed', user, {
       type: type,
       salt: salt,
     });

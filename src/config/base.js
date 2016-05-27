@@ -277,7 +277,7 @@ module.exports = function(config) {
     // encryption key to prevent tampering 
     encryptionKey: _.uuid.v4(),
     // default token validity duration from when it was created
-    validForHours: 2,
+    validForSeconds: 60 * 60 * 2, /* 2 hours */
   };
 
 
