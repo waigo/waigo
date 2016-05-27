@@ -119,7 +119,7 @@ class ACL {
       return true;
     }
 
-    // if no entry for resource then no one has access
+    // if no entry for resource then everyone has access
     if (!_.get(this.res, resource)) {
       return false;
     }
@@ -133,7 +133,7 @@ class ACL {
     let roles = user.roles || [];
 
     for (let role of roles) {
-      if (_.get(this.roles, roles[i] + '.' + resource)) {
+      if (_.get(this.roles, role + '.' + resource)) {
         return true;
       }
     }
@@ -155,6 +155,9 @@ class ACL {
     }
   }
 }
+
+
+exports.ACL = ACL;
 
 
 
