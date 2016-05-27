@@ -1,54 +1,51 @@
-var _ = require('lodash'),
-  moment = require('moment'),
+"use strict";
+
+const _ = require('lodash'),
+  co = require('co'),
   path = require('path'),
-  Q = require('bluebird'),
-  shell = require('shelljs');
-
-var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
-  test = _testUtils.test,
-  testUtils = _testUtils.utils,
-  assert = testUtils.assert,
-  expect = testUtils.expect,
-  should = testUtils.should,
-  waigo = testUtils.waigo;
+  moment = require('moment'),
+  shell = require('shelljs'),
+  Q = require('bluebird');
 
 
-var Command = null;
+const test = require(path.join(process.cwd(), 'test', '_base'))(module);
+const waigo = global.waigo;
 
+
+var Command;
 
 
 test['cli command base class'] = {
   beforeEach: function*() {
-    testUtils.deleteTestFolders()
-      .then(function() {
-        return testUtils.createTestFolders();
-      })
-      .then(waigo.initAsync)
-      .then(function() {
-        Command = waigo.load('support/cliCommand');
-      })
-      .nodeify(done);
+    yield this.initApp();
+
+    yield this.startApp({
+      startupSteps: [],
+      shutdownSteps: [],
+    });
+
+    Command = waigo.load('support/cliCommand');
   },
   afterEach: function*() {
-    testUtils.deleteTestFolders().nodeify(done);
+    yield this.shutdownApp();
   },
 
-  'construction': function() {
+  'construction': function*() {
     var c = new Command('test desc', 'blah');
+
     c.description.should.eql('test desc');
+
     c.options.should.eql('blah');
   },
 
   'run - action handler': function*() {
     var c = new Command();
 
-    testUtils.spawn(c.run, c)
-      .should.be.rejectedWith("Not yet implemented")
-      .and.notify(done);
+    yield this.shouldThrow(c.run(), "Not yet implemented");
   },
 
-  'log message': function() {
-    var spy = test.mocker.spy(console, 'log');
+  'log message': function*() {
+    var spy = this.mocker.spy(console, 'log');
 
     new Command().log('test');
 
@@ -56,115 +53,82 @@ test['cli command base class'] = {
     spy.should.have.been.calledWithExactly('[waigo-cli] test');
   },
 
-
-  'get project root folder': function() {
-    expect(new Command()._getProjectFolder()).to.eql(process.cwd());
+  'get project root folder': function*() {
+    this.expect(new Command()._getProjectFolder()).to.eql(process.cwd());
   },
 
-
   'get node modules folder': {
-    beforeEach: function() {
-      
-      
-      test.mocker.stub(Command.prototype, '_getProjectFolder', function() {
-        return testUtils.appFolder;
+    beforeEach: function*() {
+      this.mocker.stub(Command.prototype, '_getProjectFolder', () => {
+        return this.appFolder;
       });
 
       this.foundResult = true;
-      this.testSpy = test.mocker.stub(shell, 'test', function() {
+
+      this.testSpy = this.mocker.stub(shell, 'test', () => {
         return this.foundResult;
       });
     },
-    'found': function() {
-      expect(new Command()._getNpmFolderLocation()).to.eql(
-        path.join(testUtils.appFolder, 'node_modules')
+    'found': function*() {
+      this.expect(new Command()._getNpmFolderLocation()).to.eql(
+        path.join(this.appFolder, 'node_modules')
       );
 
       this.testSpy.should.have.been.calledWithExactly('-d', 
-        path.join(testUtils.appFolder, 'node_modules'));
+        path.join(this.appFolder, 'node_modules'));
     },
-    'not found': function() {
+    'not found': function*() {
       this.foundResult = false;
-      expect(new Command()._getNpmFolderLocation()).to.eql(null);
+
+      this.expect(new Command()._getNpmFolderLocation()).to.eql(null);
 
       this.testSpy.should.have.been.calledWithExactly('-d', 
-        path.join(testUtils.appFolder, 'node_modules'));
+        path.join(this.appFolder, 'node_modules'));
     }
   },
 
   'copy file': function*() {
     var c = new Command();
 
-    test.mocker.stub(c, '_getProjectFolder', function() {
-      return testUtils.appFolder;
+    this.mocker.stub(c, '_getProjectFolder', () => {
+      return this.appFolder;
     });
 
-    var src = path.join(testUtils.appFolder, 'test.txt'),
+    var src = path.join(this.appFolder, 'test.txt'),
       dst = path.join('black', 'sheep', 'affair.txt');
 
-    testUtils.writeFile(src, 'hey!')
-      .then(function() {
-        return testUtils.spawn(c.copyFile, c, src, dst);
-      })
-      .then(function() {
-        return testUtils.readFile(path.join(testUtils.appFolder, dst));
-      })
-      .should.eventually.eql('hey!')
-      .notify(done);
+    this.writeFile(src, 'hey!');
+
+    yield c.copyFile(src, dst);
+
+    let str = this.readFile(path.join(this.appFolder, dst));
+
+    str.should.eql('hey!')
   },
 
-
-
   'install NPM packages': {
-    'already exists': function*() {
-      var c = new Command();
-
-      var npmFolder = c._getNpmFolderLocation();
-
-      var testSpy = test.mocker.stub(shell, 'test', function() {
-        return true;
-      });
-
-      var execSpy = test.mocker.stub(shell, 'execAsync', function() {
+    beforeEach: function*() {
+      this.execSpy = this.mocker.stub(shell, 'execAsync', () => {
         return Q.resolve();
       });
-
-      testUtils.spawn(c.installPkgs, c, 'foo123', 'bar123')
-        .then(function() {
-          testSpy.should.have.been.calledWithExactly('-d', 
-              path.join(npmFolder, 'foo123'));
-
-          testSpy.should.have.been.calledWithExactly('-d', 
-              path.join(npmFolder, 'bar123'));
-
-          execSpy.should.have.been.notCalled;
-        })
-        .nodeify(done);    
-      
     },
-    'does not yet exist': function*() {
+    'dev': function*() {
       var c = new Command();
 
-      test.mocker.stub(c, '_getNpmFolderLocation', function() {
-        return testUtils.appFolder;
+      yield c.installPkgs(['foo123', 'bar123'], {
+        dev: true
       });
 
-      var testSpy = test.mocker.stub(shell, 'test', function(type, n) {
-        var t = n.split('/');
-        return ('foo123' === t[t.length-1]);
-      });
+      this.execSpy.should.have.been.calledOnce;
+      this.execSpy.should.have.been.calledWithExactly('npm install --save-dev foo123 bar123');
+    },
+    'normal': function*() {
+      var c = new Command();
 
-      var execSpy = test.mocker.stub(shell, 'execAsync', function() {
-        return Q.resolve();
-      });
+      yield c.installPkgs(['foo123', 'bar123']);
 
-      testUtils.spawn(c.installPkgs, c, 'foo123', 'bar123', 'jump123')
-        .then(function() {
-          execSpy.should.have.been.calledOnce;
-          execSpy.should.have.been.calledWithExactly('npm install bar123 jump123');
-        })
-        .nodeify(done);    
-      
+      this.execSpy.should.have.been.calledOnce;
+      this.execSpy.should.have.been.calledWithExactly('npm install --save foo123 bar123');
     }
   }
 

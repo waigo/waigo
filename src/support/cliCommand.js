@@ -155,7 +155,7 @@ class AbstractCommand {
     if (options.dev) {
       str = '--save-dev ' + str;
     } else {
-      str = '---save ' + str;
+      str = '--save ' + str;
     }
 
     this.log('npm install ' + str);
