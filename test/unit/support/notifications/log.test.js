@@ -40,7 +40,7 @@ test['log notifier'] = {
   },
 
   afterEach: function*() {
-    yield this.Application.shutdown();
+    yield this.shutdownApp();
   },
 
   'string': function*() {

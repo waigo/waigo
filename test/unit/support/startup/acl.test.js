@@ -28,7 +28,7 @@ test['acl'] = {
     this.setup = waigo.load('support/startup/acl');
   },
   afterEach: function*() {
-    yield this.Application.shutdown();
+    yield this.shutdownApp();
   },
   'init acl': function*() {
     yield this.setup(this.app);

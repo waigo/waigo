@@ -24,7 +24,7 @@ test['forms'] = {
     this.setup = waigo.load('support/startup/forms');
   },
   afterEach: function*() {
-    yield this.Application.shutdown();
+    yield this.shutdownApp();
   },
   'sets form accessor': function*() {
     yield this.setup(this.app);

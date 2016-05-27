@@ -40,7 +40,10 @@ class ACL {
     }
 
     // get notified of ACL updates
-    this.app.models.Acl.onChange(_.bind(this.onAclUpdated, this));
+    this._changeFeedCursor = yield this.app.models.Acl.onChange();
+    if (this._changeFeedCursor) {
+      this._changeFeedCursor.each(_.bind(this._onAclUpdated, this));
+    }
   }
 
 
@@ -87,11 +90,7 @@ class ACL {
   /**
    * Callback for collection watcher.
    */
-  onAclUpdated (cursor) {
-    if (!this._changeFeedCursor) {
-      this._changeFeedCursor = cursor;
-    }
-
+  _onAclUpdated () {
     this.app.logger.info('Detected ACL rules change...reloading');
 
     co(this.reload())

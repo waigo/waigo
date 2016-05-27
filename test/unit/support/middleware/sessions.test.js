@@ -36,7 +36,7 @@ test['sessions'] = {
   },
 
   afterEach: function*() {
-    yield this.Application.shutdown();
+    yield this.shutdownApp();
   },
 
   'verifies that cookie signing keys are set': function*() {

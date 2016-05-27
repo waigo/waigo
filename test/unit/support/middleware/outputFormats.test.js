@@ -36,7 +36,7 @@ test['output formats'] = {
   },
 
   afterEach: function*() {
-    yield this.Application.shutdown();
+    yield this.shutdownApp();
   },
 
   'invalid format in config': function() {

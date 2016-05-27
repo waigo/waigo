@@ -40,7 +40,7 @@ test['slack notifier'] = {
   },
 
   afterEach: function*() {
-    yield this.Application.shutdown();
+    yield this.shutdownApp();
   },
 
   'sets webhook url': function*() {

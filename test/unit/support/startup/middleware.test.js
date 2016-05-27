@@ -42,7 +42,7 @@ test['middleware'] = {
     this.setup = waigo.load('support/startup/middleware');
   },
   afterEach: function*() {
-    yield this.Application.shutdown();
+    yield this.shutdownApp();
   },
 
   'loads and initialises middleware': function*() {

@@ -30,7 +30,7 @@ test['models'] = {
 
   afterEach: function*() {
     yield this.clearDb();
-    yield this.Application.shutdown();
+    yield this.shutdownApp();
   },
 
   'loads models': function*() {

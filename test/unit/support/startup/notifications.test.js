@@ -35,7 +35,7 @@ test['notifications'] = {
   },
 
   afterEach: function*() {
-    yield this.Application.shutdown();
+    yield this.shutdownApp();
   },
 
   'invalid types': function*() {

@@ -42,7 +42,7 @@ test['html'] = {
   },
 
   afterEach: function*() {
-    yield this.Application.shutdown();
+    yield this.shutdownApp();
   },
 
   'returns rendering middleware': function*() {

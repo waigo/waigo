@@ -27,7 +27,7 @@ test['app template vars'] = {
   },
 
   afterEach: function*() {
-    yield this.Application.shutdown();
+    yield this.shutdownApp();
   },
 
   'default': function*() {

@@ -34,7 +34,7 @@ test['rethinkdb'] = {
       } catch (err) {}
     }
 
-    yield this.Application.shutdown();
+    yield this.shutdownApp();
   },
 
   'can create': function*() {

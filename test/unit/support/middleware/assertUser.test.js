@@ -31,7 +31,7 @@ test['assert user'] = {
   },
 
   afterEach: function*() {
-    yield this.Application.shutdown();
+    yield this.shutdownApp();
   },
 
   'user must be logged in': function*() {

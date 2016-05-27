@@ -27,7 +27,7 @@ test['context helpers'] = {
   },
 
   afterEach: function*() {
-    yield this.Application.shutdown();
+    yield this.shutdownApp();
   },
 
   'sets context': function*() {

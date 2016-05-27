@@ -45,7 +45,7 @@ test['base'] = {
   afterEach: function*() {
     yield this.clearDb();
     
-    yield this.Application.shutdown();
+    yield this.shutdownApp();
   },
 
   'app.mailer instance': function*() {

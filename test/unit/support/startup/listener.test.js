@@ -26,7 +26,7 @@ test['listener'] = {
     this.app.listen = this.mocker.stub().returns('abc');
   },
   afterEach: function*() {
-    yield this.Application.shutdown();
+    yield this.shutdownApp();
   },
 
   'starts HTTP listener': function*() {

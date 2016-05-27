@@ -36,7 +36,7 @@ test['context helpers'] = {
 
   afterEach: function*() {
     if (middleware) {
-      yield this.Application.shutdown();
+      yield this.shutdownApp();
     }
   },
 

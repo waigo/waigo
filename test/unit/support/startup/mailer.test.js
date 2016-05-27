@@ -28,7 +28,7 @@ test['mailer'] = {
     this.setup = waigo.load('support/startup/mailer');
   },
   afterEach: function*() {
-    yield this.Application.shutdown();
+    yield this.shutdownApp();
   },
   'mailer config not set': function*() {
     this.app.config.mailer = null;

@@ -24,8 +24,12 @@ exports.schema = {
 
 exports.modelMethods = {
   onChange:function(cb) {
-    return Promise.resolve(this.rawQry().changes())
-      .then(cb)
+    return this.rawQry().changes({
+      squash: true,
+      includeInitial: false,
+      includeStates: false,
+    })
+      .run()
       .catch((err) => {
         this._logger().error(`${this.name} changes error`, err);
       });

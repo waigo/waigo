@@ -24,7 +24,7 @@ test['app template vars'] = {
     this.setup = waigo.load('support/startup/appTemplateVars');
   },
   afterEach: function*() {
-    yield this.Application.shutdown();
+    yield this.shutdownApp();
   },
   'sets template vars': function*() {
     this.app.routeUrl = 'blah';

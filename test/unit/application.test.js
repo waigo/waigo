@@ -224,7 +224,7 @@ test['shutdown'] = {
     delete this.Application.app.config;
 
     try {
-      yield this.Application.shutdown();
+      yield this.shutdownApp();
       throw -1;
     } catch (err) {
       err.message.should.eql('Application not started');
@@ -241,7 +241,7 @@ test['shutdown'] = {
     'runs steps': function*() {
       let app = this.Application.app;
 
-      yield this.Application.shutdown();
+      yield this.shutdownApp();
 
       app.step1.should.eql('shutdown1');
       app.step2.should.eql('shutdown2');
@@ -250,7 +250,7 @@ test['shutdown'] = {
     'resets koa app': function*() {
       let app = this.Application.app;
 
-      yield this.Application.shutdown();
+      yield this.shutdownApp();
 
       this.Application.app.should.not.eql(app);
     },
@@ -271,7 +271,7 @@ test['shutdown'] = {
 
     'throws error': function*() {
       try {
-        yield this.Application.shutdown();
+        yield this.shutdownApp();
         throw -1;
       } catch (err) {
         err.message.should.eql('fail98');

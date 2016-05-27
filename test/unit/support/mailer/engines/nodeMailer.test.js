@@ -32,7 +32,7 @@ test['nodemailer'] = {
   afterEach: function*() {
     yield this.clearDb();
     
-    yield this.Application.shutdown();
+    yield this.shutdownApp();
   },
 
   'sets replyTo': function*() {

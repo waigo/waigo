@@ -37,7 +37,7 @@ test['static resources'] = {
   },
 
   afterEach: function*() {
-    yield this.Application.shutdown();
+    yield this.shutdownApp();
   },
 
   'deletes tmp folder': function*() {

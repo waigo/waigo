@@ -30,7 +30,7 @@ test['routes'] = {
   },
 
   afterEach: function*() {
-    yield this.Application.shutdown();
+    yield this.shutdownApp();
   },
 
   'loads routes': function*() {

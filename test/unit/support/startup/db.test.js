@@ -38,7 +38,7 @@ test['db'] = {
     this.setup = waigo.load('support/startup/db');
   },
   afterEach: function*() {
-    yield this.Application.shutdown();
+    yield this.shutdownApp();
   },
   'does nothing if no config': function*() {
     delete this.app.config.db;

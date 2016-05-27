@@ -31,7 +31,7 @@ test['action tokens'] = {
     this.setup = waigo.load('support/startup/actionTokens');
   },
   afterEach: function*() {
-    yield this.Application.shutdown();
+    yield this.shutdownApp();
   },
   'init action tokens': function*() {
     yield this.setup(this.app);

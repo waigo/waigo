@@ -30,7 +30,7 @@ test['shutdown listener'] = {
   },
 
   afterEach: function*() {
-    yield this.Application.shutdown();
+    yield this.shutdownApp();
   },
 
   'shuts down HTTP listener': function*() {

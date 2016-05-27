@@ -31,7 +31,7 @@ test['emailAddressNotInUse'] = {
   },
 
   afterEach: function*() {
-    yield this.Application.shutdown();
+    yield this.shutdownApp();
   },
 
   'is not in use': function*() {
