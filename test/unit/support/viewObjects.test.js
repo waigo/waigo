@@ -1,34 +1,40 @@
-var moment = require('moment'),
+"use strict";
+
+const _ = require('lodash'),
+  co = require('co'),
   path = require('path'),
+  moment = require('moment'),
+  shell = require('shelljs'),
   Q = require('bluebird');
 
-var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
-  test = _testUtils.test,
-  testUtils = _testUtils.utils,
-  assert = testUtils.assert,
-  expect = testUtils.expect,
-  should = testUtils.should,
-  waigo = testUtils.waigo;
+const test = require(path.join(process.cwd(), 'test', '_base'))(module);
+const waigo = global.waigo;
+
+var viewObjects;
 
 
-var viewObjects = null;
 
-
-test['viewObjects'] = {
+test['view objects'] = {
   beforeEach: function*() {
-    waigo.initAsync()
-      .then(function() {
-        viewObjects = waigo.load('support/viewObjects');        
-      })
-      .nodeify(done);
+    yield this.initApp();
+
+    yield this.startApp({
+      startupSteps: [],
+      shutdownSteps: [],
+    });
+
+    viewObjects = waigo.load('support/viewObjects');
+  },
+
+  afterEach: function*() {
+    yield this.shutdownApp();
   },
 
   'method name': function() {
-    expect(viewObjects.methodName).to.eql('toViewObject');
+    this.expect(viewObjects.METHOD_NAME).to.eql('toViewObject');
   },
 
   'get view object yieldables': {
-
     'object': function*() {
       var obj1 = {
         def: 1,
@@ -55,21 +61,17 @@ test['viewObjects'] = {
       var gen1 = viewObjects.toViewObjectYieldable(obj1, ctx),
         gen2 = viewObjects.toViewObjectYieldable(obj2, ctx);
 
-      testUtils.spawn(function*() { 
-        return yield [gen1, gen2];
-      })
-        .then(function(res) {
-          expect(res).to.eql([
-            { dummy: 5 },
-            { 
-              abc: 2,
-              ghi: {
-                master: 5
-              }
-            },
-          ])
-        })
-        .nodeify(done);
+      let res = yield [gen1, gen2];
+
+      this.expect(res).to.eql([
+        { dummy: 5 },
+        { 
+          abc: 2,
+          ghi: {
+            master: 5
+          }
+        },
+      ]);
     },
 
     'date items are unchanged': function*() {
@@ -83,15 +85,11 @@ test['viewObjects'] = {
 
       var gen1 = viewObjects.toViewObjectYieldable(obj1, ctx);
 
-      testUtils.spawn(function*() { 
-        return yield [gen1];
-      })
-        .then(function(res) {
-          expect(res).to.eql([
-            { def: date1 },
-          ])
-        })
-        .nodeify(done);
+      let res = yield [gen1];
+
+      this.expect(res).to.eql([
+        { def: date1 },
+      ]);
     },
 
 
@@ -112,34 +110,63 @@ test['viewObjects'] = {
 
       var ctx = 5;
 
-      var y1 = viewObjects.toViewObjectYieldable(arr1, ctx);
+      let obj1 = yield viewObjects.toViewObjectYieldable(arr1, ctx);
 
-      testUtils.spawn(function*() {
-        return yield y1;
-      })
-        .then(function(obj1) {
-          expect(obj1).to.eql([
-            { dummy: 5 },
-            { abc: 2 },
-          ]);
-        })
-        .nodeify(done);
+      this.expect(obj1).to.eql([
+        { dummy: 5 },
+        { abc: 2 },
+      ]);
     },
 
-    'null': function() {
-      expect(viewObjects.toViewObjectYieldable(null, 5)).to.eql(null);
+    'object': function*() {
+      var obj = {
+        a: {
+          def: 1,
+          toViewObject: function*(ctx) {
+            return {
+              dummy: ctx
+            };
+          }
+        },
+        b: {
+          abc: 2
+        },
+      };
+
+      var ctx = 5;
+
+      let obj1 = yield viewObjects.toViewObjectYieldable(obj, ctx);
+
+      this.expect(obj1).to.eql({
+        a: { dummy: 5 },
+        b: { abc: 2 },
+      });
     },
 
-    'string': function() {
-      expect(viewObjects.toViewObjectYieldable('abc', 5)).to.eql('abc');
+    'schema types': function*() {
+      this.expect(yield viewObjects.toViewObjectYieldable(String, 5)).to.eql('String');
+      this.expect(yield viewObjects.toViewObjectYieldable(Boolean, 5)).to.eql('Boolean');
+      this.expect(yield viewObjects.toViewObjectYieldable(Number, 5)).to.eql('Number');
+      this.expect(yield viewObjects.toViewObjectYieldable(Date, 5)).to.eql('Date');
+      this.expect(yield viewObjects.toViewObjectYieldable(Object, 5)).to.eql('Object');
+      this.expect(yield viewObjects.toViewObjectYieldable(Array, 5)).to.eql('Array');
     },
 
-    'number': function() {
-      expect(viewObjects.toViewObjectYieldable(1.2, 5)).to.eql(1.2);
+
+    'null': function*() {
+      this.expect(yield viewObjects.toViewObjectYieldable(null, 5)).to.eql(null);
     },
 
-    'boolean': function() {
-      expect(viewObjects.toViewObjectYieldable(true, 5)).to.eql(true);
+    'string': function*() {
+      this.expect(yield viewObjects.toViewObjectYieldable('abc', 5)).to.eql('abc');
+    },
+
+    'number': function*() {
+      this.expect(yield viewObjects.toViewObjectYieldable(1.2, 5)).to.eql(1.2);
+    },
+
+    'boolean': function*() {
+      this.expect(yield viewObjects.toViewObjectYieldable(true, 5)).to.eql(true);
     },
 
   },
