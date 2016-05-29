@@ -49,7 +49,7 @@ module.exports = {
         subject: 'Reset your password',
         bodyTemplate: 'resetPassword',
         templateVars: {
-          link: app.routeUrl('reset_password', null, {
+          link: app.routes.url('reset_password', null, {
             c: token
           }, {
             absolute: true

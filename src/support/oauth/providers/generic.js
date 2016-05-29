@@ -32,7 +32,7 @@ class GenericOauth {
     this.logger = logger.create(`Oauth-${provider}`);
 
     this.config = _.get(this.app.config.oauth, this.provider, {});
-    this.callbackURL = this.app.routeUrl('oauth_callback', {
+    this.callbackURL = this.app.routes.url('oauth_callback', {
       provider: provider,
     }, null, {
       absolute: true

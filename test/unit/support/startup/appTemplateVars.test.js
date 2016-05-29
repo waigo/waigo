@@ -27,15 +27,15 @@ test['app template vars'] = {
     yield this.shutdownApp();
   },
   'sets template vars': function*() {
-    this.app.routeUrl = 'blah';
+    this.app.routes = 'blah';
     this.app.staticUrl = 'blah2';
 
     yield this.setup(this.app);
 
     this.app.templateVars.should.eql({
       _: _,
-      routeUrl: this.app.routeUrl,
-      staticUrl: this.app.staticUrl,
+      routes: 'blah',
+      staticUrl: 'blah2',
       config: this.app.config,
     });
   },

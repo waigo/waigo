@@ -42,7 +42,7 @@ module.exports = function(options) {
         this.app.logger.debug('redirect to login');
 
         return yield this.redirect(
-          this.app.routeUrl('user_login', null, {
+          this.app.routes.url('user_login', null, {
             r: err.message,
             u: this.request.url,            
           })

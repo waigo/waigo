@@ -59,7 +59,7 @@ module.exports = {
         subject: 'Thanks for signing up!',
         bodyTemplate: 'signupWelcome',
         templateVars: {
-          link: app.routeUrl('verify_email', null, {
+          link: app.routes.url('verify_email', null, {
             c: token
           }, {
             absolute: true
