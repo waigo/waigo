@@ -1,283 +1,323 @@
-var moment = require('moment'),
+"use strict";
+
+const _ = require('lodash'),
+  co = require('co'),
   path = require('path'),
+  moment = require('moment'),
+  shell = require('shelljs'),
   Q = require('bluebird');
 
-var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
-  test = _testUtils.test,
-  testUtils = _testUtils.utils,
-  assert = testUtils.assert,
-  expect = testUtils.expect,
-  should = testUtils.should,
-  waigo = testUtils.waigo;
+const test = require(path.join(process.cwd(), 'test', '_base'))(module);
+const waigo = global.waigo;
 
+var mapper;
 
-var app = null,
-  routes = null,
-  router = null,
-  mapper = null;
+const noop = function*() {};
+
 
 test['route mapper'] = {
   beforeEach: function*() {
-    routes = {
-      'GET /': 'main.index'
-    };
+    this.createAppModules({
+      'controllers/hello': 'exports.world = function*() { this.mega.push("hello world"); };',
+      'controllers/good': 'exports.bye = function*() { this.mega.push("goodbye"); };',
+      'support/middleware/before_next': 'module.exports = function() { return function*(next) { this.mega.push("test"); yield next; }; };',
+      'support/middleware/after_next': 'module.exports = function(o) { return function*(next) { yield next; this.mega.push("test_" + o.num); }; };'
+    });
 
-    router = {
-      get: test.mocker.spy(),
-      post: test.mocker.spy(),
-      del: test.mocker.spy(),
-      delete: test.mocker.spy(),
-      put: test.mocker.spy(),
-      options: test.mocker.spy(),
-      head: test.mocker.spy()
-    }
+    yield this.initApp();
 
-    testUtils.deleteTestFolders()
-      .then(testUtils.createTestFolder)
-      .then(function() {
-        return testUtils.createAppModules({
-          'controllers/main': 'exports.index = function*() { yield this.render("index", { title: "Hello World" }); };',
-          'support/middleware/test': 'var a = function*() {}; module.exports = function() { return a }; a.ref = a;',
-          'support/middleware/test_options': 'module.exports = function(o) { o.a = 5; return function*() { return o; } };'
-        });
-      })
-      .then(waigo.initAsync)
-      .then(function() {
-        app = waigo.load('application').app;
-        mapper = waigo.load('support/routeMapper');
+    yield this.startApp({
+      startupSteps: [],
+      shutdownSteps: [],
+    });
 
-        app.route = test.mocker.spy(function() {
-          return router;
-        });
-      })
-      .nodeify(done);
+    mapper = waigo.load('support/routeMapper');
+
+    this.ctx = this.app.createContext({}, {
+      setHeader: this.mocker.spy(),
+    });
   },
+
   afterEach: function*() {
-    testUtils.deleteTestFolders().nodeify(done);
+    yield this.shutdownApp();
   },
-  'URL format': {
-    '[GET]': function() {  
-      expect(function() {
-        mapper.map(app, {
-          'GET': 'main.index'
-        });
-      }).to.throw('Invalid route URL format: GET');
-    },
-    '[/]': function() {  
-      expect(function() {
-        mapper.map(app, {
-          '/': 'main.index'
-        });
-      }).to.throw('Invalid route URL format: /');
-    },
-    '[  GET    /   ]': function() {  
-      expect(function() {
-        mapper.map(app, {
-          '  GET    /   ': 'main.index'
-        });
-      }).to.not.throw(Error);
-    },
-    '[GET /]': function() {  
-      expect(function() {
-        mapper.map(app, routes);
-      }).to.not.throw(Error);
-    }
+
+  'no routes or middleware': function*() {
+    yield mapper.setup(this.app, {}, {});
+
+    this.expect(this.app.router.match('/')).to.be.undefined;
   },
-  'HTTP method': {
-    'GET': function() {  
-      expect(function() {
-        mapper.map(app, {'GET /': 'main.index'});
-      }).to.not.throw(Error);
-    },
-    'POST': function() {  
-      expect(function() {
-        mapper.map(app, {'POST /': 'main.index'});
-      }).to.not.throw(Error);
-    },
-    'DEL': function() {  
-      expect(function() {
-        mapper.map(app, {'DEL /': 'main.index'});
-      }).to.not.throw(Error);
-    },
-    'DELETE': function() {  
-      expect(function() {
-        mapper.map(app, {'DELETE /': 'main.index'});
-      }).to.not.throw(Error);
-    },
-    'PUT': function() {  
-      expect(function() {
-        mapper.map(app, {'PUT /': 'main.index'});
-      }).to.not.throw(Error);
-    },
-    'OPTIONS': function() {  
-      expect(function() {
-        mapper.map(app, {'OPTIONS /': 'main.index'});
-      }).to.not.throw(Error);
-    },
-    'HEAD': function() {  
-      expect(function() {
-        mapper.map(app, {'HEAD /': 'main.index'});
-      }).to.not.throw(Error);
-    },
-    'INVALID': function() {  
-      expect(function() {
-        mapper.map(app, {'INVALID /': 'main.index'});
-      }).to.throw('Unsupported route HTTP method: INVALID');
-    },
-  },
-  'controller.method': {
-    'invalid controller': function() {
-      expect(function() {
-        mapper.map(app, {'HEAD /': 'invalid.index'});
-      }).to.throw('Module not found: controllers/invalid');      
-    },
-    'invalid method': function() {
-      expect(function() {
-        mapper.map(app, {'HEAD /': 'main.invalid'});
-      }).to.throw('Unable to find method "invalid" on controller "main"');            
-    },
-    'valid reference': function() {
-      expect(function() {
-        mapper.map(app, {'HEAD /': 'main.index'});
-      }).to.not.throw(Error);                  
-    },
-    'object reference': function() {
-      expect(function() {
-        mapper.map(app, {
-          'HEAD /': { 
-            id: 'main.index', 
-            dummy: true
-          } 
-        });
-      }).to.throw('Module not found: support/middleware/main.index');                  
-    }
-  },
-  'middleware': {
-    'invalid reference': function() {
-      expect(function() {
-        mapper.map(app, {'HEAD /': 'invalid'});
-      }).to.throw('Module not found: support/middleware/invalid');      
-    },
-    'valid reference': function() {
-      expect(function() {
-        mapper.map(app, {'HEAD /': 'test'});
-      }).to.not.throw(Error);                  
-    },
-    'object reference': function() {
-      expect(function() {
-        mapper.map(app, {'HEAD /': { id: 'test_options', dummy: true }});
-      }).to.not.throw(Error);                  
-    }
-  },
-  'automatic path ordering': function() {
-    routes = {
-      'GET /': 'main.index',
-      'POST /a': 'main.index',
-      'DEL /a/b': 'main.index',
-      'DELETE /a/b/d': 'main.index',
-      'PUT /a/c': 'main.index',
-      'OPTIONS /a/b/c': 'main.index',
-      'HEAD /b': 'main.index'       
-    };
 
-    mapper.map(app, routes);
-
-    expect(app.route.callCount).to.eql(7);
-    app.route.getCall(0).args[0].should.eql('/b');
-    app.route.getCall(1).args[0].should.eql('/a/c');
-    app.route.getCall(2).args[0].should.eql('/a/b/d');
-    app.route.getCall(3).args[0].should.eql('/a/b/c');
-    app.route.getCall(4).args[0].should.eql('/a/b');
-    app.route.getCall(5).args[0].should.eql('/a');
-    app.route.getCall(6).args[0].should.eql('/');
-
-    var controllerMethod = waigo.load('controllers/main').index;
-
-    router.get.should.have.been.calledOnce;
-    router.get.should.have.been.calledWithExactly(controllerMethod);
-
-    router.post.should.have.been.calledOnce;
-    router.post.should.have.been.calledWithExactly(controllerMethod);
-
-    router.del.should.have.been.calledOnce;
-    router.del.should.have.been.calledWithExactly(controllerMethod);
-
-    router.delete.should.have.been.calledOnce;
-    router.delete.should.have.been.calledWithExactly(controllerMethod);
-
-    router.put.should.have.been.calledOnce;
-    router.put.should.have.been.calledWithExactly(controllerMethod);
-
-    router.options.should.have.been.calledOnce;
-    router.options.should.have.been.calledWithExactly(controllerMethod);
-
-    router.head.should.have.been.calledOnce;
-    router.head.should.have.been.calledWithExactly(controllerMethod);
-  },
-  'handler chain': function() {
-    routes = {
-      'GET /': ['main.index', 'test', 'main.index']
-    };
-
-    mapper.map(app, routes);
-
-    expect(app.route.callCount).to.eql(1);
-    app.route.getCall(0).args[0].should.eql('/');
-
-    var controllerMethod = waigo.load('controllers/main').index,
-      middleware = waigo.load('support/middleware/test')();
-
-    router.get.should.have.been.calledOnce;
-    router.get.should.have.been.calledWithExactly(controllerMethod, middleware, controllerMethod);
-  },
-  'middleware with options': function*() {
-    testUtils.spawn(function*() {
-      var mOpts = {
-        id: 'test_options',
-        option1: 1,
-        option2: 2
-      };
-
-      routes = {
-        'GET /': [ 
-          'test',
-          mOpts
-        ]
-      };
-
-      mapper.map(app, routes);
-
-      expect(app.route.callCount).to.eql(1);
-      app.route.getCall(0).args[0].should.eql('/');
-
-      var middleware = waigo.load('support/middleware/test_options')({
-        id: 'test_options',
-        option1: 1,
-        option2: 2
+  'simple routes': {
+    beforeEach: function*() {
+      yield mapper.setup(this.app, {}, {
+        '/': {
+          GET: 'hello.world',
+          POST: 'good.bye',
+        },
+        '/blah': {
+          PUT: 'hello.world',
+        },
       });
 
-      router.get.should.have.been.calledOnce;
+      this.ctx.mega = [];
+    },
+    'test - basic': function*() {
+      this.ctx.request.url = '/';
+      this.ctx.request.method = 'GET';
 
-      var getArgs = router.get.getCall(0).args;
-      
-      getArgs[0].should.eql(waigo.load('support/middleware/test')());
+      yield this.app.router.call(this.ctx, noop);
 
-      var ret = yield* getArgs[1]();
+      this.ctx.mega.should.eql(['hello world']);
+    },
+    'test - same url, different method': function*() {
+      this.ctx.request.url = '/';
+      this.ctx.request.method = 'POST';
 
-      expect(ret).to.eql({
-        id: 'test_options',
-        option1: 1,
-        option2: 2,
-        a: 5,
+      yield this.app.router.call(this.ctx, noop);
+
+      this.ctx.mega.should.eql(['goodbye']);
+    },
+    'test - different url': function*() {
+      this.ctx.request.url = '/blah';
+      this.ctx.request.method = 'PUT';
+
+      yield this.app.router.call(this.ctx, noop);
+
+      this.ctx.mega.should.eql(['hello world']);
+    },
+    /*TODO: FIX 'test - bad url': function*() {
+      this.ctx.request.url = '/ark';
+      this.ctx.request.method = 'GET';
+
+      yield this.app.router.call(this.ctx, noop);
+    },*/
+    'test - bad method': function*() {
+      this.ctx.request.url = '/';
+      this.ctx.request.method = 'PUT';
+
+      yield this.app.router.call(this.ctx, noop);
+    },
+  },
+
+
+  'per-route cascading middleware': {
+    beforeEach: function*() {
+      yield mapper.setup(this.app, {}, {
+        '/parent': {
+          pre: ['before_next'],
+          GET: 'hello.world',
+          POST: ['before_next', 'good.bye'],
+          '/child': {
+            GET: [{ id: 'after_next', num: 123}, 'hello.world'],
+          },
+        },
       });
 
-      // original options object should not have been modified.
-      expect(mOpts).to.eql({
-        id: 'test_options',
-        option1: 1,
-        option2: 2
+      this.ctx.mega = [];
+    },
+
+    'pre': function*() {
+      this.ctx.request.url = '/parent';
+      this.ctx.request.method = 'GET';
+
+      yield this.app.router.call(this.ctx, noop);
+
+      this.ctx.mega.should.eql(['test', 'hello world']);
+    },
+
+    'non-pre': function*() {
+      this.ctx.request.url = '/parent';
+      this.ctx.request.method = 'POST';
+
+      yield this.app.router.call(this.ctx, noop);
+
+      this.ctx.mega.should.eql(['test','test','goodbye']);
+    },
+
+    'child': function*() {
+      this.ctx.request.url = '/parent/child';
+      this.ctx.request.method = 'GET';
+
+      yield this.app.router.call(this.ctx, noop);
+
+      this.ctx.mega.should.eql(['test','hello world','test_123']);
+    },  
+  },
+
+
+  'per-http-method middleware': {
+    beforeEach: function*() {
+      yield mapper.setup(this.app, {
+        GET: {
+          _order: [
+            'before_next',
+          ]          
+        },
+        POST: {
+          _order: [
+            'after_next',
+            'before_next',
+          ],
+          after_next: {
+            num: 999
+          },
+        },
+      }, {
+        '/parent': {
+          POST: [{ id: 'after_next', num: 111 }, 'good.bye'],
+        },
       });
-    })
-      .nodeify(done);
-  }
+
+      this.ctx.mega = [];
+    },
+
+    'default': function*() {
+      this.ctx.request.url = '/parent';
+      this.ctx.request.method = 'POST';
+
+      yield this.app.router.call(this.ctx, noop);
+
+      this.ctx.mega.should.eql(['test', 'goodbye', 'test_111', 'test_999']);
+    },
+  },
+
+
+  'global common middleware does not play a part': {
+    beforeEach: function*() {
+      yield mapper.setup(this.app, {
+        ALL: {
+          _order: [
+            'before_next',
+          ]          
+        },
+        POST: {
+          _order: [
+            'after_next',
+            'before_next',
+          ],
+          after_next: {
+            num: 999
+          },
+        },
+      }, {
+        '/parent': {
+          POST: [{ id: 'after_next', num: 111 }, 'good.bye'],
+        },
+      });
+
+      this.ctx.mega = [];
+    },
+
+    'default': function*() {
+      this.ctx.request.url = '/parent';
+      this.ctx.request.method = 'POST';
+
+      yield this.app.router.call(this.ctx, noop);
+
+      this.ctx.mega.should.eql(['test', 'goodbye', 'test_111', 'test_999']);
+    },
+  },
+
+
+  'controller method as middleware': {
+    beforeEach: function*() {
+      yield mapper.setup(this.app, {}, {
+        '/parent': {
+          POST: ['hello.world', 'good.bye'],
+        },
+      });
+
+      this.ctx.mega = [];
+    },
+
+    'default': function*() {
+      this.ctx.request.url = '/parent';
+      this.ctx.request.method = 'POST';
+
+      yield this.app.router.call(this.ctx, noop);
+
+      this.ctx.mega.should.eql(['hello world']);
+    },
+  },
+
+
+  'invalid controller method': function*() {
+    yield this.shouldThrow(mapper.setup(this.app, {}, {
+      '/parent': {
+        POST: 'hello.world2',
+      },
+    }), 'Unable to find method "world2" on controller "hello"');
+  },
+
+
+  'invalid middleware': function*() {
+    yield this.shouldThrow(mapper.setup(this.app, {}, {
+      '/parent': {
+        POST: 'invalid',
+      },
+    }), 'File not found: support/middleware/invalid');
+  },
+
+
+  'reverse url lookup': {
+    beforeEach: function*() {
+      this.mapper = yield mapper.setup(this.app, {}, {
+        '/bar/:name/:age': {
+          name: 'test',
+          GET: 'hello.world',
+        },
+        '/pub': {
+          name: 'test2',
+          GET: 'good.bye',
+        },
+      });
+    },
+
+    'invalid name': function*() {
+      this.expect(() => {
+        this.mapper.url('blah')
+      }).to.throw('No route named: blah');
+    },
+
+    'params': function*() {
+      let url = this.mapper.url('test', {
+        name: 'john',
+        age: 23,
+        state: 'CO',
+      });
+
+      url.should.eql('/bar/john/23');
+    },
+
+    'query': function*() {
+      let url = this.mapper.url('test', {
+        name: 'john',
+        age: 23,
+        state: 'CO',
+      }, {
+        master: 'blaster',
+        hood: 'wink'
+      });
+
+      url.should.eql('/bar/john/23?hood=wink&master=blaster');
+    },
+
+    'absolute url': function*() {
+      this.app.config.baseURL = 'http://waigojs.com';
+
+      let url = this.mapper.url('test2', {
+        name: 'john',
+        age: 23,
+        state: 'CO',
+      }, {
+        master: 'blaster',
+        hood: 'wink'
+      }, {
+        absolute: true,
+      });
+
+      url.should.eql('http://waigojs.com/pub?hood=wink&master=blaster');
+    },
+  },
 };
