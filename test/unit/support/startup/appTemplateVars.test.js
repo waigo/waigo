@@ -34,7 +34,7 @@ test['app template vars'] = {
 
     this.app.templateVars.should.eql({
       _: _,
-      routes: 'blah',
+      routeUrl: 'blah',
       staticUrl: 'blah2',
       config: this.app.config,
     });
