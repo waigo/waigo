@@ -1,38 +1,25 @@
-var _ = require('lodash'),
-  moment = require('moment'),
+"use strict";
+
+const _ = require('lodash'),
+  co = require('co'),
   path = require('path'),
-  Q = require('bluebird'),
-  shell = require('shelljs');
+  moment = require('moment'),
+  shell = require('shelljs'),
+  Q = require('bluebird');
 
-var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
-  test = _testUtils.test,
-  testUtils = _testUtils.utils,
-  assert = testUtils.assert,
-  expect = testUtils.expect,
-  should = testUtils.should,
-  waigo = testUtils.waigo;
+const test = require(path.join(process.cwd(), 'test', '_base'))(module);
+const waigo = global.waigo;
 
-
-var AbstractCommand = null,
-  InitCommand = null;
+var AbstractCommand, InitCommand;
 
 
 
-test['init command'] = {
+test['view objects'] = {
   beforeEach: function*() {
-    testUtils.deleteTestFolders()
-      .then(function() {
-        return testUtils.createTestFolders();
-      })
-      .then(waigo.initAsync)
-      .then(function() {
-        AbstractCommand = waigo.load('support/cliCommand');
-        InitCommand = waigo.load('cli/init');
-      })
-      .nodeify(done);
-  },
-  afterEach: function*() {
-    testUtils.deleteTestFolders().nodeify(done);
+    yield this.initApp();
+
+    AbstractCommand = waigo.load('support/cliCommand');
+    InitCommand = waigo.load('cli/init');
   },
 
   'inherits from base Command class': function() {
@@ -42,42 +29,66 @@ test['init command'] = {
 
   'construction': function() {
     var c = new InitCommand();
-    expect(c.description).to.eql('Initialise and create a skeleton Waigo app');
-    expect(c.options).to.eql([]);
+    this.expect(c.description).to.eql('Initialise and create a skeleton Waigo app');
+    this.expect(c.options).to.eql([]);
   },
 
   'run - action handler': function*() {
     var c = new InitCommand();
 
-    var installPkgSpy = test.mocker.stub(c, 'installPkgs', function() {
+    var installPkgSpy = this.mocker.stub(c, 'installPkgs', function() {
       return Q.resolve();
     })
 
-    var copyFileSpy = test.mocker.stub(c, 'copyFile', function() {
+    var copyFileSpy = this.mocker.stub(c, 'copyFile', function() {
       return Q.resolve();
-    })
+    });
 
-    testUtils.spawn(c.run, c)
-      .then(function() {
-        installPkgSpy.should.have.been.calledOnce;
-        installPkgSpy.should.have.been.calledWithExactly('waigo', 'co');
+    yield c.run();
 
-        expect(copyFileSpy.callCount).to.eql(4);
-        var dataFolder = path.join(process.cwd(), 'src', 'cli', 'data', 'init');
-        copyFileSpy.should.have.been.calledWithExactly(
-          path.join(dataFolder, 'start-app.js'), 'start-app.js'
-        );
-        copyFileSpy.should.have.been.calledWithExactly(
-          path.join(dataFolder, 'index.pug'), 'src/views/index.pug'
-        );
-        copyFileSpy.should.have.been.calledWithExactly(
-          path.join(dataFolder, 'main.controller.js'), 'src/controllers/main.js'
-        );
-        copyFileSpy.should.have.been.calledWithExactly(
-          path.join(dataFolder, 'routes.js'), 'src/routes.js'
-        );
-      })
-      .nodeify(done);
+    installPkgSpy.should.have.been.calledTwice;
+    installPkgSpy.should.have.been.calledWithExactly(['waigo', 'semver']);
+    installPkgSpy.should.have.been.calledWithExactly([
+      'lodash',
+      'coffee-script',
+      'gulp@3.9.x',
+      'gulp-if@1.2.x',
+      'gulp-autoprefixer@2.1.x',
+      'gulp-minify-css@0.4.x',
+      'gulp-concat@2.4.x',
+      'gulp-stylus@2.0.x',
+      'nib',
+      'rupture',
+      'gulp-uglify@1.1.x',
+      'gulp-util@3.0.x',
+      'gulp-nodemon@1.0.x',
+      'run-sequence',
+      'yargs',
+    ], {
+      dev: true,
+    });
+
+    this.expect(copyFileSpy.callCount).to.eql(4);
+
+    const dataFolder = path.join(process.cwd(), 'src', 'cli', 'data', 'init');
+    const waigoFolder = path.join(waigo.getWaigoFolder());
+    const frameworkFolder = path.join(waigo.getWaigoFolder(), '..');
+
+    copyFileSpy.should.have.been.calledWithExactly(
+      path.join(dataFolder, 'README.md'), 'src/README.md'
+    );
+
+    copyFileSpy.should.have.been.calledWithExactly(
+      path.join(dataFolder, '_gitignore'), '.gitignore'
+    );
+
+    copyFileSpy.should.have.been.calledWithExactly(
+      path.join(frameworkFolder, 'start-app.js'), 'start-app.js'
+    );
+
+    copyFileSpy.should.have.been.calledWithExactly(
+      path.join(waigoFolder, 'config', 'base.js'), 'src/config/base.js'
+    );
   },
 
 };
