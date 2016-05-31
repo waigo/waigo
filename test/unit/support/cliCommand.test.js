@@ -151,7 +151,7 @@ test['cli command base class'] = {
 
       this.writeFile(path.join(srcFolder, 'skin', 'affair.txt'), 'hey!');
 
-      yield this.c.copyFolder(srcFolder, path.join('big'));
+      yield this.c.copyFolder(srcFolder, 'big');
 
       let str = this.readFile(
         path.join(this.appFolder, 'big', 'skin', 'affair.txt')
@@ -168,7 +168,7 @@ test['cli command base class'] = {
       
       this.writeFile(finalFile, 'heya');
 
-      yield this.c.copyFolder(srcFolder, path.join('big'));
+      yield this.c.copyFolder(srcFolder, 'big');
 
       let str = this.readFile(finalFile);
 
