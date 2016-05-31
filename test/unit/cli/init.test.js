@@ -14,7 +14,7 @@ var AbstractCommand, InitCommand;
 
 
 
-test['view objects'] = {
+test['cli - init'] = {
   beforeEach: function*() {
     yield this.initApp();
 
@@ -46,27 +46,8 @@ test['view objects'] = {
 
     yield c.run();
 
-    installPkgSpy.should.have.been.calledTwice;
+    installPkgSpy.should.have.been.calledOnce;
     installPkgSpy.should.have.been.calledWithExactly(['waigo', 'semver']);
-    installPkgSpy.should.have.been.calledWithExactly([
-      'lodash',
-      'coffee-script',
-      'gulp@3.9.x',
-      'gulp-if@1.2.x',
-      'gulp-autoprefixer@2.1.x',
-      'gulp-minify-css@0.4.x',
-      'gulp-concat@2.4.x',
-      'gulp-stylus@2.0.x',
-      'nib',
-      'rupture',
-      'gulp-uglify@1.1.x',
-      'gulp-util@3.0.x',
-      'gulp-nodemon@1.0.x',
-      'run-sequence',
-      'yargs',
-    ], {
-      dev: true,
-    });
 
     this.expect(copyFileSpy.callCount).to.eql(4);
 

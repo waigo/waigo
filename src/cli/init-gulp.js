@@ -19,7 +19,7 @@ const DATA_FOLDER = path.join(__dirname, 'data', 'init');
  */
 class Command extends AbstractCommand {
   constructor() {
-    super('Initialise and create a skeleton Gulpfile and associated tasks', []);
+    super('Initialise and create a Gulpfile and associated tasks for development purposes', []);
   }
 
   /**
