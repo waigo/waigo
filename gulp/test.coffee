@@ -1,9 +1,11 @@
 gulp = require 'gulp'
-mocha = require 'gulp-mocha'
+exec = require 'gulp-exec'
 path = require 'path'
 
 module.exports = (paths, options = {}) ->
   handler: ->
+    err = null
+
     return gulp.src(
       [
         options.onlyTest || path.join(paths.test, '**', '**', '**', '*.test.js')
@@ -11,14 +13,15 @@ module.exports = (paths, options = {}) ->
         read: false 
       }
     )
-      .pipe mocha(
-        reporter: 'spec'
-        ui: 'exports'
-        timeout: 10000  
+      .pipe exec(
+        'node_modules/.bin/mocha --colors --ui exports --timeout 10000 --reporter spec <%= file.path %>'
       )
-      # .once 'error', (-> 
-      #   process.exit(1);
-      # )
-      # .once 'end', ( ->
-      #   process.exit();
-      # )
+      .once 'error', (e) -> 
+        err = e
+      .pipe exec.reporter({
+        err: false
+        stderr: true
+        stdout: true
+      })
+      .once 'end', -> 
+        if err then this.emit('error', err)
