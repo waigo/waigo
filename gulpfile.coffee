@@ -11,6 +11,7 @@ options =
   minifiedBuild: !!args.minified
   dontExitOnError: false
   onlyTest: args.onlyTest
+  ci: !!args.ci
 
 
 if options.minifiedBuild

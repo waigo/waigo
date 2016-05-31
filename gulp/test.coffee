@@ -6,10 +6,16 @@ module.exports = (paths, options = {}) ->
   handler: ->
     err = null
 
-    return gulp.src(
-      [
-        options.onlyTest || path.join(paths.test, '**', '**', '**', '*.test.js')
-      ], { 
+    p = null
+
+    if options.onlyTest
+      p = options.onlyTest
+    else if options.ci
+      p = path.join(paths.test, 'unit', '**', '**', '*.test.js')
+    else 
+      p = path.join(paths.test, '**', '**', '**', '*.test.js')
+
+    return gulp.src([p], { 
         read: false 
       }
     )

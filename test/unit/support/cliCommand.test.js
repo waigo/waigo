@@ -154,7 +154,7 @@ test['cli command base class'] = {
       yield this.c.copyFolder(srcFolder, path.join('white', 'mouse'));
 
       let str = this.readFile(
-        path.join(this.appFolder, 'white', 'mouse', 'sheep', 'skin', 'affair.txt')
+        path.join(this.appFolder, 'white', 'mouse', 'black', 'sheep', 'skin', 'affair.txt')
       );
 
       str.should.eql('hey!')      
@@ -164,7 +164,7 @@ test['cli command base class'] = {
 
       this.writeFile(path.join(srcFolder, 'skin', 'affair.txt'), 'hey!');
 
-      const finalDst = path.join(this.appFolder, 'white', 'mouse', 'sheep', 'skin');
+      const finalDst = path.join(this.appFolder, 'white', 'mouse', 'black', 'sheep', 'skin');
       
       this.writeFile(path.join(finalDst, 'affair.txt'), 'heya');
 

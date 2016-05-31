@@ -107,7 +107,8 @@
   "scripts": {
     "prepublish": "npm prune",
     "dev": "gulp",
-    "test": "NODE_ENV=test gulp test"
+    "test": "NODE_ENV=test gulp test",
+    "test-ci": "NODE_ENV=test gulp test --ci"
   },
   "engines": {
     "node": ">=4.4.5"
