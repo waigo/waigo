@@ -15,6 +15,8 @@ var mapper;
 const noop = function*() {};
 
 
+
+
 test['route mapper'] = {
   beforeEach: function*() {
     this.createAppModules({
@@ -33,7 +35,21 @@ test['route mapper'] = {
 
     mapper = waigo.load('support/routeMapper');
 
-    this.ctx = this.app.createContext({}, {
+    const _createContext = (req, res) => {
+      var context = Object.create(this.app.context);
+      var request = context.request = Object.create(this.app.request);
+      var response = context.response = Object.create(this.app.response);
+      context.app = request.app = response.app = this;
+      context.req = request.req = response.req = req;
+      context.res = request.res = response.res = res;
+      request.ctx = response.ctx = context;
+      request.response = response;
+      response.request = request;
+      context.state = {};
+      return context;
+    };
+
+    this.ctx = _createContext({}, {
       setHeader: this.mocker.spy(),
     });
   },
