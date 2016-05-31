@@ -111,7 +111,7 @@
     "test": "NODE_ENV=test gulp test"
   },
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=4.4.5"
   },
   "engine-strict": true,
   "readmeFilename": "README.md",
