@@ -41,7 +41,6 @@
     "pluralize": "^1.1.0",
     "pug": "^2.0.0-alpha7",
     "query-string": "^3.0.1",
-    "rethinkdbdash": "^2.3.2",
     "semver": "^5.1.0",
     "shelljs": "^0.3.0",
     "slack-node": "^0.2.0",
@@ -50,7 +49,7 @@
     "validator": "^5.0.0"
   },
   "devDependencies": {
-    "bluebird": "~2.9.25",
+    "bluebird": "^3.4.0",
     "browserify": "~11.0.1",
     "chai": "~1.8.1",
     "chai-as-promised": "~4.1.1",
