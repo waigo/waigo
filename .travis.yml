@@ -15,6 +15,7 @@ before_install:
   - sudo apt-get -y --force-yes install rethinkdb
 
 before_script:
+  - rethinkdb --daemon
   - "npm install"
 
 script:
