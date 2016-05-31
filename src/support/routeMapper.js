@@ -70,7 +70,7 @@ class RouteMapper {
       return a.url < b.url;
     });
 
-    this._app.routes = {
+    this._routes = {
       all: orderedMappings,
       byName: {}
     };
@@ -84,7 +84,7 @@ class RouteMapper {
       route[mapping.method.toLowerCase()].apply(route, mapping.resolvedMiddleware);
 
       // save to app
-      this._app.routes.byName[mapping.name] = mapping;
+      this._routes.byName[mapping.name] = mapping;
     });
 
 
@@ -183,7 +183,7 @@ class RouteMapper {
 
     logger.debug('Generate URL for route ' + routeName);
 
-    var route = this._app.routes.byName[routeName];
+    var route = this._routes.byName[routeName];
 
     if (!route) {
       throw new Error('No route named: ' + routeName);

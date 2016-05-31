@@ -39,7 +39,7 @@ test['cron'] = {
     this.app.count = 0;
   },
   afterEach: function*() {
-    this.Application.shutdown();
+    yield this.shutdownApp();
   },
   'stops cron job': function*() {
     yield this.shutdownStep(this.app);

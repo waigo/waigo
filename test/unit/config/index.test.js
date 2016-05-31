@@ -51,7 +51,6 @@ test['config loader'] = {
       user: process.env.USER,
       base: 1,
       dev: 1,
-      dev_user: 1
     });
   },
   'set mode': function*() {

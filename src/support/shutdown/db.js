@@ -6,6 +6,7 @@ const waigo = global.waigo,
 
 
 
+
 /**
  * Shutdown database connections.
  *

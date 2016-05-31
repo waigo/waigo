@@ -17,11 +17,9 @@ var middleware = null,
 
 test['context helpers'] = {
   beforeEach: function*() {
-    let self = this;
-
     middleware = null;
 
-    this._init = function*() {
+    this._init = this.bind(function*() {
       yield this.initApp();
 
       yield this.startApp({
@@ -31,13 +29,11 @@ test['context helpers'] = {
 
       middleware = waigo.load('support/middleware/errorHandler');
       errors = waigo.load('support/errors');
-    };
+    }, this);
   },
 
   afterEach: function*() {
-    if (middleware) {
-      yield this.shutdownApp();
-    }
+    yield this.shutdownApp();
   },
 
   'throw()': {
@@ -133,5 +129,4 @@ test['context helpers'] = {
       this.ctx.type.should.eql('json');
     },
   },
-
 };

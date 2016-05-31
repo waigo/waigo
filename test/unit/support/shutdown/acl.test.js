@@ -24,7 +24,7 @@ test['acl'] = {
     this.shutdownStep = waigo.load('support/shutdown/acl');
   },
   afterEach: function*() {
-    this.Application.shutdown();
+    yield this.shutdownApp();
   },
   'shuts down the db': function*() {
     let count = 0;

@@ -98,7 +98,7 @@ test['notify admins about user stats'] = {
 
       let ids = arg.templateVars.users.map((u) => u.id);
 
-      ids.should.eql([user1.id, user3.id]);
+      _.intersection(ids, [user1.id, user3.id]).length.should.eql(2);
     },
   },
 };

@@ -78,7 +78,7 @@ test['assert user'] = {
       redirect: this.mocker.spy(() => Q.resolve()),
     });
 
-    let routeSpy = this.mocker.spy(this.app, 'routeUrl');
+    let routeSpy = this.mocker.spy(this.app.routes, 'url');
 
     yield assertUser({ 
       redirectToLogin: true, 

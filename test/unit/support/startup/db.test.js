@@ -15,7 +15,7 @@ const waigo = global.waigo;
 test['db'] = {
   beforeEach: function*() {
     this.createAppModules({
-      'support/db/test': 'module.exports = { create: function*() { return Array.prototype.slice.call(arguments); } }; '
+      'support/db/test3': 'exports.create = function*() { return Array.prototype.slice.call(arguments); }; '
     });
 
     yield this.initApp();
@@ -25,11 +25,11 @@ test['db'] = {
       shutdownSteps: [],
       db: {
         main: {
-          type: 'test',
+          type: 'test3',
           hello: 'world'
         },
         main2: {
-          type: 'test',
+          type: 'test3',
           hello: 'world'
         },
       }
@@ -52,10 +52,10 @@ test['db'] = {
     yield this.setup(this.app);
 
     _.get(this.app.dbs, 'main.0').should.eql('main');
-    _.get(this.app.dbs, 'main.2').should.eql({ type: 'test', hello: 'world' });
+    _.get(this.app.dbs, 'main.2').should.eql({ type: 'test3', hello: 'world' });
 
     _.get(this.app.dbs, 'main2.0').should.eql('main2');
-    _.get(this.app.dbs, 'main2.2').should.eql({ type: 'test', hello: 'world' });
+    _.get(this.app.dbs, 'main2.2').should.eql({ type: 'test3', hello: 'world' });
 
     this.app.db.should.eql(this.app.dbs.main);
   }    

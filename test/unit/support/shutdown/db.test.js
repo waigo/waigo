@@ -15,8 +15,7 @@ const waigo = global.waigo;
 test['db'] = {
   beforeEach: function*() {
     this.createAppModules({
-      'support/db/test': 'module.exports = { create: function*() { return Array.prototype.slice.call(arguments); }, closeAll: function*(logger) { logger.flag += "1"; } }; ',
-      'support/db/test2': 'module.exports = { create: function*() { return Array.prototype.slice.call(arguments); }, closeAll: function*(logger) { logger.flag += "2"; } }; ',
+      'support/db/test1': 'module.exports = { closeAll: function*(logger) { logger.flag.push(1); } }; ',
     });
 
     yield this.initApp();
@@ -25,24 +24,29 @@ test['db'] = {
       startupSteps: [],
       shutdownSteps: [],
       db: {
-        test: {
-          hello: 'world'
-        }
+        main: {
+          type: 'test1',
+          hello: 'world2',
+        },
+        main2: {
+          type: 'test1',
+          hello: 'world2',
+        }        
       }
     });
 
     this.shutdownStep = waigo.load('support/shutdown/db');
 
-    this.app.logger.flag = '';
+    this.app.logger.flag = [];
   },
   afterEach: function*() {
-    this.Application.shutdown();
+    yield this.shutdownApp();
   },
   'shuts down the db': function*() {
     this.app.db = {};
 
     yield this.shutdownStep(this.app);
 
-    this.app.logger.flag.should.eql('12');
+    this.app.logger.flag.should.eql([1]);
   }    
 };

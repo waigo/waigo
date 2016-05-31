@@ -13,10 +13,15 @@ const waigo = global.waigo;
 var loader = require('../../src/loader');
 
 
+test.beforeEach = function*() {
+  waigo.reset();
+};
+
+
 
 test['app folder'] = {
   'get': function() {
-    this.expect(loader.getAppFolder()).to.be.null;
+    this.expect(loader.getAppFolder()).to.be.defined;
   }
 };
 

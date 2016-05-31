@@ -28,4 +28,10 @@ Promise.promisify = function(fn, ctx) {
 };
 
 
-
+Promise.try = function(fn) {
+  try {
+    return Promise.resolve(fn());
+  } catch (err) {
+    return Promise.reject(err);
+  }
+}

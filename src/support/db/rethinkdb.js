@@ -47,7 +47,13 @@ exports.create = function*(id, logger, dbConfig) {
 exports.closeAll = function*(logger) {
   logger.info('Close all connections');
 
-  yield _.map(_connections, (db) => db.disconnect());
+  yield _.map(_connections, (db) => {
+    return Q.try(() => {
+      if (db.isConnected) {
+        return db.disconnect()
+      }      
+    });
+  });
 };
 
 

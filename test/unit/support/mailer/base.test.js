@@ -95,7 +95,7 @@ test['base'] = {
         subject: 'subj',
       });
 
-      _.get(ret, 'body').should.contain('Hey,');
+      _.get(ret, 'body').should.contain('user1@waigojs.com,');
       _.get(ret, 'body').should.contain('Waigo administrators');
       _.get(ret, 'body').should.contain('successfully reset your password');
     },
