@@ -1,65 +1,58 @@
-var _ = require('lodash'),
-  moment = require('moment'),
+"use strict";
+
+const _ = require('lodash'),
+  co = require('co'),
   path = require('path'),
-  Q = require('bluebird'),
-  shell = require('shelljs');
-
-var _testUtils = require(path.join(process.cwd(), 'test', '_base'))(module),
-  test = _testUtils.test,
-  testUtils = _testUtils.utils,
-  assert = testUtils.assert,
-  expect = testUtils.expect,
-  should = testUtils.should,
-  waigo = testUtils.waigo;
+  moment = require('moment'),
+  shell = require('shelljs'),
+  Q = require('bluebird');
 
 
+const test = require(path.join(process.cwd(), 'test', '_base'))(module);
+const waigo = global.waigo;
 
-var pathToBin = path.join(__dirname, '..', '..', '..', 'bin', 'waigo');
 
-var execBin = function(args) {
-  var defer = Q.defer();
+const pathToBin = path.join(process.cwd(), 'bin', 'waigo');
+ 
 
-  shell.exec('node --harmony ' + pathToBin + ' ' + args, function(code, output) {
-    if (0 !== code) {
-      console.error(output);
-      defer.reject(new Error('Exit: ' + code));
+const execBin = function(args) {
+  return new Q((resolve, reject) => {
+    let ret = shell.exec('node ' + pathToBin + ' ' + args, {
+      silent: true
+    });
+
+    if (0 !== ret.code) {
+      reject(new Error('Exit: ' + ret.code));
     } else {
-      defer.resolve(output);
+      resolve(ret.output);
     }
-  });
-
-  return defer.promise;
+  })
 };
 
 
 
 
-
 test['cli executable'] = {
-  beforeEach: function(done) {
-    testUtils.deleteTestFolders()
-      .then(function() {
-        return testUtils.createTestFolders();
-      })
-      .then(waigo.initAsync)
-      .nodeify(done);
-  },
-  afterEach: function(done) {
-    testUtils.deleteTestFolders().nodeify(done);
+  beforeEach: function*() {
+    yield this.initApp();
   },
 
-  'help usage': function(done) {
-    expect(execBin('--help')).to.eventually.contain('Usage:').and.notify(done);
+  'help usage': function*() {
+    let ret = yield execBin('--help');
+
+    ret.should.contain('Usage:');
   },
 
-  'version string': function(done) {
-    expect(execBin('--version')).to.eventually.eql(
+  'version string': function*() {
+    let ret = yield execBin('--version');
+
+    ret.should.eql(
       require(path.join(process.cwd(), 'package.json')).version + "\n"
-    ).and.notify(done);
+    );
   },
 
   'delegates to local Waigo module': {
-    beforeEach: function() {
+    beforeEach: function*() {
       this.pathToLocalWaigoModule = path.join(
         process.cwd(), 'node_modules', 'waigo'
       );
@@ -68,65 +61,54 @@ test['cli executable'] = {
         this.pathToLocalWaigoModule, 'bin'
       );
 
-      this._setupTestExecutable = function(contents) {
+      this._setupTestExecutable = (contents) => {
         var pathToLocalBin = 
-          path.join(pathToLocalWaigoModuleBinFolder, 'waigo');
+          path.join(pathToLocalWaigoModuleBinFolder, 'waigo-cli.js');
 
-        return testUtils.createFolder(pathToLocalWaigoModuleBinFolder)
-          .then(function() {
-            return testUtils.writeFile(
-              pathToLocalBin,
-              contents);
-          })
-          .then(function() {
-            return testUtils.chmodFile(pathToLocalBin, '0755');
-          });
+        this.createFolder(pathToLocalWaigoModuleBinFolder);
+
+        this.writeFile(pathToLocalBin,contents);
+        this.chmodFile(pathToLocalBin, '0755');
       };
     },
-    afterEach: function(done) {
-      testUtils.deleteFolder(this.pathToLocalWaigoModule).nodeify(done);
+    afterEach: function*() {
+      this.deleteFolder(this.pathToLocalWaigoModule);
     },
-    'exits without error': function(done) {
-      this._setupTestExecutable("#!/usr/bin/env bash\necho hello world")
-        .then(function() {
-          return execBin();
-        })
-        .should.eventually.eql("hello world\n")
-        .and.notify(done);
+    'exits without error': function*() {
+      this._setupTestExecutable("console.log('hello world')");
+
+      let ret = yield execBin();
+
+      ret.should.eql("hello world\n");
     },
-    'exits with error': function(done) {
-      this._setupTestExecutable("#!/usr/bin/env bash\nexit 129")
-        .then(function() {
-          return execBin();
-        })
-        .should.be.rejectedWith('Exit: 129')
-        .and.notify(done);      
+    'exits with error': function*() {
+      this._setupTestExecutable("process.exit(129)");
+
+      yield this.shouldThrow(execBin(), 'Exit: 129');
     }
   },
 
 
   'run a command': {
-    beforeEach: function(done) {
+    beforeEach: function*() {
       var self = this;
 
       this.testCliCommandFilePath = 
         path.join(process.cwd(), 'src', 'cli', '__test.js');
 
-      testUtils.readFile(path.join(__dirname, '__test.cli-command.js'))
-        .then(function(contents){
-          testUtils.writeFile(self.testCliCommandFilePath, contents);
-        })
-        .nodeify(done);
+      let contents = this.readFile(path.join(__dirname, '__test.cli-command.js'))
+
+      this.writeFile(self.testCliCommandFilePath, contents);
     },
-    afterEach: function(done) {
-      testUtils.deleteFile(this.testCliCommandFilePath).nodeify(done);
+    afterEach: function*() {
+      this.deleteFile(this.testCliCommandFilePath);
     },
 
-    'default': function(done) {
-      execBin('__test')
-        .should.eventually.eql("TEST COMMAND INVOKED!\n")
-        .and.notify(done);
-    }
-  }
+    'default': function*() {
+      let ret = yield execBin('__test');
+
+      ret.should.eql("TEST COMMAND INVOKED!\n");
+    },
+  },
 };
 
