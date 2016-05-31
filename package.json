@@ -79,7 +79,7 @@
     "sinon": "~1.7.3",
     "sinon-chai": "~2.4.0",
     "vinyl-source-stream2": "~0.1.1",
-    "waigo-test-utils": "^2.2.0",
+    "waigo-test-utils": "^2.3.0",
     "watchify": "~3.4.0",
     "yargs": "^3.4.4"
   },
