@@ -8,7 +8,7 @@ module.exports = (paths, options = {}) ->
 
     return gulp.src(
       [
-        options.onlyTest || path.join(paths.test, '**', '**', '**', '*.test.js')
+        options.onlyTest || path.join(paths.test, 'unit', '**', '**', '**', '*.test.js')
       ], { 
         read: false 
       }
