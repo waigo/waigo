@@ -75,8 +75,7 @@ class AbstractCommand {
 
       debug('Copying ' + src + ' -> ' + dst);
 
-      console.log('-R', path.join(src, '*'), fullDstPath);
-      shell.cp('-R', path.join(src, '*'), fullDstPath);
+      shell.cp('-R', path.join(src, '.'), fullDstPath);
       console.log(shell.ls('-R', this._getProjectFolder()));
     } else {
       this.log('Found: ' + dst);

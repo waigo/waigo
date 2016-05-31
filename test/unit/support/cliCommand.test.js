@@ -147,28 +147,28 @@ test['cli command base class'] = {
       });
     },
     default: function*() {
-      const srcFolder = path.join(this.appFolder, 'black', 'sheep');
+      const srcFolder = path.join(this.appFolder, 'the');
 
-      this.writeFile(path.join(srcFolder, 'skin', 'affair.txt'), 'hey!');
+      this.writeFile(path.join(srcFolder, 'thomas', 'crown', 'affair.txt'), 'hey!');
 
-      yield this.c.copyFolder(srcFolder, 'big');
+      yield this.c.copyFolder(srcFolder, 'watch');
 
       let str = this.readFile(
-        path.join(this.appFolder, 'big', 'skin', 'affair.txt')
+        path.join(this.appFolder, 'watch', 'the', 'thomas', 'crown', 'affair.txt')
       );
 
       str.should.eql('hey!')      
     },
     'no overwrite': function*() {
-      const srcFolder = path.join(this.appFolder, 'black', 'sheep');
+      const srcFolder = path.join(this.appFolder, 'the');
 
-      this.writeFile(path.join(srcFolder, 'skin', 'affair.txt'), 'hey!');
+      this.writeFile(path.join(srcFolder, 'thomas', 'crown', 'affair.txt'), 'hey!');
 
-      const finalFile = path.join(this.appFolder, 'big', 'skin', 'affair.txt');
+      const finalFile = path.join(this.appFolder, 'watch', 'the', 'thomas', 'crown', 'affair.txt');
       
       this.writeFile(finalFile, 'heya');
 
-      yield this.c.copyFolder(srcFolder, 'big');
+      yield this.c.copyFolder(srcFolder, 'watch');
 
       let str = this.readFile(finalFile);
 
