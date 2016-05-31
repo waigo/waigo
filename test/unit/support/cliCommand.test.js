@@ -151,10 +151,10 @@ test['cli command base class'] = {
 
       this.writeFile(path.join(srcFolder, 'skin', 'affair.txt'), 'hey!');
 
-      yield this.c.copyFolder(srcFolder, path.join('white', 'mouse'));
+      yield this.c.copyFolder(srcFolder, path.join('big'));
 
       let str = this.readFile(
-        path.join(this.appFolder, 'white', 'mouse', 'black', 'sheep', 'skin', 'affair.txt')
+        path.join(this.appFolder, 'big', 'skin', 'affair.txt')
       );
 
       str.should.eql('hey!')      
@@ -164,15 +164,13 @@ test['cli command base class'] = {
 
       this.writeFile(path.join(srcFolder, 'skin', 'affair.txt'), 'hey!');
 
-      const finalDst = path.join(this.appFolder, 'white', 'mouse', 'black', 'sheep', 'skin');
+      const finalFile = path.join(this.appFolder, 'big', 'skin', 'affair.txt');
       
-      this.writeFile(path.join(finalDst, 'affair.txt'), 'heya');
+      this.writeFile(finalFile, 'heya');
 
-      yield this.c.copyFolder(srcFolder, path.join('white', 'mouse'));
+      yield this.c.copyFolder(srcFolder, path.join('big'));
 
-      let str = this.readFile(
-        path.join(finalDst, 'affair.txt')
-      );
+      let str = this.readFile(finalFile);
 
       str.should.eql('heya')      
     },

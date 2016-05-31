@@ -75,7 +75,7 @@ class AbstractCommand {
 
       debug('Copying ' + src + ' -> ' + dst);
 
-      shell.cp('-R', src, fullDstPath);
+      shell.cp('-R', path.join(src, '*'), fullDstPath);
     } else {
       this.log('Found: ' + dst);
     }  
