@@ -23,7 +23,7 @@ const waigo = global.waigo,
  */
 module.exports = function(options) {
   return function*(next) {
-    this.app.logger.debug('assertUser is logged in');
+    this.App.logger.debug('assertUser is logged in');
 
     try {
       if (!this.currentUser) {
@@ -31,7 +31,7 @@ module.exports = function(options) {
       } else {
         // need specific access?
         if (options.canAccess) {
-          this.app.logger.debug('assertUser can access ' + options.canAccess);
+          this.App.logger.debug('assertUser can access ' + options.canAccess);
 
           yield this.currentUser.assertAccess(options.canAccess);
         }
@@ -39,10 +39,10 @@ module.exports = function(options) {
     } catch (err) {
       // should we ask user to login?
       if (options.redirectToLogin) {
-        this.app.logger.debug('redirect to login');
+        this.App.logger.debug('redirect to login');
 
         return yield this.redirect(
-          this.app.routes.url('user_login', null, {
+          this.App.routes.url('user_login', null, {
             r: err.message,
             u: this.request.url,            
           })

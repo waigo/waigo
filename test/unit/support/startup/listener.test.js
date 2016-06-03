@@ -23,27 +23,27 @@ test['listener'] = {
 
     this.setup = waigo.load('support/startup/listener');
 
-    this.app.listen = this.mocker.stub().returns('abc');
+    this.App.koa.listen = this.mocker.stub().returns('abc');
   },
   afterEach: function*() {
     yield this.shutdownApp();
   },
 
   'starts HTTP listener': function*() {
-    yield this.setup(this.app);
+    yield this.setup(this.App);
 
-    this.expect(this.app.server).to.eql('abc');
+    this.expect(this.App.server).to.eql('abc');
 
-    this.app.listen.should.have.been.calledOnce;
-    this.app.listen.should.have.been.calledWithExactly(this.app.config.port);
+    this.App.koa.listen.should.have.been.calledOnce;
+    this.App.koa.listen.should.have.been.calledWithExactly(this.App.config.port);
   },
 
   'notifies admins': function*() {
     let spy = this.mocker.spy();
 
-    this.app.events.on('notify', spy);
+    this.App.on('notify', spy);
 
-    yield this.setup(this.app);
+    yield this.setup(this.App);
 
     spy.should.have.been.calledOnce;
     spy.should.have.been.calledWith('admins')

@@ -14,13 +14,13 @@ const waigo = global.waigo,
  * 
  * This should be preceded by startup: `models`.
  *
- * @param {Object} app The application.
+ * @param {Object} App The application.
  */
-module.exports = function*(app) {
-  app.logger.debug('Setting up Activity recording');
+module.exports = function*(App) {
+  App.logger.debug('Setting up Activity recording');
 
-  app.events.on('record', co.wrap(function*() {
-    yield app.models.Activity.record.apply(app.models.Activity, arguments);
+  App.on('record', co.wrap(function*() {
+    yield App.models.Activity.record.apply(App.models.Activity, arguments);
   }));
 };
 

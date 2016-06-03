@@ -96,7 +96,7 @@ test['/user'] = {
       },
       success: {
         beforeEach: function*() {
-          this.mailerSpy = this.mocker.spy(this.app.mailer, 'send');
+          this.mailerSpy = this.mocker.spy(this.App.mailer, 'send');
 
           this.registerUser = (function*(email, opts) {
             const res = yield this.fetch(this.basePath, {
@@ -127,7 +127,7 @@ test['/user'] = {
         'user in db': function*() {
           yield this.registerUser('test@waigojs.com');
 
-          let users = yield this.app.models.User.getAll();
+          let users = yield this.App.models.User.getAll();
 
           users.length.should.eql(1);
           users[0].username.should.eql('test@waigojs.com');
@@ -139,7 +139,7 @@ test['/user'] = {
           yield this.registerUser('test@waigojs.com');
 
           let user = 
-            (yield this.app.models.User.getByEmail('test@waigojs.com'));
+            (yield this.App.models.User.getByEmail('test@waigojs.com'));
 
           this.mailerSpy.should.have.been.calledOnce;
 
@@ -162,7 +162,7 @@ test['/user'] = {
           yield this.registerUser('test@waigojs.com');
           yield this.registerUser('test2@waigojs.com');
 
-          let user = yield this.app.models.User.getByEmail('test2@waigojs.com');
+          let user = yield this.App.models.User.getByEmail('test2@waigojs.com');
 
           user.isAdmin.should.be.false;
         },

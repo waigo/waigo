@@ -29,14 +29,14 @@ module.exports = {
   postValidation: [
     function* createUserAndLogin(next) {
       let ctx = this.context,
-        app = ctx.app,
-        User = app.models.User;
+        App = ctx.App,
+        User = App.models.User;
 
       // check if there's an admin user
       let adminUserExists = yield User.haveAdminUsers(),
         roles = (adminUserExists ? [] : ['admin']);
 
-      app.logger.info('Registering user ' + this.fields.email.value, roles);
+      App.logger.info('Registering user ' + this.fields.email.value, roles);
 
       // create user
       let user = yield User.register({
@@ -50,16 +50,16 @@ module.exports = {
       yield user.login(this.context);
 
       // send confirmation email
-      let token = yield app.actionTokens.create('verify_email', user, {
+      let token = yield App.actionTokens.create('verify_email', user, {
         email: this.fields.email.value,
       });
       
-      yield app.mailer.send({
+      yield App.mailer.send({
         to: user,
         subject: 'Thanks for signing up!',
         bodyTemplate: 'signupWelcome',
         templateVars: {
-          link: app.routes.url('verify_email', null, {
+          link: App.routes.url('verify_email', null, {
             c: token
           }, {
             absolute: true

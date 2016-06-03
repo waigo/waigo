@@ -27,18 +27,18 @@ const waigo = global.waigo;
  * @param {String} options.cookie.path Cookie path.
  */
 module.exports = function(options) {
-  let app = waigo.load('application').app;
+  let App = waigo.App;
 
   if (!options.keys) {
     throw new Error('Please specify cookie signing keys in the config file.');
   }
   
-  app.keys = options.keys;
+  App.koa.keys = options.keys;
 
   return koaSessionStore({
     name: options.name,
     store: waigo.load(`support/session/store/${options.store.type}`)
-                  .create(app, options.store.config),
+                  .create(App, options.store.config),
     cookie: {
       expires: moment().add('days', options.cookie.validForDays).toDate(),
       path: options.cookie.path,

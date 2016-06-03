@@ -13,9 +13,9 @@ let  moment = require('moment');
 exports.schedule = '0 0 3 * * 1';   // every monday morning at 3am
 
 
-exports.handler = function*(app) {
+exports.handler = function*(App) {
   // get admins
-  let admins = yield app.models.User.findAdminUsers();
+  let admins = yield App.models.User.findAdminUsers();
 
   if (!admins.length) {
     return;
@@ -24,11 +24,11 @@ exports.handler = function*(app) {
   // get users recently registered
   let lastWeek = moment().add('days', -7);
 
-  let users = yield app.models.User.getUsersCreatedSince(
+  let users = yield App.models.User.getUsersCreatedSince(
     lastWeek.toDate()
   );
 
-  yield app.mailer.send({
+  yield App.mailer.send({
     to: admins,
     subject: 'Report - user signups during past 7 days',
     bodyTemplate: 'reportUserSignups',

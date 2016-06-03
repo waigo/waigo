@@ -11,22 +11,22 @@ const waigo = global.waigo;
 /**
  * Start the server HTTP listener.
  *
- * If successful `app.server` will point to the HTTP server object.
+ * If successful `App.server` will point to the HTTP server object.
  * 
- * @param {Object} app The application.
+ * @param {Object} App The application.
  */
-module.exports = function*(app) {
-  app.logger.debug('Starting HTTP server');
+module.exports = function*(App) {
+  App.logger.debug('Starting HTTP server');
 
-  app.server = app.listen(app.config.port);
+  App.server = App.koa.listen(App.config.port);
 
   let workerInfo = (cluster.worker) ? ` worker: ${cluster.worker.id}` : '';
 
-  let msg = `Server (process:${process.pid} ${workerInfo}) started - listening in ${app.config.mode} mode on port ${app.config.port} (baseURL: ${app.config.baseURL})`;
+  let msg = `Server (process:${process.pid} ${workerInfo}) started - listening in ${App.config.mode} mode on port ${App.config.port} (baseURL: ${App.config.baseURL})`;
 
-  app.logger.info(msg);
+  App.logger.info(msg);
 
-  app.events.emit('notify', 'admins', msg);
+  App.emit('notify', 'admins', msg);
 };
 
 

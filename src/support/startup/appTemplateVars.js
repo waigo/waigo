@@ -9,14 +9,14 @@ const waigo = global.waigo,
  *
  * This startup step should run after all others.
  *
- * @param {Object} app The application.
+ * @param {Object} App The application.
  */
-module.exports = function*(app) {
-  app.templateVars = {
+module.exports = function*(App) {
+  App.templateVars = {
     _: _,
-    routeUrl: app.routes,
-    staticUrl: app.staticUrl,
-    config: app.config,
+    routeUrl: App.routes,
+    staticUrl: App.staticUrl,
+    config: App.config,
   };
 };
 

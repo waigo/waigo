@@ -33,9 +33,9 @@ test['app template vars'] = {
   'default': function*() {
     yield this._init();
 
-    yield this.setup(this.app);
+    yield this.setup(this.App);
 
-    this.app.cron.notifyAdminsAboutUserStats.should.be.defined;
+    this.App.cron.notifyAdminsAboutUserStats.should.be.defined;
   },
 
   'custom': {
@@ -46,16 +46,16 @@ test['app template vars'] = {
 
       yield this._init();
 
-      this.app.count = 0;
+      this.App.count = 0;
     },
 
     'view object': function*() {
-      yield this.setup(this.app);
+      yield this.setup(this.App);
 
-      this.app.cron.test.should.be.defined;
+      this.App.cron.test.should.be.defined;
 
       let viewObject = 
-        yield waigo.load('support/viewObjects').toViewObjectYieldable(this.app.cron.test);
+        yield waigo.load('support/viewObjects').toViewObjectYieldable(this.App.cron.test);
 
       viewObject.id.should.eql('test');
       viewObject.disabled.should.be.false;

@@ -24,9 +24,9 @@ module.exports = {
   postValidation: [
     function* sendResetPasswordEmail(next) {
       let ctx = this.context,
-        app = ctx.app;
+        App = ctx.App;
 
-      let User = app.models.User;
+      let User = App.models.User;
 
       // load user
       let user = yield User.getByEmailOrUsername(this.fields.email.value);
@@ -36,20 +36,20 @@ module.exports = {
       }
 
       // action
-      let token = yield app.actionTokens.create('reset_password', user);
+      let token = yield App.actionTokens.create('reset_password', user);
 
-      app.logger.debug('Reset password token for ' + user.id , token);
+      App.logger.debug('Reset password token for ' + user.id , token);
 
       // record
-      app.events.emit('record', 'reset_password', user);
+      App.emit('record', 'reset_password', user);
 
       // send email
-      yield app.mailer.send({
+      yield App.mailer.send({
         to: user,
         subject: 'Reset your password',
         bodyTemplate: 'resetPassword',
         templateVars: {
-          link: app.routes.url('reset_password', null, {
+          link: App.routes.url('reset_password', null, {
             c: token
           }, {
             absolute: true

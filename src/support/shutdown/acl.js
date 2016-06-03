@@ -6,11 +6,11 @@
  *
  * @param {Object} app The application.
  */
-module.exports = function*(app) {
-  app.logger.debug('Shutting down ACL');
+module.exports = function*(App) {
+  App.logger.debug('Shutting down ACL');
 
-  if (app.acl) {
-    yield app.acl.shutdown();
+  if (App.acl) {
+    yield App.acl.shutdown();
   }
 };
 

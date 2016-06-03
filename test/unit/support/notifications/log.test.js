@@ -44,7 +44,7 @@ test['log notifier'] = {
   },
 
   'string': function*() {
-    let fn = yield notifier(this.app, 'test1');
+    let fn = yield notifier(this.App, 'test1');
 
     yield fn('dummydave');
 
@@ -55,7 +55,7 @@ test['log notifier'] = {
   },
 
   'object': function*() {
-    let fn = yield notifier(this.app, 'test1');
+    let fn = yield notifier(this.App, 'test1');
 
     let data = { test: 'dummydave', abc: 2 };
 

@@ -37,7 +37,7 @@ module.exports = {
     function* checkUserCredentials(next) {
       let ctx = this.context;
 
-      let User = ctx.app.models.User;
+      let User = ctx.App.models.User;
 
       // load user
       let user = yield User.getByEmailOrUsername(this.fields.email.value);

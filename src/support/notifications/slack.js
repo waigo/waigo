@@ -9,7 +9,7 @@ const waigo = global.waigo,
 
 
 
-module.exports = function*(app, id, config) {
+module.exports = function*(App, id, config) {
   let _logger = logger.create(id);
 
   let slack = new Slack();

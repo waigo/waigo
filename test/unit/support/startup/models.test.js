@@ -34,24 +34,24 @@ test['models'] = {
   },
 
   'loads models': function*() {
-    yield this.setup(this.app);
+    yield this.setup(this.App);
 
-    this.app.models.Dummy.should.be.defined;
+    this.App.models.Dummy.should.be.defined;
   },
 
   'model methods': function*() {
-    yield this.setup(this.app);
+    yield this.setup(this.App);
 
-    this.app.models.Dummy._app().should.eql(this.app);
-    this.app.models.Dummy._logger().info.should.be.a.Function;
+    this.App.models.Dummy._App().should.eql(this.App);
+    this.App.models.Dummy._logger().info.should.be.a.Function;
   },
 
   'doc methods': function*() {
-    yield this.setup(this.app);
+    yield this.setup(this.App);
 
-    let doc = yield this.app.models.Dummy.insert({ name: 'James' });
+    let doc = yield this.App.models.Dummy.insert({ name: 'James' });
 
-    doc._app().should.eql(this.app);
+    doc._App().should.eql(this.App);
     doc._logger().info.should.be.a.Function;
 
     let vo = 

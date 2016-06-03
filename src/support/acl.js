@@ -12,8 +12,8 @@ const AclError = exports.AclError = errors.define('AclError');
 
 
 class ACL {
-  constructor (app) {
-    this.app = app;
+  constructor (App) {
+    this.App = App;
     this.logger = logger.create('ACL');
   }
 
@@ -30,7 +30,7 @@ class ACL {
     if (!this.res.admin) {
       this.logger.info('Admin resources rules not found, so creating them now');
 
-      yield this.app.models.Acl.insert({
+      yield this.App.models.Acl.insert({
         resource: 'admin',
         entityType: 'role',
         entity: 'admin'
@@ -40,7 +40,7 @@ class ACL {
     }
 
     // get notified of ACL updates
-    this._changeFeedCursor = yield this.app.models.Acl.onChange();
+    this._changeFeedCursor = yield this.App.models.Acl.onChange();
     if (this._changeFeedCursor) {
       this._changeFeedCursor.each(_.bind(this._onAclUpdated, this));
     }
@@ -62,7 +62,7 @@ class ACL {
   * reload () {
     this.logger.debug('Reloading rules from db');
 
-    let data = yield this.app.models.Acl.getAll();
+    let data = yield this.App.models.Acl.getAll();
 
     let res = this.res = {},
       users = this.users = {},
@@ -91,11 +91,11 @@ class ACL {
    * Callback for collection watcher.
    */
   _onAclUpdated () {
-    this.app.logger.info('Detected ACL rules change...reloading');
+    this.logger.info('Detected ACL rules change...reloading');
 
     co(this.reload())
       .catch((err) => {
-        this.app.logger.error('Error reloading ACL', err.stack);
+        this.logger.error('Error reloading ACL', err.stack);
       });
   }
 
@@ -164,10 +164,10 @@ exports.ACL = ACL;
 /**
  * Initialise ACL
  * 
- * @param {App} app The app instance.
+ * @param {App} App The App instance.
  */
-exports.init = function*(app) {
-  var a = new ACL(app);
+exports.init = function*(App) {
+  var a = new ACL(App);
 
   yield a.startup();
 

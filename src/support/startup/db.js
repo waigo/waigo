@@ -11,22 +11,22 @@ const waigo = global.waigo,
  *
  * Upon completion:
  * 
- * * `app.dbs` will be consist key-value pairs mapping database connection id to database instance.
- * * `app.db` will be an alias for `app.dbs.main`.
+ * * `App.dbs` will be consist key-value pairs mapping database connection id to database instance.
+ * * `App.db` will be an alias for `App.dbs.main`.
  * 
- * @param {Object} app The application.
+ * @param {Object} App The application.
  */
-module.exports = function*(app) {
-  app.logger.info(`Setting up database connections`);
+module.exports = function*(App) {
+  App.logger.info(`Setting up database connections`);
 
-  app.dbs = {};
+  App.dbs = {};
 
-  let ids = _.keys(app.config.db || {});
+  let ids = _.keys(App.config.db || {});
 
   for (let id of ids) {
-    app.logger.debug(`Setting up db: ${id}`);
+    App.logger.debug(`Setting up db: ${id}`);
 
-    let cfg = _.get(app.config.db, id);
+    let cfg = _.get(App.config.db, id);
 
     if (!cfg) {
       throw new Error(`Unable to find configuration for database: ${id}`);
@@ -34,11 +34,11 @@ module.exports = function*(app) {
     
     let builder = waigo.load(`support/db/${cfg.type}`);
 
-    app.dbs[id] = yield builder.create(id, app.logger.create(id), cfg);
+    App.dbs[id] = yield builder.create(id, App.logger.create(id), cfg);
   }
 
   // for convenience
-  app.db = _.get(app.dbs, 'main');
+  App.db = _.get(App.dbs, 'main');
 };
 
 

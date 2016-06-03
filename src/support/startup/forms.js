@@ -7,12 +7,12 @@ var waigo = global.waigo,
 
 /** 
  * Setup forms.
- * @param {App} app  The application.
+ * @param {App} App  The application.
  */
-module.exports = function*(app) {
-  app.logger.debug('Setting up forms');
+module.exports = function*(App) {
+  App.logger.debug('Setting up forms');
 
-  app.form = waigo.load('support/forms/form');
+  App.form = waigo.load('support/forms/form');
 };
 
 

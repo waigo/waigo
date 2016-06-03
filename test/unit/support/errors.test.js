@@ -49,7 +49,7 @@ test['errors'] = {
       let err = new Error('test');
 
       let vo = yield viewObjects.toViewObjectYieldable(err, {
-        app: {
+        App: {
           config: {
             errors: {
               showStack: true
@@ -128,7 +128,7 @@ test['errors'] = {
         var e = new errors.RuntimeError('my msg', 505);
 
         let viewObject = yield viewObjects.toViewObjectYieldable(e, {
-          app: {
+          App: {
             config: {
               errors: {
                 showStack: true
@@ -207,7 +207,7 @@ test['errors'] = {
         var e = new errors.MultipleError('blah', 404, multiErrors);
 
         let viewObject = yield viewObjects.toViewObjectYieldable(e, {
-          app: {
+          App: {
             config: {
               errors: {
                 showStack: true

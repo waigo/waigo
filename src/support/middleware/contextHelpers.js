@@ -26,11 +26,10 @@ module.exports = function() {
     this.templateVars.currentUser = this.currentUser;
 
     // convenient accessors
-    this.logger = this.app.logger;
-    this.events = this.app.events;
-    this.acl = this.app.acl;
-    this.models = this.app.models;
-    this.form = this.app.form;
+    this.logger = this.App.logger;
+    this.acl = this.App.acl;
+    this.models = this.App.models;
+    this.form = this.App.form;
 
     yield next;
   }

@@ -196,20 +196,20 @@ exports.docMethods = {
     try {
       let start = Date.now();
 
-      yield _config.handler(this._app());
+      yield _config.handler(this._App());
 
       let duration = Date.now() - start;
 
       _config.logger.info(`Run complete: ${duration}ms`);
 
-      this._app().events.emit('record', 'run_pass', 'cron', {
+      this._App().emit('record', 'run_pass', 'cron', {
         task: this.id,
         duration: duration,
         by: runByUser
       });
 
     } catch (err) {
-      this._app().events.emit('record', 'run_fail', 'cron', {
+      this._App().emit('record', 'run_fail', 'cron', {
         task: this.id,
         err: err.stack,
         by: runByUser

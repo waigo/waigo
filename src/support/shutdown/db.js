@@ -10,15 +10,15 @@ const waigo = global.waigo,
 /**
  * Shutdown database connections.
  *
- * @param {Object} app The application.
+ * @param {Object} App The application.
  */
-module.exports = function*(app) {
-  app.logger.debug('Shutting down database connections');
+module.exports = function*(App) {
+  App.logger.debug('Shutting down database connections');
 
   let dbAdapters = waigo.getItemsInFolder('support/db');
 
   yield _.map(dbAdapters, function(adapter) {
-    return waigo.load(adapter).closeAll(app.logger);
+    return waigo.load(adapter).closeAll(App.logger);
   });
 };
 

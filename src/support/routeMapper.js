@@ -22,11 +22,11 @@ const METHODS = ['GET', 'POST', 'DEL', 'DELETE', 'PUT', 'HEAD'];
 class RouteMapper {
   /**
    * Constructor.
-   * @param {Object} app Koa app.
+   * @param {Object} App Koa App.
    * @constructor
    */
-  constructor (app) {
-    this._app = app;
+  constructor (App) {
+    this.App = App;
   }
 
 
@@ -39,7 +39,7 @@ class RouteMapper {
   * setup (middlewareConfig, routeConfig) {
     logger.info('Initialise...');
 
-    require('koa-trie-router')(this._app);
+    require('koa-trie-router')(this.App.koa);
 
     let possibleMappings = [];
 
@@ -79,7 +79,7 @@ class RouteMapper {
     logger.debug('Building reverse lookup table');
 
     _.each(orderedMappings, (mapping) => {
-      let route = this._app.route(mapping.url);
+      let route = this.App.koa.route(mapping.url);
 
       route[mapping.method.toLowerCase()].apply(route, mapping.resolvedMiddleware);
 
@@ -90,7 +90,7 @@ class RouteMapper {
 
     logger.debug('Finalize...');
 
-    this._app.use(this._app.router);
+    this.App.koa.use(this.App.koa.router);
   }
 
 
@@ -189,7 +189,7 @@ class RouteMapper {
       throw new Error('No route named: ' + routeName);
     }
 
-    var str = options.absolute ? this._app.config.baseURL : '';
+    var str = options.absolute ? this.App.config.baseURL : '';
 
     str += route.url;
 

@@ -33,9 +33,9 @@ test['acl'] = {
     yield this.shutdownApp();
   },
   'auto-inserts admin records': function*() {
-    this.inst = yield this.acl.init(this.app);
+    this.inst = yield this.acl.init(this.App);
     
-    let rows = yield this.app.models.Acl.getAll();
+    let rows = yield this.App.models.Acl.getAll();
 
     rows.length.should.eql(1);
     _.omit(rows[0].toJSON(), 'id').should.eql({
@@ -45,15 +45,15 @@ test['acl'] = {
     });
   },
   'does not auto-insert admin records if already present': function*() {
-    yield this.app.models.Acl.insert({
+    yield this.App.models.Acl.insert({
       resource: 'admin',
       entityType: 'user',
       entity: 'testuser'
     });
 
-    this.inst = yield this.acl.init(this.app);
+    this.inst = yield this.acl.init(this.App);
     
-    let rows = yield this.app.models.Acl.getAll();
+    let rows = yield this.App.models.Acl.getAll();
 
     rows.length.should.eql(1);
     _.omit(rows[0].toJSON(), 'id').should.eql({
@@ -65,48 +65,48 @@ test['acl'] = {
   'check access': {
     beforeEach: function*() {
       this.users = yield {
-        admin: this.app.models.User.register({
+        admin: this.App.models.User.register({
           username: 'test',
           roles: ['admin'],
         }),
-        john: this.app.models.User.register({
+        john: this.App.models.User.register({
           username: 'john',
           roles: ['joker'],
         }),
-        mark: this.app.models.User.register({
+        mark: this.App.models.User.register({
           username: 'mark',
           roles: [],
         }),
       };
 
       yield [
-        this.app.models.Acl.insert({
+        this.App.models.Acl.insert({
           resource: 'admin',
           entityType: 'role',
           entity: 'admin',
         }),
-        this.app.models.Acl.insert({
+        this.App.models.Acl.insert({
           resource: 'jokerbox',
           entityType: 'role',
           entity: 'joker',
         }),
-        this.app.models.Acl.insert({
+        this.App.models.Acl.insert({
           resource: 'pandabox',
           entityType: 'role',
           entity: 'panda',
         }),
-        this.app.models.Acl.insert({
+        this.App.models.Acl.insert({
           resource: 'catbox',
           entityType: 'user',
           entity: this.users.john.id,
         }),
       ];
 
-      this.mocker.stub(this.app.models.Acl, 'onChange', () => {
+      this.mocker.stub(this.App.models.Acl, 'onChange', () => {
         return Q.resolve(null);
       });
 
-      this.inst = yield this.acl.init(this.app);
+      this.inst = yield this.acl.init(this.App);
     },
 
     'public': function*() {
@@ -152,14 +152,14 @@ test['acl'] = {
     },
   },
   'can reload': function*() {
-    this.inst = yield this.acl.init(this.app);
+    this.inst = yield this.acl.init(this.App);
 
     yield this.inst.reload();
   },
   'watches for changes and reloads': function*() {
-    this.inst = yield this.acl.init(this.app);
+    this.inst = yield this.acl.init(this.App);
 
-    let user = yield this.app.models.User.register({
+    let user = yield this.App.models.User.register({
       username: 'tester',
       roles: ['test'],
     });
@@ -168,7 +168,7 @@ test['acl'] = {
 
     let spy = this.mocker.spy(this.inst, 'reload');
     
-    yield this.app.db._connection.table('Acl').insert({
+    yield this.App.db._connection.table('Acl').insert({
       resource: 'admin',
       entityType: 'role',
       entity: 'test'

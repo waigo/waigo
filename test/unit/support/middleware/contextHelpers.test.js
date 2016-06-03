@@ -33,9 +33,8 @@ test['context helpers'] = {
   'sets context': function*() {
     let ctx = {
       currentUser: 2,
-      app: {
+      App: {
         logger: 1,
-        events: 2,
         acl: 3,
         models: 4,
         form: 5,
@@ -51,7 +50,6 @@ test['context helpers'] = {
 
     this.expect(_.get(ctx, 'templateVars.currentUser', '')).to.eql(2);
     this.expect(ctx.logger).to.eql(1);
-    this.expect(ctx.events).to.eql(2);
     this.expect(ctx.acl).to.eql(3);
     this.expect(ctx.models).to.eql(4);
     this.expect(ctx.form).to.eql(5);

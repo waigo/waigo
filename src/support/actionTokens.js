@@ -17,8 +17,8 @@ const _throw = function(msg, status, data) {
 
 
 class ActionTokens {
-  constructor (app, config) {
-    this.app = app;
+  constructor (App, config) {
+    this.App = App;
     this.config = config;
 
     this.logger = logger.create('ActionTokens');
@@ -118,14 +118,14 @@ class ActionTokens {
       _throw('This action token has expired.', 403);
     }
 
-    var user = yield this.app.models.User.get(userId);
+    var user = yield this.App.models.User.get(userId);
 
     if (!user) {
       _throw('Unable to find user information related to action token', 404);
     }
 
     // check if we've already executed this request before
-    var activity = yield this.app.models.Activity.getByFilter({
+    var activity = yield this.App.models.Activity.getByFilter({
       verb: 'action_token_processed',
       details: {
         type: type,
@@ -138,7 +138,7 @@ class ActionTokens {
     }
 
     // record activity
-    yield this.app.models.Activity.record('action_token_processed', user, {
+    yield this.App.models.Activity.record('action_token_processed', user, {
       type: type,
       salt: salt,
     });
@@ -161,13 +161,13 @@ class ActionTokens {
 /**
  * Initialise action tokens manager.
  *
- * @param {App} app The app.
+ * @param {App} App The App.
  * @param {Object} actionTokensConfig Config.
  * 
  * @return {ActionTokens}
  */
-exports.init = function*(app, actionTokensConfig) {
-  return new ActionTokens(app, actionTokensConfig);
+exports.init = function*(App, actionTokensConfig) {
+  return new ActionTokens(App, actionTokensConfig);
 };
 
 

@@ -37,16 +37,16 @@ test['db'] = {
 
     this.shutdownStep = waigo.load('support/shutdown/db');
 
-    this.app.logger.flag = [];
+    this.App.logger.flag = [];
   },
   afterEach: function*() {
     yield this.shutdownApp();
   },
   'shuts down the db': function*() {
-    this.app.db = {};
+    this.App.db = {};
 
-    yield this.shutdownStep(this.app);
+    yield this.shutdownStep(this.App);
 
-    this.app.logger.flag.should.eql([1]);
+    this.App.logger.flag.should.eql([1]);
   }    
 };

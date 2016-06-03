@@ -23,27 +23,27 @@ test['cron'] = {
 
     this.shutdownStep = waigo.load('support/shutdown/cron');
 
-    this.app.cron = {
+    this.App.cron = {
       test: {
         stopScheduler: () => {
-          this.app.count++;
+          this.App.count++;
         }
       },
       test2: {
         stopScheduler: () => {
-          this.app.count++;
+          this.App.count++;
         }
       },
     };
 
-    this.app.count = 0;
+    this.App.count = 0;
   },
   afterEach: function*() {
     yield this.shutdownApp();
   },
   'stops cron job': function*() {
-    yield this.shutdownStep(this.app);
+    yield this.shutdownStep(this.App);
 
-    this.app.count.should.eql(2);
+    this.App.count.should.eql(2);
   }    
 };

@@ -48,7 +48,7 @@ test['static resources'] = {
     fs.writeFileSync(tmpFile, 'test');
     fs.statSync(tmpFile);
 
-    yield this.setup(this.app);
+    yield this.setup(this.App);
 
     this.expect(() => { 
       fs.statSync(this.tmpFolder)
@@ -62,7 +62,7 @@ test['static resources'] = {
     shell.mkdir('-p', genFolder);
     fs.writeFileSync(tmpFile, 'test');
 
-    yield this.setup(this.app);
+    yield this.setup(this.App);
 
     this.expect(() => { 
       fs.statSync(tmpFile)
@@ -72,7 +72,7 @@ test['static resources'] = {
   'does not copy app stuff to _gen folder': function*() {
     fs.writeFileSync(path.join(this.publicFolder, 'test.js'), 'test');
 
-    yield this.setup(this.app);
+    yield this.setup(this.App);
 
     fs.statSync(path.join(this.publicFolder, '_gen', 'waigo'))
 
@@ -82,14 +82,14 @@ test['static resources'] = {
   },
 
   'copies framework stuff to _gen folder': function*() {
-    yield this.setup(this.app);
+    yield this.setup(this.App);
 
     fs.statSync(path.join(this.publicFolder, '_gen', 'waigo', 'js', 'app.js'));
     fs.statSync(path.join(this.publicFolder, '_gen', 'waigo', 'css', 'app.css'));
   },
 
   'copies plugin stuff to _gen folder': function*() {
-    yield this.setup(this.app);
+    yield this.setup(this.App);
 
     fs.statSync(path.join(this.publicFolder, '_gen', 'waigo_TESTPLUGIN', 'js', 'app.js'));
   },
@@ -98,19 +98,19 @@ test['static resources'] = {
     beforeEach: function*() {
       fs.writeFileSync(path.join(this.publicFolder, 'test.js'), 'test');
 
-      yield this.setup(this.app);      
+      yield this.setup(this.App);      
     },
 
     'app': function*() {
-      this.app.staticUrl('test.js').should.eql('/test.js');
+      this.App.staticUrl('test.js').should.eql('/test.js');
     },
 
     'plugin': function*() {
-      this.app.staticUrl('waigo_TESTPLUGIN:js/app.js').should.eql('/_gen/waigo_TESTPLUGIN/js/app.js');
+      this.App.staticUrl('waigo_TESTPLUGIN:js/app.js').should.eql('/_gen/waigo_TESTPLUGIN/js/app.js');
     },
 
     'waigo': function*() {
-      this.app.staticUrl('waigo:js/app.js').should.eql('/_gen/waigo/js/app.js');
+      this.App.staticUrl('waigo:js/app.js').should.eql('/_gen/waigo/js/app.js');
     },
   }
 };

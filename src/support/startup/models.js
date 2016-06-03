@@ -13,19 +13,19 @@ const waigo = global.waigo,
 /**
  * Load models.
  *
- * @param {Object} app The application.
+ * @param {Object} App The application.
  */
-module.exports = function*(app) {
-  app.logger.debug('Loading models');
+module.exports = function*(App) {
+  App.logger.debug('Loading models');
 
   let modelModuleFiles = waigo.getItemsInFolder('models');
 
-  app.models = {};
+  App.models = {};
 
   for (let modulePath of modelModuleFiles) {
     let modelName = _.capitalize(path.basename(modulePath));
 
-    app.logger.debug(`Loading ${modelName}`);
+    App.logger.debug(`Loading ${modelName}`);
 
     let modelConfig = waigo.load(modulePath);
 
@@ -34,7 +34,7 @@ module.exports = function*(app) {
     // add logger and app getter methods
     let helperMethods = {
       _logger: () => modelLogger,
-      _app: () => app,      
+      _App: () => App,      
     };
 
     modelConfig.docMethods = _.extend({}, modelConfig.docMethods, helperMethods);
@@ -44,8 +44,8 @@ module.exports = function*(app) {
     
     modelConfig.modelMethods = _.extend({}, modelConfig.modelMethods, helperMethods);
 
-    app.models[modelName] = yield app.db.model(modelName, modelConfig);
+    App.models[modelName] = yield App.db.model(modelName, modelConfig);
 
-    app.logger.debug('Added model', modelName);
+    App.logger.debug('Added model', modelName);
   }
 };

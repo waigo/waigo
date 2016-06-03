@@ -184,7 +184,7 @@ exports.docMethods = {
     yield this.save();
 
     // record
-    this._app().events.emit('record', 'verify_email', this, {
+    this._App().emit('record', 'verify_email', this, {
       email: email
     });
   },
@@ -235,7 +235,7 @@ exports.docMethods = {
     yield this.save();
 
     // record
-    this._app().events.emit('record', 'add_email', this, {
+    this._App().emit('record', 'add_email', this, {
       email: email
     });
   },
@@ -262,7 +262,7 @@ exports.docMethods = {
     yield this.save();
 
     // record
-    this._app().events.emit('record', 'update_password', this);
+    this._App().emit('record', 'update_password', this);
   },
   /**
    * Get OAuth data.
@@ -317,7 +317,7 @@ exports.docMethods = {
     yield this.save();
 
     // record
-    this._app().events.emit('record', 'save_oauth', this, _.pick(existing, 'type', 'access_token'));
+    this._App().emit('record', 'save_oauth', this, _.pick(existing, 'type', 'access_token'));
   },
   /**
    * Get whether user can access given resource.
@@ -327,7 +327,7 @@ exports.docMethods = {
    * @return {Boolean} true if access is possible, false if not.
    */
   canAccess: function*(resource) {
-    return this._app().acl.can(resource, this);
+    return this._App().acl.can(resource, this);
   },
   /**
    * Assert that user can access given resource.
@@ -337,7 +337,7 @@ exports.docMethods = {
    * @throws {Error} If not allowed to access.
    */
   assertAccess: function*(resource) {
-    return this._app().acl.assert(resource, this);
+    return this._App().acl.assert(resource, this);
   },
 };
 
@@ -474,10 +474,10 @@ exports.modelMethods = {
     }
 
     // log activity
-    this._app().events.emit('record', 'register', user);
+    this._App().emit('record', 'register', user);
 
     // notify admins
-    this._app().events.emit('notify', 'admins', `New user: ${user.id} - ${user.username}`);
+    this._App().emit('notify', 'admins', `New user: ${user.id} - ${user.username}`);
 
     return user;
   },

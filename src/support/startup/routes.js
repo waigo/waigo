@@ -15,23 +15,23 @@ const waigo = global.waigo,
  * This sets up a `koa-trie-router` and maps routes to it using the 
  * [route mapper](../routeMapper.js.html).
  * 
- * @param {Object} app The application.
+ * @param {Object} App The application.
  */
-module.exports = function*(app) {
-  app.logger.debug('Setting up routes');
+module.exports = function*(App) {
+  App.logger.debug('Setting up routes');
 
   var routeFiles = waigo.getItemsInFolder('routes');
 
   let routes = {};
 
   _.each(routeFiles, function(routeFile) {
-    app.logger.debug('Loading ' + routeFile);
+    App.logger.debug('Loading ' + routeFile);
 
     _.merge(routes, waigo.load(routeFile));
   });
 
-  app.routes = yield waigo.load('support/routeMapper')
-    .setup(app, app.config.middleware, routes);
+  App.routes = yield waigo.load('support/routeMapper')
+    .setup(App, App.config.middleware, routes);
 };
 
 

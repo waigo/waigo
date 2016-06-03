@@ -41,22 +41,22 @@ test['db'] = {
     yield this.shutdownApp();
   },
   'does nothing if no config': function*() {
-    delete this.app.config.db;
+    delete this.App.config.db;
 
-    yield this.setup(this.app);
+    yield this.setup(this.App);
 
-    this.expect(this.app.db).to.be.undefined;
-    this.expect(this.app.dbs).to.eql({});
+    this.expect(this.App.db).to.be.undefined;
+    this.expect(this.App.dbs).to.eql({});
   },
   'otherwise sets up the db': function*() {
-    yield this.setup(this.app);
+    yield this.setup(this.App);
 
-    _.get(this.app.dbs, 'main.0').should.eql('main');
-    _.get(this.app.dbs, 'main.2').should.eql({ type: 'test3', hello: 'world' });
+    _.get(this.App.dbs, 'main.0').should.eql('main');
+    _.get(this.App.dbs, 'main.2').should.eql({ type: 'test3', hello: 'world' });
 
-    _.get(this.app.dbs, 'main2.0').should.eql('main2');
-    _.get(this.app.dbs, 'main2.2').should.eql({ type: 'test3', hello: 'world' });
+    _.get(this.App.dbs, 'main2.0').should.eql('main2');
+    _.get(this.App.dbs, 'main2.2').should.eql({ type: 'test3', hello: 'world' });
 
-    this.app.db.should.eql(this.app.dbs.main);
+    this.App.db.should.eql(this.App.dbs.main);
   }    
 };

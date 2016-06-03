@@ -24,15 +24,15 @@ test['action tokens'] = {
     yield this.clearDb();
 
     this.users = yield {
-      john: this.app.models.User.register({
+      john: this.App.models.User.register({
         username: 'john'
       }),
-      mark: this.app.models.User.register({
+      mark: this.App.models.User.register({
         username: 'mark',
       }),
     };
 
-    this.inst = yield waigo.load('support/actionTokens').init(this.app, {
+    this.inst = yield waigo.load('support/actionTokens').init(this.App, {
       validForSeconds: 2,
       encryptionKey: 'test',
     });
@@ -60,7 +60,7 @@ test['action tokens'] = {
 
     yield this.inst.process(token);
 
-    let activity = yield this.app.models.Activity.getLatest(
+    let activity = yield this.App.models.Activity.getLatest(
       'action_token_processed', this.users.john.id
     );
 

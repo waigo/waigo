@@ -41,7 +41,7 @@ test['context helpers'] = {
       yield this._init();
 
       this.ctx = {
-        app: this.app,
+        App: this.App,
       };
 
       yield middleware().call(this.ctx, Q.resolve());
@@ -75,7 +75,7 @@ test['context helpers'] = {
       yield this._init();
 
       this.ctx = {
-        app: this.app,
+        App: this.App,
         request: {
           url: '/test',
           method: 'del',
@@ -114,7 +114,7 @@ test['context helpers'] = {
 
       let spy = this.mocker.spy();
 
-      this.ctx.app.on('error', spy);
+      this.ctx.App.on('error', spy);
 
       yield middleware().call(this.ctx, function*() {
         throw err;

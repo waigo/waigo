@@ -29,8 +29,6 @@ const OutputFormatError = errors.define('OutputFormatError');
  * @return {Function} Express middleware.
  */
 module.exports = function(options) {
-  let app = waigo.load('application').app;
-
   let enabledFormats = {};
 
   let formatNames = Object.keys(options.formats);
@@ -44,10 +42,8 @@ module.exports = function(options) {
   }
 
   return function* setOutputFormat(next) {
-    let ctx = this,
-      app = ctx.app;
-      
-
+    let ctx = this;
+    
     let requestedFormat = 
       _.get(this.query, options.paramName, options.default).toLowerCase();
 

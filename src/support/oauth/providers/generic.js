@@ -28,11 +28,11 @@ class GenericOauth {
   constructor (context, provider, tokens) {
     this.context = context;
     this.provider = provider;
-    this.app = this.context.app;
+    this.App = this.context.App;
     this.logger = logger.create(`Oauth-${provider}`);
 
-    this.config = _.get(this.app.config.oauth, this.provider, {});
-    this.callbackURL = this.app.routes.url('oauth_callback', {
+    this.config = _.get(this.App.config.oauth, this.provider, {});
+    this.callbackURL = this.App.routes.url('oauth_callback', {
       provider: provider,
     }, null, {
       absolute: true
@@ -71,7 +71,7 @@ class GenericOauth {
   * handleAuthorizationCallback() {
     let user = this._user();
 
-    this.context.events.emit('record', 'oauth_callback', user || 'anon', {
+    this.App.emit('record', 'oauth_callback', user || 'anon', {
       provider: this.provider,
       query: this.context.request.query,
     });
@@ -262,7 +262,7 @@ class GenericOauth {
   * _handleError (err, attrs) {
     this.logger.error(err);
 
-    this.context.events.emit('record', 'oauth_request', this._user() || 'anon', _.extend({}, attrs, {
+    this.App.emit('record', 'oauth_request', this._user() || 'anon', _.extend({}, attrs, {
       type: 'error',
       provider: this.provider,
       message: err.message,

@@ -21,7 +21,7 @@ test['notify admins about user stats'] = {
     yield this.clearDb('User');
 
     this.ctx = {
-      app: this.app,
+      App: this.App,
     };
 
     this.task = waigo.load('support/cronTasks/notifyAdminsAboutUserStats');
@@ -39,15 +39,15 @@ test['notify admins about user stats'] = {
 
   'handler': {
     beforeEach: function*() {
-      this.mocker.stub(this.app.mailer, 'send', () => Q.resolve());
+      this.mocker.stub(this.App.mailer, 'send', () => Q.resolve());
     },
     'no admins': function*() {
-      yield this.task.handler(this.app);
+      yield this.task.handler(this.App);
 
-      this.app.mailer.send.should.not.have.been.called;
+      this.App.mailer.send.should.not.have.been.called;
     },
     'have admins but no registrations': function*() {
-      let user = yield this.app.models.User.register({
+      let user = yield this.App.models.User.register({
         username: 'admin',
         roles: ['admin'],
         email: 'admin@waigojs.com',
@@ -55,10 +55,10 @@ test['notify admins about user stats'] = {
       user.created = moment().add('days', -8).toDate();
       yield user.save();
 
-      yield this.task.handler(this.app);
+      yield this.task.handler(this.App);
 
-      this.app.mailer.send.should.have.been.calledOnce;      
-      let arg = _.get(this.app.mailer.send.args, '0.0');
+      this.App.mailer.send.should.have.been.calledOnce;      
+      let arg = _.get(this.App.mailer.send.args, '0.0');
 
       this.expect(_.get(arg, 'subject')).to.eql('Report - user signups during past 7 days');
       this.expect(_.get(arg, 'bodyTemplate')).to.eql('reportUserSignups');
@@ -69,28 +69,28 @@ test['notify admins about user stats'] = {
       });
     },
     'have admins and registrations': function*() {
-      let user1 = yield this.app.models.User.register({
+      let user1 = yield this.App.models.User.register({
         username: 'user',
         email: 'user@waigojs.com',
       });
 
-      let user2 = yield this.app.models.User.register({
+      let user2 = yield this.App.models.User.register({
         username: 'user2',
         email: 'user2@waigojs.com',
       });
       user2.created = moment().add('days', -8).toDate();
       yield user2.save();
 
-      let user3 = yield this.app.models.User.register({
+      let user3 = yield this.App.models.User.register({
         username: 'admin',
         roles: ['admin'],
         email: 'admin@waigojs.com',
       });
 
-      yield this.task.handler(this.app);
+      yield this.task.handler(this.App);
 
-      this.app.mailer.send.should.have.been.calledOnce;      
-      let arg = _.get(this.app.mailer.send.args, '0.0');
+      this.App.mailer.send.should.have.been.calledOnce;      
+      let arg = _.get(this.App.mailer.send.args, '0.0');
 
       this.expect(_.get(arg, 'subject')).to.eql('Report - user signups during past 7 days');
       this.expect(_.get(arg, 'bodyTemplate')).to.eql('reportUserSignups');

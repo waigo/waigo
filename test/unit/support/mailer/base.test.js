@@ -24,15 +24,15 @@ test['base'] = {
 
     // lets insert some users
     this.users = yield {
-      user1: this.app.models.User.register({
+      user1: this.App.models.User.register({
         username: 'user1',
         email: 'user1@waigojs.com',
       }),
-      user2: this.app.models.User.register({
+      user2: this.App.models.User.register({
         username: 'user2',
         email: 'user2@waigojs.com',
       }),
-      user3: this.app.models.User.register({
+      user3: this.App.models.User.register({
         username: 'user3',
         email: 'user3@waigojs.com',
       }),
@@ -49,22 +49,22 @@ test['base'] = {
   },
 
   'app.mailer instance': function*() {
-    this.app.mailer.should.be.instanceof(this.MailerBase);
+    this.App.mailer.should.be.instanceof(this.MailerBase);
   },
 
   'rendering': {
     'need recipients': function*() {
-      yield this.shouldThrow(this.app.mailer.render(), 'Recipients must be set');
+      yield this.shouldThrow(this.App.mailer.render(), 'Recipients must be set');
     },
 
     'need subject and body': function*() {
-      yield this.shouldThrow(this.app.mailer.render({
+      yield this.shouldThrow(this.App.mailer.render({
         to: 'test@waigojs.com'
       }), 'Subject and body/template must be set');
     },
 
     'markdown': function*() {
-      let ret = yield this.app.mailer.render({
+      let ret = yield this.App.mailer.render({
         to: this.users.user1,
         body: '**This** _is_ markdown',
         subject: '**This** _is_ not markdown',
@@ -77,7 +77,7 @@ test['base'] = {
     },
 
     'body template': function*() {
-      let ret = yield this.app.mailer.render({
+      let ret = yield this.App.mailer.render({
         to: this.users.user1,
         bodyTemplate: 'passwordUpdated',
         subject: 'subj',
@@ -89,7 +89,7 @@ test['base'] = {
     },
 
     'use email address instead': function*() {
-      let ret = yield this.app.mailer.render({
+      let ret = yield this.App.mailer.render({
         to: 'user1@waigojs.com',
         bodyTemplate: 'passwordUpdated',
         subject: 'subj',
@@ -102,18 +102,18 @@ test['base'] = {
   },
 
   'got NodeMailer instance': function*() {
-    this.app.mailer._nodeMailer.should.be.instanceof(this.NodeMailer);
+    this.App.mailer._nodeMailer.should.be.instanceof(this.NodeMailer);
   },
 
   'sending': {
     beforeEach: function*() {
-      this.spy = this.mocker.stub(this.app.mailer._nodeMailer, '_send', () => Q.resolve());
+      this.spy = this.mocker.stub(this.App.mailer._nodeMailer, '_send', () => Q.resolve());
     },
 
     'sends to nodemailer': function*() {
       let spy = this.spy;
 
-      yield this.app.mailer._send({
+      yield this.App.mailer._send({
         to: [this.users.user1, this.users.user2, this.users.user3],
         subject: 'subj',
         body: '**body**',
@@ -151,9 +151,9 @@ test['base'] = {
     'records activity': function*() {
       let spy = this.mocker.spy();
 
-      this.app.events.on('record', spy);
+      this.App.on('record', spy);
 
-      yield this.app.mailer._send({
+      yield this.App.mailer._send({
         to: [this.users.user1, this.users.user2, this.users.user3],
         subject: 'subj',
         body: '**body**',

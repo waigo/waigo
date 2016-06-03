@@ -31,9 +31,9 @@ test['acl'] = {
     yield this.shutdownApp();
   },
   'init acl': function*() {
-    yield this.setup(this.app);
+    yield this.setup(this.App);
 
-    this.app.acl.should.eql([this.app, 1]);
+    this.App.acl.should.eql([this.App, 1]);
   },
 };
 

@@ -46,17 +46,17 @@ test['html'] = {
   },
 
   'returns rendering middleware': function*() {
-    var obj = html.create(this.app.logger, config);
+    var obj = html.create(this.App.logger, config);
     
     _.isGenFn(obj.render).should.be.true;
   },
 
   'rendering': {
     beforeEach: function*() {
-      this.render = html.create(this.app.logger, config).render;
+      this.render = html.create(this.App.logger, config).render;
 
       this.ctx = {
-        app: this.app
+        App: this.App
       };
     },
     'renders html to body': function*() {
@@ -103,7 +103,7 @@ test['html'] = {
         ctx = this.ctx;
 
       yield function*() {
-        ctx.app = {
+        ctx.App = {
           templateVars: {
             text: 'goat',
             text2: 'bee',
@@ -127,7 +127,7 @@ test['html'] = {
 
   'redirect': {
     beforeEach: function*() {
-      this.redirect = html.create(this.app.logger, config).redirect;
+      this.redirect = html.create(this.App.logger, config).redirect;
 
       this.ctx = {
         response: {

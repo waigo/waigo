@@ -9,12 +9,12 @@ const waigo = global.waigo,
 /**
  * Stop cron jobs.
  *
- * @param {Object} app The application.
+ * @param {Object} App The application.
  */
-module.exports = function*(app) {
-  app.logger.debug('Stopping cron jobs');
+module.exports = function*(App) {
+  App.logger.debug('Stopping cron jobs');
 
-  _.map(app.cron, function(job) {
+  _.map(App.cron, function(job) {
     job.stopScheduler();
   });
 };

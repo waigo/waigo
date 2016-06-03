@@ -31,7 +31,7 @@ exports.create = function(logger, config) {
       logger.debug('Template type', ext);
 
       // get templateVars
-      templateVars = _.extend({}, this.app.templateVars, this.templateVars, templateVars, {
+      templateVars = _.extend({}, this.App.templateVars, this.templateVars, templateVars, {
         cache: !!config.cache,
         engine: config.engine[ext],
       });

@@ -13,8 +13,8 @@ const waigo = global.waigo,
 
 
 class Console extends Mailer {
-  constructor(app, config) {
-    super(app, config, 'console');
+  constructor(App, config) {
+    super(App, config, 'console');
   }
 
   * send (params) {
@@ -28,8 +28,8 @@ exports.Console = Console;
 
 
 
-exports.create = function*(app, config) {
-  var c = new Console(app, config);
+exports.create = function*(App, config) {
+  var c = new Console(App, config);
   
   yield c._init(nodemailerStubTransport());
 

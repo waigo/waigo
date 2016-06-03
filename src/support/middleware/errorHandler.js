@@ -24,11 +24,11 @@ module.exports = function() {
     try {
       yield next;
     } catch (err) {
-      this.app.emit('error', err.stack);
+      this.App.emit('error', err.stack);
 
       // render error page
       yield render.call(this, {
-        showStack: !!_.get(this.app, 'config.errors.showStack'),
+        showStack: !!_.get(this.App, 'config.errors.showStack'),
       }, err);
     }
   }
@@ -63,7 +63,7 @@ var render = function*(config, err) {
   try {
     yield this.render('error', error);
   } catch (anotherError) {
-    this.app.emit('error', anotherError.stack);
+    this.App.emit('error', anotherError.stack);
 
     this.type = 'json';
     this.body = anotherError;

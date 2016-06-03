@@ -26,7 +26,7 @@ test['middleware'] = {
       shutdownSteps: [],
     });
 
-    this.app.config.middleware.ALL = {
+    this.App.config.middleware.ALL = {
       _order: [
         'test1',
         'test2'
@@ -46,9 +46,9 @@ test['middleware'] = {
   },
 
   'loads and initialises middleware': function*() {
-    let useSpy = this.mocker.spy(this.app, 'use');
+    let useSpy = this.mocker.spy(this.App.koa, 'use');
 
-    yield this.setup(this.app);
+    yield this.setup(this.App);
 
     useSpy.callCount.should.eql(2);
 

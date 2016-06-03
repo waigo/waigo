@@ -23,7 +23,7 @@ test['activity recorder'] = {
 
     yield this.clearDb('User', 'Activity');
 
-    this.user = yield this.app.models.User.register({
+    this.user = yield this.App.models.User.register({
       username: 'test',
     });
 
@@ -33,15 +33,15 @@ test['activity recorder'] = {
     yield this.shutdownApp();
   },
   'init action tokens': function*() {
-    yield this.setup(this.app);
+    yield this.setup(this.App);
 
-    this.app.events.emit('record', 'test', this.user, {
+    this.App.emit('record', 'test', this.user, {
       dummy: true
     });
 
     yield Q.delay(10);
 
-    let activities = yield this.app.models.Activity.rawQry().run();
+    let activities = yield this.App.models.Activity.rawQry().run();
 
     _.get(activities, '0.verb').should.eql('test');
     _.get(activities, '0.details').should.eql({dummy: true});

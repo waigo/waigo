@@ -24,7 +24,7 @@ test['nodemailer'] = {
     
     this.NodeMailer = waigo.load('support/mailer/engines/nodeMailer').NodeMailer;
 
-    this.mailer = new this.NodeMailer(this.app.logger, null, nodemailerStubTransport());
+    this.mailer = new this.NodeMailer(this.App.logger, null, nodemailerStubTransport());
 
     this.mailer._send = this.mocker.spy(() => Q.resolve());
   },

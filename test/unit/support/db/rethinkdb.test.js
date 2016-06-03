@@ -21,7 +21,7 @@ test['rethinkdb'] = {
     });
 
     this.ctx = {
-      app: this.app,
+      App: this.App,
     };
 
     this.rethinkdb = waigo.load('support/db/rethinkdb');
@@ -38,7 +38,7 @@ test['rethinkdb'] = {
   },
 
   'can create': function*() {
-    this.db = yield this.rethinkdb.create('main', this.app.logger, {
+    this.db = yield this.rethinkdb.create('main', this.App.logger, {
       serverConfig: {
         db: 'waigo',
         servers: [
@@ -56,7 +56,7 @@ test['rethinkdb'] = {
   },
 
   'can shutdown': function*() {
-    this.db = yield this.rethinkdb.create('main', this.app.logger, {
+    this.db = yield this.rethinkdb.create('main', this.App.logger, {
       serverConfig: {
         db: 'waigo',
         servers: [
@@ -68,7 +68,7 @@ test['rethinkdb'] = {
       },
     });
 
-    yield this.rethinkdb.closeAll(this.app.logger);
+    yield this.rethinkdb.closeAll(this.App.logger);
 
     try {
       yield (yield this.db.model('User')).rawQry().run();

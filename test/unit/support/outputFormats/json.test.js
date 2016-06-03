@@ -31,17 +31,17 @@ test['json'] = {
   },
 
   'returns rendering middleware': function*() {
-    var obj = json.create(this.app.logger);
+    var obj = json.create(this.App.logger);
 
     _.isGenFn(obj.render).should.be.true;
   },
 
   'rendering': {
     beforeEach: function*() {
-      this.render = json.create(this.app.logger).render;
+      this.render = json.create(this.App.logger).render;
 
       this.ctx = {
-        app: this.app,
+        App: this.App,
       };
     },
     'must be plain object': function*() {
@@ -69,10 +69,10 @@ test['json'] = {
 
   'redirect': {
     beforeEach: function*() {
-      this.redirect = json.create(this.app.logger).redirect;
+      this.redirect = json.create(this.App.logger).redirect;
 
       this.ctx = {
-        app: this.app,
+        App: this.App,
       };
     },
     'must be plain object': function*() {

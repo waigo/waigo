@@ -26,7 +26,9 @@ waigo._bootstrap = function() {
     This loads in application configuration, runs all startup steps, sets up 
     the middleware and kicks off the HTTP listener.
      */
-    yield waigo.load('application').start();
+    waigo.App = new (waigo.load('application'))
+
+    yield waigo.App.start();
   });
 };
 

@@ -13,7 +13,7 @@ const waigo = global.waigo,
  */
 module.exports = function() {
   return function*(context, field, value) {
-    let existingUser = yield context.app.models.User.getByEmail(value);
+    let existingUser = yield context.App.models.User.getByEmail(value);
 
     if (existingUser) {
       throw new FieldValidationError('Email already in use');

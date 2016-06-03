@@ -22,7 +22,7 @@ test['shutdown listener'] = {
 
     this.step = waigo.load('support/shutdown/listener');
 
-    this.app.confifg = {
+    this.App.confifg = {
       mode: 'test',
       port: 3000,
       baseURL: 'http://dummy:4334'
@@ -36,14 +36,14 @@ test['shutdown listener'] = {
   'shuts down HTTP listener': function*() {
     var closed = 0;
 
-    this.app.server = {
+    this.App.server = {
       close: function(cb) {
         closed += 1;
         cb();
       }
     };
 
-    yield this.step.call(this.step, this.app);
+    yield this.step.call(this.step, this.App);
 
     closed.should.eql(1);
   }

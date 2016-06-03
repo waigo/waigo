@@ -12,8 +12,8 @@ const waigo = global.waigo;
  *
  * @param {Object} app The application.
  */
-module.exports = function*(app) {
-  app.logger.debug('Setting up ACL');
+module.exports = function*(App) {
+  App.logger.debug('Setting up ACL');
 
-  app.acl = yield (waigo.load('support/acl')).init(app);
+  App.acl = yield (waigo.load('support/acl')).init(App);
 };

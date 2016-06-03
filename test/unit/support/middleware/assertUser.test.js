@@ -24,7 +24,7 @@ test['assert user'] = {
     });
 
     this.ctx = {
-      app: this.app,
+      App: this.App,
     };
 
     assertUser = waigo.load('support/middleware/assertUser');
@@ -78,7 +78,7 @@ test['assert user'] = {
       redirect: this.mocker.spy(() => Q.resolve()),
     });
 
-    let routeSpy = this.mocker.spy(this.app.routes, 'url');
+    let routeSpy = this.mocker.spy(this.App.routes, 'url');
 
     yield assertUser({ 
       redirectToLogin: true, 

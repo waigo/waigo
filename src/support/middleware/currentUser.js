@@ -18,10 +18,10 @@ const waigo = global.waigo,
 module.exports = function() {
   return function*(next) {
     if (this.session.user) {
-      this.app.logger.debug('Current user', this.session.user);
+      this.App.logger.debug('Current user', this.session.user);
 
       this.currentUser =  
-        yield this.app.models.User.get(this.session.user.id);
+        yield this.App.models.User.get(this.session.user.id);
     }
 
     yield next;

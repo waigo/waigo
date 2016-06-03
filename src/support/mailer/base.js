@@ -25,8 +25,8 @@ const MailerError = errors.define('MailerError');
  * Base mailer class.
  */
 class Mailer {
-  constructor (app, config, typeString) {
-    this.app = app;
+  constructor (App, config, typeString) {
+    this.App = App;
     this.logger = logger.create(`Mailer-${typeString}`);
     this.config = config;
   }
@@ -88,7 +88,7 @@ class Mailer {
       content = yield this._renderBodyMarkdown(mailOptions.body, templateVars);
     }
 
-    var templateVars = _.extend({}, this.app.templateVars, templateVars, {
+    var templateVars = _.extend({}, this.App.templateVars, templateVars, {
       content: content
     });
 
@@ -138,7 +138,7 @@ class Mailer {
     }
 
     // templateVars common to all recipients
-    mailOptions.templateVars = _.extend({}, this.app.templateVars, mailOptions.ctx.templateVars, 
+    mailOptions.templateVars = _.extend({}, this.App.templateVars, mailOptions.ctx.templateVars, 
       yield viewObjects.toViewObjectYieldable(mailOptions.templateVars, mailOptions.ctx)
     );
 
@@ -185,7 +185,7 @@ class Mailer {
         var ret = yield self._nodeMailer.send(sendOptions);
 
         // record
-        self.app.events.emit('record', 'email', recipient, {
+        self.App.emit('record', 'email', recipient, {
           subject: sendOptions.subject
         });
 

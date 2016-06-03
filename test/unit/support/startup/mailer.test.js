@@ -31,21 +31,21 @@ test['mailer'] = {
     yield this.shutdownApp();
   },
   'mailer config not set': function*() {
-    this.app.config.mailer = null;
+    this.App.config.mailer = null;
 
-    yield this.shouldThrow(this.setup(this.app), 'Mailer type not set');
+    yield this.shouldThrow(this.setup(this.App), 'Mailer type not set');
   },
   'mailer type invalid': function*() {
-    this.app.config.mailer = { type: 'invalid' };
+    this.App.config.mailer = { type: 'invalid' };
 
-    yield this.shouldThrow(this.setup(this.app), 'File not found');
+    yield this.shouldThrow(this.setup(this.App), 'File not found');
   },
   'mailer type valid': function*() {
-    this.app.config.mailer = { type: 'test', dummy: true };
+    this.App.config.mailer = { type: 'test', dummy: true };
 
-    yield this.setup(this.app);
+    yield this.setup(this.App);
 
-    this.app.mailer.should.eql([ this.app, { type: 'test', dummy: true } ]);
+    this.App.mailer.should.eql([ this.App, { type: 'test', dummy: true } ]);
   },
 };
 

@@ -13,43 +13,43 @@ const waigo = global.waigo,
  *
  * Upon completion:
  * 
- * `app.events.emit('notify')` will trigger a notification.
+ * `App.emit('notify')` will trigger a notification.
  * 
- * @param {Object} app The application.
+ * @param {Object} App The application.
  */
-module.exports = function*(app) {
-  app.logger.info(`Setting up notifications`);
+module.exports = function*(App) {
+  App.logger.info(`Setting up notifications`);
 
-  let ids = _.keys(app.config.notifications || {});
+  let ids = _.keys(App.config.notifications || {});
 
-  app.notifiers = {};
+  App.notifiers = {};
 
   for (let id of ids) {
-    app.logger.debug(`Setting up notifier: ${id}`);
+    App.logger.debug(`Setting up notifier: ${id}`);
 
-    let cfg = app.config.notifications[id];
+    let cfg = App.config.notifications[id];
 
     let transports = yield _.map(cfg.transports || [], function*(transport) {
-      app.logger.debug(`Setting up transport: ${transport.type}`);
+      App.logger.debug(`Setting up transport: ${transport.type}`);
 
       let builder = waigo.load(`support/notifications/${transport.type}`);
 
-      return yield builder(app, id, transport.config);
+      return yield builder(App, id, transport.config);
     });
 
-    app.notifiers[id] = {
+    App.notifiers[id] = {
       transports: transports,
     };
   }
 
-  app.events.on('notify', co.wrap(function*(id, messageOrObject) {
-    if (!app.notifiers[id]) {
-      return app.logger.warn(`Skipping invalid notifier target: ${id}`);
+  App.on('notify', co.wrap(function*(id, messageOrObject) {
+    if (!App.notifiers[id]) {
+      return App.logger.warn(`Skipping invalid notifier target: ${id}`);
     }
 
-    app.logger.debug(`Notify ${id}`);
+    App.logger.debug(`Notify ${id}`);
 
-    yield _.map(app.notifiers[id].transports, (t) => {
+    yield _.map(App.notifiers[id].transports, (t) => {
       return t(messageOrObject);
     });
   }));

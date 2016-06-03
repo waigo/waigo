@@ -28,15 +28,15 @@ test['console'] = {
 
     // lets insert some users
     this.users = yield {
-      user1: this.app.models.User.register({
+      user1: this.App.models.User.register({
         username: 'user1',
         email: 'user1@waigojs.com',
       }),
-      user2: this.app.models.User.register({
+      user2: this.App.models.User.register({
         username: 'user2',
         email: 'user2@waigojs.com',
       }),
-      user3: this.app.models.User.register({
+      user3: this.App.models.User.register({
         username: 'user3',
         email: 'user3@waigojs.com',
       }),
@@ -53,14 +53,14 @@ test['console'] = {
   },
 
   'app.mailer instance': function*() {
-    this.app.mailer.should.be.instanceof(this.Console);
-    this.app.mailer.should.be.instanceof(this.Base);
+    this.App.mailer.should.be.instanceof(this.Console);
+    this.App.mailer.should.be.instanceof(this.Base);
   },
 
   'send calls to base class': function*() {
-    let spy = this.mocker.stub(this.app.mailer, '_send', () => Q.resolve());
+    let spy = this.mocker.stub(this.App.mailer, '_send', () => Q.resolve());
 
-    yield this.app.mailer.send(123);
+    yield this.App.mailer.send(123);
 
     spy.should.have.been.calledWith(123);
   },

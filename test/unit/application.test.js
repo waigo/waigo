@@ -15,7 +15,7 @@ const waigo = global.waigo;
 test['exports koa app'] = function*() {
   yield this.initApp();
 
-  this.Application.app.should.be.instanceof(require('koa'));
+  this.App.koa.should.be.instanceof(require('koa'));
 };
 
 
@@ -30,21 +30,21 @@ test['load config'] = {
   },
 
   'loads config': function*() {
-    yield this.Application.loadConfig();
+    yield this.App._loadConfig();
 
-    this.Application.app.config.should.eql({
+    this.App.config.should.eql({
       done: 1
     });
   },
 
   'post config function': function*() {
-    yield this.Application.loadConfig({
+    yield this.App._loadConfig({
       postConfig: function(cfg) {
         cfg.again = 2;
       }
     });
 
-    this.Application.app.config.should.eql({
+    this.App.config.should.eql({
       done: 1,
       again: 2,
     });
@@ -58,53 +58,68 @@ test['setup logger'] = {
     yield this.initApp();
   },
 
-  'sets app.logger': function*() {
-    let Application = this.Application,
-      app = Application.app;
+  'sets App.logger': function*() {
+    let App = this.App;
 
-    yield Application.setupLogger({});
+    yield App._setupLogger({});
 
-    app.logger.error.should.be.a.function;
-    app.logger.warn.should.be.a.function;
-    app.logger.info.should.be.a.function;
-    app.logger.debug.should.be.a.function;
-    app.logger.trace.should.be.a.function;
+    App.logger.error.should.be.a.function;
+    App.logger.warn.should.be.a.function;
+    App.logger.info.should.be.a.function;
+    App.logger.debug.should.be.a.function;
+    App.logger.trace.should.be.a.function;
   },
 
-  'uncaught exception handler': function*() {
-    let Application = this.Application,
-      app = Application.app;
+  'error handler': function*() {
+    let App = this.App;
 
-    yield Application.setupLogger({});
+    yield App._setupLogger({});
 
-    let spy = this.mocker.stub(app.logger, 'error');
+    let spy = this.mocker.stub(App.logger, 'error');
 
     let err = { stack: 'abc' };
     
-    app.onUncaughtException(err);
-
-    spy.should.have.been.calledWith('Uncaught exception', 'abc');    
-
-    app.onUncaughtException('another');
-
-    spy.should.have.been.calledWith('Uncaught exception', 'another');    
-  },
-
-  'on app "error" event': function*() {
-    let Application = this.Application,
-      app = Application.app;
-
-    yield Application.setupLogger({});
-
-    let spy = this.mocker.stub(app.logger, 'error');
-
-    let err = { stack: 'abc' };
-    
-    app.emit('error', err);
+    App._onError(err);
 
     spy.should.have.been.calledWith('abc');    
 
-    app.emit('error', 'another');
+    App._onError('another');
+
+    spy.should.have.been.calledWith('another');    
+  },
+
+  'on App "error" event': function*() {
+    let App = this.App;
+
+    yield App._setupLogger({});
+
+    let spy = this.mocker.stub(App.logger, 'error');
+
+    let err = { stack: 'abc' };
+    
+    App.emit('error', err);
+
+    spy.should.have.been.calledWith('abc');    
+
+    App.emit('error', 'another');
+
+    spy.should.have.been.calledWith('another');        
+  },
+
+  'on Koa "error" event': function*() {
+    let App = this.App;
+
+    yield App._setupLogger({});
+
+    let spy = this.mocker.stub(App.logger, 'error');
+
+    let err = { stack: 'abc' };
+    
+    App.koa.emit('error', err);
+
+    spy.should.have.been.calledWith('abc');    
+
+    App.koa.emit('error', 'another');
 
     spy.should.have.been.calledWith('another');        
   }
@@ -114,12 +129,13 @@ test['setup logger'] = {
 test['startup'] = {
   beforeEach: function*() {    
     this.createAppModules({
-      'support/startup/step1': 'module.exports = function*(app) { app.step1 = 1; }',
-      'support/startup/step2': 'module.exports = function*(app) { app.step2 = 2; }',
+      'support/startup/step1': 'module.exports = function*(App) { App.step1 = 1; }',
+      'support/startup/step2': 'module.exports = function*(App) { App.step2 = 2; }',
     });
 
     let postConfig = this.postConfig = {
       startupSteps: ["step1", "step2"],
+      shutdownSteps: [],
       logging: {
         category: "test",
         minLevel: 'DEBUG',
@@ -134,26 +150,27 @@ test['startup'] = {
     };
   },
 
+
   'ok': {
     beforeEach: function*() {
       yield this.initApp();
 
-      this.mocker.spy(this.Application, 'loadConfig');
-      this.mocker.stub(this.Application, 'setupLogger').returns(Q.resolve());
+      this.mocker.spy(this.App, '_loadConfig');
+      this.mocker.spy(this.App, '_setupLogger');
     },
 
     'loads config': function*() {
-      yield this.Application.start(this.startOptions);
+      yield this.App.start(this.startOptions);
 
-      this.Application.loadConfig.should.have.been.calledOnce;
-      this.Application.loadConfig.should.have.been.calledWithExactly(this.startOptions);
+      this.App._loadConfig.should.have.been.calledOnce;
+      this.App._loadConfig.should.have.been.calledWithExactly(this.startOptions);
     },
 
     'sets up logger': function*() {
-      yield this.Application.start(this.startOptions);
+      yield this.App.start(this.startOptions);
 
-      this.Application.setupLogger.should.have.been.calledOnce;
-      this.Application.setupLogger.should.have.been.calledWithExactly({
+      this.App._setupLogger.should.have.been.calledOnce;
+      this.App._setupLogger.should.have.been.calledWithExactly({
         category:"test",
         minLevel:"DEBUG",
         appenders:[]
@@ -161,17 +178,28 @@ test['startup'] = {
     },
 
     'runs startup steps': function*() {
-      yield this.Application.start(this.startOptions);
+      yield this.App.start(this.startOptions);
 
-      this.Application.app.step1.should.eql(1);
-      this.Application.app.step2.should.eql(2);
+      this.App.step1.should.eql(1);
+      this.App.step2.should.eql(2);
+    },
+
+    'application must not be started': function*() {
+      yield this.App.start(this.startOptions);
+
+      try {
+        yield this.App.start(this.startOptions);
+        throw -1;
+      } catch (err) {
+        err.message.should.eql('Application already started');
+      }
     },
   },
 
   'fail': {
     beforeEach: function*() {
       this.createAppModules({
-        'support/startup/step3': 'module.exports = function*(app) { throw new Error("fail98"); }',
+        'support/startup/step3': 'module.exports = function*(App) { throw new Error("fail98"); }',
       });
 
       this.postConfig.startupSteps = ["step1", "step3"];
@@ -179,9 +207,13 @@ test['startup'] = {
       yield this.initApp();
     },
 
+    afterEach: function*() {
+      yield this.App.shutdown();
+    },
+
     'throws error': function*() {
       try {
-        yield this.Application.start(this.startOptions);
+        yield this.App.start(this.startOptions);
         
         throw -1;
       } catch (err) {
@@ -196,8 +228,8 @@ test['startup'] = {
 test['shutdown'] = {
   beforeEach: function*() {    
     this.createAppModules({
-      'support/shutdown/step1': 'module.exports = function*(app) { app.step1 = "shutdown1"; }',
-      'support/shutdown/step2': 'module.exports = function*(app) { app.step2 = "shutdown2"; }',
+      'support/shutdown/step1': 'module.exports = function*(App) { App.step1 = "shutdown1"; }',
+      'support/shutdown/step2': 'module.exports = function*(App) { App.step2 = "shutdown2"; }',
     });
 
     let postConfig = this.postConfig = {
@@ -221,7 +253,7 @@ test['shutdown'] = {
   'application must be started': function*() {
     yield this.initApp();
 
-    delete this.Application.app.config;
+    delete this.App.config;
 
     try {
       yield this.shutdownApp();
@@ -235,38 +267,38 @@ test['shutdown'] = {
     beforeEach: function*() {
       yield this.initApp();
 
-      yield this.Application.start(this.startOptions);
+      yield this.App.start(this.startOptions);
     },
 
     'runs steps': function*() {
-      let app = this.Application.app;
+      let App = this.App;
 
       yield this.shutdownApp();
 
-      app.step1.should.eql('shutdown1');
-      app.step2.should.eql('shutdown2');
+      App.step1.should.eql('shutdown1');
+      App.step2.should.eql('shutdown2');
     },
 
     'resets koa app': function*() {
-      let app = this.Application.app;
+      let koa = this.App.koa;
 
       yield this.shutdownApp();
 
-      this.Application.app.should.not.eql(app);
+      this.App.koa.should.not.eql(koa);
     },
   },
 
   'fail': {
     beforeEach: function*() {
       this.createAppModules({
-        'support/shutdown/step3': 'module.exports = function*(app) { throw new Error("fail98"); }',
+        'support/shutdown/step3': 'module.exports = function*(App) { throw new Error("fail98"); }',
       });
 
       this.postConfig.shutdownSteps = ["step1", "step3"];
 
       yield this.initApp();
 
-      yield this.Application.start(this.startOptions);
+      yield this.App.start(this.startOptions);
     },
 
     'throws error': function*() {

@@ -13,8 +13,8 @@ const waigo = global.waigo,
  *
  * @param {Object} app The application.
  */
-module.exports = function*(app) {
-  app.cron = {};
+module.exports = function*(App) {
+  App.cron = {};
 
   let cronTasks = waigo.getItemsInFolder('support/cronTasks');
 
@@ -27,8 +27,8 @@ module.exports = function*(app) {
 
     let job = waigo.load(taskFilePath);
 
-    app.cron[name] = 
-      yield app.models.Cron.create(name, job.schedule, job.handler);
+    App.cron[name] = 
+      yield App.models.Cron.create(name, job.schedule, job.handler);
   }
 };
 

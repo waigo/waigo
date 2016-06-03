@@ -50,12 +50,12 @@ test['context helpers'] = {
   },
 
   'has user': function*() {
-    let user = yield this.app.models.User.register({
+    let user = yield this.App.models.User.register({
       username: 'test',
     });
 
     let ctx = {
-      app: this.app,
+      App: this.App,
       session: {
         user: {
           id: user.id,

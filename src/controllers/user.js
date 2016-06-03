@@ -110,7 +110,7 @@ exports.register_submit = function*() {
 
 
 exports.verify_email = function*() {
-  let action = yield this.app.actionTokens.process(
+  let action = yield this.App.actionTokens.process(
     this.request.query.c, {
       type: 'verify_email'
     }
@@ -175,7 +175,7 @@ exports.forgot_password_submit = function*() {
 
 
 exports.reset_password = function*() {
-  let action = yield this.app.actionTokens.process(
+  let action = yield this.App.actionTokens.process(
     this.request.query.c, {
       type: 'reset_password'
     }

@@ -26,7 +26,7 @@ test['emailAddressNotInUse'] = {
     validator = waigo.load('support/forms/validators/emailAddressNotInUse');
 
     this.ctx = {
-      app: this.app,
+      App: this.App,
     };
   },
 
@@ -43,7 +43,7 @@ test['emailAddressNotInUse'] = {
   'in use': function*() {
     var fn = validator();
 
-    yield this.app.models.User.register({
+    yield this.App.models.User.register({
       username: 'test',
       email: 'test@test.com',
     })

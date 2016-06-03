@@ -51,7 +51,7 @@ test['sessions'] = {
     );
 
     var options = { 
-      app: this.app,
+      App: this.App,
       keys: ['my', 'key'],
       name: 'sessionName',
       store: {
@@ -68,8 +68,8 @@ test['sessions'] = {
 
     var fn = middleware(options);
 
-    this.app.keys.should.eql(['my', 'key']);
+    this.App.koa.keys.should.eql(['my', 'key']);
     createStoreSpy.should.have.been.calledOnce;
-    createStoreSpy.should.have.been.calledWithExactly(this.app, {hello: 'world'});
+    createStoreSpy.should.have.been.calledWithExactly(this.App, {hello: 'world'});
   }
 };

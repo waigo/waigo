@@ -33,10 +33,10 @@ module.exports = {
   postValidation: [
     function* updateUserPassword(next) {
       let ctx = this.context,
-        app = ctx.app,
+        App = ctx.App,
         user = ctx.currentUser;
 
-      app.logger.info('Resetting user password', user.id);
+      App.logger.info('Resetting user password', user.id);
 
       // save new password
       yield user.updatePassword(this.fields.password.value);
@@ -45,10 +45,10 @@ module.exports = {
     },
     function* emailUser(next) {
       let ctx = this.context,
-        app = ctx.app,
+        App = ctx.App,
         user = ctx.currentUser;
 
-      yield app.mailer.send({
+      yield App.mailer.send({
         to: user,
         subject: 'Your password has been updated',
         bodyTemplate: 'passwordUpdated',

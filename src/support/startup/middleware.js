@@ -8,16 +8,16 @@ const waigo = global.waigo,
 /**
  * Setup middleware common to all requests.
  *
- * @param {Object} app The application.
+ * @param {Object} App The application.
  */
-module.exports = function*(app) {
-  app.logger.debug('Setting up common middleware');
+module.exports = function*(App) {
+  App.logger.debug('Setting up common middleware');
 
-  for (let m of app.config.middleware.ALL._order) {
-    app.logger.debug(`Loading middleware: ${m}`);
+  for (let m of App.config.middleware.ALL._order) {
+    App.logger.debug(`Loading middleware: ${m}`);
 
-    app.use(waigo.load(`support/middleware/${m}`)(
-      _.get(app.config.middleware.ALL, m, {})
+    App.koa.use(waigo.load(`support/middleware/${m}`)(
+      _.get(App.config.middleware.ALL, m, {})
     ));
   }
 };

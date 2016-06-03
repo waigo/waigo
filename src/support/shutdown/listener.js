@@ -8,13 +8,13 @@ const waigo = global.waigo,
 /**
  * Shutdown the HTTP server.
  *
- * @param {Object} app The application.
+ * @param {Object} App The application.
  */
-module.exports = function*(app) {
-  if (app.server) {
-    app.logger.debug('Shutting down HTTP server');
+module.exports = function*(App) {
+  if (App.server) {
+    App.logger.debug('Shutting down HTTP server');
 
-    yield Q.promisify(app.server.close, app.server)();
+    yield Q.promisify(App.server.close, App.server)();
   } 
 };
 

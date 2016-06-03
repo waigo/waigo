@@ -7,15 +7,15 @@ const waigo = global.waigo,
 /**
  * Setup action tokens interface and request processor.
  *
- * @param {Object} app The application.
+ * @param {Object} App The application.
  */
-module.exports = function*(app) {
-  app.logger.debug('Setting up action tokens system');
+module.exports = function*(App) {
+  App.logger.debug('Setting up action tokens system');
 
   let mod = waigo.load('support/actionTokens');
 
-  app.actionTokens = yield mod.init(
-    app, app.config.actionTokens
+  App.actionTokens = yield mod.init(
+    App, App.config.actionTokens
   );
 };
 

@@ -29,13 +29,13 @@ test['acl'] = {
   'shuts down the db': function*() {
     let count = 0;
 
-    this.app.acl = {
+    this.App.acl = {
       shutdown: function*() {
         count++;
       }
     };
 
-    yield this.shutdownStep(this.app);
+    yield this.shutdownStep(this.App);
 
     count.should.eql(1);
   }    

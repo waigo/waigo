@@ -29,9 +29,9 @@ test['notifications'] = {
 
     this.setup = waigo.load('support/startup/notifications');
 
-    this.app.count1 = [];
-    this.app.count2 = [];
-    this.app.count3 = [];
+    this.App.count1 = [];
+    this.App.count2 = [];
+    this.App.count3 = [];
   },
 
   afterEach: function*() {
@@ -39,17 +39,17 @@ test['notifications'] = {
   },
 
   'invalid types': function*() {
-    this.app.config.notifications = {
+    this.App.config.notifications = {
       admins: {
         transports: [{ type: 'invalid' }]
       }
     };
 
-    yield this.shouldThrow(this.setup(this.app), 'File not found: support/notifications/invalid');
+    yield this.shouldThrow(this.setup(this.App), 'File not found: support/notifications/invalid');
   },
 
   'valid types': function*() {
-    this.app.config.notifications = {
+    this.App.config.notifications = {
       admins: {
         transports: [{ type: 'test1'}, { type: 'test2'}]
       },
@@ -58,14 +58,14 @@ test['notifications'] = {
       },
     };
 
-    yield this.setup(this.app);
+    yield this.setup(this.App);
 
-    this.app.emit('notify', 'admins', 'test');
-    this.app.emit('notify', 'admins2', 'test2');
+    this.App.emit('notify', 'admins', 'test');
+    this.App.emit('notify', 'admins2', 'test2');
 
-    this.app.count1.should.eql['test'];
-    this.app.count2.should.eql['test'];
-    this.app.count3.should.eql['test2'];
+    this.App.count1.should.eql['test'];
+    this.App.count2.should.eql['test'];
+    this.App.count3.should.eql['test2'];
   },
 
 };

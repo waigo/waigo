@@ -34,9 +34,9 @@ test['action tokens'] = {
     yield this.shutdownApp();
   },
   'init action tokens': function*() {
-    yield this.setup(this.app);
+    yield this.setup(this.App);
 
-    this.app.actionTokens.should.eql([this.app, { dummy: true }, 1]);
+    this.App.actionTokens.should.eql([this.App, { dummy: true }, 1]);
   },
 };
 

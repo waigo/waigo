@@ -44,7 +44,7 @@ test['slack notifier'] = {
   },
 
   'sets webhook url': function*() {
-    let fn = yield notifier(this.app, 'test', {
+    let fn = yield notifier(this.App, 'test', {
       url: '/test'
     });
 
@@ -54,7 +54,7 @@ test['slack notifier'] = {
   'error sending to slack': function*() {
     this.webhookSpyResult = new Error('errorblah');
 
-    let fn = yield notifier(this.app, 'test', {
+    let fn = yield notifier(this.App, 'test', {
       url: '/test',
       channel: 'ch1',
       username: 'user1',
@@ -72,7 +72,7 @@ test['slack notifier'] = {
   },
 
   'string': function*() {
-    let fn = yield notifier(this.app, 'test', {
+    let fn = yield notifier(this.App, 'test', {
       url: '/test',
     });
 
@@ -82,7 +82,7 @@ test['slack notifier'] = {
   },
 
   'object': function*() {
-    let fn = yield notifier(this.app, 'test', {
+    let fn = yield notifier(this.App, 'test', {
       url: '/test',
     });
 

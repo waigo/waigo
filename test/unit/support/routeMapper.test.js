@@ -36,9 +36,9 @@ test['route mapper'] = {
     mapper = waigo.load('support/routeMapper');
 
     const _createContext = (req, res) => {
-      var context = Object.create(this.app.context);
-      var request = context.request = Object.create(this.app.request);
-      var response = context.response = Object.create(this.app.response);
+      var context = Object.create(this.App.koa.context);
+      var request = context.request = Object.create(this.App.koa.request);
+      var response = context.response = Object.create(this.App.koa.response);
       context.app = request.app = response.app = this;
       context.req = request.req = response.req = req;
       context.res = request.res = response.res = res;
@@ -59,14 +59,14 @@ test['route mapper'] = {
   },
 
   'no routes or middleware': function*() {
-    yield mapper.setup(this.app, {}, {});
+    yield mapper.setup(this.App, {}, {});
 
-    this.expect(this.app.router.match('/')).to.be.undefined;
+    this.expect(this.App.koa.router.match('/')).to.be.undefined;
   },
 
   'simple routes': {
     beforeEach: function*() {
-      yield mapper.setup(this.app, {}, {
+      yield mapper.setup(this.App, {}, {
         '/': {
           GET: 'hello.world',
           POST: 'good.bye',
@@ -82,7 +82,7 @@ test['route mapper'] = {
       this.ctx.request.url = '/';
       this.ctx.request.method = 'GET';
 
-      yield this.app.router.call(this.ctx, noop);
+      yield this.App.koa.router.call(this.ctx, noop);
 
       this.ctx.mega.should.eql(['hello world']);
     },
@@ -90,7 +90,7 @@ test['route mapper'] = {
       this.ctx.request.url = '/';
       this.ctx.request.method = 'POST';
 
-      yield this.app.router.call(this.ctx, noop);
+      yield this.App.koa.router.call(this.ctx, noop);
 
       this.ctx.mega.should.eql(['goodbye']);
     },
@@ -98,7 +98,7 @@ test['route mapper'] = {
       this.ctx.request.url = '/blah';
       this.ctx.request.method = 'PUT';
 
-      yield this.app.router.call(this.ctx, noop);
+      yield this.App.koa.router.call(this.ctx, noop);
 
       this.ctx.mega.should.eql(['hello world']);
     },
@@ -106,20 +106,20 @@ test['route mapper'] = {
       this.ctx.request.url = '/ark';
       this.ctx.request.method = 'GET';
 
-      yield this.app.router.call(this.ctx, noop);
+      yield this.App.koa.router.call(this.ctx, noop);
     },*/
     'test - bad method': function*() {
       this.ctx.request.url = '/';
       this.ctx.request.method = 'PUT';
 
-      yield this.app.router.call(this.ctx, noop);
+      yield this.App.koa.router.call(this.ctx, noop);
     },
   },
 
 
   'per-route cascading middleware': {
     beforeEach: function*() {
-      yield mapper.setup(this.app, {}, {
+      yield mapper.setup(this.App, {}, {
         '/parent': {
           pre: ['before_next'],
           GET: 'hello.world',
@@ -137,7 +137,7 @@ test['route mapper'] = {
       this.ctx.request.url = '/parent';
       this.ctx.request.method = 'GET';
 
-      yield this.app.router.call(this.ctx, noop);
+      yield this.App.koa.router.call(this.ctx, noop);
 
       this.ctx.mega.should.eql(['test', 'hello world']);
     },
@@ -146,7 +146,7 @@ test['route mapper'] = {
       this.ctx.request.url = '/parent';
       this.ctx.request.method = 'POST';
 
-      yield this.app.router.call(this.ctx, noop);
+      yield this.App.koa.router.call(this.ctx, noop);
 
       this.ctx.mega.should.eql(['test','test','goodbye']);
     },
@@ -155,7 +155,7 @@ test['route mapper'] = {
       this.ctx.request.url = '/parent/child';
       this.ctx.request.method = 'GET';
 
-      yield this.app.router.call(this.ctx, noop);
+      yield this.App.koa.router.call(this.ctx, noop);
 
       this.ctx.mega.should.eql(['test','hello world','test_123']);
     },  
@@ -164,7 +164,7 @@ test['route mapper'] = {
 
   'per-http-method middleware': {
     beforeEach: function*() {
-      yield mapper.setup(this.app, {
+      yield mapper.setup(this.App, {
         GET: {
           _order: [
             'before_next',
@@ -192,7 +192,7 @@ test['route mapper'] = {
       this.ctx.request.url = '/parent';
       this.ctx.request.method = 'POST';
 
-      yield this.app.router.call(this.ctx, noop);
+      yield this.App.koa.router.call(this.ctx, noop);
 
       this.ctx.mega.should.eql(['test', 'goodbye', 'test_111', 'test_999']);
     },
@@ -201,7 +201,7 @@ test['route mapper'] = {
 
   'global common middleware does not play a part': {
     beforeEach: function*() {
-      yield mapper.setup(this.app, {
+      yield mapper.setup(this.App, {
         ALL: {
           _order: [
             'before_next',
@@ -229,7 +229,7 @@ test['route mapper'] = {
       this.ctx.request.url = '/parent';
       this.ctx.request.method = 'POST';
 
-      yield this.app.router.call(this.ctx, noop);
+      yield this.App.koa.router.call(this.ctx, noop);
 
       this.ctx.mega.should.eql(['test', 'goodbye', 'test_111', 'test_999']);
     },
@@ -238,7 +238,7 @@ test['route mapper'] = {
 
   'controller method as middleware': {
     beforeEach: function*() {
-      yield mapper.setup(this.app, {}, {
+      yield mapper.setup(this.App, {}, {
         '/parent': {
           POST: ['hello.world', 'good.bye'],
         },
@@ -251,7 +251,7 @@ test['route mapper'] = {
       this.ctx.request.url = '/parent';
       this.ctx.request.method = 'POST';
 
-      yield this.app.router.call(this.ctx, noop);
+      yield this.App.koa.router.call(this.ctx, noop);
 
       this.ctx.mega.should.eql(['hello world']);
     },
@@ -259,7 +259,7 @@ test['route mapper'] = {
 
 
   'invalid controller method': function*() {
-    yield this.shouldThrow(mapper.setup(this.app, {}, {
+    yield this.shouldThrow(mapper.setup(this.App, {}, {
       '/parent': {
         POST: 'hello.world2',
       },
@@ -268,7 +268,7 @@ test['route mapper'] = {
 
 
   'invalid middleware': function*() {
-    yield this.shouldThrow(mapper.setup(this.app, {}, {
+    yield this.shouldThrow(mapper.setup(this.App, {}, {
       '/parent': {
         POST: 'invalid',
       },
@@ -278,7 +278,7 @@ test['route mapper'] = {
 
   'reverse url lookup': {
     beforeEach: function*() {
-      this.mapper = yield mapper.setup(this.app, {}, {
+      this.mapper = yield mapper.setup(this.App, {}, {
         '/bar/:name/:age': {
           name: 'test',
           GET: 'hello.world',
@@ -320,7 +320,7 @@ test['route mapper'] = {
     },
 
     'absolute url': function*() {
-      this.app.config.baseURL = 'http://waigojs.com';
+      this.App.config.baseURL = 'http://waigojs.com';
 
       let url = this.mapper.url('test2', {
         name: 'john',

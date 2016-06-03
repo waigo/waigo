@@ -27,9 +27,9 @@ test['forms'] = {
     yield this.shutdownApp();
   },
   'sets form accessor': function*() {
-    yield this.setup(this.app);
+    yield this.setup(this.App);
 
-    this.app.form.should.eql(waigo.load('support/forms/form'));
+    this.App.form.should.eql(waigo.load('support/forms/form'));
   },
 };
 
