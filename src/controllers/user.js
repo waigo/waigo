@@ -89,7 +89,9 @@ exports.register_submit = function*() {
   try {
     yield form.process();
 
-    yield this.redirect('/');
+    yield this.render('index', {
+      alert: 'You have signed up successfully!'
+    });
   } catch (err) {
     if (!(err instanceof this.form.FormValidationError)) {
       this.logger.error(err.stack);
@@ -122,9 +124,9 @@ exports.verify_email = function*() {
   // log the user in
   yield action.user.login(this);
 
-  yield this.showAlert('Your email address has been verified.');
-
-  yield this.redirect('/');
+  yield this.render('index', {
+    alert: 'Your email address has been verified'
+  });
 };
 
 
@@ -152,9 +154,9 @@ exports.forgot_password_submit = function*() {
   try {
     yield form.process();
 
-    yield this.showAlert('We have emailed you a link to reset your password.');
-
-    yield this.redirect('/');
+    yield this.render('index', {
+      alert: 'We have emailed you a link to reset your password'
+    });
   } catch (err) {
     if (!(err instanceof this.form.FormValidationError)) {
       this.logger.error(err.stack);
@@ -205,9 +207,9 @@ exports.reset_password_submit = function*() {
   try {
     yield form.process();
 
-    yield this.showAlert('Your new password has been saved.');
-    yield this.redirect('/');
-
+    yield this.render('index', {
+      alert: 'Your new password has been saved'
+    });
   } catch (err) {
     if (!(err instanceof this.form.FormValidationError)) {
       this.logger.error(err.stack);

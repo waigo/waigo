@@ -67,9 +67,6 @@ module.exports = {
         }
       });
 
-      // tell user we sent them a link
-      yield this.context.showAlert('Thanks! We have sent you an email with a signup confirmation link.');
-
       yield next;
     }
   ]

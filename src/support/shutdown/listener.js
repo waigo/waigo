@@ -14,9 +14,7 @@ module.exports = function*(app) {
   if (app.server) {
     app.logger.debug('Shutting down HTTP server');
 
-    yield Q.promisify(app.server.close, {
-      context: app.server
-    })();
+    yield Q.promisify(app.server.close, app.server)();
   } 
 };
 
