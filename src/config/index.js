@@ -1,7 +1,7 @@
 "use strict";
 
 
-const debug = require('debug')('waigo config'),
+const debug = require('debug')('waigo_config'),
   fs = require('fs');
 
 const waigo = global.waigo,

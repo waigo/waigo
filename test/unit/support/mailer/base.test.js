@@ -119,7 +119,10 @@ test['base'] = {
         body: '**body**',
       });
 
-      _.map(spy.args || [], (arg) => _.get(arg, '0.to')).should.eql([
+      let arr = _.map(spy.args || [], (arg) => _.get(arg, '0.to'));
+      arr.sort();
+
+      arr.should.eql([
         'user1@waigojs.com', 
         'user2@waigojs.com',
         'user3@waigojs.com',

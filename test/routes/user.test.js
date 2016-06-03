@@ -162,10 +162,9 @@ test['/user'] = {
           yield this.registerUser('test@waigojs.com');
           yield this.registerUser('test2@waigojs.com');
 
-          let users = yield this.app.models.User.getAll();
+          let user = yield this.app.models.User.getByEmail('test2@waigojs.com');
 
-          users.length.should.eql(2);
-          users[1].isAdmin.should.be.false;
+          user.isAdmin.should.be.false;
         },
         html: function*() {
           yield this.registerUser('test@waigojs.com');
@@ -187,7 +186,7 @@ test['/user'] = {
     },
   },
 
-  
+
 
 };
 

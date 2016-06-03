@@ -1,7 +1,7 @@
 "use strict";
 
 
-const debug = require('debug')('waigo application'),
+const debug = require('debug')('waigo_application'),
   koa = require('koa'),
   log4js = require('log4js'),
   EventEmitter = require('eventemitter3'),

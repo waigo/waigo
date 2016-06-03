@@ -1,7 +1,6 @@
 "use strict";
 
-const debug = require('debug')('waigo-cli-init'),
-  path = require('path'),
+const path = require('path'),
   util = require('util');
 
 const waigo = global.waigo,

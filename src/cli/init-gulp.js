@@ -1,7 +1,6 @@
 "use strict";
 
-const debug = require('debug')('waigo-cli-init'),
-  path = require('path'),
+const path = require('path'),
   util = require('util');
 
 const waigo = global.waigo,
@@ -55,7 +54,7 @@ class Command extends AbstractCommand {
     });
     
     yield this.copyFile(path.join(FRAMEWORK_FOLDER, 'gulpfile.coffee'), 'gulpfile.coffee');
-    yield this.copyFolder(path.join(FRAMEWORK_FOLDER, 'gulp', 'utils'), 'gulp');
+    yield this.copyFolder(path.join(FRAMEWORK_FOLDER, 'gulp', 'utils'), 'gulp/utils');
     yield _.map([
       'dev-frontend',
       'dev-server',

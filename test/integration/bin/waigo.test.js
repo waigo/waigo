@@ -22,9 +22,13 @@ const execBin = function(args) {
     });
 
     if (0 !== ret.code) {
-      reject(new Error('Exit: ' + ret.code));
+      let err = new Error('Exit: ' + ret.code);
+      err.stdout = ret.stdout;
+      err.stderr = ret.stderr;
+
+      reject(err);
     } else {
-      resolve(ret.output);
+      resolve(ret.stdout);
     }
   })
 };

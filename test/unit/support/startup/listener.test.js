@@ -35,7 +35,7 @@ test['listener'] = {
     this.expect(this.app.server).to.eql('abc');
 
     this.app.listen.should.have.been.calledOnce;
-    this.app.listen.should.have.been.calledWithExactly(3000);
+    this.app.listen.should.have.been.calledWithExactly(this.app.config.port);
   },
 
   'notifies admins': function*() {

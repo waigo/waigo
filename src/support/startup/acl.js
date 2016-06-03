@@ -1,8 +1,7 @@
 "use strict";
 
 
-const waigo = global.waigo,
-  acl = waigo.load('support/acl');
+const waigo = global.waigo;
 
 
 
@@ -16,5 +15,5 @@ const waigo = global.waigo,
 module.exports = function*(app) {
   app.logger.debug('Setting up ACL');
 
-  app.acl = yield acl.init(app);
+  app.acl = yield (waigo.load('support/acl')).init(app);
 };

@@ -1,5 +1,5 @@
 gulp = require 'gulp'
-mocha = require 'gulp-mocha'
+mocha = require 'gulp-spawn-mocha'
 path = require 'path'
 
 module.exports = (paths, options = {}) ->

@@ -2,7 +2,7 @@
 
 
 const _ = require('lodash'),
-  debug = require('debug')('waigo loader'),
+  debug = require('debug')('waigo_loader'),
   findup = require('findup-sync'),
   path = require('path'),
   fs = require('fs'),
@@ -176,7 +176,7 @@ loader.init = function*(options) {
       }
 
       try {
-        config = require(path.resolve(pathToConfig));
+        config = loader.__require(path.resolve(pathToConfig));
       } catch (err) {
         throw new Error(`Unable to load config file: ${pathToConfig}`);
       }
@@ -310,7 +310,7 @@ loader.load = function(fileName) {
 
   debug(`Load ${fileName} -> ${resolvedPath}`);
 
-  return require(resolvedPath);
+  return loader.__require(resolvedPath);
 };
 
 
@@ -457,8 +457,13 @@ loader.getAppFolder = function() {
 
 
 
+/**
+ * Load given item using `require()`.
+ *
+ * @param  {String} p path or module name.
+ * @return {Module}
+ */
+loader.__require = function(p) {
+  return require(p);
+};
 
-
-
-
- 

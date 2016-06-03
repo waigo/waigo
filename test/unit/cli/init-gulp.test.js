@@ -86,7 +86,7 @@ test['cli - init-gulp'] = {
     );
 
     copyFolderSpy.should.have.been.calledWithExactly(
-      path.join(frameworkFolder, 'gulp', 'utils'), 'gulp'
+      path.join(frameworkFolder, 'gulp', 'utils'), 'gulp/utils'
     );
 
     ['dev-frontend',

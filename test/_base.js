@@ -15,6 +15,7 @@ const waigo = require('../src'),
 
 
 
+
 module.exports = function(_module) {
   let test = testUtils.mocha(_module, {
     name: path.relative(process.cwd(), _module.filename),

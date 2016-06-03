@@ -1,7 +1,7 @@
 "use strict";
 
 
-const debug = require('debug')('waigo-cli'),
+const debug = require('debug')('waigo_cli'),
   path = require('path'),
   shell = require('shelljs');
 
