@@ -13,7 +13,7 @@ const waigo = global.waigo;
 
 
 
-test['forgot_password'] = {
+test['forgot password'] = {
   beforeEach: function*() {
     yield this.initApp();
 
