@@ -143,6 +143,9 @@ test['register'] = {
 
         _.get(args, 'to.id').should.eql(user.id);
         _.get(args, 'subject').should.eql('Thanks for signing up!');
+        _.get(args, 'templateVars.link').should.contain(
+          this.App.routes.url('verify_email', null, null, { absolute: true })
+        );
       },
       'cannot register if email address already exists': function*() {
         yield this.registerUser('test@waigojs.com');
