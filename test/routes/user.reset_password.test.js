@@ -30,7 +30,6 @@ test['reset password'] = {
       password: 'blah',
     });
 
-
     /*
     submit forgot password form to get reset link
      */
