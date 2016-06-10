@@ -1,3 +1,3 @@
 # Introduction
 
-* [Motivation][Motivation.md]
+* [Motivation](Motivation.md)
