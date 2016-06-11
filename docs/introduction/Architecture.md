@@ -1,6 +1,12 @@
 # Architecture
 
-Waigo is built on top of [Koa](http://koajs.com) -  the spiritual successor to Express - and is itself written using ES6 technologies. Callbacks are eschewed in favour of [Promises](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise) and [Generator Functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*). This allows for writing code which is highly asynchronous, yet appears synchronous. More importantly, it allows for building more complex middleware without adding unnecessary cruft.
+Waigo is built on top of [Koa](http://koajs.com) -  the spiritual successor to Express - and is itself written using ES6 technologies. Koa's ES6-based architecture allows for complex middleware patterns that aren't as easy to do in Express. 
+
+Waigo's codebase adhered to certain principles. We recommend you do so for your app too, to ensure maximum interoperability with Waigo code:
+
+* **Callbacks are out**. [Promises](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise) and [Generator Functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*) are in. This allows for writing code which is highly asynchronous, yet appears synchronous. Code is cleaner and easier to understand - and this extends to the test suite. If an external API utilises callbacks then simply wrap it in a Promise.
+
+* 
 
 ## Folder structure
 
