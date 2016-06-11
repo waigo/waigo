@@ -36,4 +36,4 @@ You will see lots of log output from Waigo, and then a line which looks like thi
 
 Now navigate to `http://localhost:3000` in your browser and you should see something similar to:
 
-![](Screen Shot 2016-06-11 at 21.38.21.png)
+![](helloworld.png)
