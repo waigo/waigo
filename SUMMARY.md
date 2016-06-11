@@ -8,4 +8,5 @@
    * [Coding standard](docs/introduction/CodingStandard.md)
 * [Getting Started](docs/getting_started/README.md)
    * [Requirements](docs/getting_started/Requirements.md)
+   * Installation
 
