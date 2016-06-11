@@ -5,5 +5,5 @@
    * [Motivation](docs/introduction/Motivation.md)
    * [Architecture](docs/introduction/Architecture.md)
    * [Coding Standard](docs/introduction/CodingStandard.md)
-   * Folder structure
+   * [Folder structure](docs/introduction/FolderStructure.md)
 
