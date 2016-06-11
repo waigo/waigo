@@ -23,6 +23,7 @@ $ waigo init
 ```
 
 This will add `waigo` and other necessary dependencies to `package.json`.
+
 You start Waigo using:
 
 ```shell
