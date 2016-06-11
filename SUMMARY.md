@@ -3,5 +3,5 @@
 * [Read Me](README.md)
 * [Introduction](docs/introduction/TOC.md)
    * [Motivation](docs/introduction/Motivation.md)
-   * [Principles](docs/introduction/Principles.md/principles.md)
+   * [Principles](docs/introduction/principles.md)
 
