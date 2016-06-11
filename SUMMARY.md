@@ -10,5 +10,5 @@
    * [Requirements](docs/getting_started/Requirements.md)
    * [Installation](docs/getting_started/Installation.md)
    * [Running "Hello World"](docs/getting_started/RunningHelloWorld.md)
-   * Build workflow
+   * [Build workflow](docs/getting_started/BuildWorkflow.md)
 
