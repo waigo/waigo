@@ -9,5 +9,5 @@
 * [Getting Started](docs/getting_started/README.md)
    * [Requirements](docs/getting_started/Requirements.md)
    * [Installation](docs/getting_started/Installation.md)
-   * Running "Hello World"
+   * [Running "Hello World"](docs/getting_started/RunningHelloWorld.md)
 
