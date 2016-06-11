@@ -3,5 +3,5 @@
 * [Read Me](README.md)
 * [Introduction](docs/introduction/TOC.md)
    * [Motivation](docs/introduction/Motivation.md)
-   * [Principles](docs/introduction/Architecture.md)
+   * [Architecture](docs/introduction/Architecture.md)
 
