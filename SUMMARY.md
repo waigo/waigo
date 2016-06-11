@@ -1,7 +1,7 @@
 # Summary
 
 * [Read Me](README.md)
-* [Introduction](docs/introduction/TOC.md)
+* [Introduction](docs/introduction/README.md)
    * [Motivation](docs/introduction/Motivation.md)
    * [Architecture](docs/introduction/Architecture.md)
    * [Folder structure](docs/introduction/FolderStructure.md)
