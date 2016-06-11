@@ -19,12 +19,10 @@ $ waigo init
 [waigo-cli] NPM install co
 ... 
 [waigo-cli] Creating: start-app.js
-[waigo-cli] Creating: src/views/index.pug
+[waigo-cli] Creating: src/base/config.js
 ```
 
-This will add `waigo` and other necessary dependencies to `package.json`.
-
-You start Waigo using:
+You can start Waigo using:
 
 ```shell
 $ ./start-app.js
