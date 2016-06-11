@@ -22,6 +22,7 @@ $ waigo init
 [waigo-cli] Creating: src/views/index.pug
 ```
 
+This will add `waigo` and other necessary dependencies to `package.json`.
 You start Waigo using:
 
 ```shell
