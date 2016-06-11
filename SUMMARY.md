@@ -7,5 +7,5 @@
    * [Folder structure](docs/introduction/FolderStructure.md)
    * [Coding standard](docs/introduction/CodingStandard.md)
 * [Getting Started](docs/getting_started/README.md)
-   * Requirements
+   * [Requirements](docs/getting_started/Requirements.md)
 
