@@ -1,7 +1,7 @@
 {
   "name": "waigo",
   "description": "Reactive web framework for Node.js ES6 using RethinkDB",
-  "version": "2.1.0-beta3",
+  "version": "2.1.0-beta4",
   "license": "MIT",
   "author": {
     "name": "Ramesh Nair",

@@ -50,7 +50,8 @@ test['init()'] = {
           },
           devDependencies: {
             'waigo-plugin-2_TESTPLUGIN': '0.0.1',
-            'waigo-plugin-2_TESTPLUGIN': '0.0.1'  // deliberately testing duplicates
+            'waigo-plugin-2_TESTPLUGIN': '0.0.1',  // deliberately testing duplicates
+            'waigo-test-utils': '0.0.1'
           },
           peerDependencies: {
             'another-plugin_TESTPLUGIN': '0.0.1'

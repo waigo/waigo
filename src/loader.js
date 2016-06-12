@@ -158,7 +158,7 @@ loader.init = function*(options) {
     debug('Getting plugin names...');
     
     // based on code from https://github.com/sindresorhus/load-grunt-tasks/blob/master/load-grunt-tasks.js
-    let pattern = options.plugins.glob || ['waigo-*'];
+    let pattern = options.plugins.glob || ['waigo-plugin-*'];
     let config = options.plugins.config || null;
     let scope = options.plugins.configKey || ['dependencies', 'devDependencies', 'peerDependencies'];
     
@@ -186,8 +186,7 @@ loader.init = function*(options) {
       return result.concat(Object.keys(config[prop] || {}));
     }, []);
 
-    options.plugins.names = 
-      _.without(_.uniq(globule.match(pattern, names)), 'waigo-test-utils');
+    options.plugins.names = _.uniq(globule.match(pattern, names));
   }
   
   debug(`Plugins to load: ${options.plugins.names.join(', ')}`);
