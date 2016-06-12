@@ -21,6 +21,9 @@ Quick overview:
 
 ## Waigo v2
 
+Version 2 is a re-write of Waigo using ES6 and RethinkDB (instead of Mongo). It 
+does more for you out of the box and is more extensible.
+
 The `master` branch contains Waigo v2, which is under development. For v1 see the `v1` branch. v2 is almost production-ready. If you wish to use it in your project use the 
 `next` NPM tag:
 
