@@ -15,11 +15,10 @@ Now we are ready to setup a skeleton Waigo app:
 ```shell
 $ waigo init
 
-[waigo-cli] NPM install waigo
-[waigo-cli] NPM install co
+[waigo-cli] NPM install waigo semver
 ... 
 [waigo-cli] Creating: start-app.js
-[waigo-cli] Creating: src/base/config.js
+[waigo-cli] Creating: src/config/base.js
 ```
 
 You can start Waigo using:
@@ -32,9 +31,9 @@ You will see lots of log output from Waigo, and then a line which looks like thi
 
 ```shell
 ...
-(RamMacbookPro.local-78163) [2016-04-06 11:01:41.450] [INFO] [app] - Startup complete
+(RamMacbookPro.local-11267) [2016-06-11 21:38:05.993] [INFO] [app] - Startup complete
 ```
 
-Now navigate to `http://localhost:3000` in your browser and you should see page similar to:
+Now navigate to `http://localhost:3000` in your browser and you should see something similar to:
 
-**TODO**
+![](helloworld.png)
