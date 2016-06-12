@@ -24,7 +24,9 @@ class NodeMailer {
     this.logger = logger;
     this._transport = nodemailer.createTransport(transportImpl);
     this._transport.use('compile', htmlToText());
-    this._send = Q.promisify(this._transport.sendMail, this._transport);
+    this._send = Q.promisify(this._transport.sendMail, {
+      context: this._transport
+    });
   }
 
   /**

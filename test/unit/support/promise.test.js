@@ -30,8 +30,8 @@ test['promise'] = {
     yield this.shutdownApp();
   },
 
-  'same as default': function*() {
-    promise.should.eql(Promise);
+  'same as bluebird': function*() {
+    promise.should.eql(Q);
   },
 
   'promisify': {

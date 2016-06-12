@@ -11,7 +11,9 @@ const waigo = global.waigo,
   Q = waigo.load('support/promise');
 
 
-shell.execAsync = Q.promisify(shell.exec, shell);
+shell.execAsync = Q.promisify(shell.exec, {
+  context: shell
+});
 
 
 

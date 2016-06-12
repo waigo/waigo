@@ -8,7 +8,9 @@ const waigo = global.waigo,
   errors = waigo.load('support/errors');
 
 
-const randomBytesQ = Q.promisify(crypto.pseudoRandomBytes);
+const randomBytesQ = Q.promisify(crypto.pseudoRandomBytes, {
+  context: crypto
+});
 
 
 const ProfileSchema = {
