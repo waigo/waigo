@@ -1,13 +1,12 @@
 # What is Waigo?
 
-**NOTE: The `master` branch contains Waigo v2, which is under development. For v1 see the `v1` branch.**
-
 \[ [Guide](http://waigojs.com/guide.html) • [API](http://waigojs.com/api/) • [Examples](http://waigojs.com/examples/) • [Sites](http://waigojs.com/sites.html) \]
 
 [![Build Status](https://secure.travis-ci.org/waigo/waigo.png)](http://travis-ci.org/waigo/waigo) [![NPM module](https://badge.fury.io/js/waigo.png)](https://npmjs.org/package/waigo) [![Code quality](https://codeclimate.com/github/waigo/waigo.png)](https://codeclimate.com/github/waigo/waigo)
 
 Waigo is a Node.js framework for building scalable and maintainable web 
 application back-ends.
+
 
 Quick overview:
 
@@ -19,9 +18,20 @@ Quick overview:
  * [Extend](#extend-and-override) or override _any_ part of the core framework
  * Bundle up functionality into re-usable [plugins](#plugins)
  * And much, [much more](http://waigojs.com)..
+
+## Waigo v2
+
+The `master` branch contains Waigo v2, which is under development. For v1 see the `v1` branch. v2 is almost production-ready. If you wish to use it in your project use the 
+`next` NPM tag:
+
+```shell
+$ npm install --save waigo@next
+```
+
+[Documentation for v2](https://hiddentao.gitbooks.io/waigo-documentation/content/) is available, though it is still unfinished.
  
 
-# Development 
+## Development 
 
 We recommend using **Node 0.12.0+** for Waigo. You will also need to have a 
 MongoDB replica set running at `127.0.0.1:27017`.
@@ -41,7 +51,7 @@ By default assets are minified. To avoid this use the `--debug` flag:
 $ gulp --debug
 ```
 
-# Testing
+## Testing
 
 ```bash
 $ gulp test
@@ -55,16 +65,12 @@ $ gulp test --only-test test/unit/src/support/*.test.js
 ```
 
 
-# Roadmap
 
-See the [Github issue queue](https://github.com/waigo/waigo/issues).
-
-
-# Contributing
+## Contributing
 
 Suggestions, bug reports and pull requests are welcome. Please see [CONTRIBUTING.md](https://github.com/waigo/waigo/blob/master/CONTRIBUTING.md) for guidelines.
 
-# License
+## License
 
 MIT - see [LICENSE.md](https://github.com/waigo/waigo/blob/master/LICENSE.md)
 
