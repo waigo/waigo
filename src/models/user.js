@@ -435,6 +435,9 @@ exports.modelMethods = {
    * @param {Object} properties User props.
    * @param {String} properties.username Username.
    * @param {Object} properties.roles Roles
+   * @param {String} [properties.email] Email address.
+   * @param {Boolean} [properties.emailVerified] Whether email address is verified.
+   * @param {String} [properties.password] User's password.
    * @return {User} The registered user.
    */
   register: function*(properties) {
