@@ -72,45 +72,43 @@ test['logger'] = {
 
   'create': {
     'direct': function*() {
+      let level = -1;
+
       let spy2 = this.mocker.stub(log4js, 'getLogger', () => {
         return {
-          dummy: true,
+          setLevel: (l) => {
+            level = l;
+          }
         };
       });
 
+      let spy1 = this.mocker.stub(log4js, 'configure');
+
+      logger.init({
+        minLevel: 'ERROR'
+      });
+
+      level.should.eql('ERROR');
+
+      level = -1;
+
       let log = logger.create('test');
+
+      level.should.eql('ERROR');
 
       log.create.should.be.defined;
 
       spy2.should.have.been.calledWithExactly('test');
 
+      level = -1;
+
       let child = log.create('blah');
+
+      level.should.eql('ERROR');
 
       child.create.should.be.defined;
 
       spy2.should.have.been.calledWithExactly('test/blah');
-    },
-    'through main logger': function*() {
-      let spy2 = this.mocker.stub(log4js, 'getLogger', () => {
-        return {
-          setLevel: function() {},
-          dummy: true,
-        };
-      });
-
-      let log = logger.init({
-        category: 'blah',
-        appenders: [{
-          type: 'console',
-        }],
-        minLevel: 'debug'
-      });
-
-      let child = log.create('blah');
-
-      child.create.should.be.defined;
-
-      spy2.should.have.been.calledWithExactly('blah');
     },
   },
 };
