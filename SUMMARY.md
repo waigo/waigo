@@ -4,7 +4,7 @@
 * [Introduction](docs/introduction/README.md)
    * [Motivation](docs/introduction/Motivation.md)
    * [Architecture](docs/introduction/Architecture.md)
-   * [Middleware](docs/introduction/Middleware.md)
+   * [Middleware primer](docs/introduction/Middleware.md)
    * [Folder structure](docs/introduction/FolderStructure.md)
    * [Coding standard](docs/introduction/CodingStandard.md)
 * [Getting Started](docs/getting_started/README.md)
