@@ -1,6 +1,6 @@
 # Build workflow and Live reload
 
-When developing an app if's annoying if you have to constantly restart the server to see your latest changes. Generally speaking, developers will use a tool (e.g. gulp) to monitor source code for changes and automatically restart the server and rebuild front-end assets if necessary.
+When developing an app it's annoying if you have to constantly restart the server to see your latest changes. Generally speaking, developers will use a tool (e.g. gulp) to monitor source code for changes and automatically restart the server and rebuild front-end assets if necessary.
 
 Waigo comes with a set of built-in gulp scripts which do just that for you. And you can add them to your Waigo app using the CLI tool.
 
