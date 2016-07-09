@@ -8,37 +8,36 @@ Here is the code:
 
 ```js
 var express = require('express');
+
+// create new Express app instance
 var app = express();
 
-app.use(function ensureFormat(req, res, next) {
-  
-});
-
-app.use(function ensureFormatSet(req, res, nect) {
-  if (!req.query.format) {
-    req.query.format = 'plain';
+// middleware to check secret
+app.use(function checkSecret(req, res, next) {
+  if ('secretpassword' !== req.query.secret) {
+    next(new Error('Wrong secret!'));
+  } else {
+    next();
   }
-  
-  next();
 });
 
-app.use(function checkFormat(req, res, next) {
-  // if "format=json" set then return as JSON
-  if ('json' === req.query.format) {
-    res.set('Content-Type', 'application/json');
-  }
-  
-  next();
-});
-
+// middleware to serve up content
 app.get('/', function serveContent(req, res) {
   res.send('Hello World!');
 });
 
+// middleware to handle errors
+app.use(function(err, req, res, next) {
+  res.send(err.toString());
+});
+
+// last step - kickstart the HTTP listening server
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!');
 });
 ```
+
+
 
 We initialise a new Express app, setup a request middleware chain, and finally tell it to start a HTTP server and listen on port 3000.
 
