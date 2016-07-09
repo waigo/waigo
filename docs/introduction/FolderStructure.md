@@ -19,7 +19,10 @@ The app folder (`<project>/src`) contains all the source code and rendering temp
 /emails          # email templates
   /_layout       # layout template for all emails
 /forms           # forms
-/frontend        # front-end source assets
+/frontend        # front-end assets
+  /img           # front-end image assets
+  /js            # front-end javascript assets
+  /stylus        # front-end stylus assets
 /models          # database models
 /routes          # route configuration
 /support         # framework support and utilities
