@@ -108,7 +108,7 @@ app.get(function*() {
 
 Notice the simpler middleware function signatures. In Koa each middleware function's calling context is set dynamically at runtime. The [context](http://koajs.com/#context) internally has references to the active `request` and `response` objects.
 
-The `next` callback is still used. However, because it is also a generator function it is `yield`-ed. This allows for an interesting emergent property - a Koa middleware function can pause execution, allow for other middleware further down the chain has execute, and then resume executing at a later point.
+The `next` callback is still used. However, because it is also a generator function it is `yield`-ed in order to be executed. This allows for an interesting emergent property - a Koa middleware function can pause execution, allow for other middleware further down the chain to execute, and then resume executing at a later point.
 
 We see this most clearly with the error handling middleware, which is now the first in the chain:
 
@@ -155,7 +155,31 @@ Additionally, since Koa middleware are generator functions we can internally `yi
 
 Waigo route handlers and middleware functions work identically to Koa's, except that you the middleware function context also holds references to other parts of your Waigo app.
 
+Here is an example route handler taken from Waigo's source code. This handler marks a user's email address as verified (after they've clicked a link we've sent to them via email):
 
+```js
+exports.verify_email = function*() {
+  let action = yield this.App.actionTokens.process(
+    this.request.query.c, {
+      type: 'verify_email'
+    }
+  );
+  
+  this.logger.debug('Verify email address', action.user.id, action.data.email);
+
+  // verify email address
+  yield action.user.verifyEmail(action.data.email);
+
+  // log the user in
+  yield action.user.login(this);
+
+  yield this.render('index', {
+    alert: 'Your email address has been verified'
+  });
+};
+```
+
+You'll notice the handler context object has a no. of properties not present in Koa - `this.App`, `this.logger`, `this.render`, etc. We'll go over each of these in more detail in later sections of this guide. 
 
 
 
