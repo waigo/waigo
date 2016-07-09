@@ -37,7 +37,7 @@ app.listen(3000, function () {
 });
 ```
 
-Let's go through what'
+Let's go through each line step-by-step.
 
 We initialise a new Express app, setup a request middleware chain, and finally tell it to start a HTTP server and listen on port 3000.
 
