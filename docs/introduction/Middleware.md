@@ -27,7 +27,7 @@ app.get('/', function serveContent(req, res) {
 });
 
 // middleware to handle errors
-app.use(function(err, req, res, next) {
+app.use(function handleError(err, req, res, next) {
   res.send(err.toString());
 });
 
@@ -37,7 +37,7 @@ app.listen(3000, function () {
 });
 ```
 
-
+Let's go through what'
 
 We initialise a new Express app, setup a request middleware chain, and finally tell it to start a HTTP server and listen on port 3000.
 
