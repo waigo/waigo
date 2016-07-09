@@ -54,12 +54,3 @@ Within each middleware we have to remember to call `next()` so that the next mid
 
 The third of these only gets triggered for `GET` requests made to the root path (`/`), and as such it is defined differently (using `app.get()` rather than `app.use()`).
 
-The first middleware
-
-
-
-
-
-
-
-In the above example 
