@@ -1,6 +1,8 @@
 # Middleware primer
 
-_Note: This section gives a short primer on middleware and how it works in Express and Koa. If you're already familiar with this you can skip to the next section._
+_Note: This section gives a short primer on middleware functions and how they works in Express and Koa. If you're already familiar with this you can skip to the next section._
+
+Middleware functions form the foundation of most web development in Node.js. They allow you to easily elegantly "chain" together different pieces of logic which are to be executed for incoming web requests.
 
 Let's consider a basic Express application which prints _"Hello World!"_. Our application will expect the user to have passed in a secret string as a URL query parameter in order to work. If this query parameter is omitted we want the response to be an error.
 
