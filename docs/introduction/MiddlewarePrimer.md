@@ -22,7 +22,7 @@ app.use(function checkSecret(req, res, next) {
 });
 
 // middleware to serve up content
-app.get('/', function serveContent(req, res) {
+app.get('/', function serveContent(req, res, next) {
   res.send('Hello World!');
 });
 
@@ -37,23 +37,25 @@ app.listen(3000, function () {
 });
 ```
 
-Let's go through each line step-by-step.
-
-We initialise a new Express app, setup a request middleware chain, and finally tell it to start a HTTP server and listen on port 3000.
-
 As you can see, each middleware is essentially a function which gets passed the current request object  (`req`), response object (`res`) and a callback (`next`) which points to the next middleware in the chain:
 
 ```js
-function (req, res, next) { ... }
+function(req, res, next) { ... }
 ```
 
-Within each middleware we have to remember to call `next()` so that the next middleware in the chain can be executed. But in what order are they executed? in the order in which they are defined. In the above example the middleware will be executed in the following order:
+However the error handling middleware is special, and gets an additional `err` argument at the beginning:
 
-1. `ensureFormatSet`
-2. `checkFormat`
-3. `serverContent`
+```js
+function(err, req, res, next) { ... }
+```
 
-The third of these only gets triggered for `GET` requests made to the root path (`/`), and as such it is defined differently (using `app.get()` rather than `app.use()`).
+Each middleware function must call `next()` in order for the next middleware in the chain to execute. If `next()` is called with an error object (like we do above if the `secret` query value is incorrect) then Express will skip subsequent middleware functions until it finds the available error handling middleware.
+
+Notice above that the second middleware function does not call `next()`. This is a _route handler_ middleware and is intended to handle all HTTP GET requests to the root URL path (`/`) and return a response. 
+
+Typically you would define a route handler for every URL route in your app - using `app.get()`, `app.post()`, `app.put()`, etc according to the HTTP method you wish to specify. Furthermore, you would typically define these route handlers after defining middleware that is common to every route - using `app.use()`.
+
+
 
 ## Koa middleware
 
