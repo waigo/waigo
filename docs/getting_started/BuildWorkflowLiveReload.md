@@ -1,6 +1,6 @@
 # Build workflow and Live reload
 
-When developing an app it's annoying if you have to constantly restart the server to see your latest changes. Generally speaking, developers will use a tool to monitor source code for changes and automatically restart the server and rebuild front-end assets if necessary.
+When developing an app it's annoying if you have to constantly restart the server to see your latest changes. Generally speaking, developers will use a tool to monitor source code for changes and automatically restart the server and rebuild front-end assets when necessary.
 
 Waigo comes with a set of built-in [gulp](http://gulpjs.com/) scripts which do just that for you. And you can add them to your Waigo app using the CLI tool.
 
@@ -33,7 +33,7 @@ $ gulp dev
 
 ## Front-end conventions
 
-In order for the default gulp tasks to work properly your front-end code will need to adhere to a specific structure:
+In order for the default gulp tasks to work properly your front-end code will need to adhere to a specific folder structure:
 
 ```
 /src
@@ -45,18 +45,23 @@ In order for the default gulp tasks to work properly your front-end code will ne
 
 [Browserify](http://browserify.org/) is used to package up your Javascript. The gulp task will look for a single `app.js` file within `src/frontend/js`  and build it along with all its dependencies into `public/js/app.js`.
 
-[Stylus](http://stylus-lang.com/) is the default pre-processor of choice in Waigo. The gulp task will look for a single `app.styl` file within `src/frontend/stylus` and build it along with all its dependencies into `public/css/app.css`.
+[Stylus](http://stylus-lang.com/) is the default pre-processor of choice in Waigo. The gulp task will look for a single `app.styl` file within `src/frontend/stylus` and build it along with all its dependencies into `public/css/app.css`.
 
-The image assets under `src/frontend/img` are for now just copied into `public/img` without any further modification.
+The image assets under `src/frontend/img` get copied into `public/img` without any further modification.
 
-These are just the defaults in Waigo. You are of course free to modify the gulp scripts to work with your folder structure and/or preprocessor language of choice. 
+These are just the defaults in Waigo. You are of course free to modify the gulp scripts to work with your folder structure, your preprocessor language of choice, and do just about anything else you would normally do in gulp.
 
 
 ## Live reload
 
-All built front-end assets get placed within subfolders of `public/`. Whenever something within this folder is changed the gulp dev server informs the browser, which will then auto-reload the changed assets or reload the web-page as a whole if necessary.
+All built front-end assets get placed within subfolders of `public/`. Whenever something within this folder is changed the dev server started up by running `gulp dev` will inform the browser, which will then auto-reload the changed assets or reload the web-page as a whole depending on what changes.
 
-The gulp dev task will ensure front-end assets get auto-rebuilt whenever they are changed.
+Running `gulp dev` will ensure front-end assets get auto-rebuilt into `public/` whenever they are changed, thus ensuring that the browser-side live reload mechanism kicks in 
+whenever you modify your frontend asset source files.
+
+_Note: Adding a new file will not trigger a live-reload. This is due to a 
+limitation in underlying library used to watch for changes. In such instances you 
+may need to restart `gulp dev`_.
 
 ## Minification
 
@@ -68,7 +73,7 @@ $ gulp dev --minified
 
 ## Production builds
 
-For production deployments you will simply wish to build the front-end assets without running a dev server. To do this run the `frontend` task:
+For production deployments you will want to build the front-end assets without running a dev server. To do this run the `frontend` task:
 
 ```shell
 $ gulp frontend --minified
