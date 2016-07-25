@@ -29,8 +29,8 @@ handle the route it calls `waigo.load("controllers/index")` rather than using
 `require()`. At this point the actual controller code which gets loaded and 
 returned will depend on the first available one in the given locations:
 
-- `<project folder>/src/controllers/index.js`
-- `<waigo npm module>/src/controllers/index.js`
+1. `<project folder>/src/controllers/index.js`
+2. `<waigo npm module>/src/controllers/index.js`
 
 Thus, if `src/controllers/index.js` isn't present within your project folder then 
 Waigo will load and return the one proided by the Waigo framework itself. If 

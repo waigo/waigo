@@ -11,6 +11,6 @@ Frameworks of the latter type usually come with the above boilerplate items alre
 
 **Waigo** and frameworks of it's ilk attempt to bridge this disparity by providing you with the common boiler-plate building blocks of a web application out of the box, while still allowing you to structure your app as you see fit. 
 
-The unique property Waigo brings to the table is that just about every bit of functionality in the core framework can be *cleanly* extended or overridden within your app.
+The unique property Waigo brings to the table is that just about every bit of functionality in the core framework can be selectively extended or overridden within your app.
 
 Furthermore, what you build for one web app can easily be shared and re-used for another web app in the form a plugin (NPM module).

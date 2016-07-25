@@ -133,10 +133,10 @@ loader.reset = function() {
  * @param {Object} [options] Loading configuration.
  * @param {String} [options.appFolder] Absolute path to folder containing app files. Overrides the default calculated folder.
  * @param {Object} [options.plugins] Plugin loading configuration.
- * @param {Array} [options.plugins.names] Plugins to load. If omitted then other options are used to load plugins.
- * @param {Array} [options.plugins.glob] Regexes specifying plugin naming conventions. Default is `waigo-*`.
+ * @param {Array} [options.plugins.names] Names of plugins to load. If omitted then other options are used to load plugins.
+ * @param {Array} [options.plugins.glob] Regexes specifying plugin naming conventions. Default is `waigo-plugin-*`.
  * @param {String|Object} [options.plugins.config] JSON config containing names of plugins to load. If a string is given then it assumed to be the path of a script which exports the configuration. Default is to load `package.json`.
- * @param {Array} [options.plugins.configKey] Names of keys in JSON config whose values contain names of plugins. Default is `dependencies, devDependencies, peerDependencies`.
+ * @param {Array} [options.plugins.configKey] Names of keys in JSON config whose child keys contain names of plugins. Default is `[dependencies, devDependencies, peerDependencies]`.
  *
  * @return {Object} Final augmented options, in which ase you wish to check loading config.
  */
