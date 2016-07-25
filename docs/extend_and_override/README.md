@@ -1,6 +1,6 @@
-# Getting Started
+# Extend and Override
 
-* [How it works](HowItWorks.md)
+* [Module Loader](ModuleLoader.md)
 * [Using Plugins](UsingPlugins.md)
 * [Creating Plugins](CreatingPlugins.md)
 

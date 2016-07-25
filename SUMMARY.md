@@ -12,4 +12,11 @@
    * [Installation](docs/getting_started/Installation.md)
    * [Running "Hello World"](docs/getting_started/RunningHelloWorld.md)
    * [Build workflow and Live reload](docs/getting_started/BuildWorkflowLiveReload.md)
+* [Extend and Override](docs/extend_and_override/README.md)
+   * [Module loader](docs/extend_and_override/ModuleLoader.md)
+   * [Using Plugins](docs/extend_and_override/UsingPlugins.md)
+   * [Creating Plugins](docs/extend_and_override/CreatingPlugins.md)
+* [Command-Line (CLI)](docs/command_line/README.md)
+   * [Using the CLI](docs/command_line/UsingTheCLI.md)
+   * [Creating custom commands](docs/command_line/CreatingCustomCommands.md)
 

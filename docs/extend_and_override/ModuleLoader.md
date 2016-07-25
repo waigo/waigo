@@ -1,4 +1,4 @@
-# How it works
+# Module loader
 
 Waigo's most powerful feature is its module loading architecture. Before we explain exactly what it is and how it works let's see it in action! 
 
@@ -19,7 +19,7 @@ Now restart the app (`./start-app.js` or it will be automatic if you're using
 What you just did was override the default `index` controller built into Waigo 
 with your own.
 
-## Module loader
+## waigo.load()
 
 Waigo has its own module loader, which is used instead of `require()` when
 it wishes to load a CommonJS module file from within its `src` folder.
