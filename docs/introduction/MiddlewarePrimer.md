@@ -155,6 +155,8 @@ Additionally, since Koa middleware are generator functions we can internally `yi
 
 ## Waigo builds on Koa
 
+Waigo is built on top of Koa and is itself written using ES6 technologies. Koa's ES6-based architecture allows for complex middleware patterns that aren't as easy to do in Express. 
+
 Waigo route handlers and middleware functions work identically to Koa's, except that you the middleware function context also holds references to other parts of your Waigo app.
 
 Here is an example route handler taken from Waigo's source code. This handler marks a user's email address as verified (after they've clicked a link we've sent to them via email):

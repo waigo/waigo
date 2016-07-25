@@ -12,19 +12,19 @@ Every Waigo app has the same basic folder structure:
 The app folder (`<project>/src`) contains all the source code and rendering templates for the Waigo application. The structure usually looks like the following:
 
 ```
-/cli             # command-line interface command definitions
+/cli             # app command-line interface commands
   /data          # internal data for CLI commands
 /config          # app configuration
-/controllers     # route handling controllers
-/emails          # email templates
-  /_layout       # layout template for all emails
-/forms           # forms
-/frontend        # front-end assets
-  /img           # front-end image assets
-  /js            # front-end javascript assets
-  /stylus        # front-end stylus assets
-/models          # database models
-/routes          # route configuration
+/controllers     # app controllers
+/emails          # app email templates
+  /_layout       # app email layout template
+/forms           # app forms
+/frontend        # app front-end assets
+  /img           # app front-end image assets
+  /js            # app front-end javascript assets
+  /stylus        # app front-end stylus assets
+/models          # app database models
+/routes          # app route configuration
 /support         # framework support and utilities
   /cronTasks     # CRON jobs
   /db            # database adapters
@@ -41,9 +41,9 @@ The app folder (`<project>/src`) contains all the source code and rendering temp
   /outputFormats # view rendering (html, json, etc)
   /session       # user session support
     /store       # session store adapters
-  /shutdown      # app shutdown steps
-  /startup       # app startup steps
-/views           # general view templates
+  /shutdown      # shutdown steps
+  /startup       # startup steps
+/views           # app view templates
 ```
 
-The remainder of this guide will go through every item shown above. You will have a good understanding of how all these parts come together to make a Waigo app work. You will also come to learn how easy it is to exclude, customize or override almost any of part for your specific app.
+The remainder of this guide will go through every item shown above. You will have a good understanding of how all these parts come together to make a Waigo app work. You will also come to learn how easy it is to exclude, customize or override almost any of these parts for your specific app.
