@@ -33,6 +33,9 @@ test['context helpers'] = {
   'sets context': function*() {
     let ctx = {
       currentUser: 2,
+      request: {
+        url: 53,
+      },
       App: {
         logger: 1,
         acl: 3,
@@ -49,6 +52,7 @@ test['context helpers'] = {
     yield middleware().call(ctx, next);
 
     this.expect(_.get(ctx, 'templateVars.currentUser', '')).to.eql(2);
+    this.expect(_.get(ctx, 'templateVars.currentUrl', '')).to.eql(53);
     this.expect(ctx.logger).to.eql(1);
     this.expect(ctx.acl).to.eql(3);
     this.expect(ctx.models).to.eql(4);

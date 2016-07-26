@@ -24,6 +24,7 @@ module.exports = function() {
     // request template vars
     this.templateVars = this.templateVars || {};
     this.templateVars.currentUser = this.currentUser;
+    this.templateVars.currentUrl = this.request.url;
 
     // convenient accessors
     this.logger = this.App.logger;
