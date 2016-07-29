@@ -31,7 +31,7 @@ The `master` branch contains Waigo v2, which is under development. For v1 see th
 $ npm install --save waigo@next
 ```
 
-[Documentation for v2](https://hiddentao.gitbooks.io/waigo-documentation/content/) is available, though it is still unfinished.
+[Documentation for v2](https://hiddentao.gitbooks.io/waigo-documentation/content/) is available, though it is still a work in progress.
  
 
 ## Development 

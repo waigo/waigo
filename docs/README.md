@@ -6,5 +6,6 @@
 * [Command-Line (CLI)](command_line/README.md)
 * [App configuration](app_configuration/README.md)
 * [Logging](logging/README.md)
+* [Events](events/README.md)
 
 
