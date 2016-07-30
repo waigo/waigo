@@ -7,6 +7,6 @@
 * [App configuration](app_configuration/README.md)
 * [Logging](logging/README.md)
 * [Events](events/README.md)
-* []()
+* [Error handling](error_handling/README.md)
 
 
