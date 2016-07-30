@@ -2,7 +2,12 @@
 
 Waigo provides you with built-in `Error` subclasses for raising exceptions with. 
 These classes provide a few conveniences beyond the base `Error` class and are 
-worth using within your own back-end code.
+worth using within your own back-end code. They can are defined within the 
+`support/errors` file:
+
+```javascript
+const errors = waigo.load('support/errors');
+```
 
 ## RuntimeError
 
@@ -54,6 +59,8 @@ group of relatederrors. The 3rd `details` parameter is assumed to represent a
 collection of `Error` objects. 
 
 ```javascript
+
+
 throw new MultipleError('oh dear!', 403, {
   firstError: new RuntimeError('fail1'),
   secondError: new Error('test')
