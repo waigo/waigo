@@ -1,6 +1,7 @@
 # Summary
 
 * [Read Me](README.md)
+   * [Middleware](docs/middleware/README.md)
 * [Introduction](docs/introduction/README.md)
    * [Motivation](docs/introduction/Motivation.md)
    * [Architecture](docs/introduction/Architecture.md)
