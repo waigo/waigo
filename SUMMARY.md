@@ -28,9 +28,9 @@
    * [How to use](docs/logging/HotToUse.md)
    * [Sub-categories](docs/logging/SubCategories.md)
 * [Events](docs/events/README.md)
-   * [Internal events](docs/events/InternalEvents.md)
 * [Error handling](docs/error_handling/README.md)
    * [Built-in Error classes](docs/error_handling/BuiltInErrorClasses.md)
    * [Creating your own](docs/error_handling/CreatingYourOwn.md)
    * [Error middleware](docs/error_handling/ErrorMiddleware.md)
+* [Routing](docs/routing/README.md)
 
