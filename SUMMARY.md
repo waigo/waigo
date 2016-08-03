@@ -33,4 +33,6 @@
    * [Creating your own](docs/error_handling/CreatingYourOwn.md)
    * [Error middleware](docs/error_handling/ErrorMiddleware.md)
 * [Routing](docs/routing/README.md)
+   * [How to use](docs/routing/HowToUse.md)
+   * [Generating URLs](docs/routing/GeneratingUrls.md)
 
