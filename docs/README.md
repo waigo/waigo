@@ -1,14 +1,14 @@
 # Waigo v2 Guide
 
-* [Introduction](introduction/README.md)
-* [Getting Started](getting_started/README.md)
-* [Extend and Override](extend_and_override/README.md)
-* [Command-Line (CLI)](command_line/README.md)
-* [App configuration](app_configuration/README.md)
-* [Logging](logging/README.md)
-* [Events](events/README.md)
-* [Error handling](error_handling/README.md)
-* [Middleware](middleware/README.md)
-* [Controllers](controllers/README.md)
-
+* [Introduction](introduction/)
+* [Getting Started](getting_started/)
+* [Extend and Override](extend_and_override/)
+* [Command-Line (CLI)](command_line/)
+* [App configuration](app_configuration/)
+* [Logging](logging/)
+* [Events](events/)
+* [Error handling](error_handling/)
+* [Middleware](middleware/)
+* [Controllers](controllers/)
+* [Database and Models](database_and_models/)
 

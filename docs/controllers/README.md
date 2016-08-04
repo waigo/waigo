@@ -12,7 +12,7 @@ exports.main = function*(next) {
 };
 ```
 
-_Note: `this.render()` is provided by the [output formats](../output_formats/README.md) middleware._
+_Note: `this.render()` is provided by the [output formats](../output_formats/) middleware._
 
 The above controller `main` method simply render the `index` template to the client response. If you want the controller function can also behave like normal middleware and pass control to `next`:
 
