@@ -1,20 +1,22 @@
 # Common middleware
 
-If a given middleware is being initialised during [startup](#startup-and-shutdown) (i.e. see below) then
-additional options from the `app.config.middleware.ALL` configuration object get
-passed to the middleware initializer:
+As well as per-route middleware you can also define more _common_ middleware, which apply per-HTTP-method and/or to all incoming requests.
+
+Both of these are defined in your app's [configuration](../app_configuration/README.md), as such:
 
 ```javascript
-// file: <app folder>/src/config/base.js
+// file: <project folder>/src/config/base.js
+
 module.exports = function(config) {
   ...
+  /* middleware for every request */
   config.middleware.ALL = {
-    /* Order in which middleware gets run */
+    /* order in which middleware gets run */
     _order: [
       'errorHandler',
       'staticResources',
     ],
-    /* Options for each middleware */
+    /* options for each middleware's initializer */
     errorHandler: {},
     staticResources: {
       // relative to app folder
@@ -22,77 +24,65 @@ module.exports = function(config) {
     },
   };
   ...
-}
-```
-
-Given the above configuration, the `staticResources` middleware initializer will get passed the options: `{ folder: '/static' }`.
-
-
-
-## Common middleware
-
-The [app configuration](#configuration) file may specify middleware that applies to all incoming requests. For example:
-
-```javascript
-// file:  <app folder>/src/config/base.js
-
-module.exports = function(config) {
-  ...
-  config.middleware = {};
-
-  config.middleware.ALL = {
-    _order: [
-      'errorHandler',
-    ],
-  };
-
+  
+  /* middleware for only POST and PUT requests */
   config.middleware.POST = config.middleware.PUT = {
+  	/* order in which middleware gets run */
     _order: [
       'bodyParser',
+      'csrf',
     ],
+    /* options to pass to each middleware's initialier */
     bodyParser: {
       limit: '16mb',
     },
   };
-  ...
+}
+```
+
+Once a request has been passed through the common middleware handler chain it then gets handed off to the middleware specific to the route associated with the request.
+
+Let's say you have route defined as such:
+
+```javascript
+// file: <project folder>/src/routes/user.js
+
+module.exports = {
+  '/user': {
+  	'/info': {
+      GET: 'users.updateInfo'
+	  },
+  	'/pic': {
+      POST: [ { id: 'bodyParser', limit: '3mb' }, 'users.updatePic' ]
+	  }
+  }
 };
 ```
 
-The above configuration states that:
-
-* The `errorHandler` middleware will apply to _all_ incoming requests. 
-* The `bodyParser` middlware will only apply to incoming requests using the `PUT` and `POST` HTTP methods.
-
-Once a request has been processed by common middleware the middleware specific to the trigger [route](#routing) will be executed.
-
-
-# Controllers
-
-Controllers in Waigo expose route handling methods which work as they do in koa.
-The default `index` controller simply has:
+Combined with the common middleware defined above, this is what the actual route middleware chain would look like if we were to define it entirely within the route configuration:
 
 ```javascript
-// file: <waigo framework>/src/controllers/index
-
-"use strict";
-
-exports.main = function*(next) {
-  yield this.render('index');
+module.exports = {
+  '/user': {
+  	'/info': {
+     GET: [ 
+       'errorHandler',
+       { id: 'staticResources', folder: '/static' },
+       'users.getInfo' 
+     ]
+	},
+  	'/pic': {
+     POST: [ 
+       'errorHandler',
+       { id: 'staticResources', folder: '/static' },
+       { id: 'bodyParser', limit: '16mb' }, 
+       'csrf',
+       'users.updatePic' 
+     ]
+	}
+  }
 };
 ```
 
-A controller must either send some output or pass control to the `next`
-middleware in the request chain. The `this.render()` call is provided by the 
-[output formats](#views-and-output-formats) middleware.
 
-Controllers can be nested within subfolders within the `controllers` path. For example, Waigo's default [admin dashboard](#admin-dashboard) controllers are located at:
 
-* `<waigo npm folder>/src/controllers/admin/index.js`
-* `<waigo npm folder>/src/controllers/admin/routes.js`
-* ...
-
-So to load the admin `routes` controller:
-
-```javascript
-waigo.load('controllers/admin/routes');
-```

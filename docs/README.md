@@ -8,5 +8,7 @@
 * [Logging](logging/README.md)
 * [Events](events/README.md)
 * [Error handling](error_handling/README.md)
+* [Middleware](middleware/README.md)
+* [Controllers](controllers/README.md)
 
 

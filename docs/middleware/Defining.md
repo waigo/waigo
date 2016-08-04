@@ -47,6 +47,8 @@ module.exports = function(options) {
 
 Thys, existing Koa middleware functions can be re-used very easily within Waigo.
 
+## App object 
+
 Middleware functions in Waigo also have access to your application's `App` object, which is set on the context:
 
 

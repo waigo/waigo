@@ -5,5 +5,4 @@ Middleware determines how each client request coming into your application gets 
 * [Defining](Defining.md)
 * [Configuring](Configuring.md)
 * [Common middleware](CommonMiddleware.md)
-* [Controllers as middleware](ControllersAsMiddleware.md)
 
