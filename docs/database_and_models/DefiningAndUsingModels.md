@@ -202,6 +202,7 @@ exports.modelMethods = {
   }
 };
 ```
+
 The `_logger()` method we used inside the model methods gives us access to a [logger](../logging) associated with the Model - it is auto-created by Waigo. We can also access the `App` object at any time using the `_App()` method, though in this case we didn't need to do this. 
 
 The `rawQry()` method is available on all Waigo models and enables the raw querying mode for our underlying database table. In this case it's the same as executing a query using [rethinkdbdash](https://github.com/neumino/rethinkdbdash), the RethinkDB database library that is being used at a lower level.
@@ -214,12 +215,12 @@ We would use this model as follows:
 yield App.models.User.add('test@test.com', 'password');
 
 // let's try loading, but with a wrong password
-let user = App.models.User.load('test@test.com', 'wrongpassword');
+let user = yield App.models.User.load('test@test.com', 'wrongpassword');
 
 /* user === null */
 
 // let's try loading with right password
-user = App.models.User.load('test@test.com', 'password');
+user = yield App.models.User.load('test@test.com', 'password');
 
 console.log(user.password);  /* F24FA5B... some hash */
 ```
@@ -234,34 +235,129 @@ Document methods are extra methods to enable on the document instances returned 
 
 _Note: Waigo automatically adds `_App()` and `_logger()` methods to every document instance, same as for Model objects_.
 
-The `getById()` method is automatically available to on model instances. Beyond that a model must define its own additional methods within the `Model` class itself.
+Let's add a `checkPassword()` document method which lets us check whether a given password matches the password stored for a user:
 
-In our example model we have defined two: `getByUsername` and `register`.
+```javascript
+// file: <project folder>/src/models/user.js
 
-You'll notice that within our example we call a couple of internal methods: `_qry()` and `_insert()`. These are provided by the `RethinkDBModel` base class and perform the actual work of talking to the database and processing results.
+const waigo = require('waigo'),
+	_ = waigo._;	// lodash
 
-The available internal methods are:
+exports.schema = {
+  username: { 
+    type: String, 
+    required: true,
+  },
+  password: { 
+    type: String, 
+    required: true,
+  },
+};
 
-* `_qry()` - construct a RethinkDB query object - basically `r.table('table name')`.
-* `_insert()` - insert a new record and return a document instance.
-* `_update()` - update a record.
-* `_remove()` - remove a record.
-* `_get()` - equivalent to RethinkDb's [get()](https://www.rethinkdb.com/api/javascript/#get).
-* `_getAll()` - equivalent to RethinkDb's [get()](https://www.rethinkdb.com/api/javascript/#getAll).
-* `_wrap()` - process query results array (or single result object) by encapsulating each raw query result in a document instance.
-* `_createDoc()` - encapsulate given raw query result in a document instance (this gets called by `_wrap()`).
+exports.docMethods = {
+  checkPassword: function*(password) {
+    return this.someHashingFunction(password) === this.password;
+  },
+};
+```
 
-These internal methods give you all the tools you need to build out model and document methods.
+_Note: The context (`this`) of a document method is always the document instance itself._
 
+How we might use it:
 
-**Document methods**
+```javascript
+let user = yield App.models.User.get('user id');
 
-Document methods are the methods available on an instance of a "document" returned by the model.
+if (user.checkPassword(inputPassword)) {
+  // password correct!
+} else {
+  // password incorrect!
+}
+```
 
+_Note: Read the [Thinodium docs](https://hiddentao.github.io/thinodium) for the list of built-in Document instance methods._
 
 **Virtual fields**
 
-Virtual fields are fields which appear in the Model's interface as normal fields but which aren't actually stored in the database. They're essentially another way of doing model instance methods.
+Virtual fields are document instance fields which appear to work like normal fields, except that they are actually represented by getter and setter functions, and consequently are not part of the model's schema and are not stored in the database.
 
+Virtual fields act as convenient accessors for information derived from the real document data. For example, let's say we store a user's birth date. We may add an `age` virtual field which automatically calculates their current age:
 
-The `TABLE_DEF` constant defines the database schema, database indexes and _virtual_ fields.
+```javascript
+// file: <project folder>/src/models/user.js
+
+const moment = require('moment'),
+  waigo = require('waigo'),
+  _ = waigo._;	// lodash
+
+exports.schema = {
+  username: { 
+    type: String, 
+    required: true,
+  },
+  dob: { 
+    type: Date, 
+    required: true,
+  },
+};
+
+exports.docVirtuals = {
+  age: {
+    get: function() {
+      return moment().diff(this.dob, 'years');
+    }
+  }
+};
+```
+
+And here is how you would use it:
+
+```javascript
+let user = yield App.models.User.insert({
+  username: 'test',
+  dob: moment('1982-02-02', 'YYYY-MM-DD').toDate(),
+});
+
+console.log( user.age );
+/* 34 */
+
+// let's try setting the field
+user.age = 2; /* throws Error */
+```
+
+Notice how we were unable to set `age`. Virtual fields can be set if we add setters to them:
+
+```javascript
+exports.docVirtuals = {
+  age: {
+    get: function() {
+      return moment().diff(this.dob, 'years');
+    },
+    set: function(val) {
+      // weird thing to do, I know!
+      this.dob = moment().subtract(val, 'years').toDate();
+    }
+  }
+};
+```
+
+_Note: The getters and setters of virtual functions must by synchronous non-generator functions._
+
+When using the above setter keep in mind that we need to explicitly `save()` the document in order for the `dob` field changes to take effect:
+
+```javascript
+const oldDob = user.dob;
+
+console.log( user.age );
+/* 34 */
+
+user.age = 25;
+
+let diff = moment(user.dob).diff(oldDob, 'years');
+
+console.log( diff );
+/* 9 */
+
+// save it!
+yield user.save();
+```

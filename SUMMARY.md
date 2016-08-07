@@ -36,4 +36,8 @@
 * [Routing](docs/routing/README.md)
    * [How to use](docs/routing/HowToUse.md)
    * [Generating URLs](docs/routing/GeneratingUrls.md)
+* [Database and Models](docs/database_and_models/README.md)
+   * [Database connection](docs/database_and_models/DatabaseConnection.md)
+   * [Overview of models](docs/database_and_models/OverviewOfModels.md)
+   * [Defining and using models](docs/database_and_models/DefiningAndUsingModels.md)
 
