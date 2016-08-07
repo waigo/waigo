@@ -11,4 +11,5 @@
 * [Middleware](middleware/)
 * [Controllers](controllers/)
 * [Database and Models](database_and_models/)
+* [Scaling](scaling/)
 

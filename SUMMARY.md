@@ -4,7 +4,6 @@
    * [Middleware](docs/middleware/README.md)
 * [Introduction](docs/introduction/README.md)
    * [Motivation](docs/introduction/Motivation.md)
-   * [Architecture](docs/introduction/Architecture.md)
    * [Middleware primer](docs/introduction/MiddlewarePrimer.md)
    * [Folder structure](docs/introduction/FolderStructure.md)
    * [Coding standard](docs/introduction/CodingStandard.md)
@@ -40,4 +39,9 @@
    * [Database connection](docs/database_and_models/DatabaseConnection.md)
    * [Overview of models](docs/database_and_models/OverviewOfModels.md)
    * [Defining and using models](docs/database_and_models/DefiningAndUsingModels.md)
+   * [Built-in models](docs/database_and_models/BuiltInModels.md)
+   * [Reactive updates](docs/database_and_models/ReactiveUpdates.md)
+* [Scaling](docs/scaling/README.md)
+   * [Multi-process clustering](docs/scaling/MultiProcessClustering.md)
+* [Best practices](docs/best_practices/README.md)
 
