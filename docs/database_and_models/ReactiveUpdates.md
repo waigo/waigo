@@ -6,4 +6,5 @@ Thus it is possible for one instance of your application to create or an update 
 
 Combined with a reactive front-end UI you can build a fully end-to-end (i.e. between two clients) reactive application with ease.
 
-Let's consider a simple chat application. When one user enters a message we want to enter it into the database and instantly notify any other users who are in the chatroom.
+Let's consider a simple chat application. When one user enters a message we want to enter it into the database and instantly notify any other users who are in the chatroom so that they too see it.
+
