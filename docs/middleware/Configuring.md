@@ -25,7 +25,7 @@ const middlewareFn = waigo.load('support/middleware/bodyParser')({
 });	
 ```
 
-This ability to configure the middleware during initialization is most useful when we are defining the middleware chain for a given [route](../routing/). For example, let's say we have two routes for updating user information - one to update the user's profile text data and another to update their profile picture. We wish to allow a larger request body size for the profile picture than we do for the other data, so may define them as follows:
+This ability to configure the middleware during initialization is most useful when we are defining the middleware chain for a given [route](../Routing/). For example, let's say we have two routes for updating user information - one to update the user's profile text data and another to update their profile picture. We wish to allow a larger request body size for the profile picture than we do for the other data, so may define them as follows:
 
 ```javascript
 // file: <project folder>/src/routes/user.js

@@ -2,7 +2,7 @@
 
 Waigo's router provides a user-friendly mapping syntax, per-route middleware customisation, and the ability to have _"sub paths"_ to any level.
 
-Routes are specified in files under the `routes/` path and are processed once by the `routes` [startup step](../app_configuration/StartupSteps.md). 
+Routes are specified in files under the `routes/` path and are processed once by the `routes` [startup step](../AppConfiguration/StartupSteps.md). 
 
 An example:
 

@@ -29,5 +29,5 @@ Internally, the model may actually write JSON data to the database, or make a HT
 
 ## Rendering for views
 
-Another benefit of using Model objects is that they can also control how the underlying data is rendered into views. The [view objects](../view_objects/) chapter has more information on this.
+Another benefit of using Model objects is that they can also control how the underlying data is rendered into views. The [view objects](../ViewObjects/) chapter has more information on this.
 

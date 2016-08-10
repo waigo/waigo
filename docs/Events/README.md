@@ -2,7 +2,7 @@
 
 Different parts of your app back-end need to communicate with each other at 
 times. Specifically, you may need to implement a publish-subscribe model whereby 
-certain parts of your app are triggered by other parts. The [`App` object](../app_configuration/Appobject.md) is an [EventEmitter](https://nodejs.org/dist/latest-v4.x/docs/api/events.html#events_class_eventemitter) 
+certain parts of your app are triggered by other parts. The [`App` object](../AppConfiguration/Appobject.md) is an [EventEmitter](https://nodejs.org/dist/latest-v4.x/docs/api/events.html#events_class_eventemitter) 
 instance, and can be used to facilitate the sort of message passing we require.
 
 For instance, let's say we have a notification system whereby we can notify 

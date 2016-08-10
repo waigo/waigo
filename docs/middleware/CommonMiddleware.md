@@ -2,7 +2,7 @@
 
 As well as per-route middleware you can also define more _common_ middleware, which apply per-HTTP-method and/or to all incoming requests.
 
-Both of these are defined in your app's [configuration](../app_configuration/), as such:
+Both of these are defined in your app's [configuration](../AppConfiguration/), as such:
 
 ```javascript
 // file: <project folder>/src/config/base.js

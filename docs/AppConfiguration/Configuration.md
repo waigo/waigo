@@ -43,7 +43,7 @@ load a file based on the mode:
 1. `src/config/base.js` - _base configuration file_
 2. `src/config/<NODE_ENV>.js` - _mode-specific configuration file_
 
-If any of these files isn't provided by your app then the [module loader](../extend_and_override/ModuleLoader.md) will load the 
+If any of these files isn't provided by your app then the [module loader](../ExtendAndOverride/ModuleLoader.md) will load the 
 corresponding version provided within Waigo. Note that Waigo currently [only provides `base.js`](https://github.com/waigo/waigo/tree/master/src/config) by default.
 
 Each file is expected to export a single function to which a configuration `Object` 

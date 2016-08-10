@@ -203,7 +203,7 @@ exports.modelMethods = {
 };
 ```
 
-The `_logger()` method we used inside the model methods gives us access to a [logger](../logging) associated with the Model - it is auto-created by Waigo. We can also access the `App` object at any time using the `_App()` method, though in this case we didn't need to do this. 
+The `_logger()` method we used inside the model methods gives us access to a [logger](../Logging/) associated with the Model - it is auto-created by Waigo. We can also access the `App` object at any time using the `_App()` method, though in this case we didn't need to do this. 
 
 The `rawQry()` method is available on all Waigo models and enables the raw querying mode for our underlying database table. In this case it's the same as executing a query using [rethinkdbdash](https://github.com/neumino/rethinkdbdash), the RethinkDB database library that is being used at a lower level.
 
