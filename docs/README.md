@@ -10,6 +10,7 @@
 * [Error handling](ErrorHandling/)
 * [Middleware](Middleware/)
 * [Controllers](Controllers/)
-* [Database and Models](Database_and_models/)
+* [Database and Models](DatabaseAndModels/)
 * [Scaling](Scaling/)
-
+* [Routing](Routing/)
+* [Best practices](BestPractices/)
