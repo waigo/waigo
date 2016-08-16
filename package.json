@@ -1,7 +1,7 @@
 {
   "name": "waigo",
-  "description": "Reactive web framework for Node.js ES6 using RethinkDB",
-  "version": "2.1.1",
+  "description": "Node.js ES6 framework for extendable, scalable back-ends (Koa, RethinkDB)",
+  "version": "2.1.2",
   "license": "MIT",
   "author": {
     "name": "Ramesh Nair",
@@ -85,6 +85,7 @@
   },
   "keywords": [
     "reactive",
+    "rethinkdb",
     "framework",
     "koa",
     "generators",
