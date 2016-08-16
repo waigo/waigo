@@ -1,6 +1,9 @@
 # Waigo
 
-[![Build Status](https://secure.travis-ci.org/waigo/waigo.png)](http://travis-ci.org/waigo/waigo) [![NPM module](https://badge.fury.io/js/waigo.png)](https://npmjs.org/package/waigo) [![Join the chat at https://gitter.im/waigo/waigo](https://badges.gitter.im/waigo/waigo.svg)](https://gitter.im/waigo/waigo?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://secure.travis-ci.org/waigo/waigo.png)](http://travis-ci.org/waigo/waigo)
+[![NPM module](https://badge.fury.io/js/waigo.png)](https://npmjs.org/package/waigo)
+[![Waigo channel on discord](https://img.shields.io/badge/discord-waigo-738bd7.svg?style=flat-square)](https://discord.gg/Jf3pGjf)
+[![Join the chat at https://gitter.im/waigo/waigo](https://badges.gitter.im/waigo/waigo.svg)](https://gitter.im/waigo/waigo?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 \[ [Getting started](https://waigojs.com/docs/) • [Docs](https://waigojs.com/docs/) • [API](http://waigojs.com/api/) • [Examples](http://waigojs.com/examples/) • [Sites](http://waigojs.com/sites.html) \]
 
