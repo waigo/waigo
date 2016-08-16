@@ -5,7 +5,7 @@
 [![Waigo channel on discord](https://img.shields.io/badge/discord-waigo-738bd7.svg?style=flat-square)](https://discord.gg/Jf3pGjf)
 [![Join the chat at https://gitter.im/waigo/waigo](https://badges.gitter.im/waigo/waigo.svg)](https://gitter.im/waigo/waigo?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-\[ [Getting started](https://waigojs.com/docs/) • [Docs](https://waigojs.com/docs/) • [API](http://waigojs.com/api/) • [Examples](http://waigojs.com/examples/) • [Sites](http://waigojs.com/sites.html) \]
+\[ [Getting started](https://waigojs.com/docs/) • [Docs](https://waigojs.com/docs/) \]
 
 
 Waigo is a Node.js ES6 framework for building web apps and API back-ends which 
@@ -37,7 +37,6 @@ Full documentation can be found in the `/docs/` folder. The same docs
 can also be read online at [waigojs.com/docs](https://waigojs.com/docs/).
 
 **Note: Waigo v2 (current major version) was only recently completed, and as such docs are still a work in progress. The old v1 docs can be found at [waigojs.com/v1](https://waigojs.com/v1/)**
-
 
 ## Development 
 
@@ -101,6 +100,8 @@ branch in the repo. Docs can be found [waigojs.com/v1](https://waigojs.com/v1/).
 ## Contributing
 
 Suggestions, bug reports and pull requests are welcome. Please see [CONTRIBUTING.md](https://github.com/waigo/waigo/blob/master/CONTRIBUTING.md) for guidelines.
+
+If you have any questions, come and [chat with us on Discord](https://discord.gg/Jf3pGjf).
 
 ## License
 
