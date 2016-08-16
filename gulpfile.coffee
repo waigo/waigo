@@ -6,6 +6,7 @@ gulp = require('gulp')
 gutil = require 'gulp-util'
 args = require('yargs').argv
 
+console.log(args);
 
 options = 
   minifiedBuild: !!args.minified
