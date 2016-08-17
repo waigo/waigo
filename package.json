@@ -1,6 +1,6 @@
 {
   "name": "waigo",
-  "description": "Node.js ES6 framework for extendable, scalable back-ends (Koa, RethinkDB)",
+  "description": "Node.js ES6 framework for reactive, data-driven apps and APIs (Koa, RethinkDB)",
   "version": "2.1.2",
   "license": "MIT",
   "author": {
