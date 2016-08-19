@@ -47,7 +47,7 @@ test['cli - init'] = {
     yield c.run();
 
     installPkgSpy.should.have.been.calledOnce;
-    installPkgSpy.should.have.been.calledWithExactly(['waigo@next', 'semver']);
+    installPkgSpy.should.have.been.calledWithExactly(['waigo', 'semver']);
 
     this.expect(copyFileSpy.callCount).to.eql(4);
 
