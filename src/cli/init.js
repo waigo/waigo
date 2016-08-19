@@ -6,11 +6,11 @@ const path = require('path'),
 const waigo = global.waigo,
   _ = waigo._,
   AbstractCommand = waigo.load('support/cliCommand');
-  
+
 const WAIGO_FOLDER = waigo.getWaigoFolder(),
   FRAMEWORK_FOLDER = path.join(WAIGO_FOLDER, '..');
 
-const DATA_FOLDER = path.join(__dirname, 'data', 'init');  
+const DATA_FOLDER = path.join(__dirname, 'data', 'init');
 
 
 /**
@@ -32,7 +32,7 @@ class Command extends AbstractCommand {
     }
 
     yield this.installPkgs([
-      'waigo@next',
+      'waigo',
       'semver',
     ]);
 
@@ -40,7 +40,7 @@ class Command extends AbstractCommand {
     yield this.copyFile(path.join(DATA_FOLDER, '_gitignore'), '.gitignore');
 
     yield this.copyFile(path.join(FRAMEWORK_FOLDER, 'start-app.js'), 'start-app.js');
-    
+
     yield this.copyFile(path.join(WAIGO_FOLDER, 'config', 'base.js'), 'src/config/base.js');
   }
 }
@@ -48,4 +48,3 @@ class Command extends AbstractCommand {
 
 
 module.exports = Command;
-
