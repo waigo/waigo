@@ -31,8 +31,8 @@ co(function*() {
   // app folder available?
   let appFolderPath = path.join(process.cwd(), 'src');
   if (!shell.test('-d', appFolderPath)) {
-    // if not then use the framework folder
-    appFolderPath = path.join(frameworkFolderPath, 'src');
+    // if not create it
+    shell.mkdir(path.join(process.cwd(), 'src'));
   }
 
   debug(`App folder: ${appFolderPath}`);
