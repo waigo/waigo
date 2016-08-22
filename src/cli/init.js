@@ -28,7 +28,7 @@ class Command extends AbstractCommand {
    */
   * run () {
     if (!this.fileExists('package.json')) {
-      throw new Error('Please run "npm init" first');
+      return this.log('Please run "npm init" first');
     }
 
     yield this.installPkgs([
@@ -38,9 +38,7 @@ class Command extends AbstractCommand {
 
     yield this.copyFile(path.join(DATA_FOLDER, 'README.md'), 'src/README.md');
     yield this.copyFile(path.join(DATA_FOLDER, '_gitignore'), '.gitignore');
-
     yield this.copyFile(path.join(FRAMEWORK_FOLDER, 'start-app.js'), 'start-app.js');
-
     yield this.copyFile(path.join(WAIGO_FOLDER, 'config', 'base.js'), 'src/config/base.js');
   }
 }

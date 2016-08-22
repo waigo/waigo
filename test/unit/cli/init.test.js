@@ -32,8 +32,20 @@ test['cli - init'] = {
     this.expect(c.description).to.eql('Initialise and create a skeleton Waigo app');
     this.expect(c.options).to.eql([]);
   },
+  
+  'run - need package.json present': function*() {
+    var c = new InitCommand();
+
+    var logSpy = this.mocker.stub(c, 'log', function() {});
+
+    yield c.run();
+    
+    logSpy.should.have.been.calledWithExactly('Please run "npm init" first');
+  },
 
   'run - action handler': function*() {
+    this.writeFile(path.join(waigo.getAppFolder(), 'package.json'), '');
+    
     var c = new InitCommand();
 
     var installPkgSpy = this.mocker.stub(c, 'installPkgs', function() {

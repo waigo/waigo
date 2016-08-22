@@ -163,7 +163,9 @@ class AbstractCommand {
 
     this.log('npm install ' + str);
 
-    yield shell.execAsync('npm install ' + str);    
+    yield shell.execAsync('npm install ' + str, {
+      cwd: this._getProjectFolder()
+    });    
   }  
 
 
@@ -211,7 +213,7 @@ class AbstractCommand {
    * @protected
    */
   _getProjectFolder () {
-    return process.cwd();
+    return waigo.getAppFolder();
   }
 
 

@@ -26,7 +26,7 @@ class Command extends AbstractCommand {
    */
   * run () {
     if (!this.fileExists('package.json')) {
-      throw new Error('Please run "waigo init" first');
+      return this.log('Please run "waigo init" first');
     }
 
     yield this.installPkgs([
