@@ -115,6 +115,32 @@ test['output formats'] = {
   },
 
 
+  'override format after middleware is setup': function*() {
+    var fn = outputFormats({
+      paramName: 'format',
+      default: 'json',
+      formats: {
+        json: true,
+        html2: true
+      }
+    });
+
+    ctx.query.format = 'html2';
+
+    yield fn.call(ctx, Q.resolve());
+
+    this.expect(_.isGenFn(ctx.render)).to.be.true;
+    this.expect(ctx.request.outputFormat).to.eql('html2');
+    
+    ctx.request.outputFormat = 'json';
+
+    yield ctx.render.call(ctx);
+
+    this.expect(ctx.body).to.eql({});
+  },
+
+
+
   'converts locals to view objects if possible': function*() {
     const toViewObjectMethodName = waigo.load('support/viewObjects').METHOD_NAME;
 

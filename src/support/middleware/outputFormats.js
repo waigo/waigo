@@ -72,7 +72,7 @@ module.exports = function(options) {
       let localsViewObjects = yield viewObjects.toViewObjectYieldable(locals, ctx);
 
       // call actual rendering method
-      yield enabledFormats[requestedFormat].render.call(ctx, view, localsViewObjects);
+      yield enabledFormats[this.request.outputFormat].render.call(ctx, view, localsViewObjects);
     };
 
     // redirect method
@@ -80,7 +80,7 @@ module.exports = function(options) {
       logger.debug('Redirect', url);
 
       // call actual rendering method
-      yield enabledFormats[requestedFormat].redirect.call(ctx, url);
+      yield enabledFormats[this.request.outputFormat].redirect.call(ctx, url);
     };
 
 
