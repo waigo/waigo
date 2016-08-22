@@ -213,7 +213,7 @@ class AbstractCommand {
    * @protected
    */
   _getProjectFolder () {
-    return waigo.getAppFolder();
+    return path.join(waigo.getAppFolder(), '..');
   }
 
 

@@ -54,7 +54,9 @@ test['cli command base class'] = {
   },
 
   'get project root folder': function*() {
-    this.expect(new Command()._getProjectFolder()).to.eql(process.cwd());
+    this.expect(new Command()._getProjectFolder()).to.eql(
+      path.join(process.cwd(), 'test', 'data')
+    );
   },
 
   'get node modules folder': {
@@ -225,7 +227,9 @@ test['cli command base class'] = {
       });
 
       this.execSpy.should.have.been.calledOnce;
-      this.execSpy.should.have.been.calledWithExactly('npm install --save-dev foo123 bar123');
+      this.execSpy.should.have.been.calledWithExactly('npm install --save-dev foo123 bar123', { 
+        cwd: c._getProjectFolder()
+      });
     },
     'normal': function*() {
       var c = new Command();
@@ -233,7 +237,9 @@ test['cli command base class'] = {
       yield c.installPkgs(['foo123', 'bar123']);
 
       this.execSpy.should.have.been.calledOnce;
-      this.execSpy.should.have.been.calledWithExactly('npm install --save foo123 bar123');
+      this.execSpy.should.have.been.calledWithExactly('npm install --save foo123 bar123', { 
+        cwd: c._getProjectFolder()
+      });
     }
   }
 

@@ -44,7 +44,7 @@ test['cli - init'] = {
   },
 
   'run - action handler': function*() {
-    this.writeFile(path.join(waigo.getAppFolder(), 'package.json'), '');
+    this.writeFile(path.join(waigo.getAppFolder(), '..', 'package.json'), '');
     
     var c = new InitCommand();
 

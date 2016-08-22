@@ -40,11 +40,11 @@ test['cli - init-gulp'] = {
 
     yield c.run();
     
-    logSpy.should.have.been.calledWithExactly('Please run "waigo init" first');
+    logSpy.should.have.been.calledWithExactly('Please run "npm init" first');
   },
 
   'run - action handler': function*() {
-    this.writeFile(path.join(waigo.getAppFolder(), 'package.json'), '');
+    this.writeFile(path.join(waigo.getAppFolder(), '..', 'package.json'), '');
 
     var c = new InitCommand();
 

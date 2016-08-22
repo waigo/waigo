@@ -34,6 +34,12 @@ module.exports = function(_module) {
   });
 
   test.beforeEach = function*() {
+    const testPackageJsonFile = path.join(process.cwd(), 'test', 'data', 'package.json');
+    
+    if (this.fileExists(testPackageJsonFile)) {
+      this.deleteFile(testPackageJsonFile);
+    }
+    
     this.deleteTestFolders();
     this.createTestFolders();
   };
