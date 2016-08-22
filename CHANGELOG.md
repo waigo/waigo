@@ -1,6 +1,6 @@
 # Changelog for [waigo](https://github.com/waigo/waigo)
 
-## 22 Aug 2016 (2.1.5)
+## 22 Aug 2016 (2.1.6)
 * Ensure CLI commands run in app folder.
 * For expected CLI errors don't actually throw an error.
 
