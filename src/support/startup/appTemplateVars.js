@@ -14,7 +14,7 @@ const waigo = global.waigo,
 module.exports = function*(App) {
   App.templateVars = {
     _: _,
-    routeUrl: App.routes,
+    routeUrl: App.routes.url.bind(App.routes),
     staticUrl: App.staticUrl,
     config: App.config,
   };
