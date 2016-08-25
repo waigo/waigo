@@ -13,4 +13,5 @@
 * [Database and Models](DatabaseAndModels/)
 * [Scaling](Scaling/)
 * [Routing](Routing/)
+* [Sessions](Sessions/)
 * [Best practices](BestPractices/)
