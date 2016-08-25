@@ -4,6 +4,25 @@ Built-in session handling comes courtesy of the [koa-session-store](https://gith
 
 On the browser side the session key is stored within a signed cookie. Thus, if you are using sessions ensure you inform the user at some point that cookies will be used.
 
+## Accessing session data
+
+You can access session data using the request context `session` key within your controllers:
+
+```javascript
+// file: <project folder>/src/controllers/someController.js
+
+exports.index = function*(next) {
+  yield this.render('index', {
+    name: this.session.userName
+  });
+};
+```
+
+Any data which can be stringified into JSON can be stored in the `session` object.
+
+To completely delete a session simply use `this.session = null`.
+
+
 ## Enabling sessions
 
 Sessions are created and loaded by the `sessions` middleware. The default configuration looks as follows:
@@ -50,19 +69,4 @@ config.middleware.ALL = {
 
 The above configuration enables sessions using the `cookie` storage adapter. This means all session data is stored within the browser cookie, encrypted using array of key specified (see `keys`). Each session is valid for a maximum of 7 days.
 
-## Accessing session data
-
-You can access session data using the request context `session` key within your controllers:
-
-```javascript
-// file: <project folder>/src/controllers/someController.js
-
-exports.index = function*(next) {
-  yield this.render('index', {
-    name: this.session.userName
-  });
-};
-```
-
-To delete a session simply use `this.session = null`.
 
