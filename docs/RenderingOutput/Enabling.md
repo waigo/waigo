@@ -1,6 +1,6 @@
 # Enabling output formats
 
-Output formats are enabled using the `outputFormats` middleware .The default configuration looks similar to:
+Output formats are enabled using the `outputFormats` middleware .The default [configuration](../AppConfiguration/) has something like this:
 
 ```js
 {
