@@ -35,7 +35,7 @@ got.post(`https://api.travis-ci.org/repo/waigo%2Fwaigo.github.io/requests`, {
   body: JSON.stringify({
     request: {
       message: `Trigger build at waigo/waigo commit: ${gitCommitHash}`,
-      branch: 'master',
+      branch: 'source',
     },    
   }),
 })
