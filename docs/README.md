@@ -14,6 +14,7 @@
 * [Routing](Routing/)
 * [Rendering output](RenderingOutput/)
 * [View templates](ViewTemplates/)
+* [Static resources](StaticResources/)
 * [Sessions](Sessions/)
 * [Scaling](Scaling/)
 * [Best practices](BestPractices/)

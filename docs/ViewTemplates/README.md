@@ -5,4 +5,4 @@ Waigo uses [Pug](https://github.com/pugjs/pug) (formerly Jade) as its default te
 Templates are used for both rendering pages and emails. Page templates can be found under the `/src/views` path. Email templates are under the `/src/emails` path. 
 
 * [Template data](TemplateData.md)
-* [Static asset paths](StaticAssetPaths.md)
+* [Context-level and app-level data](ContextLevelAndAppLevelData.md)

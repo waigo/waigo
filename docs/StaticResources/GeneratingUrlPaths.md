@@ -1,8 +1,20 @@
-# Static asset paths
+# Generating URL paths
 
-When linking to static assets from within your templates you can use the `staticUrl()` helper function to dynamically generate paths. This ensures that if you change where static assets are stored in future you don't have to then update your templates.
+You can use the `App.staticUrl()` helper method to dynamically generate URLs to static resources from anywhere within your app. This ensures that you don't have to hardcode URL paths, allowing you to easily change where your static resources are stored if necessary.
 
 For example:
+
+```js
+// file: <project folder>/src/controllers/index.js
+
+exports.main = function*() {
+  yield this.render('index', {
+    pathToJs: this.App.staticUrl('/js/app.js');
+  });
+}
+```
+
+You will most likely need to generate static resources URLs within your [view templates](../ViewTemplates/). The above helper method is available as `staticUrl()`:
 
 ```pug
 // file: <project folder>/src/views/index.pug
@@ -39,13 +51,11 @@ Would result in:
 <link rel="stylesheet" href="/_gen/waigo/css/app.css" />
 ```
 
-_Note: The [Static resources](../StaticResources/) docs go into more detail about why it generates such a URL._
-
-If we had static asset provided by a plugin we would use that plugin's NPM module name as the prefix. For example:
+If we had a static asset provided by a plugin we would use that plugin's NPM module name as the prefix. For example, if we wished to include an asset from the `waigo-plugin-bootstrap` plugin:
 
 ```pug
 // file: <project folder>/src/views/index.pug
 
-link(rel="stylesheet", href=staticUrl('waigo-bootstrap:/css/app.css'))
+link(rel="stylesheet", href=staticUrl('waigo-plugin-bootstrap:/css/app.css'))
 ```
 
