@@ -58,6 +58,7 @@
     "coffee-script": "^1.9.2",
     "event-stream": "^3.3.0",
     "form-data": "^1.0.0-rc4",
+    "got": "^6.3.0",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^3.1.0",
     "gulp-concat": "^2.4.3",

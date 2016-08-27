@@ -1,13 +1,13 @@
 branches:
   only:
-    - master
+  - master
 
 language: node_js
 
 node_js:
-  - "4"
-  - "5"
-  - "6"
+  - '4'
+  - '5'
+  - '6'
 
 before_install:
   - source /etc/lsb-release && echo "deb http://download.rethinkdb.com/apt $DISTRIB_CODENAME main" | sudo tee /etc/apt/sources.list.d/rethinkdb.list
@@ -17,12 +17,19 @@ before_install:
 
 before_script:
   - rethinkdb --daemon
-  - "npm install"
+  - npm install
 
 script:
-  - "npm run test-ci"
+  - npm run test-ci
+
+after_success:
+  - node scripts/triggerDocSiteBuild.js
 
 notifications:
   email:
-    - ram@hiddentao.com
+  - ram@hiddentao.com
+
+env:
+  global:
+    secure: S0+kWx+F56zFvFtuoLYlu6BDMjc3U9OZruuCwSYV/aNLdIo/mtpuhYAMgzChlT5K4kVVF2bTeramFTZQ3nxKHKFZ34y8UW+Ju+ARH4oBzUsU+m0W+zKOsovtjLpSv3grS5yz5XqRiYMxJQFlGHdQjqX1/jDeA0KdkQbaLMVktak=
 
