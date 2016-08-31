@@ -14,10 +14,16 @@ const waigo = global.waigo,
 module.exports = function*(App) {
   App.templateVars = {
     _: _,
-    routeUrl: App.routes.url.bind(App.routes),
-    staticUrl: App.staticUrl,
     config: App.config,
   };
+  
+  if (_.get(App.routes, 'url')) {
+    App.templateVars.routeUrl = App.routes.url.bind(App.routes);
+  }
+  
+  if (App.staticUrl) {
+    App.templateVars.taticUrl = App.staticUrl;
+  }
 };
 
 
