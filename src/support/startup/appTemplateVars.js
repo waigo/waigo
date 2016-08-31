@@ -22,7 +22,7 @@ module.exports = function*(App) {
   }
   
   if (App.staticUrl) {
-    App.templateVars.taticUrl = App.staticUrl;
+    App.templateVars.staticUrl = App.staticUrl;
   }
 };
 
