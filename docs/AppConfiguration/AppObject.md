@@ -1,6 +1,6 @@
 # App object
 
-Your application's central point of control is the [Application object](https://github.com/waigo/waigo/blob/master/src/application.js), accessible as 'App' inside your 
+Your application's central point of control is the [Application object](https://github.com/waigo/waigo/blob/master/src/application.js), accessible as `App` inside your 
 controllers and other back-end code:
 
 ```javascript

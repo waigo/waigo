@@ -21,6 +21,7 @@ docs/api/*
 public/_gen
 public/js/*.map
 
+
 # test
 test/data/app
 test/data/*

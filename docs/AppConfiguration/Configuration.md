@@ -1,6 +1,6 @@
 # Configuration
 
-When starting up your app the first thing it does is load in the configuration 
+When starting up your app the first thing it does is load in configuration 
 from `src/config/base.js`. 
 
 The configuration file exports a single function which takes an empty `config` object 
