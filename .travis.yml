@@ -22,7 +22,9 @@ script:
   - npm run test-ci
 
 after_success:
-  - node scripts/triggerDocSiteBuild.js
+  if [ "${TRAVIS_NODE_VERSION}" = "4" ]; then
+    node scripts/triggerDocSiteBuild.js
+  fi
 
 notifications:
   email:
