@@ -16,5 +16,6 @@
 * [View templates](ViewTemplates/)
 * [Static resources](StaticResources/)
 * [Sessions](Sessions/)
+* [Forms](Forms/)
 * [Scaling](Scaling/)
 * [Best practices](BestPractices/)
