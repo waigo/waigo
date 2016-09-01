@@ -43,7 +43,7 @@ module.exports = function() {
 
 *Note: Sanitizers are implemented as generator functions, meaning you can do asynchronous processing within them!*
 
-Submitted form data usually comes in as strings, which is why this sanitizer makes sense for even the `age` field.
+Submitted form data usually comes in as strings, which is why this sanitizer makes sense for even the `age` field. 
 
 Notice that `sanitizers` is specified as an array. This is because fields can have multiple sanitizers attached to them, each of which gets executed in order. For example, if the sanitizer list is `['trim','truncate']` then Waigo would first pass the input value to the `trim` sanitizer, and then the output of that would get passed to the `truncate` sanitizer and so on. The final post-sanitation value would be saved as the field's value.
 
@@ -78,3 +78,10 @@ module.exports = NumberField;
 
 When we call `form.process()` on a form instance it internally runs each field's submitted value through the corresponding list of sanitizers prior to any further processing. If an error gets thrown from a sanitizer then a `FieldSanitizationError` gets thrown for that particular field.
 
+## Built-in sanitizers
+
+Here are the [built-in sanitizers](https://github.com/waigo/waigo/blob/master/src/support/forms/sanitizers) which come with Waigo:
+
+* `trim` - trim the input string of leading and trailing spaces, as used in the above examples. Users sometimes accidentally add trailing spaces to usernames and passwords when typing. This sanitizer helps to deal with such cases.
+* `lib` - apply one of the of the sanitizing methods from the [validator NPM module](https://github.com/chriso/validator.js). For example, if you wanted to use the `ltrim()` method from this library this is how you would declare it in the sanitizer list:
+  * `{ id: 'lib', method: 'ltrim', args: 'abc' }` - trim all occurrences of `a`, `b` or `c` from the left side of the input string.

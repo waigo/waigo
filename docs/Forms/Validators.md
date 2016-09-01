@@ -29,11 +29,11 @@ module.exports = {
 
 All validators are loaded from the `support/forms/validators` path. All the validators used above come with Waigo. 
 
-The `notEmpty` validator checks to ensure the input value isn't `null`, `undefined` or an empty string (if it's a string). 
+* The `notEmpty` validator checks to ensure the input value isn't `null`, `undefined` or an empty string (if it's a string). 
 
-The `isLength` validator checks to ensure the input string has a length between `min` and `max` characters inclusive. We haven't supplied `max` above so that means the string does not have a max length.
+* The `isLength` validator checks to ensure the input string has a length between `min` and `max` characters inclusive. We haven't supplied `max` above so that means the string does not have a max length.
 
-The `numberInRange` validator is meant for use with number values and checks that the input number is between `min` and `max` inclusive. 
+* The `numberInRange` validator is meant for use with number values and checks that the input number is between `min` and `max` inclusive. 
 
 In order to pass the `min` and `max` parameters the validator had to be specified as an object - this object gets passed as a whole to the validator initializer function:
 
@@ -121,3 +121,16 @@ This `msg` would now show up in the validation error output instead of the defau
   }
 }
 ```
+
+## Built-in validators
+
+Here are the [built-in validators](https://github.com/waigo/waigo/blob/master/src/support/forms/validators) which come with Waigo:
+
+* `compareToField` - compare value of this field with the value of another field. The comparison result must match the expected result.
+* `emailAddressNotInUse` - check that value of this field (assumed to be an email address) is not already associated with a user in the database. This validator is used when registering a new user.
+* `isEmailAddress` - check that value of this field is a valid email address.
+* `isLength` - check that value of this field has a length of between the given `min` and `max` number of characters inclusive.
+* `notEmpty` - check that value of this field not `null`, `undefined` or an empty string.
+* `numberInRage` - check that value of this field is a number between the given `min` and `max` values inclusive.
+* `lib` - apply one of the of the validator methods from the [validator NPM module](https://github.com/chriso/validator.js). For example, if you wanted to use the `contains()` method from this library this is how you would declare it in the validator list:
+  * `{ id: 'lib', method: 'contains', args: 'needle' }` - ensure input value contains the `needle` string.
