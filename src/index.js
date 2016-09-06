@@ -1,4 +1,7 @@
 "use strict";
+/**
+ * @file The default entry point for Waigo.
+ */
 
 const co = require('co');
 const waigo = module.exports = require('./loader');

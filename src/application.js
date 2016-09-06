@@ -1,5 +1,8 @@
 "use strict";
-
+/**
+ * The Waigo application object.
+ * @module waigo/src/application
+ */
 
 const debug = require('debug')('waigo_application'),
   koa = require('koa'),

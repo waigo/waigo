@@ -1,4 +1,7 @@
 "use strict";
+/**
+ * @file The module loader.
+ */
 
 
 const _ = require('lodash'),
@@ -18,7 +21,6 @@ const WAIGO_FOLDER = __dirname,
 
 
 var appFolder = null;
-
 
 var loader = module.exports = global.waigo = {};
 

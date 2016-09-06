@@ -2,9 +2,9 @@
 
 [![Build Status](https://secure.travis-ci.org/waigo/waigo.png)](http://travis-ci.org/waigo/waigo)
 [![NPM module](https://badge.fury.io/js/waigo.png)](https://npmjs.org/package/waigo)
-[![Waigo channel on discord](https://img.shields.io/badge/discord-waigo-738bd7.svg?style=flat-square)](https://discord.gg/Jf3pGjf)
+[![Waigo channel on discord](https://img.shields.io/badge/discord-waigo-738bd7.svg?style=flat-square)](https://discord.gg/Jf3pGjf) [![Follow on Twitter](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Follow&maxAge=2592000)](https://twitter.com/waigojs)
 
-\[ [Getting started](https://waigojs.com/docs/) • [Docs](https://waigojs.com/docs/) \]
+\[ [Getting started](https://waigojs.com/docs/) • [Guide](https://waigojs.com/docs/) \]
 
 
 Waigo is a Node.js ES6 framework for building web apps and API back-ends which
