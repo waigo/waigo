@@ -39,8 +39,8 @@ module.exports = (params) ->
       .on 'update', ->
         gutil.log 'Rerunning browserify...'
         updateStart = Date.now()
-        _process(b)
-        gutil.log '...Done (' + (Date.now() - updateStart) + 'ms)'
+        _process(b).on 'end', ->
+          gutil.log '...Done (' + (Date.now() - updateStart) + 'ms)'
 
   # kick-off
   _process(b)
