@@ -6,7 +6,7 @@ gutil = require 'gulp-util'
 
 
 module.exports = (params) ->
-  { src, globWatch, outputName, outputDir, options } = params
+  { src, watchGlob, outputName, outputDir, options } = params
 
   _process = ->
     gutil.log 'Concatenating JS...'
@@ -18,6 +18,6 @@ module.exports = (params) ->
 
   _process()
 
-  if options.watchForChanges and globWatch
+  if options.watchForChanges and watchGlob
     gulp.watch watchGlob, _process
 
