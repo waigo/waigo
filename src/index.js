@@ -8,9 +8,9 @@ const waigo = module.exports = require('./loader');
 
 
 /**
- * Bootstrap your application.
+ * Bootstrap the application.
  *
- * @return {Coroutine}
+ * @return {Function} Function to start the app and which returns a `Promise`.
  */
 waigo._bootstrap = function() {
   return co(function*() {

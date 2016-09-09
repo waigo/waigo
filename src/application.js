@@ -1,7 +1,7 @@
 "use strict";
 /**
+ * @file
  * The Waigo application object.
- * @module waigo/src/application
  */
 
 const debug = require('debug')('waigo_application'),
@@ -25,13 +25,11 @@ const AppError = errors.define('AppError');
 
 
 /** 
- * The application object is the main entry point for all Waigo applications.
+ * The application object.
  * 
- * It is responsible for constructing the Koa `app` object and initialising
- * logging, database connections, sessions and the various middleware
- * components amongst other things.
- *
- * Internally it holds a reference to the Koa `app` object.
+ * This is the main entry point for all Waigo applications. It is responsible 
+ * for constructing the Koa `app` object, loading in the app 
+ * configuration, initialising logging and running all startup steps.
  */
 class Application extends EventEmitter {
   constructor () {
@@ -46,7 +44,7 @@ class Application extends EventEmitter {
   /**
    * Initialize koa.
    *
-   * @private
+   * @protected
    */
   _initKoa () {
     var self = this;
@@ -68,13 +66,13 @@ class Application extends EventEmitter {
   /**
    * Load in the application configuration.
    *
-   * This gets called automatically from `start()` and should not be called 
-   * directly.
+   * This gets called automatically during startup.
    *
    * @param {Object} [options] Additional options.
-   * @param {Function} [options.postConfig] Function to pass configuration object to once loaded. Useful for performing dynamic runtime configuration.
+   * @param {Function} [options.postConfig] Function to pass configuration object to once loaded.
+   * Should have signature `function (config: Object)`.
    * 
-   * @private
+   * @protected
    */
   * _loadConfig (options) {
     options = options || {};
@@ -92,9 +90,11 @@ class Application extends EventEmitter {
 
 
   /**
-   * Handler for errors.
+   * Handle an error.
+   *
+   * @param {Error} err The error.
    * 
-   * @private
+   * @protected
    */
   _onError (err) {
     this.logger.error(err.stack ? err.stack : err);
@@ -105,17 +105,12 @@ class Application extends EventEmitter {
   /**
    * Setup application logger.
    *
-   * The logging configuration is a key-value map where the key specifies the 
-   * name of the module file under the `support.logging` path and the mapped 
-   * value specifies the configuration for the specific logger type.
-   * 
-   * Upon completion `app.logger` will be set.
+   * Upon completion `this.logger` will be set.
    *
-   * _Note: At present only the first specified logger actually gets initialised_.
-   * 
    * @param {Object} cfg Logger configuration.
    *
-   * @private
+   * @see support/logger.js
+   * @protected
    */
   * _setupLogger (cfg) {
     debug('Setup logging');
@@ -130,14 +125,11 @@ class Application extends EventEmitter {
 
 
   /**
-   * Start the Koa application.
-   *
-   * This is a convenience method for initialising the various parts of the app and setting up the general middleware chain.
+   * Start the application.
    *
    * @param {Object} [options] Additional options.
-   * @param {Function} [options.postConfig] see `loadConfig()`.
-   *
-   * @public
+   * @param {Function} [options.postConfig] Function to pass configuration object to once loaded.
+   * Should have signature `function (config: Object)`.
    */
   * start (options) {
     if (this.config) {
@@ -163,11 +155,9 @@ class Application extends EventEmitter {
 
 
   /**
-   * Stop the currently running application.
+   * Stop the application.
    *
    * This will reset the internal Koa `app` object.
-   *
-   * @public
    */
   * shutdown () {
     if (!this.config) {
@@ -198,7 +188,9 @@ class Application extends EventEmitter {
 
 
 
-
+/**
+ * @type {Class}
+ */
 module.exports = Application;
 
 

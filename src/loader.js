@@ -1,6 +1,6 @@
 "use strict";
 /**
- * @file The module loader.
+ * @file The Waigo module loader.
  */
 
 
@@ -22,16 +22,19 @@ const WAIGO_FOLDER = __dirname,
 
 var appFolder = null;
 
-var loader = module.exports = global.waigo = {};
+
+/**
+ * Global reference to the loader.
+ * @global waigo
+ * @type {Object}
+ */
+const loader = module.exports = global.waigo = {};
 
 
 
 /**
  * Reference to Lodash instance.
- * 
- * Once waigo.load('application') has been called this will have been extended 
- * with `underscore.string` module and Waigo's 
- * enhanced mixins (see `support/underscore.js`).
+ * @type {Object}
  */
 loader._ = _;
 
@@ -101,10 +104,9 @@ var _walk = function(folder, options) {
 
 
 /**
- * Reset the internal file loader configuration.
+ * Reset the internal configuration.
  *
- * NOTE: `init()` must be called after this to re-initialize the loader.
- * @return {[type]} [description]
+ * Note: `init()` must be called after this to re-initialize the loader.
  */
 loader.reset = function() {
   debug('Reset loader config');
@@ -119,13 +121,12 @@ loader.reset = function() {
 
 
 /**
- * Initialise the Waigo file loader.
+ * Initialise the loader.
  *
  * This scans the folder trees of the core framework, plugins and your
  * application to map out what's available and to ensure that there are no
  * instances of any given file or view being provided by two or more 
- * plugins. For more information on how Waigo decides where to load files 
- * from see the `load()` and `getModulePath()` methods.
+ * plugins.
  *
  * If `options.plugins` is provided then those named plugins get loaded. If
  * not then the remaining options are used to first work out which plugins to
@@ -140,7 +141,7 @@ loader.reset = function() {
  * @param {String|Object} [options.plugins.config] JSON config containing names of plugins to load. If a string is given then it assumed to be the path of a script which exports the configuration. Default is to load `package.json`.
  * @param {Array} [options.plugins.configKey] Names of keys in JSON config whose child keys contain names of plugins. Default is `[dependencies, devDependencies, peerDependencies]`.
  *
- * @return {Object} Final augmented options, in which ase you wish to check loading config.
+ * @return {Object} Final augmented options, in case you wish to check the loading config.
  */
 loader.init = function*(options) {
   if (loader[$FILE]) {
@@ -298,18 +299,17 @@ loader.init = function*(options) {
 
 
 /**
- * Load a Waigo file.
+ * Load a file.
  *
- * See `loader.getPath()` for more info.
- * 
- * @param {string} fileName File name in the supported format (see above).
+ * @param {string} filePath File path (see `getPath()` docs for supported format).
  * @return {Object} contents of loaded file.
  * @throws Error if there was an error loading the file.
+ * @see #getPath
  */
-loader.load = function(fileName) {
-  let resolvedPath = loader.getPath(fileName);
+loader.load = function(filePath) {
+  let resolvedPath = loader.getPath(filePath);
 
-  debug(`Load ${fileName} -> ${resolvedPath}`);
+  debug(`Load ${filePath} -> ${resolvedPath}`);
 
   return loader.__require(resolvedPath);
 };
@@ -319,16 +319,13 @@ loader.load = function(fileName) {
 
 
 /**
- * Get path to a Waigo file.
+ * Get full path to a file.
  *
  * Names to load are specified in the form: `[npm_module_name:]<module_file_path>`
  *
  * If `npm_module_name:` is not given then Waigo works out the which version
  * of the file to load according to the following priority order: **App >
  * plugins > core framework**.
- *
- * Thus an app can completely override any of the framework's built-in
- * files.
  *
  * For example, when a call to load the `support/errors` module is made Waigo
  * checks the following paths in order until a match is found:
@@ -346,22 +343,25 @@ loader.load = function(fileName) {
  * version provided the core Waigo framework then `waigo:support/errors`
  * should be used.
  * 
- * @param {String} fileName File name in the supported format (see above).
+ * @param {String} filePath File path in the supported format.
  * @return {String} Full path to file.
+ * @throws {Error} If the file or the requested source could not be found.
+ * @see getSources
+ * @see load
  */
-loader.getPath = function(fileName) {
+loader.getPath = function(filePath) {
   if (!loader[$FILE]) {
     throw new Error('Please initialise Waigo first');
   }
 
   // get source to load from
-  let sanitizedFileName = fileName,
+  let sanitizedFileName = filePath,
     source = null;
 
-  let sepPos = fileName.indexOf(':')
+  let sepPos = filePath.indexOf(':')
   if (-1 < sepPos) {
-    source = fileName.substr(0, sepPos);
-    sanitizedFileName = fileName.substr(sepPos + 1);
+    source = filePath.substr(0, sepPos);
+    sanitizedFileName = filePath.substr(sepPos + 1);
   }
 
   if (!loader[$FILE][sanitizedFileName]) {
@@ -377,7 +377,7 @@ loader.getPath = function(fileName) {
     throw new Error(`File source not found: ${source}`);
   }
 
-  debug(`File "${fileName}" points to "${sanitizedFileName}" from source "${source}"`);
+  debug(`File "${filePath}" points to "${sanitizedFileName}" from source "${source}"`);
 
   return loader[$FILE][sanitizedFileName].sources[source];
 };
@@ -390,12 +390,11 @@ loader.getPath = function(fileName) {
  * Get file sources.
  *
  * This will return key-value pairs, where the key is the name of the source and 
- * the value is that path to the `src` folder for that source.
- *
- * When calling `waigo.load()` and/or `waigo.getPath()` is is this list which 
- * tells Waigo where to look for files.
+ * the value is the path to the `src` folder for that source.
  *
  * @return {Object}
+ * @see #getPath
+ * @see #load
  */
 loader.getSources = function() {
   return loader[$SOURCE_PATHS];
@@ -405,18 +404,18 @@ loader.getSources = function() {
 
 
 /**
- * Get all items under a particular foder.
+ * Get all files in given folder path.
  *
- * This will look through the initialised file list for all files
- * which reside under the given folder (and subfolders) and then return their names. 
+ * This will look for all files
+ * which reside under the given folder (and subfolders) and then return their relative paths. 
  * Files provided by both plugins and the app itself will also be included.
  *
  * This is useful in situations where a particular folder holds a number of 
  * related files/folders and you wish to see which ones are available.
  *
- * @param {String} folder Folder to check under, relative to application folder.
- * @return {Array} List of file names.
- * @throws Error if there was an error.
+ * @param {String} folder Folder to check under, relative to app folder.
+ * @return {Array} List of file paths.
+ * @throws Error If the loader hasn't been initialised yet.
  */
 loader.getItemsInFolder = function(folder) {
   if (!loader[$FILE]) {
@@ -461,8 +460,9 @@ loader.getAppFolder = function() {
 /**
  * Load given item using `require()`.
  *
- * @param  {String} p path or module name.
+ * @param  {String} p Path or module name.
  * @return {Module}
+ * @private
  */
 loader.__require = function(p) {
   return require(p);
