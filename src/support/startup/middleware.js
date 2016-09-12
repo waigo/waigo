@@ -17,6 +17,7 @@ module.exports = function*(App) {
     App.logger.debug(`Loading middleware: ${m}`);
 
     App.koa.use(waigo.load(`support/middleware/${m}`)(
+      App,
       _.get(App.config.middleware.ALL, m, {})
     ));
   }

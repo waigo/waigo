@@ -41,7 +41,7 @@ test['output formats'] = {
 
   'invalid format in config': function() {
     this.expect(function() {
-      outputFormats({
+      outputFormats({}, {
         formats: {
           html3: true          
         }
@@ -50,7 +50,7 @@ test['output formats'] = {
   },
 
   'uses default format when not specified': function*() {
-    var fn = outputFormats({
+    var fn = outputFormats(this.App, {
       paramName: 'format',
       default: 'json',
       formats: {
@@ -72,7 +72,7 @@ test['output formats'] = {
   },
 
   'invalid format in request': function*() {
-    var fn = outputFormats({
+    var fn = outputFormats(this.App, {
       paramName: 'format',
       default: 'json',
       formats: {
@@ -93,7 +93,7 @@ test['output formats'] = {
 
 
   'custom format': function*() {
-    var fn = outputFormats({
+    var fn = outputFormats(this.App, {
       paramName: 'format',
       default: 'json',
       formats: {
@@ -116,7 +116,7 @@ test['output formats'] = {
 
 
   'override format after middleware is setup': function*() {
-    var fn = outputFormats({
+    var fn = outputFormats(this.App, {
       paramName: 'format',
       default: 'json',
       formats: {
@@ -144,7 +144,7 @@ test['output formats'] = {
   'converts locals to view objects if possible': function*() {
     const toViewObjectMethodName = waigo.load('support/viewObjects').METHOD_NAME;
 
-    var fn = outputFormats({
+    var fn = outputFormats(this.App, {
       paramName: 'format',
       default: 'json',
       formats: {
@@ -199,7 +199,7 @@ test['output formats'] = {
 
 
   'redirect to url': function*() {
-    var fn = outputFormats({
+    var fn = outputFormats(this.App, {
       paramName: 'format',
       default: 'json',
       formats: {

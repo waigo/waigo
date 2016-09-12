@@ -23,7 +23,7 @@ test['route mapper'] = {
       'controllers/hello': 'exports.world = function*() { this.mega.push("hello world"); };',
       'controllers/good': 'exports.bye = function*() { this.mega.push("goodbye"); };',
       'support/middleware/before_next': 'module.exports = function() { return function*(next) { this.mega.push("test"); yield next; }; };',
-      'support/middleware/after_next': 'module.exports = function(o) { return function*(next) { yield next; this.mega.push("test_" + o.num); }; };'
+      'support/middleware/after_next': 'module.exports = function(App, o) { return function*(next) { yield next; this.mega.push("test_" + o.num); }; };'
     });
 
     yield this.initApp();

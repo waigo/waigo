@@ -21,7 +21,7 @@ const waigo = global.waigo,
  *
  * @return {Function}
  */
-module.exports = function(options) {
+module.exports = function(App, options) {
   return function*(next) {
     this.App.logger.debug('assertUser is logged in');
 

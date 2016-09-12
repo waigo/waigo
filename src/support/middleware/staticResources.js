@@ -22,7 +22,7 @@ const waigo = global.waigo,
  * 
  * @return {Function} middleware
  */
-module.exports = function(options) {
+module.exports = function(App, options) {
   let moreOptions = _.extend({
     maxage: 0,
     hidden: false,

@@ -41,7 +41,7 @@ test['sessions'] = {
 
   'verifies that cookie signing keys are set': function*() {
     this.expect(function() {
-      middleware({});
+      middleware({}, {});
     }).to.throw('Please specify cookie signing keys in the config file.');
   },
   'default': function*() {
@@ -66,7 +66,7 @@ test['sessions'] = {
       }
     };
 
-    var fn = middleware(options);
+    var fn = middleware(this.App, options);
 
     this.App.koa.keys.should.eql(['my', 'key']);
     createStoreSpy.should.have.been.calledOnce;

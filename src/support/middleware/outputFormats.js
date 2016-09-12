@@ -28,7 +28,7 @@ const OutputFormatError = errors.define('OutputFormatError');
  * 
  * @return {Function} Express middleware.
  */
-module.exports = function(options) {
+module.exports = function(App, options) {
   let enabledFormats = {};
 
   let formatNames = Object.keys(options.formats);

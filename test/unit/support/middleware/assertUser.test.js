@@ -36,7 +36,7 @@ test['assert user'] = {
 
   'user must be logged in': function*() {
     yield this.shouldThrow(
-      assertUser({}).call(this.ctx, Q.resolve()), 
+      assertUser(this.App, {}).call(this.ctx, Q.resolve()), 
       'You must be logged in'
     );
   },
@@ -48,7 +48,7 @@ test['assert user'] = {
       assertAccess: spy,
     };
     
-    yield assertUser({canAccess: 'admin'}).call(this.ctx, Q.resolve());
+    yield assertUser(this.App, {canAccess: 'admin'}).call(this.ctx, Q.resolve());
 
     spy.should.have.been.calledWithExactly('admin');
   },
@@ -58,7 +58,7 @@ test['assert user'] = {
 
     this.ctx.currentUser = {};
 
-    yield assertUser({}).call(this.ctx, function*() {
+    yield assertUser(this.App, {}).call(this.ctx, function*() {
       count++;
     });
 
@@ -80,7 +80,7 @@ test['assert user'] = {
 
     let routeSpy = this.mocker.spy(this.App.routes, 'url');
 
-    yield assertUser({ 
+    yield assertUser(this.App, { 
       redirectToLogin: true, 
       canAccess: 'admin' 
     }).call(this.ctx);
@@ -105,7 +105,7 @@ test['assert user'] = {
       },
     });
 
-    yield this.shouldThrow(assertUser({ 
+    yield this.shouldThrow(assertUser(this.App, { 
       canAccess: 'admin' 
     }).call(this.ctx), 'blah');
   },

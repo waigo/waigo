@@ -25,10 +25,9 @@ const waigo = global.waigo;
  * @param {Object} options.cookie Session cookie options.
  * @param {Integer} options.cookie.validForDays No. of days cookie remains valid for.
  * @param {String} options.cookie.path Cookie path.
+ * @param {Application} The active application instance.
  */
-module.exports = function(options) {
-  let App = waigo.App;
-
+module.exports = function(App, options) {
   if (!options.keys) {
     throw new Error('Please specify cookie signing keys in the config file.');
   }

@@ -15,8 +15,8 @@ const waigo = global.waigo;
 test['middleware'] = {
   beforeEach: function*() {
     this.createAppModules({
-      'support/middleware/test1': 'module.exports = function(options) { return function*() { return ["test1", options, arguments[0]]; }; };',
-      'support/middleware/test2': 'module.exports = function(options) { return function*() { return ["test2", options, arguments[0]]; }; };',
+      'support/middleware/test1': 'module.exports = function(App, options) { return function*() { return ["test1", options, arguments[0]]; }; };',
+      'support/middleware/test2': 'module.exports = function(App, options) { return function*() { return ["test2", options, arguments[0]]; }; };',
     });
 
     yield this.initApp();

@@ -117,7 +117,7 @@ class RouteMapper {
       middlewareOptions = middlewareOptions || {};
     }
 
-    return waigo.load(`support/middleware/${middlewareName}`)(middlewareOptions);
+    return waigo.load(`support/middleware/${middlewareName}`)(this.App, middlewareOptions);
   }
 
 

@@ -9,7 +9,7 @@ For example:
 ```javascript
 // file: <project folder>/src/support/middleware/example.js
 
-module.exports = function(options) {
+module.exports = function(App, options) {
   return function*(next) {
     // do nothing and pass through
     yield next;
@@ -22,7 +22,7 @@ The above middleware doesn't do anything and simply passes control to the next h
 If we wanted to catch and handle any errors thrown by subsequent handlers in the chain we could do:
 
 ```javascript
-module.exports = function(options) {
+module.exports = function(App, options) {
   return function*(next) {
   	try {
 	  yield next;
@@ -36,7 +36,7 @@ module.exports = function(options) {
 Middleware functions in Waigo work in the same way as ones in Koa, in that they have a defined context and associated `request` and `response` objects:
 
 ```javascript
-module.exports = function(options) {
+module.exports = function(App, options) {
   return function*(next) {
   	console.log(`URL: ${this.request.url}`);    
 	
@@ -45,15 +45,15 @@ module.exports = function(options) {
 };
 ```
 
-Thys, existing Koa middleware functions can be re-used very easily within Waigo.
+Thus, existing Koa middleware functions can be re-used very easily within Waigo.
 
 ## App object 
 
-Middleware functions in Waigo also have access to your application's `App` object, which is set on the context:
+Middleware functions in Waigo also have access to your application's `App` object, which is set on the context as well as being passed in during the construction phase:
 
 
 ```javascript
-module.exports = function(options) {
+module.exports = function(App, options) {
   return function*(next) {
   	console.log(`Running in mode: ${this.App.config.mode}`);    
   	

@@ -7,7 +7,7 @@ When initializing middleware it's possible to pass in configuration options to t
 
 const parser = require('co-body');
 
-module.exports = function(options) {
+module.exports = function(App, options) {
   return function*(next) {
     this.request.body = yield parser(this, options);
 
@@ -20,7 +20,7 @@ In order to construct and use this middleware we would need to pass in options t
 
 ```javascript
 // let's go for a 16MB request body size limit
-const middlewareFn = waigo.load('support/middleware/bodyParser')({
+const middlewareFn = waigo.load('support/middleware/bodyParser')(App, {
   limit: '16mb'
 });	
 ```
