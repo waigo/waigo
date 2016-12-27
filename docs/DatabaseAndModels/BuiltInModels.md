@@ -1,6 +1,6 @@
 # Built-in models
 
-Waigo provides a few built-in models (under `src/models`) to enable to you quickly get started building a fully-fledged application.
+Waigo provides a few [built-in models](https://github.com/waigo/waigo/tree/master/src/models) to enable to you quickly get started building a fully-fledged application.
 
 * `Acl` - Represents an entry in the Access-Control-List (ACL) table. The ACL provides an easy way for you to control access to any resource within your application based on user or role assigned to user.
 * `User` - Represents a registered user, along with their authentication data (passwords, OAuth), profile info as well as their assigned roles.
