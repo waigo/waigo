@@ -24,7 +24,7 @@ const FormValidationError = exports.FormValidationError =
 
 
 // the form spec cache
-var cache = {};
+const cache = {};
 
 
 
@@ -99,7 +99,7 @@ class Form {
 
     // setup fields
     this._fields = {}
-    for (let idx in this.config.fields) {
+    for (const idx in this.config.fields) {
       let def = this.config.fields[idx];
       this._fields[def.name] = Field.new(this, def);
     }
@@ -136,7 +136,7 @@ class Form {
   set state (newState) {
     this._state = newState;
 
-    for (let fieldName in this.fields) {
+    for (const fieldName in this.fields) {
       this._state[fieldName] = this._state[fieldName] || {
         value: undefined
       }
@@ -151,7 +151,7 @@ class Form {
    * @param {Object} values Mapping from field name to field value.
    */
   * setValues (values) {
-    for (let fieldName in this.fields) {
+    for (const fieldName in this.fields) {
       yield this.fields[fieldName].setSanitizedValue(values[fieldName]);
     }
   }
@@ -166,7 +166,7 @@ class Form {
    * @param {Object} values Mapping from field name to field original value.
    */
   * setOriginalValues (values) {
-    for (let fieldName in this.fields) {
+    for (const fieldName in this.fields) {
       this.fields[fieldName].originalValue = values[fieldName];
     }
   }
@@ -178,7 +178,7 @@ class Form {
    * @return {Boolean} True if any fields are dirty; false otherwise.
    */
   isDirty () {
-    for (let fieldName in this.fields) {
+    for (const fieldName in this.fields) {
       if (this.fields[fieldName].isDirty()) {
         return true;
       }
@@ -197,7 +197,7 @@ class Form {
     let fields = this.fields,
       errors = null;
 
-    for (let fieldName in fields) {
+    for (const fieldName in fields) {
       let field = fields[fieldName];
 
       try {
@@ -266,7 +266,7 @@ Form.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
     fieldViewObjects = {},
     fieldOrder = [];
 
-  for (let fieldName in fields) {
+  for (const fieldName in fields) {
     let field = fields[fieldName];
       
     fieldViewObjects[fieldName] = yield field[viewObjects.METHOD_NAME](ctx);

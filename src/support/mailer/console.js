@@ -29,7 +29,7 @@ exports.Console = Console;
 
 
 exports.create = function*(App, config) {
-  var c = new Console(App, config);
+  const c = new Console(App, config);
   
   yield c._init(nodemailerStubTransport());
 

@@ -20,7 +20,7 @@ const waigo = global.waigo,
 module.exports = function*(App) {
   App.logger.debug('Setting up routes');
 
-  var routeFiles = waigo.getItemsInFolder('routes');
+  const routeFiles = waigo.getItemsInFolder('routes');
 
   let routes = {};
 

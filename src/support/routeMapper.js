@@ -183,13 +183,13 @@ class RouteMapper {
 
     logger.debug('Generate URL for route ' + routeName);
 
-    var route = this._routes.byName[routeName];
+    const route = this._routes.byName[routeName];
 
     if (!route) {
       throw new Error('No route named: ' + routeName);
     }
 
-    var str = options.absolute ? this.App.config.baseURL : '';
+    const str = options.absolute ? this.App.config.baseURL : '';
 
     str += route.url;
 

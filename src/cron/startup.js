@@ -20,7 +20,7 @@ module.exports = function*(App) {
 
   logger.info(`${cronTasks.length} cron tasks found`);
 
-  for (let taskFilePath of cronTasks) {
+  for (const taskFilePath of cronTasks) {
     let name = path.basename(taskFilePath, path.extname(taskFilePath));
 
     logger.debug(`Adding cron task: ${name}`);

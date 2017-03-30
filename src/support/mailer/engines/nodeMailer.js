@@ -39,7 +39,7 @@ class NodeMailer {
 
     this.logger.debug('send', params);
 
-    var noBody = _.isEmpty(params.html) && _.isEmpty(params.text);
+    const noBody = _.isEmpty(params.html) && _.isEmpty(params.text);
 
     if (noBody || _.isEmpty(params.from) || _.isEmpty(params.to)) {
       throw new NodeMailerError('Need from, to and html/text');

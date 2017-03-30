@@ -29,7 +29,7 @@ module.exports = function*(App) {
 
   let sources = waigo.getSources();
 
-  for (let key in sources) {
+  for (const key in sources) {
     // skip app's own
     if ('app' === key) {
       continue;
@@ -47,7 +47,7 @@ module.exports = function*(App) {
     shell.rm('-rf', path.join(dst, '_gen'));
   }
 
-  var destFolder = 
+  const destFolder = 
     path.join(waigo.getAppFolder(), App.config.staticResources.folder, '_gen');
 
   logger.debug('Copy ' + tmpFolder + ' -> ' + destFolder);

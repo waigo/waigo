@@ -22,7 +22,7 @@ module.exports = function*(App) {
 
   App.models = {};
 
-  for (let modulePath of modelModuleFiles) {
+  for (const modulePath of modelModuleFiles) {
     let modelName = _.capitalize(path.basename(modulePath));
 
     App.logger.debug(`Loading ${modelName}`);

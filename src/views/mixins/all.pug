@@ -1,5 +1,5 @@
 mixin msg(type, header, options)
-  - var isCompact = !!_.get(options, 'compact')
+  - const isCompact = !!_.get(options, 'compact')
   div.msg
     div(class="panel " + type + (isCompact ? ' compact': ''))
       .panel-heading
@@ -32,10 +32,10 @@ mixin form(form, error)
           pre #{error.stack}
       .fields
         each fieldName in form.order
-          - var field = form.fields[fieldName]
-          - var fieldErrors = _.get(error, 'details.' + fieldName, [])
-          - var value = field.value || ''
-          - var placeholder = field.placeholder || field.label
+          - const field = form.fields[fieldName]
+          - const fieldErrors = _.get(error, 'details.' + fieldName, [])
+          - const value = field.value || ''
+          - const placeholder = field.placeholder || field.label
           if (field.type == 'text' || field.type == 'password')
             .row
               .input-field.col.m6.s12

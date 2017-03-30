@@ -45,7 +45,7 @@ module.exports = function() {
  * @return {*}
  * @private
  */
-var render = function*(config, err) {
+const render = function*(config, err) {
   this.status = err.status || 500;
 
   let error = yield viewObjects.toViewObjectYieldable(err, this);
@@ -80,7 +80,7 @@ var render = function*(config, err) {
  * @param  {Any} ...       Additional arguments get passed to error class constructor.
  * @throws Error
  */
-var _throw = function() {
+const _throw = function() {
   let args = Array.prototype.slice.call(arguments),
     ErrorClass = args[0];
 

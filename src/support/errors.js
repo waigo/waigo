@@ -127,7 +127,7 @@ MultipleError.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
     details: {},
   };
 
-  for (let subErrorKey in this.details) {
+  for (const subErrorKey in this.details) {
     let subError = this.details[subErrorKey],
       fn = subError[viewObjects.METHOD_NAME];
 

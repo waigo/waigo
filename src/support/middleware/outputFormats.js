@@ -33,7 +33,7 @@ module.exports = function(App, options) {
 
   let formatNames = Object.keys(options.formats);
 
-  for (let format of formatNames) {
+  for (const format of formatNames) {
     enabledFormats[format] = 
       waigo.load(`support/outputFormats/${format}`).create(
         logger.create(format), 

@@ -13,7 +13,7 @@ const waigo = global.waigo,
  * @param  {String} name Config module name.
  * @return {Function} `null` if module not found.
  */
-var loadConfigModule = function(name) {
+const loadConfigModule = function(name) {
   try {
     debug(`Loading ${name} configuration`);
 
@@ -37,7 +37,7 @@ var loadConfigModule = function(name) {
  * The [base configuration](base.js.html) module gets loaded first. Additional
  * configuration modules then get loaded using the following logic:
  *
- * 1. `config/<node environment>` 
+ * 1. `config/<node environment>`
  * 2. `config/<node environment>.<current user>`
  *
  * Thus if node is running in `test` mode and the user id of the process is
@@ -52,7 +52,7 @@ var loadConfigModule = function(name) {
  * @return {Object}
  */
 module.exports = function() {
-  let config = {
+  const config = {
     mode: process.env.NODE_ENV || 'development',
     user: process.env.USER
   };
@@ -81,9 +81,3 @@ module.exports = function() {
 
   return config;
 };
-
-
-
-
-
-

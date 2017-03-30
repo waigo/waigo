@@ -24,7 +24,7 @@ module.exports = function*(App) {
 
   App.notifiers = {};
 
-  for (let id of ids) {
+  for (const id of ids) {
     App.logger.debug(`Setting up notifier: ${id}`);
 
     let cfg = App.config.notifications[id];

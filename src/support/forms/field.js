@@ -73,7 +73,7 @@ class Field {
       });
     }
 
-    var options = {};
+    const options = {};
 
     if (def.id) {
       options = _.omit(def, 'id');
@@ -98,7 +98,7 @@ class Field {
       });
     }
 
-    var options = {}
+    const options = {}
 
     if (def.id) {
       options = _.omit(def, 'id');
@@ -156,7 +156,7 @@ class Field {
    * @throws FieldSanitizationError If any errors occur.
    */
   * setSanitizedValue (val) {
-    for (let sanitizer of this.sanitizers) {
+    for (const sanitizer of this.sanitizers) {
       let fn = sanitizer.fn,
         msg = sanitizer.msg;
 
@@ -202,7 +202,7 @@ class Field {
         errors.push('Must be set');
       }
     } else {
-      for (let validator of this.validators) {
+      for (const validator of this.validators) {
         let fn = validator.fn,
           msg = validator.msg;
 

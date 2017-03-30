@@ -20,7 +20,7 @@ const WAIGO_FOLDER = __dirname,
 
 
 
-var appFolder = null;
+const appFolder = null;
 
 
 /**
@@ -65,21 +65,21 @@ loader[$SOURCE_PATHS] = null;
  * @return {Promise}
  * @private
  */
-var _walk = function(folder, options) {
+const _walk = function(folder, options) {
   options = _.extend({
     matchFiles: /.+/ig,
     keepExtensions: false,
   }, options);
 
   return new Promise(function(resolve, reject) {
-    var files = {};
+    const files = {};
 
-    var walker = walk(folder, {
+    const walker = walk(folder, {
       followSymlinks: false
     });
 
     walker.on('file', function(file, stat) {
-      var dirname = path.dirname(file),
+      const dirname = path.dirname(file),
         filename = path.join(path.relative(folder, dirname), path.basename(file));
 
       if (!filename.match(options.matchFiles)) {
@@ -88,7 +88,7 @@ var _walk = function(folder, options) {
 
       // strip extension from filename?
       if (!options.keepExtensions) {
-        var extname = path.extname(filename),
+        const extname = path.extname(filename),
           filename = filename.substr(0, filename.length - extname.length);
       }
       
@@ -228,7 +228,7 @@ loader.init = function*(options) {
   loader[$FILE] = {};
 
   // start scanning
-  for (let sourceName of scanOrder) {
+  for (const sourceName of scanOrder) {
     let moduleMap = {};
 
     debug(`Scanning for files in: ${sourceName}`);
@@ -422,7 +422,7 @@ loader.getItemsInFolder = function(folder) {
     throw new Error('Please initialise Waigo first');
   }
 
-  var ret = _.chain(loader[$FILE])
+  const ret = _.chain(loader[$FILE])
     .keys()
     .filter(function(filePath) {
       return (0 === filePath.indexOf(folder));

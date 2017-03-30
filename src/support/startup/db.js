@@ -23,7 +23,7 @@ module.exports = function*(App) {
 
   let ids = _.keys(App.config.db || {});
 
-  for (let id of ids) {
+  for (const id of ids) {
     App.logger.debug(`Setting up db: ${id}`);
 
     let cfg = _.get(App.config.db, id);

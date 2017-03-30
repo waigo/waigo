@@ -139,7 +139,7 @@ class Application extends EventEmitter {
     // logging
     yield this._setupLogger(this.config.logging)
 
-    for (let stepName of this.config.startupSteps) {
+    for (const stepName of this.config.startupSteps) {
       this.logger.debug(`Running startup step: ${stepName}`)
 
       yield waigo.load(`${stepName}/startup`)(this)
@@ -164,7 +164,7 @@ class Application extends EventEmitter {
     process.removeListener('uncaughtException', this._onError)
 
     // run shutdown steps
-    for (let stepName of this.config.shutdownSteps) {
+    for (const stepName of this.config.shutdownSteps) {
       this.logger.debug(`Running shutdown step: ${stepName}`)
 
       yield waigo.load(`${stepName}/shutdown`)(this)

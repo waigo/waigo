@@ -63,7 +63,7 @@ class Mailer {
 
 
   * _renderBodyMarkdown (template, templateVars) {
-    var compiled = _.template(template, {
+    const compiled = _.template(template, {
       interpolate: /{{([\s\S]+?)}}/img
     });
 
@@ -72,7 +72,7 @@ class Mailer {
 
 
   * _renderBodyTemplate (templateName, templateVars) {
-    var body = yield this._renderEmailTemplate(templateName, templateVars);
+    const body = yield this._renderEmailTemplate(templateName, templateVars);
 
     return body.html;
   }
@@ -88,11 +88,11 @@ class Mailer {
       content = yield this._renderBodyMarkdown(mailOptions.body, templateVars);
     }
 
-    var templateVars = _.extend({}, this.App.templateVars, templateVars, {
+    const templateVars = _.extend({}, this.App.templateVars, templateVars, {
       content: content
     });
 
-    var body = yield this._renderEmailTemplate('_layout', templateVars);
+    const body = yield this._renderEmailTemplate('_layout', templateVars);
 
     return body.html;
   }
@@ -100,7 +100,7 @@ class Mailer {
 
 
   * _renderSubject (mailOptions, templateVars) {
-    var compiled = _.template(mailOptions.subject, {
+    const compiled = _.template(mailOptions.subject, {
       interpolate: /{{([\s\S]+?)}}/img
     });
 
@@ -155,23 +155,23 @@ class Mailer {
     return yield _.map(mailOptions.to, (recipient) => {
       return co.wrap(function*() {
         // email address
-        var email = _.get(recipient, 'emailAddress', recipient);
+        const email = _.get(recipient, 'emailAddress', recipient);
 
         self.logger.debug('Email ' + email + ': ' + mailOptions.subject);
 
         // user-specific templateVars
-        var userLocals = _.extend({}, mailOptions.templateVars, 
+        const userLocals = _.extend({}, mailOptions.templateVars, 
           yield viewObjects.toViewObjectYieldable({
             recipient: recipient
           }, mailOptions.ctx)
         );
 
         // render body
-        var body = yield self._renderBody(mailOptions, userLocals);
-        var subject = yield self._renderSubject(mailOptions, userLocals);
+        const body = yield self._renderBody(mailOptions, userLocals);
+        const subject = yield self._renderSubject(mailOptions, userLocals);
 
         // setup actual options
-        var sendOptions = _.extend({
+        const sendOptions = _.extend({
           from: mailOptions.from,
         }, {
           to: email,
@@ -182,7 +182,7 @@ class Mailer {
         self.logger.debug('Content', sendOptions.html);
 
         // send
-        var ret = yield self._nodeMailer.send(sendOptions);
+        const ret = yield self._nodeMailer.send(sendOptions);
 
         // record
         self.App.emit('record', 'email', recipient, {
@@ -200,14 +200,14 @@ class Mailer {
   * render (mailOptions) {
     mailOptions = yield this._prepareMailOptions(mailOptions);
 
-    var recipient = mailOptions.to.pop();
+    const recipient = mailOptions.to.pop();
 
-    var email = _.get(recipient, 'emails.0.email', recipient);
+    const email = _.get(recipient, 'emails.0.email', recipient);
 
     this.logger.debug('Render email ' + email + ': ' + mailOptions.subject);
 
     // user-specific templateVars
-    var userLocals = _.extend({}, mailOptions.templateVars, 
+    const userLocals = _.extend({}, mailOptions.templateVars, 
       yield viewObjects.toViewObjectYieldable({
         recipient: recipient
       }, mailOptions.ctx)

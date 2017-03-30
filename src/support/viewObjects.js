@@ -58,7 +58,7 @@ const toViewObjectYieldable = exports.toViewObjectYieldable = function(inputObje
     else if (_.isPlainObject(inputObject)) {
       let yieldables = {};
 
-      for (let idx in inputObject) {
+      for (const idx in inputObject) {
         yieldables[idx] = toViewObjectYieldable(inputObject[idx], ctx);
       }
 

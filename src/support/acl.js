@@ -132,7 +132,7 @@ class ACL {
     // if one of user's roles has access it's ok 
     let roles = user.roles || [];
 
-    for (let role of roles) {
+    for (const role of roles) {
       if (_.get(this.roles, role + '.' + resource)) {
         return true;
       }
@@ -167,7 +167,7 @@ exports.ACL = ACL;
  * @param {App} App The App instance.
  */
 exports.init = function*(App) {
-  var a = new ACL(App);
+  const a = new ACL(App);
 
   yield a.startup();
 
