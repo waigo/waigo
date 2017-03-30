@@ -1,7 +1,7 @@
 
 
 
-const csrf = require('koa-csrf');
+const csrf = require('koa-csrf')
 
 
 
@@ -21,8 +21,8 @@ module.exports = function() {
   return csrf({
     // nullify middleware option
     middleware: function*(next) {
-      yield next;
+      yield next
     }
-  });
-};
+  })
+}
 

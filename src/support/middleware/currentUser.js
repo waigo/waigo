@@ -6,7 +6,7 @@
 
 
 const waigo = global.waigo,
-  _ = waigo._;
+  _ = waigo._
 
 
 
@@ -18,12 +18,12 @@ const waigo = global.waigo,
 module.exports = function() {
   return function*(next) {
     if (this.session.user) {
-      this.App.logger.debug('Current user', this.session.user);
+      this.App.logger.debug('Current user', this.session.user)
 
       this.currentUser =  
-        yield this.App.models.User.get(this.session.user.id);
+        yield this.App.models.User.get(this.session.user.id)
     }
 
-    yield next;
+    yield next
   }
-};
+}

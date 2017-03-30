@@ -2,7 +2,7 @@
 
 
 const waigo = global.waigo,
-  _ = waigo._;
+  _ = waigo._
 
 
 
@@ -34,28 +34,28 @@ module.exports = {
     function* updateUserPassword(next) {
       const ctx = this.context,
         App = ctx.App,
-        user = ctx.currentUser;
+        user = ctx.currentUser
 
-      App.logger.info('Resetting user password', user.id);
+      App.logger.info('Resetting user password', user.id)
 
       // save new password
-      yield user.updatePassword(this.fields.password.value);
+      yield user.updatePassword(this.fields.password.value)
 
-      yield next;
+      yield next
     },
     function* emailUser(next) {
       const ctx = this.context,
         App = ctx.App,
-        user = ctx.currentUser;
+        user = ctx.currentUser
 
       yield App.mailer.send({
         to: user,
         subject: 'Your password has been updated',
         bodyTemplate: 'passwordUpdated',
-      });
+      })
 
-      yield next;
+      yield next
     },
   ]
-};
+}
 

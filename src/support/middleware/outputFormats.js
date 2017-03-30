@@ -4,10 +4,10 @@ const waigo = global.waigo,
   _ = waigo._,
   logger = waigo.load('support/logger').create('OutputFormats'),
   errors = waigo.load('support/errors'),
-  viewObjects = waigo.load('support/viewObjects');
+  viewObjects = waigo.load('support/viewObjects')
 
 
-const OutputFormatError = errors.define('OutputFormatError');
+const OutputFormatError = errors.define('OutputFormatError')
 
 
 
@@ -29,64 +29,64 @@ const OutputFormatError = errors.define('OutputFormatError');
  * @return {Function} Express middleware.
  */
 module.exports = function(App, options) {
-  const enabledFormats = {};
+  const enabledFormats = {}
 
-  const formatNames = Object.keys(options.formats);
+  const formatNames = Object.keys(options.formats)
 
   for (const format of formatNames) {
     enabledFormats[format] = 
       waigo.load(`support/outputFormats/${format}`).create(
         logger.create(format), 
         options.formats[format]
-      );
+      )
   }
 
   return function* setOutputFormat(next) {
-    const ctx = this;
+    const ctx = this
     
     const requestedFormat = 
-      _.get(this.query, options.paramName, options.default).toLowerCase();
+      _.get(this.query, options.paramName, options.default).toLowerCase()
 
     // check format is valid
     if (requestedFormat && !enabledFormats[requestedFormat]) {
-      throw new OutputFormatError(`Invalid output format requested: ${requestedFormat}`, 400);
+      throw new OutputFormatError(`Invalid output format requested: ${requestedFormat}`, 400)
     }
 
-    this.request.outputFormat = requestedFormat;
+    this.request.outputFormat = requestedFormat
 
-    logger.debug('Output format', requestedFormat);
+    logger.debug('Output format', requestedFormat)
 
     // attach renderer
     this.render = function*(view, locals, options) {
-      locals = locals || {};
-      options = options || {};
+      locals = locals || {}
+      options = options || {}
       
-      logger.debug('Render', view);
+      logger.debug('Render', view)
 
       // set status code
       if (options.status) {
-        this.status = options.status;
+        this.status = options.status
       }
 
       // get yieldables
-      const localsViewObjects = yield viewObjects.toViewObjectYieldable(locals, ctx);
+      const localsViewObjects = yield viewObjects.toViewObjectYieldable(locals, ctx)
 
       // call actual rendering method
-      yield enabledFormats[this.request.outputFormat].render.call(ctx, view, localsViewObjects);
-    };
+      yield enabledFormats[this.request.outputFormat].render.call(ctx, view, localsViewObjects)
+    }
 
     // redirect method
     this.redirect = function*(url) {
-      logger.debug('Redirect', url);
+      logger.debug('Redirect', url)
 
       // call actual rendering method
-      yield enabledFormats[this.request.outputFormat].redirect.call(ctx, url);
-    };
+      yield enabledFormats[this.request.outputFormat].redirect.call(ctx, url)
+    }
 
 
-    yield next;
-  };
-};
+    yield next
+  }
+}
 
 
 

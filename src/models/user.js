@@ -1,27 +1,27 @@
 
 
-const crypto = require('crypto');
+const crypto = require('crypto')
 
 const waigo = global.waigo,
   _ = waigo._,
   Q = waigo.load('support/promise'),
-  errors = waigo.load('support/errors');
+  errors = waigo.load('support/errors')
 
 
 const randomBytesQ = Q.promisify(crypto.pseudoRandomBytes, {
   context: crypto
-});
+})
 
 
 const ProfileSchema = {
   displayName: { type: String, required: true },
-};
+}
 
 
 const EmailSchema = {
   email: { type: String, required: true },
   verified: { type: Boolean },
-};
+}
 
 
 const AuthSchema = {
@@ -67,7 +67,7 @@ exports.schema = {
     type: Date,
     required: false,
   },
-};
+}
 
 
 
@@ -78,7 +78,7 @@ exports.indexes = [
   {
     name: 'email',
     def: function(doc) {
-      return doc('emails')('email');
+      return doc('emails')('email')
     },
     options: {
       multi: true,
@@ -90,7 +90,7 @@ exports.indexes = [
       multi: true,
     },
   },
-];
+]
 
 
 
@@ -99,20 +99,20 @@ exports.indexes = [
 exports.docVirtuals = {
   isAdmin: {
     get: function() {
-      return true === _.includes(this.roles, 'admin');
+      return true === _.includes(this.roles, 'admin')
     }
   },
   emailAddress: {
     get: function() {
-      return _.get(this.emails, '0.email');
+      return _.get(this.emails, '0.email')
     }
   },
   emailAddresses: {
     get: function() {
-      return _.map(this.emails || [], 'email');
+      return _.map(this.emails || [], 'email')
     }
   },
-};
+}
 
 
 
@@ -121,9 +121,9 @@ exports.docMethods = {
    * Get whether user has any of  given roles
    */
   isOneOf: function() {
-    const roles = _.toArray(arguments);
+    const roles = _.toArray(arguments)
 
-    return !! (_.intersection(this.roles || [], roles).length);
+    return !! (_.intersection(this.roles || [], roles).length)
   },
   /**
    * Check password against hash.
@@ -133,38 +133,38 @@ exports.docMethods = {
    */
   isPasswordCorrect: function*(password) {
     const passAuth = _.find(this.auth, function(a) {
-      return 'password' === a.type;
-    });
+      return 'password' === a.type
+    })
 
     if (!passAuth) {
-      return false;
+      return false
     }
 
     const sepPos = passAuth.token.indexOf('-'),
       salt = passAuth.token.substr(0, sepPos),
-      hash = passAuth.token.substr(sepPos + 1);
+      hash = passAuth.token.substr(sepPos + 1)
 
     const generatedHash = yield this.__model.generatePasswordHash(
       password, salt
-    );
+    )
 
-    return generatedHash === passAuth.token;
+    return generatedHash === passAuth.token
   },
   /**
    * Log the user into given context.
    * @param {Object} context waigo client request context.
    */
   login: function*(context) {
-    this._logger().debug(`Logging in user: ${this.id} = ${this.username}`);
+    this._logger().debug(`Logging in user: ${this.id} = ${this.username}`)
 
     context.session.user = {
       id: this.id,
       username: this.username,
-    };
+    }
 
     // update last-login timestamp
-    this.lastLogin = new Date();
-    yield this.save();
+    this.lastLogin = new Date()
+    yield this.save()
   },
   /**
    * Verify an email address.
@@ -172,23 +172,23 @@ exports.docMethods = {
    */
   verifyEmail: function*(email) {
     const theEmail = _.find(this.emails, function(e) {
-      return email === e.email;
-    });
+      return email === e.email
+    })
 
     if (!theEmail) {
-      return false;
+      return false
     }
 
-    theEmail.verified = true;
+    theEmail.verified = true
 
     // save
-    this.markChanged('emails');
-    yield this.save();
+    this.markChanged('emails')
+    yield this.save()
 
     // record
     this._App().emit('record', 'verify_email', this, {
       email: email
-    });
+    })
   },
   /**
    * Check whether user has given email address.
@@ -197,8 +197,8 @@ exports.docMethods = {
    */
   hasEmail: function*(email) {
     return 0 <= _.findIndex(this.emails || [], function(e) {
-      return email === e.email;
-    });
+      return email === e.email
+    })
   },
   /**
    * Check whether user has verified given email address.
@@ -207,10 +207,10 @@ exports.docMethods = {
    */
   isEmailVerified: function*(email) {
     const item = _.find(this.emails || [], function(e) {
-      return email === e.email;
-    });
+      return email === e.email
+    })
 
-    return item && item.verified;
+    return item && item.verified
   },
   /**
    * Add an email address.
@@ -219,52 +219,52 @@ exports.docMethods = {
    */
   addEmail: function*(email, verified) {
     const theEmail = _.find(this.emails, function(e) {
-      return email === e.email;
-    });
+      return email === e.email
+    })
 
     if (!theEmail) {
       theEmail = {
         email: email,
-      };
+      }
 
-      this.emails.push(theEmail);
+      this.emails.push(theEmail)
     }
 
-    theEmail.verified = true;
+    theEmail.verified = true
 
     // save
-    this.markChanged('emails');
-    yield this.save();
+    this.markChanged('emails')
+    yield this.save()
 
     // record
     this._App().emit('record', 'add_email', this, {
       email: email
-    });
+    })
   },
   /**
    * Update this user's password.
    * @param {String} newPassword New password.
    */
   updatePassword: function*(newPassword) {
-    this._logger().debug('Update user password', this.username);
+    this._logger().debug('Update user password', this.username)
 
     const passAuth = _.find(this.auth, function(a) {
-      return 'password' === a.type;
-    });
+      return 'password' === a.type
+    })
 
     if (!passAuth) {
-      return false;
+      return false
     }
 
     // update password
-    passAuth.token = yield this.__model.generatePasswordHash(newPassword);
+    passAuth.token = yield this.__model.generatePasswordHash(newPassword)
 
     // save
-    this.markChanged('auth');
-    yield this.save();
+    this.markChanged('auth')
+    yield this.save()
 
     // record
-    this._App().emit('record', 'update_password', this);
+    this._App().emit('record', 'update_password', this)
   },
   /**
    * Get OAuth data.
@@ -274,13 +274,13 @@ exports.docMethods = {
    * @return {Object} null if not found.
    */
   getOauth: function*(provider)  {
-    provider = 'oauth:' + provider;
+    provider = 'oauth:' + provider
 
     provider = _.find(this.auth, function(a) {
-      return provider === a.type;
-    });
+      return provider === a.type
+    })
 
-    return _.get(provider, 'data', null);
+    return _.get(provider, 'data', null)
   },
   /**
    * Save OAuth data.
@@ -289,7 +289,7 @@ exports.docMethods = {
    * @param {Object} data Data.
    */
   saveOAuth: function*(provider, data) {
-    yield this.saveAuth('oauth:' + provider, data);
+    yield this.saveAuth('oauth:' + provider, data)
   },
   /**
    * Save Auth data.
@@ -298,28 +298,28 @@ exports.docMethods = {
    * @param {Object} data Data.
    */
   saveAuth: function*(type, data) {
-    this._logger().debug('Save user auth', this.id, type, data);
+    this._logger().debug('Save user auth', this.id, type, data)
 
     const existing = _.find(this.auth, function(a) {
-      return type === a.type;
-    });
+      return type === a.type
+    })
 
     if (!existing) {
       existing = {
         type: type
-      };
+      }
 
-      this.auth.push(existing);
+      this.auth.push(existing)
     }
 
-    existing.data = data;
+    existing.data = data
 
     // save
-    this.markChanged('auth');
-    yield this.save();
+    this.markChanged('auth')
+    yield this.save()
 
     // record
-    this._App().emit('record', 'save_oauth', this, _.pick(existing, 'type', 'access_token'));
+    this._App().emit('record', 'save_oauth', this, _.pick(existing, 'type', 'access_token'))
   },
   /**
    * Get whether user can access given resource.
@@ -329,7 +329,7 @@ exports.docMethods = {
    * @return {Boolean} true if access is possible, false if not.
    */
   canAccess: function*(resource) {
-    return this._App().acl.can(resource, this);
+    return this._App().acl.can(resource, this)
   },
   /**
    * Assert that user can access given resource.
@@ -339,9 +339,9 @@ exports.docMethods = {
    * @throws {Error} If not allowed to access.
    */
   assertAccess: function*(resource) {
-    return this._App().acl.assert(resource, this);
+    return this._App().acl.assert(resource, this)
   },
-};
+}
 
 
 exports.modelMethods = {
@@ -351,25 +351,25 @@ exports.modelMethods = {
    */
   getByUsername: function*(username) {
     const ret = yield this.rawQry().filter(function(user) {
-      return user('username').eq(username);
-    }).run();
+      return user('username').eq(username)
+    }).run()
 
-    return this.wrapRaw(_.get(ret, '0'));
+    return this.wrapRaw(_.get(ret, '0'))
   },
   /**
    * Get user by email address.
    * @return {User}
    */
   getByEmail: function*(email) {
-    const r = this.db;
+    const r = this.db
 
     const ret = yield this.rawQry().filter(
       r.row('emails').contains(function(e) {
-        return e('email').eq(email);
+        return e('email').eq(email)
       })
-    ).run();
+    ).run()
 
-    return this.wrapRaw(_.get(ret, '0'));
+    return this.wrapRaw(_.get(ret, '0'))
   },
   /**
    * Get user by email address or username.
@@ -377,21 +377,21 @@ exports.modelMethods = {
    */
   getByEmailOrUsername: function*(str) {
     const ret = yield this.rawQry().filter(function(user) {
-      return user('emails')('email')(0).eq(str).or(user('username').eq(str));
-    }).run();
+      return user('emails')('email')(0).eq(str).or(user('username').eq(str))
+    }).run()
 
-    return this.wrapRaw(_.get(ret, '0'));
+    return this.wrapRaw(_.get(ret, '0'))
   },
   /**
    * Get user by email address or username.
    * @return {User}
    */
   findWithIds: function*(ids) {
-    const qry = this.rawQry();
+    const qry = this.rawQry()
 
-    qry = qry.getAll.apply(qry, ids.concat([{index: 'id'}]));
+    qry = qry.getAll.apply(qry, ids.concat([{index: 'id'}]))
 
-    return this.wrapRaw(yield qry.run());
+    return this.wrapRaw(yield qry.run())
   },
   /**
    * Find all admin users.
@@ -400,9 +400,9 @@ exports.modelMethods = {
   findAdminUsers: function*() {
     const ret = yield this.rawQry().filter(function(user) {
       return user('roles').contains('admin')
-    }).run();
+    }).run()
 
-    return this.wrapRaw(ret);
+    return this.wrapRaw(ret)
   },
   /**
    * Get whether any admin users exist.
@@ -411,9 +411,9 @@ exports.modelMethods = {
   haveAdminUsers: function*() {
     const count = yield this.rawQry().count(function(user) {
       return user('roles').contains('admin')
-    }).run();
+    }).run()
 
-    return count > 0;
+    return count > 0
   },
   /**
    * Generate a secure SHA256 representing given password.
@@ -422,13 +422,13 @@ exports.modelMethods = {
    * @return {String} hash to store
    */
   generatePasswordHash: function*(password, salt) {
-    const hash = crypto.createHash('sha256');
+    const hash = crypto.createHash('sha256')
 
-    salt = salt || (yield randomBytesQ(64)).toString('hex');
-    hash.update(salt);
-    hash.update(password);
+    salt = salt || (yield randomBytesQ(64)).toString('hex')
+    hash.update(salt)
+    hash.update(password)
 
-    return salt + '-' + hash.digest('hex');
+    return salt + '-' + hash.digest('hex')
   },
   /**
    * Register a new user
@@ -450,7 +450,7 @@ exports.modelMethods = {
         displayName: properties.username,
       }, properties.profile),
       roles: properties.roles || [],
-    };
+    }
 
     if (properties.email) {
       attrs.emails.push(
@@ -458,7 +458,7 @@ exports.modelMethods = {
           email: properties.email,
           verified: !!properties.emailVerified,
         }
-      );
+      )
     }
 
     if (properties.password) {
@@ -467,39 +467,39 @@ exports.modelMethods = {
           type: 'password',
           token: yield this.generatePasswordHash(properties.password),
         }
-      );
+      )
     }
 
-    attrs.created = new Date();
+    attrs.created = new Date()
 
-    const user = yield this.insert(attrs);
+    const user = yield this.insert(attrs)
 
     if (!user) {
-      throw new Error('Error creating new user: ' + properties.username);
+      throw new Error('Error creating new user: ' + properties.username)
     }
 
     // log activity
-    this._App().emit('record', 'register', user);
+    this._App().emit('record', 'register', user)
 
     // notify admins
-    this._App().emit('notify', 'admins', `New user: ${user.id} - ${user.username}`);
+    this._App().emit('notify', 'admins', `New user: ${user.id} - ${user.username}`)
 
-    return user;
+    return user
   },
   loadLoggedIn: function*(context) {
-    const userId = _.get(context, 'session.user.id');
+    const userId = _.get(context, 'session.user.id')
 
     if (!userId) {
-      return null;
+      return null
     }
 
-    return yield this.get(userId);
+    return yield this.get(userId)
   },
   getUsersCreatedSince: function*(date) {
     const ret = yield this.rawQry().filter(function(doc) {
       return doc('created').ge(date)
-    }).run();
+    }).run()
 
-    return this.wrapRaw(ret);
+    return this.wrapRaw(ret)
   },
-};
+}

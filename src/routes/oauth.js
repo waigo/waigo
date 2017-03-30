@@ -11,4 +11,4 @@ module.exports = {
       GET: 'oauth.callback',
     }
   }
-};
+}

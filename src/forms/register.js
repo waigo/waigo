@@ -2,7 +2,7 @@
 
 
 const waigo = global.waigo,
-  _ = waigo._;
+  _ = waigo._
 
 
 
@@ -30,13 +30,13 @@ module.exports = {
     function* createUserAndLogin(next) {
       const ctx = this.context,
         App = ctx.App,
-        User = App.models.User;
+        User = App.models.User
 
       // check if there's an admin user
       const adminUserExists = yield User.haveAdminUsers(),
-        roles = (adminUserExists ? [] : ['admin']);
+        roles = (adminUserExists ? [] : ['admin'])
 
-      App.logger.info('Registering user ' + this.fields.email.value, roles);
+      App.logger.info('Registering user ' + this.fields.email.value, roles)
 
       // create user
       const user = yield User.register({
@@ -44,15 +44,15 @@ module.exports = {
         email: this.fields.email.value,
         password: this.fields.password.value,
         roles: roles
-      });
+      })
 
       // log them in
-      yield user.login(this.context);
+      yield user.login(this.context)
 
       // send confirmation email
       const token = yield App.actionTokens.create('verify_email', user, {
         email: this.fields.email.value,
-      });
+      })
       
       yield App.mailer.send({
         to: user,
@@ -65,10 +65,10 @@ module.exports = {
             absolute: true
           })
         }
-      });
+      })
 
-      yield next;
+      yield next
     }
   ]
-};
+}
 

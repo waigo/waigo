@@ -1,6 +1,6 @@
 
 
 const waigo = global.waigo,
-  TextField = waigo.load('support/forms/fields/text');
+  TextField = waigo.load('support/forms/fields/text')
 
-module.exports = TextField;
+module.exports = TextField

@@ -1,25 +1,25 @@
 
 
-const Slack = require('slack-node');
+const Slack = require('slack-node')
 
 const waigo = global.waigo,
   _ = waigo._,
   logger = waigo.load('support/logger').create('SlackNotifier'),
-  Q = waigo.load('support/promise');
+  Q = waigo.load('support/promise')
 
 
 
 module.exports = function*(App, id, config) {
-  const _logger = logger.create(id);
+  const _logger = logger.create(id)
 
-  const slack = new Slack();
+  const slack = new Slack()
 
-  slack.setWebhook(config.url);
+  slack.setWebhook(config.url)
 
   return function*(messageOrObject) {
-    const msg = (typeof messageOrObject === 'string' ? messageOrObject : JSON.stringify(messageOrObject));
+    const msg = (typeof messageOrObject === 'string' ? messageOrObject : JSON.stringify(messageOrObject))
     
-    _logger.debug(`Notify`);
+    _logger.debug(`Notify`)
 
     yield new Q(function(resolve, reject) {
       slack.webhook({
@@ -29,15 +29,15 @@ module.exports = function*(App, id, config) {
         text: msg,
       }, function(err, response) {
         if (err) {
-          _logger.error(err);
+          _logger.error(err)
 
-          return reject(new Error('' + err));
+          return reject(new Error('' + err))
         } else {
-          resolve();
+          resolve()
         }
-      });
-    });
-  };
-};
+      })
+    })
+  }
+}
 
 

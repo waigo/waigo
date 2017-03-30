@@ -2,10 +2,10 @@
 
 
 const path = require('path'),
-  render = require('co-render');
+  render = require('co-render')
 
 const waigo = global.waigo,
-  _ = waigo._;
+  _ = waigo._
 
 
 /**
@@ -23,35 +23,35 @@ exports.create = function(logger, config) {
   return {
     render: function*(view, templateVars) {
       // what type of template is this?
-      const ext = path.extname(view).slice(1);  // slice(1) to remove '.' prefix
+      const ext = path.extname(view).slice(1)  // slice(1) to remove '.' prefix
       if (!ext.length) {
-        ext = config.ext;
+        ext = config.ext
       }
 
-      logger.debug('Template type', ext);
+      logger.debug('Template type', ext)
 
       // get templateVars
       templateVars = _.extend({}, this.App.templateVars, this.templateVars, templateVars, {
         cache: !!config.cache,
         engine: config.engine[ext],
-      });
+      })
 
       // get full path to view file
-      view = waigo.getPath('views/' + view + '.' + ext);
+      view = waigo.getPath('views/' + view + '.' + ext)
 
-      logger.debug('Template path', view);
+      logger.debug('Template path', view)
 
-      this.body = yield render(view, templateVars);
-      this.type = 'html';
+      this.body = yield render(view, templateVars)
+      this.type = 'html'
     },
 
     redirect: function*(url) {
-      logger.debug('Redirect', url);
+      logger.debug('Redirect', url)
 
-      this.response.redirect(url);
+      this.response.redirect(url)
     },
-  };
-};
+  }
+}
 
 
 

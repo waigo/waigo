@@ -3,7 +3,7 @@
 
 const waigo = global.waigo,
   _ = waigo._,
-  Q = waigo.load('support/promise');
+  Q = waigo.load('support/promise')
 
 
 
@@ -11,7 +11,7 @@ const waigo = global.waigo,
  * The name of the method which when called will return a view object representation of the callee.
  * @type {String}
  */
-const METHOD_NAME = exports.METHOD_NAME = 'toViewObject';
+const METHOD_NAME = exports.METHOD_NAME = 'toViewObject'
 
 
 
@@ -30,44 +30,44 @@ const toViewObjectYieldable = exports.toViewObjectYieldable = function(inputObje
     // (see https://github.com/hiddentao/simple-nosql-schema)
     switch (inputObject) {
       case String:
-        return Q.resolve('String');
+        return Q.resolve('String')
       case Boolean:
-        return Q.resolve('Boolean');
+        return Q.resolve('Boolean')
       case Number:
-        return Q.resolve('Number');
+        return Q.resolve('Number')
       case Date:
-        return Q.resolve('Date');
+        return Q.resolve('Date')
       case Object:
-        return Q.resolve('Object');
+        return Q.resolve('Object')
       case Array:
-        return Q.resolve('Array');
+        return Q.resolve('Array')
     }
 
     // has view object method
     if ('function' === typeof inputObject[METHOD_NAME]) {
-      return inputObject[METHOD_NAME].call(inputObject, ctx);
+      return inputObject[METHOD_NAME].call(inputObject, ctx)
     }
     // is an array
     else if (_.isArray(inputObject)) {
       // recursive call on all children
       return inputObject.map(function(local) {
-        return toViewObjectYieldable(local, ctx);
-      });
+        return toViewObjectYieldable(local, ctx)
+      })
     }
     // is an object
     else if (_.isPlainObject(inputObject)) {
-      const yieldables = {};
+      const yieldables = {}
 
       for (const idx in inputObject) {
-        yieldables[idx] = toViewObjectYieldable(inputObject[idx], ctx);
+        yieldables[idx] = toViewObjectYieldable(inputObject[idx], ctx)
       }
 
-      return yieldables;
+      return yieldables
     }
   }
 
-  return Q.resolve(inputObject);
-};
+  return Q.resolve(inputObject)
+}
 
 
 

@@ -2,7 +2,7 @@
 
 
 const waigo = global.waigo,
-  _ = waigo._;
+  _ = waigo._
 
 
 
@@ -13,13 +13,13 @@ const waigo = global.waigo,
  * @param {Object} App The application.
  */
 module.exports = function*(App) {
-  App.logger.debug('Shutting down database connections');
+  App.logger.debug('Shutting down database connections')
 
-  const dbAdapters = waigo.getItemsInFolder('support/db');
+  const dbAdapters = waigo.getItemsInFolder('support/db')
 
   yield _.map(dbAdapters, function(adapter) {
-    return waigo.load(adapter).closeAll(App.logger);
-  });
-};
+    return waigo.load(adapter).closeAll(App.logger)
+  })
+}
 
 

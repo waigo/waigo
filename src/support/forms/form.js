@@ -1,7 +1,7 @@
 
 
 
-const compose = require('generator-compose');
+const compose = require('generator-compose')
 
 const waigo = global.waigo,
   _ = waigo._,
@@ -9,22 +9,22 @@ const waigo = global.waigo,
   errors = waigo.load('support/errors'),
   FieldExports = waigo.load('support/forms/field'),
   Field = FieldExports.Field,
-  viewObjects = waigo.load('support/viewObjects');
+  viewObjects = waigo.load('support/viewObjects')
 
 
-exports.Field = FieldExports.Field;
+exports.Field = FieldExports.Field
 
 
 
 /** Form validation error. */
 const FormValidationError = exports.FormValidationError = 
-  errors.define('FormValidationError', errors.MultipleError);
+  errors.define('FormValidationError', errors.MultipleError)
 
 
 
 
 // the form spec cache
-const cache = {};
+const cache = {}
 
 
 
@@ -45,21 +45,21 @@ const cache = {};
  */
 exports.create = function*(config, options) {
   if (_.isString(config)) {
-    const cachedSpec = cache[config];
+    const cachedSpec = cache[config]
 
     if (!cachedSpec) {
-      cache[config]  = cachedSpec = waigo.load('forms/' + config);
-      cachedSpec.id = config;
+      cache[config]  = cachedSpec = waigo.load('forms/' + config)
+      cachedSpec.id = config
     }
 
-    config = cachedSpec;    
+    config = cachedSpec    
   }
 
-  const f = new Form(config, options);
+  const f = new Form(config, options)
 
-  yield f.runHook('postCreation');
+  yield f.runHook('postCreation')
 
-  return f;
+  return f
 }
 
 
@@ -84,48 +84,48 @@ class Form {
     options = _.extend({
       context: null,
       state: null,
-    }, options);
+    }, options)
 
     if (config instanceof Form) {
       // passed-in state overrides existing form's state
-      options.state = options.state || config.state;  
-      config = config.config;
+      options.state = options.state || config.state  
+      config = config.config
     }
 
-    this.config = _.extend({}, config);
+    this.config = _.extend({}, config)
 
-    this.context = options.context;
-    this.logger = logger.create('Form[' + this.config.id + ']');
+    this.context = options.context
+    this.logger = logger.create('Form[' + this.config.id + ']')
 
     // setup fields
     this._fields = {}
     for (const idx in this.config.fields) {
-      const def = this.config.fields[idx];
-      this._fields[def.name] = Field.new(this, def);
+      const def = this.config.fields[idx]
+      this._fields[def.name] = Field.new(this, def)
     }
 
     // CSRF enabled (set by koa-csrf package)?
     if (!!_.get(this.context, 'assertCSRF')) {
-      this.logger.debug('Adding CSRF field');
+      this.logger.debug('Adding CSRF field')
 
       this._fields.__csrf = Field.new(this, {
         name: '__csrf',
         label: 'CSRF',
         type: 'csrf',
         required: true,
-      });
+      })
     }
 
     // initial state
-    this.state = _.extend({}, options.state);    
+    this.state = _.extend({}, options.state)    
   }
 
   get fields () {
-    return this._fields;
+    return this._fields
   }
 
   get state () {
-    return this._state;
+    return this._state
   }
 
   /**
@@ -134,7 +134,7 @@ class Form {
    * @param {Object} newState New state.
    */
   set state (newState) {
-    this._state = newState;
+    this._state = newState
 
     for (const fieldName in this.fields) {
       this._state[fieldName] = this._state[fieldName] || {
@@ -152,7 +152,7 @@ class Form {
    */
   * setValues (values) {
     for (const fieldName in this.fields) {
-      yield this.fields[fieldName].setSanitizedValue(values[fieldName]);
+      yield this.fields[fieldName].setSanitizedValue(values[fieldName])
     }
   }
 
@@ -167,7 +167,7 @@ class Form {
    */
   * setOriginalValues (values) {
     for (const fieldName in this.fields) {
-      this.fields[fieldName].originalValue = values[fieldName];
+      this.fields[fieldName].originalValue = values[fieldName]
     }
   }
 
@@ -175,16 +175,16 @@ class Form {
   /** 
    * Get whether this form is dirty.
    * 
-   * @return {Boolean} True if any fields are dirty; false otherwise.
+   * @return {Boolean} True if any fields are dirty false otherwise.
    */
   isDirty () {
     for (const fieldName in this.fields) {
       if (this.fields[fieldName].isDirty()) {
-        return true;
+        return true
       }
     }
 
-    return false;
+    return false
   }
 
 
@@ -195,24 +195,24 @@ class Form {
    */
   * validate () {
     const fields = this.fields,
-      errors = null;
+      errors = null
 
     for (const fieldName in fields) {
-      const field = fields[fieldName];
+      const field = fields[fieldName]
 
       try {
-        yield field.validate(this.context);
+        yield field.validate(this.context)
       } catch (err) {
         if (!errors) {
-          errors = {};
+          errors = {}
         }
 
-        errors[fieldName] = err.details;
+        errors[fieldName] = err.details
       }
     }
 
     if (errors) {
-      throw new FormValidationError('Please correct the errors in the form.', 400, errors);
+      throw new FormValidationError('Please correct the errors in the form.', 400, errors)
     }
   }
 
@@ -226,15 +226,15 @@ class Form {
    * hooks will be run.
    */
   * process () {
-    const body = _.get(this.context, 'request.body');
+    const body = _.get(this.context, 'request.body')
 
     if (!body) {
-      throw new FormValidationError('No request body available to process');
+      throw new FormValidationError('No request body available to process')
     }
 
-    yield this.setValues(body);
-    yield this.validate();
-    yield this.runHook('postValidation');
+    yield this.setValues(body)
+    yield this.validate()
+    yield this.runHook('postValidation')
   }
 
 
@@ -246,12 +246,12 @@ class Form {
    * @param {String} hookName Hooks to run.
    */
   * runHook (hookName) {
-    yield compose(this.config[hookName] || []).call(this);
+    yield compose(this.config[hookName] || []).call(this)
   }
 
 }
 
-exports.Form = Form;
+exports.Form = Form
 
 
 /**
@@ -260,23 +260,23 @@ exports.Form = Form;
  * @return {Object} Renderable plain object representation.
  */
 Form.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
-  const ret = _.omit(this.config, 'fields', 'postValidation');
+  const ret = _.omit(this.config, 'fields', 'postValidation')
 
   const fields = this.fields,
     fieldViewObjects = {},
-    fieldOrder = [];
+    fieldOrder = []
 
   for (const fieldName in fields) {
-    const field = fields[fieldName];
+    const field = fields[fieldName]
       
-    fieldViewObjects[fieldName] = yield field[viewObjects.METHOD_NAME](ctx);
-    fieldOrder.push(fieldName);
+    fieldViewObjects[fieldName] = yield field[viewObjects.METHOD_NAME](ctx)
+    fieldOrder.push(fieldName)
   }
 
-  ret.fields = fieldViewObjects;
-  ret.order = fieldOrder;
+  ret.fields = fieldViewObjects
+  ret.order = fieldOrder
 
-  return ret;
+  return ret
 }
 
 

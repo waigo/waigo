@@ -2,11 +2,11 @@
 
 
 const bodyParser = require('co-body'),
-  path = require('path');
+  path = require('path')
 
 
 const waigo = global.waigo,
-  _ = waigo._;
+  _ = waigo._
 
 
 /**
@@ -25,11 +25,11 @@ const waigo = global.waigo,
  */
 const fn = module.exports = function(App, options) {
   return function*(next) {
-    this.request.body = yield fn._bodyParser(this, options);
+    this.request.body = yield fn._bodyParser(this, options)
 
-    yield next;
-  };
-};
+    yield next
+  }
+}
 // we attach actual parser to the function to make unit testing easier
-fn._bodyParser = require('co-body');
+fn._bodyParser = require('co-body')
 

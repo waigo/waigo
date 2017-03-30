@@ -1,1 +1,1 @@
-console.log('Waigo loaded!');
+console.log('Waigo loaded!')

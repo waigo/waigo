@@ -3,7 +3,7 @@
 
 const waigo = global.waigo,
   _ = waigo._,
-  RuntimeError = waigo.load('support/errors').RuntimeError;
+  RuntimeError = waigo.load('support/errors').RuntimeError
 
 
 
@@ -23,37 +23,37 @@ const waigo = global.waigo,
  */
 module.exports = function(App, options) {
   return function*(next) {
-    this.App.logger.debug('assertUser is logged in');
+    this.App.logger.debug('assertUser is logged in')
 
     try {
       if (!this.currentUser) {
-        throw new RuntimeError('You must be logged in to access this content.', 403);
+        throw new RuntimeError('You must be logged in to access this content.', 403)
       } else {
         // need specific access?
         if (options.canAccess) {
-          this.App.logger.debug('assertUser can access ' + options.canAccess);
+          this.App.logger.debug('assertUser can access ' + options.canAccess)
 
-          yield this.currentUser.assertAccess(options.canAccess);
+          yield this.currentUser.assertAccess(options.canAccess)
         }
       }
     } catch (err) {
       // should we ask user to login?
       if (options.redirectToLogin) {
-        this.App.logger.debug('redirect to login');
+        this.App.logger.debug('redirect to login')
 
         return yield this.redirect(
           this.App.routes.url('user_login', null, {
             r: err.message,
             u: this.request.url,            
           })
-        );
+        )
       }
       // else show error
       else {
-        throw err;
+        throw err
       }
     }
 
-    yield next;
-  };
-};
+    yield next
+  }
+}

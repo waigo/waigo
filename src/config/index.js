@@ -2,10 +2,10 @@
 
 
 const debug = require('debug')('waigo_config'),
-  fs = require('fs');
+  fs = require('fs')
 
 const waigo = global.waigo,
-  _ = waigo._;
+  _ = waigo._
 
 
 /**
@@ -15,16 +15,16 @@ const waigo = global.waigo,
  */
 const loadConfigModule = function(name) {
   try {
-    debug(`Loading ${name} configuration`);
+    debug(`Loading ${name} configuration`)
 
-    return waigo.load(`config/${name}`);
+    return waigo.load(`config/${name}`)
   } catch (e) {
-    debug(`Error loading config: ${name}`);
-    debug(e);
+    debug(`Error loading config: ${name}`)
+    debug(e)
 
-    return null;
+    return null
   }
-};
+}
 
 
 
@@ -55,29 +55,29 @@ module.exports = function() {
   const config = {
     mode: process.env.NODE_ENV || 'development',
     user: process.env.USER
-  };
+  }
 
-  debug('Config mode, user', config.mode, config.user);
+  debug('Config mode, user', config.mode, config.user)
 
   // base
-  const fn = loadConfigModule('base');
+  const fn = loadConfigModule('base')
   if (!fn) {
-    throw new Error('Base configuration file not found');
+    throw new Error('Base configuration file not found')
   }
-  fn(config);
+  fn(config)
 
 
   // mode
-  fn = loadConfigModule(config.mode);
+  fn = loadConfigModule(config.mode)
   if (fn) {
-    fn(config);
+    fn(config)
   }
 
   // mode.userId
-  fn = loadConfigModule(config.mode + '.' + config.user);
+  fn = loadConfigModule(config.mode + '.' + config.user)
   if (fn) {
-    fn(config);
+    fn(config)
   }
 
-  return config;
-};
+  return config
+}

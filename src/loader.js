@@ -10,17 +10,17 @@ const _ = require('lodash'),
   path = require('path'),
   fs = require('fs'),
   globule = require('globule'),
-  walk = require('findit');
+  walk = require('findit')
 
 
 const WAIGO_FOLDER = __dirname,
   DEFAULT_APP_FOLDER = path.join(path.dirname(require.main.filename), 'src'),
   $FILE = Symbol('file loading config'),
-  $SOURCE_PATHS = Symbol('paths to sources');
+  $SOURCE_PATHS = Symbol('paths to sources')
 
 
 
-const appFolder = null;
+let appFolder = null
 
 
 /**
@@ -28,7 +28,7 @@ const appFolder = null;
  * @global waigo
  * @type {Object}
  */
-const loader = module.exports = global.waigo = {};
+const loader = module.exports = global.waigo = {}
 
 
 
@@ -36,21 +36,21 @@ const loader = module.exports = global.waigo = {};
  * Reference to Lodash instance.
  * @type {Object}
  */
-loader._ = _;
+loader._ = _
 
 
-/** 
+/**
  * Internal file loading configuration.
  * @private
  */
-loader[$FILE] = null;
+loader[$FILE] = null
 
 
-/** 
+/**
  * Internal paths to file sources.
  * @private
  */
-loader[$SOURCE_PATHS] = null;
+loader[$SOURCE_PATHS] = null
 
 
 
@@ -61,7 +61,7 @@ loader[$SOURCE_PATHS] = null;
  * @param {Object} [options] Additional options.
  * @param {String} [options.matchFiles] Filter files by this regex.
  * @param {String} [options.keepExtensions] If enabled then file names will keep their extensions.
- * 
+ *
  * @return {Promise}
  * @private
  */
@@ -69,37 +69,38 @@ const _walk = function(folder, options) {
   options = _.extend({
     matchFiles: /.+/ig,
     keepExtensions: false,
-  }, options);
+  }, options)
 
   return new Promise(function(resolve, reject) {
-    const files = {};
+    const files = {}
 
     const walker = walk(folder, {
       followSymlinks: false
-    });
+    })
 
     walker.on('file', function(file, stat) {
-      const dirname = path.dirname(file),
-        filename = path.join(path.relative(folder, dirname), path.basename(file));
+      const dirname = path.dirname(file)
+      let filename = path.join(path.relative(folder, dirname), path.basename(file))
 
       if (!filename.match(options.matchFiles)) {
-        return;
+        return
       }
 
       // strip extension from filename?
       if (!options.keepExtensions) {
-        const extname = path.extname(filename),
-          filename = filename.substr(0, filename.length - extname.length);
+        const extname = path.extname(filename)
+
+        filename = filename.substr(0, filename.length - extname.length)
       }
-      
-      files[filename] = file;
-    });  
+
+      files[filename] = file
+    })
 
     walker.on('end', function() {
-      resolve(files);
-    });  
-  });
-};
+      resolve(files)
+    })
+  })
+}
 
 
 
@@ -109,12 +110,12 @@ const _walk = function(folder, options) {
  * Note: `init()` must be called after this to re-initialize the loader.
  */
 loader.reset = function() {
-  debug('Reset loader config');
+  debug('Reset loader config')
 
-  appFolder = null;
-  loader[$FILE] = null;
-  loader[$SOURCE_PATHS] = null;
-};
+  appFolder = null
+  loader[$FILE] = null
+  loader[$SOURCE_PATHS] = null
+}
 
 
 
@@ -125,14 +126,14 @@ loader.reset = function() {
  *
  * This scans the folder trees of the core framework, plugins and your
  * application to map out what's available and to ensure that there are no
- * instances of any given file or view being provided by two or more 
+ * instances of any given file or view being provided by two or more
  * plugins.
  *
  * If `options.plugins` is provided then those named plugins get loaded. If
  * not then the remaining options are used to first work out which plugins to
  * load and then those plugins get loaded. By default the plugins to load are
  * filtered from the dependencies listed within the `package.json` file.
- * 
+ *
  * @param {Object} [options] Loading configuration.
  * @param {String} [options.appFolder] Absolute path to folder containing app files. Overrides the default calculated folder.
  * @param {Object} [options.plugins] Plugin loading configuration.
@@ -145,99 +146,99 @@ loader.reset = function() {
  */
 loader.init = function*(options) {
   if (loader[$FILE]) {
-    debug('Waigo was already initialised. Re-initialising...');
+    debug('Waigo was already initialised. Re-initialising...')
 
-    loader.reset();
+    loader.reset()
   }
 
-  options = JSON.parse(JSON.stringify(options || {}));
-  options.plugins = options.plugins || {};
+  options = JSON.parse(JSON.stringify(options || {}))
+  options.plugins = options.plugins || {}
 
-  appFolder = options.appFolder || DEFAULT_APP_FOLDER;
-  debug('App folder ' + appFolder);
+  appFolder = options.appFolder || DEFAULT_APP_FOLDER
+  debug('App folder ' + appFolder)
 
   // get loadable plugin
   if (!options.plugins.names) {
-    debug('Getting plugin names...');
-    
+    debug('Getting plugin names...')
+
     // based on code from https://github.com/sindresorhus/load-grunt-tasks/blob/master/load-grunt-tasks.js
-    const pattern = options.plugins.glob || ['waigo-plugin-*'];
-    const config = options.plugins.config || null;
-    const scope = options.plugins.configKey || ['dependencies', 'devDependencies', 'peerDependencies'];
-    
+    const pattern = options.plugins.glob || ['waigo-plugin-*']
+    const config = options.plugins.config || null
+    const scope = options.plugins.configKey || ['dependencies', 'devDependencies', 'peerDependencies']
+
     if (null === config || typeof config === 'string') {
-      const pathToConfig = config;
+      let pathToConfig = config
 
       if (!pathToConfig || 'package.json' === pathToConfig) {
         pathToConfig = findup('package.json', {
           cwd: appFolder
-        });
+        })
 
         if (!pathToConfig) {
-          throw new Error(`Unable to find package.json`);
+          throw new Error(`Unable to find package.json`)
         }
       }
 
       try {
-        config = loader.__require(path.resolve(pathToConfig));
+        config = loader.__require(path.resolve(pathToConfig))
       } catch (err) {
-        throw new Error(`Unable to load config file: ${pathToConfig}`);
+        throw new Error(`Unable to load config file: ${pathToConfig}`)
       }
     }
 
     const names = scope.reduce(function (result, prop) {
-      return result.concat(Object.keys(config[prop] || {}));
-    }, []);
+      return result.concat(Object.keys(config[prop] || {}))
+    }, [])
 
-    options.plugins.names = _.uniq(globule.match(pattern, names));
+    options.plugins.names = _.uniq(globule.match(pattern, names))
   }
-  
-  debug(`Plugins to load: ${options.plugins.names.join(', ')}`);
+
+  debug(`Plugins to load: ${options.plugins.names.join(', ')}`)
 
   // what paths will we search?
   const sourcePaths = loader[$SOURCE_PATHS] = {
     waigo: WAIGO_FOLDER,
     app: appFolder
-  };
+  }
 
   _.each(options.plugins.names, function(name) {
-    const fullPath;
+    const fullPath
 
     try {
-      fullPath = path.dirname(require.resolve(name));
+      fullPath = path.dirname(require.resolve(name))
     } catch (err) {
       if (process.env.PLUGIN_SEARCH_FOLDER) {
-        fullPath = path.join(process.env.PLUGIN_SEARCH_FOLDER, name);
+        fullPath = path.join(process.env.PLUGIN_SEARCH_FOLDER, name)
 
-        const stat = fs.statSync(fullPath);
+        const stat = fs.statSync(fullPath)
 
         if (!stat.isDirectory()) {
-          throw err;
+          throw err
         }
       } else {
-        throw err;
+        throw err
       }
     }
 
-    sourcePaths[name] = path.join(fullPath, 'src');
-  });
+    sourcePaths[name] = path.join(fullPath, 'src')
+  })
 
-  const scanOrder = ['waigo'].concat(options.plugins.names, 'app');
+  const scanOrder = ['waigo'].concat(options.plugins.names, 'app')
 
   // reset cache
-  loader[$FILE] = {};
+  loader[$FILE] = {}
 
   // start scanning
   for (const sourceName of scanOrder) {
-    const moduleMap = {};
+    const moduleMap = {}
 
-    debug(`Scanning for files in: ${sourceName}`);
+    debug(`Scanning for files in: ${sourceName}`)
 
     _.extend(moduleMap, yield _walk(sourcePaths[sourceName], {
         // only want .js files, but not any from frontend/ views/ or cli/data
         matchFiles: /^(?!(frontend|views|cli\/data)\/)(.+?\.js)$/i,
       })
-    );
+    )
 
     _.extend(moduleMap, yield _walk(sourcePaths[sourceName], {
         // only want files from views/ and emails/, but not ones which are prefixed with an underscore
@@ -245,52 +246,52 @@ loader.init = function*(options) {
         // may have many view templates with same names but different extensions
         keepExtensions: true,
       })
-    );
+    )
 
     /*jshint -W083 */
     _.each(moduleMap, function(modulePath, moduleName) {
-      loader[$FILE] = loader[$FILE] || {};
-      loader[$FILE][moduleName] = _.get(loader[$FILE], moduleName, { 
-        sources: {} 
-      });
-      loader[$FILE][moduleName].sources[sourceName] = modulePath;
-    });
+      loader[$FILE] = loader[$FILE] || {}
+      loader[$FILE][moduleName] = _.get(loader[$FILE], moduleName, {
+        sources: {}
+      })
+      loader[$FILE][moduleName].sources[sourceName] = modulePath
+    })
   }
 
   // now go through the list of available modules and ensure that there are no ambiguities
   _.each(loader[$FILE], function(moduleConfig, moduleName) {
-    const sourceNames = Object.keys(moduleConfig.sources);
+    const sourceNames = Object.keys(moduleConfig.sources)
 
     // if there is an app implementation then that's the one to use
     if (moduleConfig.sources.app) {
-      moduleConfig._load = 'app';
-    } 
+      moduleConfig._load = 'app'
+    }
     // if there is only one source then use that one
     else if (1 === sourceNames.length) {
-      moduleConfig._load = sourceNames[0];
+      moduleConfig._load = sourceNames[0]
     }
     // else
     else {
       // get plugin source names
       const pluginSources = _.filter(sourceNames, function(srcName) {
-        return 'waigo' !== srcName;
-      });
+        return 'waigo' !== srcName
+      })
 
       // if more than one plugin then we have a problem
       if (1 < pluginSources.length) {
-        throw new Error(`Path "${moduleName}" has more than one plugin implementation to choose from: ${pluginSources.join(', ')}`);
-      } 
+        throw new Error(`Path "${moduleName}" has more than one plugin implementation to choose from: ${pluginSources.join(', ')}`)
+      }
       // else the one available plugin is the source
       else {
-        moduleConfig._load = pluginSources[0];
+        moduleConfig._load = pluginSources[0]
       }
     }
 
-    debug(`File "${moduleName}" will be loaded from source "${moduleConfig._load}"`);
-  });
+    debug(`File "${moduleName}" will be loaded from source "${moduleConfig._load}"`)
+  })
 
-  return options;
-};
+  return options
+}
 
 
 
@@ -307,12 +308,12 @@ loader.init = function*(options) {
  * @see #getPath
  */
 loader.load = function(filePath) {
-  const resolvedPath = loader.getPath(filePath);
+  const resolvedPath = loader.getPath(filePath)
 
-  debug(`Load ${filePath} -> ${resolvedPath}`);
+  debug(`Load ${filePath} -> ${resolvedPath}`)
 
-  return loader.__require(resolvedPath);
-};
+  return loader.__require(resolvedPath)
+}
 
 
 
@@ -342,7 +343,7 @@ loader.load = function(filePath) {
  * `waigo-doc:support/errors`. If on the other hand they wish to load the
  * version provided the core Waigo framework then `waigo:support/errors`
  * should be used.
- * 
+ *
  * @param {String} filePath File path in the supported format.
  * @return {String} Full path to file.
  * @throws {Error} If the file or the requested source could not be found.
@@ -351,36 +352,36 @@ loader.load = function(filePath) {
  */
 loader.getPath = function(filePath) {
   if (!loader[$FILE]) {
-    throw new Error('Please initialise Waigo first');
+    throw new Error('Please initialise Waigo first')
   }
 
   // get source to load from
   const sanitizedFileName = filePath,
-    source = null;
+    source = null
 
   const sepPos = filePath.indexOf(':')
   if (-1 < sepPos) {
-    source = filePath.substr(0, sepPos);
-    sanitizedFileName = filePath.substr(sepPos + 1);
+    source = filePath.substr(0, sepPos)
+    sanitizedFileName = filePath.substr(sepPos + 1)
   }
 
   if (!loader[$FILE][sanitizedFileName]) {
-    throw new Error(`File not found: ${sanitizedFileName}`);
+    throw new Error(`File not found: ${sanitizedFileName}`)
   }
 
   // if no source then use default
   if (!source) {
-    source = loader[$FILE][sanitizedFileName]._load;
+    source = loader[$FILE][sanitizedFileName]._load
   }
 
   if (!loader[$FILE][sanitizedFileName].sources[source]) {
-    throw new Error(`File source not found: ${source}`);
+    throw new Error(`File source not found: ${source}`)
   }
 
-  debug(`File "${filePath}" points to "${sanitizedFileName}" from source "${source}"`);
+  debug(`File "${filePath}" points to "${sanitizedFileName}" from source "${source}"`)
 
-  return loader[$FILE][sanitizedFileName].sources[source];
-};
+  return loader[$FILE][sanitizedFileName].sources[source]
+}
 
 
 
@@ -389,7 +390,7 @@ loader.getPath = function(filePath) {
 /**
  * Get file sources.
  *
- * This will return key-value pairs, where the key is the name of the source and 
+ * This will return key-value pairs, where the key is the name of the source and
  * the value is the path to the `src` folder for that source.
  *
  * @return {Object}
@@ -397,8 +398,8 @@ loader.getPath = function(filePath) {
  * @see #load
  */
 loader.getSources = function() {
-  return loader[$SOURCE_PATHS];
-};
+  return loader[$SOURCE_PATHS]
+}
 
 
 
@@ -407,10 +408,10 @@ loader.getSources = function() {
  * Get all files in given folder path.
  *
  * This will look for all files
- * which reside under the given folder (and subfolders) and then return their relative paths. 
+ * which reside under the given folder (and subfolders) and then return their relative paths.
  * Files provided by both plugins and the app itself will also be included.
  *
- * This is useful in situations where a particular folder holds a number of 
+ * This is useful in situations where a particular folder holds a number of
  * related files/folders and you wish to see which ones are available.
  *
  * @param {String} folder Folder to check under, relative to app folder.
@@ -419,18 +420,18 @@ loader.getSources = function() {
  */
 loader.getItemsInFolder = function(folder) {
   if (!loader[$FILE]) {
-    throw new Error('Please initialise Waigo first');
+    throw new Error('Please initialise Waigo first')
   }
 
   const ret = _.chain(loader[$FILE])
     .keys()
     .filter(function(filePath) {
-      return (0 === filePath.indexOf(folder));
+      return (0 === filePath.indexOf(folder))
     })
-    .value();
+    .value()
 
-  return ret;
-};
+  return ret
+}
 
 
 
@@ -441,8 +442,8 @@ loader.getItemsInFolder = function(folder) {
  * @return {String}
  */
 loader.getWaigoFolder = function() {
-  return WAIGO_FOLDER;
-};
+  return WAIGO_FOLDER
+}
 
 
 
@@ -452,8 +453,8 @@ loader.getWaigoFolder = function() {
  * @return {String}
  */
 loader.getAppFolder = function() {
-  return appFolder;
-};
+  return appFolder
+}
 
 
 
@@ -465,6 +466,5 @@ loader.getAppFolder = function() {
  * @private
  */
 loader.__require = function(p) {
-  return require(p);
-};
-
+  return require(p)
+}

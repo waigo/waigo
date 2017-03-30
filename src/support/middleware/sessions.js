@@ -2,10 +2,10 @@
 
 
 const koaSessionStore = require('koa-session-store'),
-  moment = require('moment');
+  moment = require('moment')
 
 
-const waigo = global.waigo;
+const waigo = global.waigo
 
 
 
@@ -29,10 +29,10 @@ const waigo = global.waigo;
  */
 module.exports = function(App, options) {
   if (!options.keys) {
-    throw new Error('Please specify cookie signing keys in the config file.');
+    throw new Error('Please specify cookie signing keys in the config file.')
   }
   
-  App.koa.keys = options.keys;
+  App.koa.keys = options.keys
 
   return koaSessionStore({
     name: options.name,
@@ -43,5 +43,5 @@ module.exports = function(App, options) {
       path: options.cookie.path,
       signed: false,
     }
-  });
-};
+  })
+}

@@ -1,12 +1,12 @@
 
 
 const path = require('path'),
-  shell = require('shelljs');
+  shell = require('shelljs')
 
 
 const waigo = global.waigo,
   _ = waigo._,
-  logger = waigo.load('support/logger').create('StaticResources');
+  logger = waigo.load('support/logger').create('StaticResources')
 
 
 
@@ -18,48 +18,48 @@ const waigo = global.waigo,
  * @param {Object} app The application.
  */
 module.exports = function*(App) {
-  App.logger.debug('Copying static resources into public folder');
+  App.logger.debug('Copying static resources into public folder')
   
-  const tmpFolder = path.join(shell.tempdir(), 'waigo-app');
+  const tmpFolder = path.join(shell.tempdir(), 'waigo-app')
 
   // clean old stuff from tmp folder
-  shell.rm('-rf', tmpFolder);
+  shell.rm('-rf', tmpFolder)
 
-  logger.debug('Copy static resources into', tmpFolder);
+  logger.debug('Copy static resources into', tmpFolder)
 
-  const sources = waigo.getSources();
+  const sources = waigo.getSources()
 
   for (const key in sources) {
     // skip app's own
     if ('app' === key) {
-      continue;
+      continue
     }
 
     const src = path.join(sources[key], '..', 'public', '*'),
-      dst = path.join(tmpFolder, key);
+      dst = path.join(tmpFolder, key)
 
-    logger.debug('Copying ' + src + ' -> ' + tmpFolder);
+    logger.debug('Copying ' + src + ' -> ' + tmpFolder)
 
-    shell.mkdir('-p', dst);
-    shell.cp('-Rf', src, dst);
+    shell.mkdir('-p', dst)
+    shell.cp('-Rf', src, dst)
 
     // delete _gen folder in dst (if present)
-    shell.rm('-rf', path.join(dst, '_gen'));
+    shell.rm('-rf', path.join(dst, '_gen'))
   }
 
   const destFolder = 
-    path.join(waigo.getAppFolder(), App.config.staticResources.folder, '_gen');
+    path.join(waigo.getAppFolder(), App.config.staticResources.folder, '_gen')
 
-  logger.debug('Copy ' + tmpFolder + ' -> ' + destFolder);
-  shell.mkdir('-p', destFolder);
-  shell.cp('-Rf', path.join(tmpFolder, '*'), destFolder);
+  logger.debug('Copy ' + tmpFolder + ' -> ' + destFolder)
+  shell.mkdir('-p', destFolder)
+  shell.cp('-Rf', path.join(tmpFolder, '*'), destFolder)
 
   // done with tmp folder
-  shell.rm('-rf', tmpFolder);
+  shell.rm('-rf', tmpFolder)
 
   // Static URL helper
-  App.staticUrl = _.curry(_staticUrl, 2)(logger);
-};
+  App.staticUrl = _.curry(_staticUrl, 2)(logger)
+}
 
 
 
@@ -77,9 +77,9 @@ module.exports = function*(App) {
 function _staticUrl(logger, resourcePath) {
   const pos = resourcePath.indexOf(':'),
     owner =  (0 <= pos) ? resourcePath.substr(0, pos) : '',
-    theUrl = (0 <= pos) ? resourcePath.substr(pos+1) : resourcePath;
+    theUrl = (0 <= pos) ? resourcePath.substr(pos+1) : resourcePath
 
-  logger.trace('Static resource: ' + resourcePath + ' -> owner:' + owner + ', url:' + theUrl);
+  logger.trace('Static resource: ' + resourcePath + ' -> owner:' + owner + ', url:' + theUrl)
 
   if (
     /* app */ 
@@ -87,11 +87,11 @@ function _staticUrl(logger, resourcePath) {
     /* if want 'waigo' resource and the current app is the waigo framework itself */
       ('waigo' === owner && 0 === waigo.getAppFolder().indexOf(waigo.getWaigoFolder())) 
   ) {
-    return path.join('/', theUrl);
+    return path.join('/', theUrl)
   } else {
-    return path.join('/_gen', owner, theUrl);
+    return path.join('/_gen', owner, theUrl)
   }
-};
+}
 
 
 

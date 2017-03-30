@@ -1,9 +1,9 @@
 
 
 const waigo = global.waigo,
-  _ = waigo._;
+  _ = waigo._
 
 
-module.exports = require('bluebird');
+module.exports = require('bluebird')
 
 

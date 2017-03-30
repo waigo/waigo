@@ -4,17 +4,17 @@
 const waigo = global.waigo,
   _ = waigo._,
   viewObjects = waigo.load('support/viewObjects'),
-  HiddenField = waigo.load('support/forms/fields/hidden');
+  HiddenField = waigo.load('support/forms/fields/hidden')
 
 
 
 const checkCSRF = function*(context, field, value) {
   try {
-    context.assertCSRF(value);
+    context.assertCSRF(value)
   } catch (err) {
-    throw new Error('CSRF token check failed');
+    throw new Error('CSRF token check failed')
   }
-};
+}
 
 
 
@@ -30,9 +30,9 @@ class Csrf extends HiddenField {
    * @constructor
    */
   constructor (form, config) {
-    super(form, config);
+    super(form, config)
 
-    this._addValidator(checkCSRF);
+    this._addValidator(checkCSRF)
   }
 }
 
@@ -41,14 +41,14 @@ class Csrf extends HiddenField {
  * @override
  */
 Csrf.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
-  const ret = yield HiddenField.prototype[viewObjects.METHOD_NAME].call(this, ctx);
+  const ret = yield HiddenField.prototype[viewObjects.METHOD_NAME].call(this, ctx)
 
-  ret.value = ctx.csrf;
+  ret.value = ctx.csrf
 
-  return ret;
-};
+  return ret
+}
 
 
 
-module.exports = Csrf;
+module.exports = Csrf
 

@@ -3,9 +3,9 @@
 
 const waigo = global.waigo,
   _ = waigo._,
-  errors = waigo.load('support/errors');
+  errors = waigo.load('support/errors')
 
-const LoginError = errors.define('LoginError');
+const LoginError = errors.define('LoginError')
 
 
 module.exports = {
@@ -35,24 +35,24 @@ module.exports = {
   method: 'POST',
   postValidation: [
     function* checkUserCredentials(next) {
-      const ctx = this.context;
+      const ctx = this.context
 
-      const User = ctx.App.models.User;
+      const User = ctx.App.models.User
 
       // load user
-      const user = yield User.getByEmailOrUsername(this.fields.email.value);
+      const user = yield User.getByEmailOrUsername(this.fields.email.value)
 
       // check user and password
       if (!user 
           || !(yield user.isPasswordCorrect(this.fields.password.value)) ) {
-        ctx.throw(LoginError, 'Incorrect username or password', 400);
+        ctx.throw(LoginError, 'Incorrect username or password', 400)
       }
 
       // log the user in
-      yield user.login(this.context);
+      yield user.login(this.context)
 
-      yield next;
+      yield next
     }
   ]
-};
+}
 

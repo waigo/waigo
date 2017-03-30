@@ -1,10 +1,10 @@
 
 
 
-const path = require('path');
+const path = require('path')
 
 const waigo = global.waigo,
-  _ = waigo._;
+  _ = waigo._
 
 
 
@@ -28,7 +28,7 @@ module.exports = function(App, options) {
     hidden: false,
     index: 'index.html',
     defer: false
-  }, options.options);
+  }, options.options)
 
-  return require('koa-static')(path.join(waigo.getAppFolder(), options.folder), moreOptions);
-};
+  return require('koa-static')(path.join(waigo.getAppFolder(), options.folder), moreOptions)
+}

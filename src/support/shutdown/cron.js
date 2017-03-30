@@ -2,7 +2,7 @@
 
 
 const waigo = global.waigo,
-  _ = waigo._;
+  _ = waigo._
 
 
 
@@ -12,11 +12,11 @@ const waigo = global.waigo,
  * @param {Object} App The application.
  */
 module.exports = function*(App) {
-  App.logger.debug('Stopping cron jobs');
+  App.logger.debug('Stopping cron jobs')
 
   _.map(App.cron, function(job) {
-    job.stopScheduler();
-  });
-};
+    job.stopScheduler()
+  })
+}
 
 

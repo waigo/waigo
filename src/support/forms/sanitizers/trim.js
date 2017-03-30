@@ -1,7 +1,7 @@
 
 
 const waigo = global.waigo,
-  _ = waigo._;
+  _ = waigo._
 
 
 /**
@@ -11,8 +11,8 @@ const waigo = global.waigo,
  */
 module.exports = function() {
   return function*(field, value) {
-    return (typeof value === 'string' ? _.trim(value) : value);
+    return (typeof value === 'string' ? _.trim(value) : value)
   }
-};
+}
 
 

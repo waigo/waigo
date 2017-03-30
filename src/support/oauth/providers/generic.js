@@ -1,14 +1,14 @@
 
 
 const qs = require('query-string'),
-  OAuth2 = require('oauth').OAuth2;
+  OAuth2 = require('oauth').OAuth2
 
 
 const waigo = global.waigo,
   _ = waigo._,
   logger = waigo.load('support/logger'),
   Q = waigo.load('support/promise'),
-  OauthError = waigo.load('support/oauth/error');
+  OauthError = waigo.load('support/oauth/error')
 
 
 
@@ -26,17 +26,17 @@ class GenericOauth {
    * @param  {Object} [tokens]   Access tokens previously obtained.
    */
   constructor (context, provider, tokens) {
-    this.context = context;
-    this.provider = provider;
-    this.App = this.context.App;
-    this.logger = logger.create(`Oauth-${provider}`);
+    this.context = context
+    this.provider = provider
+    this.App = this.context.App
+    this.logger = logger.create(`Oauth-${provider}`)
 
-    this.config = _.get(this.App.config.oauth, this.provider, {});
+    this.config = _.get(this.App.config.oauth, this.provider, {})
     this.callbackURL = this.App.routes.url('oauth_callback', {
       provider: provider,
     }, null, {
       absolute: true
-    });
+    })
 
     this.oauth2 = new OAuth2(
       this.config.clientId,
@@ -45,10 +45,10 @@ class GenericOauth {
       this.config.authorizePath,
       this.config.accessTokenPath,
       this.config.customHeaders
-    );
+    )
 
     if (tokens) {
-      this._setTokens(tokens);
+      this._setTokens(tokens)
     }
   }
 
@@ -58,44 +58,44 @@ class GenericOauth {
    * @return {String}
    */
   getAuthorizeUrl () {
-    const params = this._buildAuthorizeParams();
+    const params = this._buildAuthorizeParams()
 
-    const url = this.oauth2.getAuthorizeUrl(params);
+    const url = this.oauth2.getAuthorizeUrl(params)
 
-    this.logger.debug('authorize url', url);
+    this.logger.debug('authorize url', url)
 
-    return url;
+    return url
   }
 
 
   * handleAuthorizationCallback() {
-    const user = this._user();
+    const user = this._user()
 
     this.App.emit('record', 'oauth_callback', user || 'anon', {
       provider: this.provider,
       query: this.context.request.query,
-    });
+    })
 
     try {
       const errorMsg = this.context.request.query.error,
-        errorDesc = this.context.request.query.error_description;
+        errorDesc = this.context.request.query.error_description
 
       if (errorMsg) {
-        throw new OauthError(errorMsg, 400, errorDesc);
+        throw new OauthError(errorMsg, 400, errorDesc)
       }
       
       // we got the code!
-      const code = this.context.request.query.code;
+      const code = this.context.request.query.code
 
       if (!code) {
-        throw new OauthError('Failed to obtain OAuth code', 400);
+        throw new OauthError('Failed to obtain OAuth code', 400)
       }
 
-      const response = yield this.getAccessToken(code);
+      const response = yield this.getAccessToken(code)
 
-      yield this._handlePostAuthorizationSuccess(response);
+      yield this._handlePostAuthorizationSuccess(response)
     } catch (err) {
-      yield this._handleError(err);
+      yield this._handleError(err)
     }
   }
 
@@ -105,17 +105,17 @@ class GenericOauth {
    * @param {String} code Code returned by OAuth provider.
    */
   * getAccessToken (code) {
-    const user = this._user();
+    const user = this._user()
 
-    this.logger.info(`Get access token: user=${user ? user.id : 'anon'} code=${code}`);
+    this.logger.info(`Get access token: user=${user ? user.id : 'anon'} code=${code}`)
 
     try {
       return yield new Q((resolve, reject) => {
-        const params = this._buildAccessTokenParams();
+        const params = this._buildAccessTokenParams()
 
         this.oauth2.getOAuthAccessToken(code, params, (err, access_token, refresh_token, result) => {
           if (err) {
-            return reject(new OauthError('Get access token error', err.statusCode || 400, err));
+            return reject(new OauthError('Get access token error', err.statusCode || 400, err))
           }
 
           if (_.get(result, 'error')) {
@@ -123,158 +123,158 @@ class GenericOauth {
               new OauthError(`Get access token error: ${result.error}`, 400, {
                 error: result.error
               })
-            );
+            )
           }
 
-          this.logger.debug(`Get access token result: ${access_token}, ${refresh_token}, ${JSON.stringify(result)}`);
+          this.logger.debug(`Get access token result: ${access_token}, ${refresh_token}, ${JSON.stringify(result)}`)
 
           this._setTokens({
             access_token: access_token,
             refresh_token: refresh_token,             
-          });
+          })
 
           resolve({
             access_token: access_token,
             refresh_token: refresh_token, 
             result: result,
-          });
-        });
-      });
+          })
+        })
+      })
 
     } catch (err) {
       yield this._handleError(err, {
         method: 'getOAuthAccessToken',
-      });
+      })
     }
   }
 
 
 
   _setTokens (tokens) {
-    this.tokens = tokens;
+    this.tokens = tokens
 
     if (this.tokens) {
       this.authHeader = {
         'Authorization': `Bearer ${this.tokens.access_token}`,
-      };
+      }
     }
   }
 
 
   * _get (url, queryParams) {
-    return yield this._request('GET', url, queryParams);
+    return yield this._request('GET', url, queryParams)
   }
 
 
   * _post (url, queryParams, body) {
-    return yield this._request('POST', url, queryParams, body);
+    return yield this._request('POST', url, queryParams, body)
   }
 
 
   _buildRequestUrl (url, queryParams) {
-    const apiBaseUrl = this.config.apiBaseUrl;
+    const apiBaseUrl = this.config.apiBaseUrl
 
     if (!_.get(apiBaseUrl, 'length')) {
-      throw new OauthError(`${this.provider}: apiBaseUrl must be provided`);
+      throw new OauthError(`${this.provider}: apiBaseUrl must be provided`)
     }
 
-    url = apiBaseUrl + url;
+    url = apiBaseUrl + url
 
-    queryParams = qs.stringify(queryParams || {});
+    queryParams = qs.stringify(queryParams || {})
 
     if (queryParams.length) {
-      url += '?' + queryParams;
+      url += '?' + queryParams
     }
 
-    return url;
+    return url
   }
 
 
 
   * _request (method, url, queryParams, body) {
-    url = this._buildRequestUrl(url, queryParams);
+    url = this._buildRequestUrl(url, queryParams)
 
-    this.logger.debug(method, url);
+    this.logger.debug(method, url)
 
     if (body) {
-      body = JSON.stringify(body);
+      body = JSON.stringify(body)
     }
 
     try {
       return yield new Q((resolve, reject) => {
         this.oauth2._request(method, url, this.authHeader, body, this.accessToken, (err, result) => {
           if (err) {
-            return reject(new OauthError(method + ' error', err.statusCode || 400, err));
+            return reject(new OauthError(method + ' error', err.statusCode || 400, err))
           }
 
           try {
-            result = JSON.parse(result);
+            result = JSON.parse(result)
           } catch (e) {
             // nothing to do here
           }
 
-          resolve(result);
-        });
-      });
+          resolve(result)
+        })
+      })
 
     } catch (err) {
       yield this._handleError(err, {
         method: method,
         url: url,
         body: body,
-      });
+      })
     }
   }
 
 
   _buildAuthorizeParams () {
-    const params = _.extend({}, _.get(this.config, 'authorizeParams'));
+    const params = _.extend({}, _.get(this.config, 'authorizeParams'))
 
-    const callbackParamName = _.get(this.config, 'callbackParam', 'redirect_uri');
+    const callbackParamName = _.get(this.config, 'callbackParam', 'redirect_uri')
 
-    params[callbackParamName] = this.callbackURL;
+    params[callbackParamName] = this.callbackURL
 
-    return params;
+    return params
   }
 
 
   _buildAccessTokenParams () {
-    const params = _.extend({}, _.get(this.config, 'accessTokenParams'));
+    const params = _.extend({}, _.get(this.config, 'accessTokenParams'))
 
-    const callbackParamName = _.get(this.config, 'callbackParam', 'redirect_uri');
+    const callbackParamName = _.get(this.config, 'callbackParam', 'redirect_uri')
 
-    params[callbackParamName] = this.callbackURL;
+    params[callbackParamName] = this.callbackURL
 
-    return params;
+    return params
   }
 
 
   _user () {
-    return this.context.currentUser;
+    return this.context.currentUser
   }
 
 
   * _handlePostAuthorizationSuccess (accessTokenResponse) {
-    yield this.context.redirect("/");
+    yield this.context.redirect("/")
   }
 
 
   * _handleError (err, attrs) {
-    this.logger.error(err);
+    this.logger.error(err)
 
     this.App.emit('record', 'oauth_request', this._user() || 'anon', _.extend({}, attrs, {
       type: 'error',
       provider: this.provider,
       message: err.message,
       details: err.details,
-    }));
+    }))
 
-    throw err;
+    throw err
   }
 
 }
 
-module.exports = GenericOauth;
+module.exports = GenericOauth
 
 
 

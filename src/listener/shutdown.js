@@ -1,5 +1,5 @@
 const waigo = global.waigo,
-  Q = waigo.load('support/promise');
+  Q = waigo.load('support/promise')
 
 
 
@@ -10,10 +10,10 @@ const waigo = global.waigo,
  */
 module.exports = function*(App) {
   if (App.server) {
-    App.logger.debug('Shutting down HTTP server');
+    App.logger.debug('Shutting down HTTP server')
 
     yield Q.promisify(App.server.close, {
       context: App.server
-    })();
+    })()
   }
-};
+}

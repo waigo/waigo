@@ -3,7 +3,7 @@
 
 
 const waigo = global.waigo,
-  _ = waigo._;
+  _ = waigo._
 
 
 
@@ -18,21 +18,21 @@ const waigo = global.waigo,
  * @param {Object} App The application.
  */
 module.exports = function*(App) {
-  App.logger.debug('Setting up routes');
+  App.logger.debug('Setting up routes')
 
-  const routeFiles = waigo.getItemsInFolder('routes');
+  const routeFiles = waigo.getItemsInFolder('routes')
 
-  const routes = {};
+  const routes = {}
 
   _.each(routeFiles, function(routeFile) {
-    App.logger.debug('Loading ' + routeFile);
+    App.logger.debug('Loading ' + routeFile)
 
-    _.merge(routes, waigo.load(routeFile));
-  });
+    _.merge(routes, waigo.load(routeFile))
+  })
 
   App.routes = yield waigo.load('support/routeMapper')
-    .setup(App, App.config.middleware, routes);
-};
+    .setup(App, App.config.middleware, routes)
+}
 
 
 

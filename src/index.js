@@ -3,8 +3,8 @@
  * @file The default entry point for Waigo.
  */
 
-const co = require('co');
-const waigo = module.exports = require('./loader');
+const co = require('co')
+const waigo = module.exports = require('./loader')
 
 
 /**
@@ -21,7 +21,7 @@ waigo._bootstrap = function() {
     be loaded then this is the place to do it.
 
      */
-    yield waigo.init();
+    yield waigo.init()
 
     /*
     Start the application.
@@ -31,7 +31,7 @@ waigo._bootstrap = function() {
      */
     waigo.App = new (waigo.load('application'))
 
-    yield waigo.App.start();
-  });
-};
+    yield waigo.App.start()
+  })
+}
 

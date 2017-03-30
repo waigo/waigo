@@ -1,9 +1,9 @@
 
 
-const co = require('co');
+const co = require('co')
 
 const waigo = global.waigo,
-  _ = waigo._;
+  _ = waigo._
 
 
 
@@ -17,10 +17,10 @@ const waigo = global.waigo,
  * @param {Object} App The application.
  */
 module.exports = function*(App) {
-  App.logger.debug('Setting up Activity recording');
+  App.logger.debug('Setting up Activity recording')
 
   App.on('record', co.wrap(function*() {
-    yield App.models.Activity.record.apply(App.models.Activity, arguments);
-  }));
-};
+    yield App.models.Activity.record.apply(App.models.Activity, arguments)
+  }))
+}
 

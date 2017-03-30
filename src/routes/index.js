@@ -14,7 +14,7 @@
  * ```javascript
  * module.exports = { 
  *   'GET /' : ['accessControl', 'main.index'] 
- * };
+ * }
  * ```
  *
  * As you can see, if the middleware name has a period (`.`) within it it
@@ -29,7 +29,7 @@
  * ```javascript
  * module.exports = { 
  *   'GET /' : ['accessControl', 'user.load', 'main.index'] 
- * };
+ * }
  * ```
  *
  * For the above example, Waigo will process the request in the following
@@ -45,7 +45,7 @@
  * ```javascript
  * module.exports = { 
  *   'POST /signup' : [ { id: 'bodyParser', limit: '1kb' }, 'main.signup' ] 
- * };
+ * }
  * ```
  *
  * For the above configuration an instance of the `bodyParser` middleware will 
@@ -82,4 +82,4 @@ module.exports = {
       GET: 'user.logout'
     },
   },
-};
+}

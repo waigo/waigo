@@ -6,45 +6,45 @@
 
 
 exports.logout = function*() {
-  delete this.session.user;
+  delete this.session.user
 
-  yield this.redirect('/');
-};
+  yield this.redirect('/')
+}
 
 
 exports.login = function*() {
-  const reason = this.request.query.r || null;
+  const reason = this.request.query.r || null
 
   const form = yield this.form.create('login', {
     context: this
-  });
-  form.fields.postLoginUrl.value = this.request.query.u || '/';
+  })
+  form.fields.postLoginUrl.value = this.request.query.u || '/'
 
   this.logger.debug('Login', reason,
-      form.fields.postLoginUrl.value);
+      form.fields.postLoginUrl.value)
 
   yield this.render('user/login', {
     reason: reason,
     form: form,
-  });
-};
+  })
+}
 
 
 
 exports.login_submit = function*() {
-  this.logger.debug('Logging in');
+  this.logger.debug('Logging in')
 
   const form = yield this.form.create('login', {
     context: this
-  });
+  })
 
   try {
-    yield form.process();
+    yield form.process()
 
-    yield this.redirect(form.fields.postLoginUrl.value || '/');
+    yield this.redirect(form.fields.postLoginUrl.value || '/')
   } catch (err) {
     if (!(err instanceof this.form.FormValidationError)) {
-      this.logger.error(err.stack);
+      this.logger.error(err.stack)
     }
 
     yield this.render('user/login', {
@@ -52,9 +52,9 @@ exports.login_submit = function*() {
       form: form,
     }, {
       status: 400
-    });
-  };
-};
+    })
+  }
+}
 
 
 
@@ -62,39 +62,39 @@ exports.login_submit = function*() {
 exports.register = function*() {
   const form = yield this.form.create('register', {
     context: this
-  });
+  })
 
-  this.logger.debug('Register');
+  this.logger.debug('Register')
 
-  const adminUserExists = yield this.models.User.haveAdminUsers();
+  const adminUserExists = yield this.models.User.haveAdminUsers()
 
   yield this.render('user/register', {
     form: form,
     willCreateAdminUser: !adminUserExists,
-  });
-};
+  })
+}
 
 
 
 exports.register_submit = function*() {
-  this.logger.debug('Registering user');
+  this.logger.debug('Registering user')
 
   const form = yield this.form.create('register', {
     context: this,
     submitted: true,
-  });
+  })
 
-  const adminUserExists = yield this.models.User.haveAdminUsers();
+  const adminUserExists = yield this.models.User.haveAdminUsers()
 
   try {
-    yield form.process();
+    yield form.process()
 
     yield this.render('index', {
       alert: 'You have signed up successfully!'
-    });
+    })
   } catch (err) {
     if (!(err instanceof this.form.FormValidationError)) {
-      this.logger.error(err.stack);
+      this.logger.error(err.stack)
     }
 
     yield this.render('user/register', {
@@ -103,9 +103,9 @@ exports.register_submit = function*() {
       willCreateAdminUser: !adminUserExists,
     }, {
       status: 400
-    });
+    })
   }
-};
+}
 
 
 
@@ -114,20 +114,20 @@ exports.verify_email = function*() {
     this.request.query.c, {
       type: 'verify_email'
     }
-  );
+  )
 
-  this.logger.debug('Verify email address', action.user.id, action.data.email);
+  this.logger.debug('Verify email address', action.user.id, action.data.email)
 
   // verify email address
-  yield action.user.verifyEmail(action.data.email);
+  yield action.user.verifyEmail(action.data.email)
 
   // log the user in
-  yield action.user.login(this);
+  yield action.user.login(this)
 
   yield this.render('index', {
     alert: 'Your email address has been verified'
-  });
-};
+  })
+}
 
 
 
@@ -136,12 +136,12 @@ exports.verify_email = function*() {
 exports.forgot_password = function*() {
   const form = yield this.form.create('forgotPassword', {
     context: this
-  });
+  })
 
   yield this.render('user/forgotPassword', {
     form: form,
-  });
-};
+  })
+}
 
 
 
@@ -149,17 +149,17 @@ exports.forgot_password = function*() {
 exports.forgot_password_submit = function*() {
   const form = yield this.form.create('forgotPassword', {
     context: this
-  });
+  })
 
   try {
-    yield form.process();
+    yield form.process()
 
     yield this.render('index', {
       alert: 'We have emailed you a link to reset your password'
-    });
+    })
   } catch (err) {
     if (!(err instanceof this.form.FormValidationError)) {
-      this.logger.error(err.stack);
+      this.logger.error(err.stack)
     }
 
     yield this.render('user/forgotPassword', {
@@ -167,9 +167,9 @@ exports.forgot_password_submit = function*() {
       form: form,
     }, {
       status: 400
-    });
+    })
   }
-};
+}
 
 
 
@@ -179,40 +179,40 @@ exports.reset_password = function*() {
     this.request.query.c, {
       type: 'reset_password'
     }
-  );
+  )
 
   // log the user in
-  yield action.user.login(this);
+  yield action.user.login(this)
 
-  this.logger.debug('Reset password', action.user.id);
+  this.logger.debug('Reset password', action.user.id)
 
   const form = yield this.form.create('resetPassword', {
     context: this
-  });
+  })
 
   yield this.render('user/resetPassword', {
     form: form,
-  });
-};
+  })
+}
 
 
 
 exports.reset_password_submit = function*() {
-  this.logger.debug('Resetting password');
+  this.logger.debug('Resetting password')
 
   const form = yield this.form.create('resetPassword', {
     context: this
-  });
+  })
 
   try {
-    yield form.process();
+    yield form.process()
 
     yield this.render('index', {
       alert: 'Your new password has been saved'
-    });
+    })
   } catch (err) {
     if (!(err instanceof this.form.FormValidationError)) {
-      this.logger.error(err.stack);
+      this.logger.error(err.stack)
     }
 
     yield this.render('user/resetPassword', {
@@ -220,6 +220,6 @@ exports.reset_password_submit = function*() {
       form: form,
     }, {
       status: 400
-    });
-  };
-};
+    })
+  }
+}

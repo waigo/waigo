@@ -2,7 +2,7 @@
 
 const waigo = global.waigo,
   _ = waigo._,
-  FieldValidationError = waigo.load('support/forms/field').FieldValidationError;
+  FieldValidationError = waigo.load('support/forms/field').FieldValidationError
 
 
 
@@ -18,26 +18,26 @@ const waigo = global.waigo,
  * @throws Error If not an email address.
  */
 module.exports = function(options) {
-  options = (options || {});
+  options = (options || {})
   
   const min = options.min,
-    max = options.max;
+    max = options.max
 
   return function*(context, field, value) {
-    value = Number(value);
+    value = Number(value)
     
     if ( (undefined !== min && value < min) 
           || (undefined !== max && value > max) ) {
       if (undefined !== min) {
         if (undefined !== max) {
-          throw new FieldValidationError(`Must be between ${min} and ${max} inclusive`);
+          throw new FieldValidationError(`Must be between ${min} and ${max} inclusive`)
         } else {
-          throw new FieldValidationError(`Must be greater than or equal to ${min}`);          
+          throw new FieldValidationError(`Must be greater than or equal to ${min}`)          
         }
       } else {
-        throw new FieldValidationError(`Must be less than or equal to ${max}`);          
+        throw new FieldValidationError(`Must be less than or equal to ${max}`)          
       }
     }
   }
-};
+}
 

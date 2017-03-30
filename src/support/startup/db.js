@@ -2,7 +2,7 @@
 
 
 const waigo = global.waigo,
-  _ = waigo._;
+  _ = waigo._
 
 
 
@@ -17,28 +17,28 @@ const waigo = global.waigo,
  * @param {Object} App The application.
  */
 module.exports = function*(App) {
-  App.logger.info(`Setting up database connections`);
+  App.logger.info(`Setting up database connections`)
 
-  App.dbs = {};
+  App.dbs = {}
 
-  const ids = _.keys(App.config.db || {});
+  const ids = _.keys(App.config.db || {})
 
   for (const id of ids) {
-    App.logger.debug(`Setting up db: ${id}`);
+    App.logger.debug(`Setting up db: ${id}`)
 
-    const cfg = _.get(App.config.db, id);
+    const cfg = _.get(App.config.db, id)
 
     if (!cfg) {
-      throw new Error(`Unable to find configuration for database: ${id}`);
+      throw new Error(`Unable to find configuration for database: ${id}`)
     }
     
-    const builder = waigo.load(`support/db/${cfg.type}`);
+    const builder = waigo.load(`support/db/${cfg.type}`)
 
-    App.dbs[id] = yield builder.create(id, App.logger.create(id), cfg);
+    App.dbs[id] = yield builder.create(id, App.logger.create(id), cfg)
   }
 
   // for convenience
-  App.db = _.get(App.dbs, 'main');
-};
+  App.db = _.get(App.dbs, 'main')
+}
 
 

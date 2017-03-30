@@ -11,5 +11,5 @@
  */
 exports.create = function(App, storeConfig) {
   // koa-session-store automatically falls back to using the session cookie itself if no store object is given
-  return null;
-};
+  return null
+}

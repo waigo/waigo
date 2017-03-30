@@ -1,9 +1,9 @@
 
 
-const validator = require('validator');
+const validator = require('validator')
 
 const waigo = global.waigo,
-  FieldValidationError = waigo.load('support/forms/field').FieldValidationError;
+  FieldValidationError = waigo.load('support/forms/field').FieldValidationError
 
 
 /**
@@ -11,16 +11,16 @@ const waigo = global.waigo,
  */
 module.exports = function(options) {
   const method = options.method,
-    args = options.args;
+    args = options.args
 
-  args = args || [];
+  args = args || []
 
   if (!validator[method]) {
-    throw new FieldValidationError(`Invalid method: ${method}`);
+    throw new FieldValidationError(`Invalid method: ${method}`)
   }
 
   return function*(field, value) {
-    return validator[method].apply(validator, [value].concat(args));
+    return validator[method].apply(validator, [value].concat(args))
   }
-};
+}
 

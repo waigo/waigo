@@ -1,14 +1,14 @@
 
 
 
-const path = require('path');
+const path = require('path')
 
 const waigo = global.waigo,
   _ = waigo._,
-  errors = waigo.load('support/errors');
+  errors = waigo.load('support/errors')
 
 
-const JsonRenderError = errors.define('JsonRenderError');
+const JsonRenderError = errors.define('JsonRenderError')
 
 
 
@@ -21,29 +21,29 @@ const JsonRenderError = errors.define('JsonRenderError');
 exports.create = function(logger) {
   return {
     render: function*(view, templateVars) {
-      logger.debug('View', view);
+      logger.debug('View', view)
 
-      templateVars = templateVars || {};
+      templateVars = templateVars || {}
 
       if (!_.isObject(templateVars)) {
-        throw new JsonRenderError('Object required for JSON output format');
+        throw new JsonRenderError('Object required for JSON output format')
       }
 
-      this.body = templateVars;
-      this.type = 'json';
+      this.body = templateVars
+      this.type = 'json'
     },
 
 
     redirect: function*(url) {
-      logger.debug('Redirect', url);
+      logger.debug('Redirect', url)
       
-      this.type = 'json';
-      this.status = 200;
+      this.type = 'json'
+      this.status = 200
       this.body = {
         redirectTo: url,
-      };
+      }
     },
-  };
-};
+  }
+}
 
 

@@ -1,7 +1,7 @@
 
 
 const waigo = global.waigo,
-  _ = waigo._;
+  _ = waigo._
 
 
 /**
@@ -15,16 +15,16 @@ module.exports = function*(App) {
   App.templateVars = {
     _: _,
     config: App.config,
-  };
+  }
   
   if (_.get(App.routes, 'url')) {
-    App.templateVars.routeUrl = App.routes.url.bind(App.routes);
+    App.templateVars.routeUrl = App.routes.url.bind(App.routes)
   }
   
   if (App.staticUrl) {
-    App.templateVars.staticUrl = App.staticUrl;
+    App.templateVars.staticUrl = App.staticUrl
   }
-};
+}
 
 
 

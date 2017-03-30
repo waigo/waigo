@@ -1,42 +1,42 @@
 
 
-const log4js = require('log4js');
+const log4js = require('log4js')
 
 const config = {
   minLevel: 'DEBUG',
-};
+}
 
 
 exports.init = function(cfg) {
-  config = cfg;
+  config = cfg
 
   log4js.configure({
     appenders: config.appenders || [],
-  });
+  })
 
-  const logger = log4js.getLogger(config.category);
+  const logger = log4js.getLogger(config.category)
 
-  logger.setLevel(config.minLevel);
+  logger.setLevel(config.minLevel)
 
-  logger.create = exports.create;
+  logger.create = exports.create
 
-  return logger;
-};
+  return logger
+}
 
 
 
 exports.create = function(category) {
-  const logger = log4js.getLogger(category);
+  const logger = log4js.getLogger(category)
 
-  logger.setLevel(config.minLevel);
+  logger.setLevel(config.minLevel)
 
   // Allow for easy creation of sub-categories.
   logger.create = function(subCategory) {
-      return exports.create(`${category}/${subCategory}`);
+      return exports.create(`${category}/${subCategory}`)
   }
 
-  return logger;
-};
+  return logger
+}
 
 
 

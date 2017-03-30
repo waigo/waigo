@@ -7,14 +7,14 @@ const waigo = global.waigo,
   viewObjects = waigo.load('support/viewObjects'),
   FieldExports = waigo.load('support/forms/field'),
   Field = FieldExports.Field, 
-  FieldValidationError = FieldExports.FieldValidationError;
+  FieldValidationError = FieldExports.FieldValidationError
 
 
 
 const _arrayToStr = function(arr) {
   return _.map(arr, function(v) {
-    return '' + v;
-  });
+    return '' + v
+  })
 }
 
 
@@ -30,30 +30,30 @@ class Select extends Field {
    * @constructor
    */
   constructor(form, config) {
-    super(form, config);
+    super(form, config)
 
     // default validator
     this._addValidator(
       function*(context, field, val) {
-        const options = yield field.getOptions();
+        const options = yield field.getOptions()
 
         if (!_.isArray(val)) {
-          val = [val];
+          val = [val]
         }
 
-        val = _arrayToStr(val);
-        const expected = _arrayToStr(_.keys(options));
+        val = _arrayToStr(val)
+        const expected = _arrayToStr(_.keys(options))
 
-        const diff = _.difference(val, expected);
+        const diff = _.difference(val, expected)
         
         // if unknown option given OR if more than one given for a non-multiple select
         if (diff.length || (1 < val.length && !field.config.multiple)) {
-          const str = field.config.multiple ? 'one or more of' : 'one of';
+          const str = field.config.multiple ? 'one or more of' : 'one of'
 
-          throw new FieldValidationError(`Must be ${str}: ${_.values(options).join(', ')}`);
+          throw new FieldValidationError(`Must be ${str}: ${_.values(options).join(', ')}`)
         }
       }
-    );
+    )
   }
 
   /**
@@ -63,9 +63,9 @@ class Select extends Field {
    */
   * getOptions () {
     if (this.config.options instanceof Function) {
-      return yield this.config.options();
+      return yield this.config.options()
     } else {
-      return this.config.options;
+      return this.config.options
     }
   }
 }
@@ -76,16 +76,16 @@ class Select extends Field {
  * @override
  */
 Select.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
-  const ret = yield Field.prototype.toViewObject.call(this, ctx);
+  const ret = yield Field.prototype.toViewObject.call(this, ctx)
 
-  ret.options = yield this.getOptions();
+  ret.options = yield this.getOptions()
 
-  return ret;
-};
+  return ret
+}
 
 
 
-module.exports = Select;
+module.exports = Select
 
 
 

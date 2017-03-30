@@ -1,12 +1,12 @@
 
 
 
-const validator = require('validator');
+const validator = require('validator')
 
 const waigo = global.waigo,
   _ = waigo._,
   FieldExports = waigo.load('support/forms/field'),
-  Field = FieldExports.Field;
+  Field = FieldExports.Field
 
 
 
@@ -21,18 +21,18 @@ class Checkbox extends Field {
    * @constructor
    */
   constructor(form, config) {
-    super(form, config);
+    super(form, config)
 
     this._addSanitizer(
       function*(field, value) {
-        return value ? validator.toBoolean('' + value) : false;
+        return value ? validator.toBoolean('' + value) : false
       }
     )
   }
 }
 
 
-module.exports = Checkbox;
+module.exports = Checkbox
 
 
 

@@ -1,9 +1,9 @@
 
 
-const cluster = require('cluster');
+const cluster = require('cluster')
 
 const waigo = global.waigo,
-  _ = waigo._;
+  _ = waigo._
 
 
 
@@ -27,13 +27,13 @@ module.exports = function(config) {
   /**
    * Server listening port.
    */
-  config.port = (process.env.PORT || 3000);
+  config.port = (process.env.PORT || 3000)
 
 
   /**
    * Base web URL without the trailing slash
    */
-  config.baseURL = 'http://localhost:' + config.port;
+  config.baseURL = 'http://localhost:' + config.port
 
 
 
@@ -60,7 +60,7 @@ module.exports = function(config) {
         }
       }
     ],
-  };
+  }
 
 
   /**
@@ -68,7 +68,7 @@ module.exports = function(config) {
    */
   config.staticResources = {
     folder: '../public'
-  };
+  }
 
 
   /**
@@ -91,7 +91,7 @@ module.exports = function(config) {
     'cron',
     'appTemplateVars',
     'listener',
-  ];
+  ]
 
 
 
@@ -105,7 +105,7 @@ module.exports = function(config) {
     'cron',
     'acl',
     'db',
-  ];
+  ]
 
 
   /**
@@ -117,7 +117,7 @@ module.exports = function(config) {
      * @type {Boolean}
      */
     showStack: true,
-  };
+  }
 
 
 
@@ -145,7 +145,7 @@ module.exports = function(config) {
         ],
       }
     }
-  };
+  }
 
 
 
@@ -155,7 +155,7 @@ module.exports = function(config) {
    * Common middleware for requests.
    */
 
-  config.middleware = {};
+  config.middleware = {}
 
   config.middleware.ALL = {
     _order: [
@@ -220,7 +220,7 @@ module.exports = function(config) {
       // Default format, in case URL query parameter which determines output format isn't provided. */
       default: 'html'
     }
-  };
+  }
 
   // POST/PUT routes should get parsed request bodies
   config.middleware.POST = config.middleware.PUT = {
@@ -231,7 +231,7 @@ module.exports = function(config) {
     bodyParser: {
       limit: '16mb',
     },
-  };
+  }
 
 
 
@@ -260,7 +260,7 @@ module.exports = function(config) {
     //   socketTimeout: 3000,
     //   debug: false,
     // }
-  };
+  }
 
 
   /**
@@ -278,7 +278,7 @@ module.exports = function(config) {
     encryptionKey: _.uuid.v4(),
     // default token validity duration from when it was created
     validForSeconds: 60 * 60 * 2, /* 2 hours */
-  };
+  }
 
 
 
@@ -308,7 +308,7 @@ module.exports = function(config) {
         */
       ]
     },
-  };
+  }
 
 
-};
+}

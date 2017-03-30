@@ -3,10 +3,10 @@
 
 const waigo = global.waigo,
   _ = waigo._,
-  errors = waigo.load('support/errors');
+  errors = waigo.load('support/errors')
 
 
-const ForgotPasswordError = errors.define('ForgotPasswordError');
+const ForgotPasswordError = errors.define('ForgotPasswordError')
 
 
 module.exports = {
@@ -24,24 +24,24 @@ module.exports = {
   postValidation: [
     function* sendResetPasswordEmail(next) {
       const ctx = this.context,
-        App = ctx.App;
+        App = ctx.App
 
-      const User = App.models.User;
+      const User = App.models.User
 
       // load user
-      const user = yield User.getByEmailOrUsername(this.fields.email.value);
+      const user = yield User.getByEmailOrUsername(this.fields.email.value)
 
       if (!user) {
-        ctx.throw(ForgotPasswordError, 'User not found', 404);
+        ctx.throw(ForgotPasswordError, 'User not found', 404)
       }
 
       // action
-      const token = yield App.actionTokens.create('reset_password', user);
+      const token = yield App.actionTokens.create('reset_password', user)
 
-      App.logger.debug('Reset password token for ' + user.id , token);
+      App.logger.debug('Reset password token for ' + user.id , token)
 
       // record
-      App.emit('record', 'reset_password', user);
+      App.emit('record', 'reset_password', user)
 
       // send email
       yield App.mailer.send({
@@ -55,10 +55,10 @@ module.exports = {
             absolute: true
           })
         }
-      });
+      })
 
-      yield next;
+      yield next
     }
   ]
-};
+}
 

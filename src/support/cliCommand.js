@@ -3,17 +3,17 @@
 
 const debug = require('debug')('waigo_cli'),
   path = require('path'),
-  shell = require('shelljs');
+  shell = require('shelljs')
 
 
 const waigo = global.waigo,
   _ = waigo._,
-  Q = waigo.load('support/promise');
+  Q = waigo.load('support/promise')
 
 
 shell.execAsync = Q.promisify(shell.exec, {
   context: shell
-});
+})
 
 
 
@@ -31,8 +31,8 @@ class AbstractCommand {
    * @constructor
    */
   constructor (description, options) {
-    this.description = description;
-    this.options = options || [];
+    this.description = description
+    this.options = options || []
   }
 
   /** 
@@ -41,7 +41,7 @@ class AbstractCommand {
    * This function gets passed to [Commander.action](http://visionmedia.github.io/commander.js/#Command.prototype.action) as the command handler.
    */
   * run () {
-    throw new Error('Not yet implemented');
+    throw new Error('Not yet implemented')
   }
 
   /** 
@@ -50,7 +50,7 @@ class AbstractCommand {
    * @param {String} msg The log message to write.
    */
   log (msg) {
-    console.log(`[waigo-cli] ${msg}`);
+    console.log(`[waigo-cli] ${msg}`)
   }
 
 
@@ -66,21 +66,21 @@ class AbstractCommand {
    * @param {String} dst Destination folder path.
    */
   * copyFolder (src, dst) {
-    const fullDstPath = path.join(this._getProjectFolder(), dst);
+    const fullDstPath = path.join(this._getProjectFolder(), dst)
 
     if (! (shell.test('-f', fullDstPath)) ) {
-      this.log('Creating: ' + dst);
+      this.log('Creating: ' + dst)
 
       // create intermediate folders
-      debug('Creating intermediate folders for: ' + dst);
-      shell.mkdir('-p', path.dirname(fullDstPath));
+      debug('Creating intermediate folders for: ' + dst)
+      shell.mkdir('-p', path.dirname(fullDstPath))
 
-      debug('Copying ' + src + ' -> ' + dst);
+      debug('Copying ' + src + ' -> ' + dst)
 
-      shell.cp('-R', src, fullDstPath);
+      shell.cp('-R', src, fullDstPath)
 
     } else {
-      this.log('Found: ' + dst);
+      this.log('Found: ' + dst)
     }  
   }  
 
@@ -98,25 +98,25 @@ class AbstractCommand {
    * @param {Boolean} [overwrite] Whether to overwrite if already exists. Default is `false`.
    */
   * copyFile (src, dst, overwrite) {
-    const fullDstPath = path.join(this._getProjectFolder(), dst);
+    const fullDstPath = path.join(this._getProjectFolder(), dst)
 
-    const fileExistsAlready = !!shell.test('-f', fullDstPath);
+    const fileExistsAlready = !!shell.test('-f', fullDstPath)
 
     if ( !fileExistsAlready || overwrite ) {
       if (fileExistsAlready) {
-        this.log('Overwriting: ' + dst);
+        this.log('Overwriting: ' + dst)
       } else {
-        this.log('Creating: ' + dst);      
+        this.log('Creating: ' + dst)      
       }
 
       // create intermediate folders
-      debug('Creating intermediate folders for: ' + dst);
-      shell.mkdir('-p', path.dirname(fullDstPath));
+      debug('Creating intermediate folders for: ' + dst)
+      shell.mkdir('-p', path.dirname(fullDstPath))
 
-      debug('Copying ' + src + ' -> ' + dst);
-      shell.cp(src, fullDstPath);
+      debug('Copying ' + src + ' -> ' + dst)
+      shell.cp(src, fullDstPath)
     } else {
-      this.log('Found: ' + dst);
+      this.log('Found: ' + dst)
     }  
   }  
 
@@ -128,11 +128,11 @@ class AbstractCommand {
    * @param {String} dst Destination file path.
    */
   * deleteFile (dst) {
-    const fullDstPath = path.join(this._getProjectFolder(), dst);
+    const fullDstPath = path.join(this._getProjectFolder(), dst)
 
-    this.log('Deleting: ' + dst);
+    this.log('Deleting: ' + dst)
     
-    shell.rm(fullDstPath);
+    shell.rm(fullDstPath)
   }  
 
 
@@ -151,21 +151,21 @@ class AbstractCommand {
   * installPkgs (pkgs, options) {
     options = _.extend({
       dev: false,
-    }, options);
+    }, options)
 
-    const str = pkgs.join(' ');
+    const str = pkgs.join(' ')
 
     if (options.dev) {
-      str = '--save-dev ' + str;
+      str = '--save-dev ' + str
     } else {
-      str = '--save ' + str;
+      str = '--save ' + str
     }
 
-    this.log('npm install ' + str);
+    this.log('npm install ' + str)
 
     yield shell.execAsync('npm install ' + str, {
       cwd: this._getProjectFolder()
-    });    
+    })    
   }  
 
 
@@ -176,9 +176,9 @@ class AbstractCommand {
    * @return {Boolean} true if found, false otherwise.
    */
   fileExists (filePath) {
-    const fullPath = path.join(this._getProjectFolder(), filePath);
+    const fullPath = path.join(this._getProjectFolder(), filePath)
 
-    return !!(shell.test('-e', fullPath));
+    return !!(shell.test('-e', fullPath))
   }  
 
 
@@ -195,12 +195,12 @@ class AbstractCommand {
     // we're going to assume that the CLI is always run in the root folder
     // of the project, where node_moduels also resides
 
-    const npmFolder = path.join(this._getProjectFolder(), 'node_modules');
+    const npmFolder = path.join(this._getProjectFolder(), 'node_modules')
 
     if (shell.test('-d', npmFolder)) {
-      return npmFolder;
+      return npmFolder
     } else {
-      return null;
+      return null
     }
   }  
 
@@ -213,7 +213,7 @@ class AbstractCommand {
    * @protected
    */
   _getProjectFolder () {
-    return path.join(waigo.getAppFolder(), '..');
+    return path.join(waigo.getAppFolder(), '..')
   }
 
 
@@ -223,6 +223,6 @@ class AbstractCommand {
 
 
 
-module.exports = AbstractCommand;
+module.exports = AbstractCommand
 
 

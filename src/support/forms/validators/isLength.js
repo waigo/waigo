@@ -2,7 +2,7 @@
 
 const waigo = global.waigo,
   _ = waigo._,
-  FieldValidationError = waigo.load('support/forms/field').FieldValidationError;
+  FieldValidationError = waigo.load('support/forms/field').FieldValidationError
 
 
 
@@ -19,19 +19,19 @@ module.exports = function(options) {
   options = _.extend({
     min: 0,
     max: 10000000,
-  }, options);
+  }, options)
 
   return function*(context, field, value) {
-    const len = _.get(value, 'length', 0);
-    const min = options.min;
-    const max = options.max;
+    const len = _.get(value, 'length', 0)
+    const min = options.min
+    const max = options.max
 
     if (min > len || max < len) {
       throw new FieldValidationError('Must be between ' 
         + options.min + ' and ' 
         + options.max + ' characters in length'
-      );
+      )
     }
   }
-};
+}
 

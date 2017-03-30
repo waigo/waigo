@@ -95,7 +95,7 @@ class Application extends EventEmitter {
    */
   _onError (err) {
     this.logger.error(err.stack ? err.stack : err)
-  };
+  }
 
 
 

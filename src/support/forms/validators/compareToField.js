@@ -1,7 +1,7 @@
 
 
 const waigo = global.waigo,
-  FieldValidationError = waigo.load('support/forms/field').FieldValidationError;
+  FieldValidationError = waigo.load('support/forms/field').FieldValidationError
 
 
 
@@ -20,41 +20,41 @@ module.exports = function(options) {
       otherField = fields[options.field]
 
     if (!otherField) {
-      throw new FieldValidationError('Comparison field not found: ' + options.field);
+      throw new FieldValidationError('Comparison field not found: ' + options.field)
     }
 
     switch (options.comparison) {
       case 'gte':
         if (value < otherField.value) {
-          throw new FieldValidationError('Must be greater than or equal to ' + otherField.label);
+          throw new FieldValidationError('Must be greater than or equal to ' + otherField.label)
         }
-        break;
+        break
       case 'gt':
         if (value <= otherField.value) {
-          throw new FieldValidationError('Must be greater than ' + otherField.label);
+          throw new FieldValidationError('Must be greater than ' + otherField.label)
         }
-        break;
+        break
       case 'lte':
         if (value > otherField.value) {
-          throw new FieldValidationError('Must be less than or equal to ' + otherField.label);
+          throw new FieldValidationError('Must be less than or equal to ' + otherField.label)
         }
-        break;
+        break
       case 'lt':
         if (value >= otherField.value) {
-          throw new FieldValidationError('Must be less than ' + otherField.label);
+          throw new FieldValidationError('Must be less than ' + otherField.label)
         }
-        break;
+        break
       case 'neq':
         if (value === otherField.value) {
-          throw new FieldValidationError('Must not be equal to ' + otherField.label);
+          throw new FieldValidationError('Must not be equal to ' + otherField.label)
         }
-        break;
+        break
       default:
         if (value !== otherField.value) {
-          throw new FieldValidationError('Must be equal to ' + otherField.label);
+          throw new FieldValidationError('Must be equal to ' + otherField.label)
         }
-        break;
+        break
     }
   }
-};
+}
 

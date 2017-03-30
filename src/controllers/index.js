@@ -6,5 +6,5 @@
 
 
 exports.main = function*() {
-  yield this.render('index');
-};
+  yield this.render('index')
+}

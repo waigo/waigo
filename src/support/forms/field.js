@@ -4,7 +4,7 @@
 const waigo = global.waigo,
   _ = waigo._,
   errors = waigo.load('support/errors'),
-  viewObjects = waigo.load('support/viewObjects');
+  viewObjects = waigo.load('support/viewObjects')
 
 
 /** 
@@ -27,12 +27,12 @@ const waigo = global.waigo,
 
 /** A field validation error. */
 const FieldValidationError = exports.FieldValidationError = 
-  errors.define('FieldValidationError', errors.MultipleError);
+  errors.define('FieldValidationError', errors.MultipleError)
 
   
 /** A field sanitization error. */
 const FieldSanitizationError = exports.FieldSanitizationError = 
-  errors.define('FieldSanitizationError');
+  errors.define('FieldSanitizationError')
 
 
 
@@ -46,19 +46,19 @@ class Field {
    * @constructor
    */
   constructor (form, config) {
-    this.form = form;
-    this.config = config;
+    this.form = form
+    this.config = config
 
-    this.sanitizers = [];
-    this.validators = [];
+    this.sanitizers = []
+    this.validators = []
 
     _.each(config.sanitizers || [], (def) => {
-      this._addSanitizer(def);
-    });
+      this._addSanitizer(def)
+    })
 
     _.each(config.validators || [], (def) => {
-      this._addValidator(def);
-    });
+      this._addValidator(def)
+    })
   }
 
 
@@ -70,20 +70,20 @@ class Field {
     if (_.isGenFn(def)) {
       return this.validators.push({
         fn: def
-      });
+      })
     }
 
-    const options = {};
+    const options = {}
 
     if (def.id) {
-      options = _.omit(def, 'id');
-      def = def.id;
+      options = _.omit(def, 'id')
+      def = def.id
     }
 
     this.validators.push({
       fn: waigo.load(`support/forms/validators/${def}`)(options),
       msg: options.msg,
-    });
+    })
   }
 
 
@@ -95,30 +95,30 @@ class Field {
     if (_.isGenFn(def)) {
       return this.sanitizers.push({
         fn: def
-      });
+      })
     }
 
     const options = {}
 
     if (def.id) {
-      options = _.omit(def, 'id');
-      def = def.id;
+      options = _.omit(def, 'id')
+      def = def.id
     }
 
     this.sanitizers.push({
       fn: waigo.load(`support/forms/sanitizers/${def}`)(options),
       msg: options.msg,
-    });
+    })
   }
 
 
   get name () {
-    return this.config.name;
+    return this.config.name
   }
 
 
   get label () {
-    return this.config.label || this.config.name;
+    return this.config.label || this.config.name
   }
 
   /**
@@ -128,20 +128,20 @@ class Field {
    * from its previous value.
    */
   get originalValue () {
-    return _.get(this.form.state, `${this.name}.originalValue`);
+    return _.get(this.form.state, `${this.name}.originalValue`)
   }
 
   set originalValue (value) {
-    this.form.state[this.name].originalValue = value; 
+    this.form.state[this.name].originalValue = value 
   }
 
 
   get value () {
-    return _.get(this.form.state, `${this.name}.value`);
+    return _.get(this.form.state, `${this.name}.value`)
   }
 
   set value (value) {
-    this.form.state[this.name].value = value;
+    this.form.state[this.name].value = value
   }
 
 
@@ -158,16 +158,16 @@ class Field {
   * setSanitizedValue (val) {
     for (const sanitizer of this.sanitizers) {
       const fn = sanitizer.fn,
-        msg = sanitizer.msg;
+        msg = sanitizer.msg
 
       try {
-        val = yield fn(this, val);
+        val = yield fn(this, val)
       } catch (e) {
-        throw new FieldSanitizationError(msg || e.message);
+        throw new FieldSanitizationError(msg || e.message)
       }
     }
 
-    this.value = val;
+    this.value = val
   }
 
 
@@ -179,7 +179,7 @@ class Field {
    * @return {Boolean}
    */
   isDirty () {
-    return this.value !== this.originalValue;
+    return this.value !== this.originalValue
   }
 
 
@@ -192,30 +192,30 @@ class Field {
    * @throws FieldValidationError If validation fails.
    */
   * validate (context) {
-    const errors = [];
+    const errors = []
 
     // if value is undefined and field is not required then nothing to do
     if (undefined === this.value || null === this.value || '' === this.value) {
       if (!this.config.required) {
-        return;
+        return
       } else {
-        errors.push('Must be set');
+        errors.push('Must be set')
       }
     } else {
       for (const validator of this.validators) {
         const fn = validator.fn,
-          msg = validator.msg;
+          msg = validator.msg
 
         try {
-          yield fn(context, this, this.value);
+          yield fn(context, this, this.value)
         } catch (err) {
-          errors.push(msg || err.message);
+          errors.push(msg || err.message)
         }
       }    
     }
 
     if (0 < errors.length) {
-      throw new FieldValidationError('Field validation failed', 400, errors);
+      throw new FieldValidationError('Field validation failed', 400, errors)
     }
   }
 }
@@ -233,7 +233,7 @@ Field.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
   return _.extend({}, this.config, {
     value: this.value,
     originalValue: this.originalValue,
-  });
+  })
 }
 
 
@@ -251,13 +251,13 @@ Field.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
  */
 Field.new = function(form, config) {
   const type = config.type,
-    FieldClass = waigo.load(`support/forms/fields/${type}`);
+    FieldClass = waigo.load(`support/forms/fields/${type}`)
 
-  return new FieldClass(form, config);
+  return new FieldClass(form, config)
 }
 
 
 
 
-exports.Field = Field;
+exports.Field = Field
 

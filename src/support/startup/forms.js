@@ -2,7 +2,7 @@
 
 
 const waigo = global.waigo,
-  _ = waigo._;
+  _ = waigo._
 
 
 /** 
@@ -10,10 +10,10 @@ const waigo = global.waigo,
  * @param {App} App  The application.
  */
 module.exports = function*(App) {
-  App.logger.debug('Setting up forms');
+  App.logger.debug('Setting up forms')
 
-  App.form = waigo.load('support/forms/form');
-};
+  App.form = waigo.load('support/forms/form')
+}
 
 
 
