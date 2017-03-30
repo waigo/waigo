@@ -163,8 +163,8 @@ loader.init = function *(options) {
 
     // based on code from https://github.com/sindresorhus/load-grunt-tasks/blob/master/load-grunt-tasks.js
     const pattern = options.plugins.glob || ['waigo-plugin-*']
-    const config = options.plugins.config || null
     const scope = options.plugins.configKey || ['dependencies', 'devDependencies', 'peerDependencies']
+    let config = options.plugins.config || null
 
     if (null === config || typeof config === 'string') {
       let pathToConfig = config
@@ -202,7 +202,7 @@ loader.init = function *(options) {
   }
 
   _.each(options.plugins.names, function (name) {
-    const fullPath
+    let fullPath
 
     try {
       fullPath = path.dirname(require.resolve(name))
@@ -235,20 +235,17 @@ loader.init = function *(options) {
     debug(`Scanning for files in: ${sourceName}`)
 
     _.extend(moduleMap, yield _walk(sourcePaths[sourceName], {
-        // only want .js files, but not any from frontend/ views/ or cli/data
-        matchFiles: /^(?!(frontend|views|cli\/data)\/)(.+?\.js)$/i,
-      })
-    )
+      // only want .js files, but not any from frontend/ views/ or cli/data
+      matchFiles: /^(?!(frontend|views|cli\/data)\/)(.+?\.js)$/i,
+    }))
 
     _.extend(moduleMap, yield _walk(sourcePaths[sourceName], {
-        // only want files from views/ and emails/, but not ones which are prefixed with an underscore
-        matchFiles: /^(views|emails)\/(.*\/)?(((?!_)[A-Za-z0-9_]+)\.?\w+)$/i,
-        // may have many view templates with same names but different extensions
-        keepExtensions: true,
-      })
-    )
+      // only want files from views/ and emails/, but not ones which are prefixed with an underscore
+      matchFiles: /^(views|emails)\/(.*\/)?(((?!_)[A-Za-z0-9_]+)\.?\w+)$/i,
+      // may have many view templates with same names but different extensions
+      keepExtensions: true,
+    }))
 
-    /*jshint -W083 */
     _.each(moduleMap, function (modulePath, moduleName) {
       loader[$FILE] = loader[$FILE] || {}
       loader[$FILE][moduleName] = _.get(loader[$FILE], moduleName, {
@@ -356,7 +353,7 @@ loader.getPath = function (filePath) {
   }
 
   // get source to load from
-  const sanitizedFileName = filePath,
+  let sanitizedFileName = filePath,
     source = null
 
   const sepPos = filePath.indexOf(':')
