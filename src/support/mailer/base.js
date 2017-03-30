@@ -44,10 +44,10 @@ class Mailer {
   _renderEmailTemplate (templateName, templateVars) {
     this.logger.debug('Rendering template ' + templateName);
 
-    let templatePath = 
+    const templatePath = 
       path.dirname( waigo.getPath(`emails/${templateName}/html.pug`) );
 
-    let emailTemplate = new EmailTemplate(templatePath);
+    const emailTemplate = new EmailTemplate(templatePath);
 
     return new Q((resolve, reject) => {
       emailTemplate.render(templateVars, function(err, result) {
@@ -80,7 +80,7 @@ class Mailer {
 
 
   * _renderBody (mailOptions, templateVars) {
-    let content;
+    const content;
 
     if (mailOptions.bodyTemplate) {
       content = yield this._renderBodyTemplate(mailOptions.bodyTemplate, templateVars);
@@ -148,7 +148,7 @@ class Mailer {
 
 
   * _send (mailOptions) {
-    let self = this;
+    const self = this;
 
     mailOptions = yield self._prepareMailOptions(mailOptions);
 

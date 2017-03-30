@@ -2,7 +2,7 @@
 
 const log4js = require('log4js');
 
-let config = {
+const config = {
   minLevel: 'DEBUG',
 };
 
@@ -14,7 +14,7 @@ exports.init = function(cfg) {
     appenders: config.appenders || [],
   });
 
-  let logger = log4js.getLogger(config.category);
+  const logger = log4js.getLogger(config.category);
 
   logger.setLevel(config.minLevel);
 
@@ -26,7 +26,7 @@ exports.init = function(cfg) {
 
 
 exports.create = function(category) {
-  let logger = log4js.getLogger(category);
+  const logger = log4js.getLogger(category);
 
   logger.setLevel(config.minLevel);
 

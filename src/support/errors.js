@@ -17,7 +17,7 @@ const waigo = global.waigo,
  * @return {Object} Plain object.
  */
 Error.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
-  let ret = {
+  const ret = {
     type: this.name || 'Error',
     msg: this.message,
   };
@@ -70,7 +70,7 @@ exports.RuntimeError = RuntimeError;
  * @return {Object} Plain object.
  */
 RuntimeError.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
-  let ret = {
+  const ret = {
     type: this.name,
     msg: this.message,
   };
@@ -121,14 +121,14 @@ exports.MultipleError = MultipleError;
  * @return {Object} Plain object.
  */
 MultipleError.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
-  let ret = {
+  const ret = {
     type: this.name,
     msg: this.message,
     details: {},
   };
 
   for (const subErrorKey in this.details) {
-    let subError = this.details[subErrorKey],
+    const subError = this.details[subErrorKey],
       fn = subError[viewObjects.METHOD_NAME];
 
     ret.details[subErrorKey] = (fn ? yield fn.call(subError, ctx) : subError);
@@ -159,7 +159,7 @@ MultipleError.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
 exports.define = function(newClassName, baseClass) {
   baseClass = baseClass || RuntimeError;
 
-  let newErrorClass = (class Class extends baseClass {
+  const newErrorClass = (class Class extends baseClass {
     constructor (msg, status, details) {
       super(msg, status, details);
       this.name = newClassName;

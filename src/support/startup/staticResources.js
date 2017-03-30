@@ -20,14 +20,14 @@ const waigo = global.waigo,
 module.exports = function*(App) {
   App.logger.debug('Copying static resources into public folder');
   
-  let tmpFolder = path.join(shell.tempdir(), 'waigo-app');
+  const tmpFolder = path.join(shell.tempdir(), 'waigo-app');
 
   // clean old stuff from tmp folder
   shell.rm('-rf', tmpFolder);
 
   logger.debug('Copy static resources into', tmpFolder);
 
-  let sources = waigo.getSources();
+  const sources = waigo.getSources();
 
   for (const key in sources) {
     // skip app's own
@@ -35,7 +35,7 @@ module.exports = function*(App) {
       continue;
     }
 
-    let src = path.join(sources[key], '..', 'public', '*'),
+    const src = path.join(sources[key], '..', 'public', '*'),
       dst = path.join(tmpFolder, key);
 
     logger.debug('Copying ' + src + ' -> ' + tmpFolder);
@@ -75,7 +75,7 @@ module.exports = function*(App) {
  * @return {String}
  */
 function _staticUrl(logger, resourcePath) {
-  let pos = resourcePath.indexOf(':'),
+  const pos = resourcePath.indexOf(':'),
     owner =  (0 <= pos) ? resourcePath.substr(0, pos) : '',
     theUrl = (0 <= pos) ? resourcePath.substr(pos+1) : resourcePath;
 

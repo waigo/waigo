@@ -66,7 +66,7 @@ class AbstractCommand {
    * @param {String} dst Destination folder path.
    */
   * copyFolder (src, dst) {
-    let fullDstPath = path.join(this._getProjectFolder(), dst);
+    const fullDstPath = path.join(this._getProjectFolder(), dst);
 
     if (! (shell.test('-f', fullDstPath)) ) {
       this.log('Creating: ' + dst);
@@ -98,9 +98,9 @@ class AbstractCommand {
    * @param {Boolean} [overwrite] Whether to overwrite if already exists. Default is `false`.
    */
   * copyFile (src, dst, overwrite) {
-    let fullDstPath = path.join(this._getProjectFolder(), dst);
+    const fullDstPath = path.join(this._getProjectFolder(), dst);
 
-    let fileExistsAlready = !!shell.test('-f', fullDstPath);
+    const fileExistsAlready = !!shell.test('-f', fullDstPath);
 
     if ( !fileExistsAlready || overwrite ) {
       if (fileExistsAlready) {
@@ -128,7 +128,7 @@ class AbstractCommand {
    * @param {String} dst Destination file path.
    */
   * deleteFile (dst) {
-    let fullDstPath = path.join(this._getProjectFolder(), dst);
+    const fullDstPath = path.join(this._getProjectFolder(), dst);
 
     this.log('Deleting: ' + dst);
     
@@ -153,7 +153,7 @@ class AbstractCommand {
       dev: false,
     }, options);
 
-    let str = pkgs.join(' ');
+    const str = pkgs.join(' ');
 
     if (options.dev) {
       str = '--save-dev ' + str;
@@ -176,7 +176,7 @@ class AbstractCommand {
    * @return {Boolean} true if found, false otherwise.
    */
   fileExists (filePath) {
-    let fullPath = path.join(this._getProjectFolder(), filePath);
+    const fullPath = path.join(this._getProjectFolder(), filePath);
 
     return !!(shell.test('-e', fullPath));
   }  
@@ -195,7 +195,7 @@ class AbstractCommand {
     // we're going to assume that the CLI is always run in the root folder
     // of the project, where node_moduels also resides
 
-    let npmFolder = path.join(this._getProjectFolder(), 'node_modules');
+    const npmFolder = path.join(this._getProjectFolder(), 'node_modules');
 
     if (shell.test('-d', npmFolder)) {
       return npmFolder;

@@ -22,9 +22,9 @@ module.exports = function(options) {
   }, options);
 
   return function*(context, field, value) {
-    let len = _.get(value, 'length', 0);
-    let min = options.min;
-    let max = options.max;
+    const len = _.get(value, 'length', 0);
+    const min = options.min;
+    const max = options.max;
 
     if (min > len || max < len) {
       throw new FieldValidationError('Must be between ' 

@@ -7,7 +7,7 @@
  * - users signed up in past 7 days
  */
 
-let  moment = require('moment');
+const  moment = require('moment');
 
 
 exports.schedule = '0 0 3 * * 1';   // every monday morning at 3am
@@ -15,16 +15,16 @@ exports.schedule = '0 0 3 * * 1';   // every monday morning at 3am
 
 exports.handler = function*(App) {
   // get admins
-  let admins = yield App.models.User.findAdminUsers();
+  const admins = yield App.models.User.findAdminUsers();
 
   if (!admins.length) {
     return;
   }
 
   // get users recently registered
-  let lastWeek = moment().add('days', -7);
+  const lastWeek = moment().add('days', -7);
 
-  let users = yield App.models.User.getUsersCreatedSince(
+  const users = yield App.models.User.getUsersCreatedSince(
     lastWeek.toDate()
   );
 

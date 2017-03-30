@@ -35,12 +35,12 @@ module.exports = {
   method: 'POST',
   postValidation: [
     function* checkUserCredentials(next) {
-      let ctx = this.context;
+      const ctx = this.context;
 
-      let User = ctx.App.models.User;
+      const User = ctx.App.models.User;
 
       // load user
-      let user = yield User.getByEmailOrUsername(this.fields.email.value);
+      const user = yield User.getByEmailOrUsername(this.fields.email.value);
 
       // check user and password
       if (!user 

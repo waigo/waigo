@@ -17,9 +17,9 @@ module.exports = function*(App) {
 
   App.server = App.koa.listen(App.config.port);
 
-  let workerInfo = (cluster.worker) ? ` worker: ${cluster.worker.id}` : '';
+  const workerInfo = (cluster.worker) ? ` worker: ${cluster.worker.id}` : '';
 
-  let msg = `Server (process:${process.pid} ${workerInfo}) started - listening in ${App.config.mode} mode on port ${App.config.port} (baseURL: ${App.config.baseURL})`;
+  const msg = `Server (process:${process.pid} ${workerInfo}) started - listening in ${App.config.mode} mode on port ${App.config.port} (baseURL: ${App.config.baseURL})`;
 
   App.logger.info(msg);
 

@@ -83,7 +83,7 @@ exports.modelMethods = {
       }
     }
 
-    let qry = {
+    const qry = {
       verb: verb,
       actor: actor,
       published: new Date(),
@@ -96,14 +96,14 @@ exports.modelMethods = {
     return yield this.insert(qry)
   },
   getByFilter: function *(filter) {
-    let ret = yield this.rawQry().filter(filter).run()
+    const ret = yield this.rawQry().filter(filter).run()
 
     return this.wrapRaw(ret)
   },
   getLatest: function *(verb, actorId) {
     const r = this.db
 
-    let ret = yield this.rawQry().filter(function (doc) {
+    const ret = yield this.rawQry().filter(function (doc) {
       return doc('user')('id').eq(actorId) && doc('verb').eq(verb)
     })
       .orderBy(r.desc('published'))

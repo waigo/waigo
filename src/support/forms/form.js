@@ -45,7 +45,7 @@ const cache = {};
  */
 exports.create = function*(config, options) {
   if (_.isString(config)) {
-    let cachedSpec = cache[config];
+    const cachedSpec = cache[config];
 
     if (!cachedSpec) {
       cache[config]  = cachedSpec = waigo.load('forms/' + config);
@@ -55,7 +55,7 @@ exports.create = function*(config, options) {
     config = cachedSpec;    
   }
 
-  let f = new Form(config, options);
+  const f = new Form(config, options);
 
   yield f.runHook('postCreation');
 
@@ -100,7 +100,7 @@ class Form {
     // setup fields
     this._fields = {}
     for (const idx in this.config.fields) {
-      let def = this.config.fields[idx];
+      const def = this.config.fields[idx];
       this._fields[def.name] = Field.new(this, def);
     }
 
@@ -194,11 +194,11 @@ class Form {
    * @throws FormValidationError If validation fails.
    */
   * validate () {
-    let fields = this.fields,
+    const fields = this.fields,
       errors = null;
 
     for (const fieldName in fields) {
-      let field = fields[fieldName];
+      const field = fields[fieldName];
 
       try {
         yield field.validate(this.context);
@@ -226,7 +226,7 @@ class Form {
    * hooks will be run.
    */
   * process () {
-    let body = _.get(this.context, 'request.body');
+    const body = _.get(this.context, 'request.body');
 
     if (!body) {
       throw new FormValidationError('No request body available to process');
@@ -260,14 +260,14 @@ exports.Form = Form;
  * @return {Object} Renderable plain object representation.
  */
 Form.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
-  let ret = _.omit(this.config, 'fields', 'postValidation');
+  const ret = _.omit(this.config, 'fields', 'postValidation');
 
-  let fields = this.fields,
+  const fields = this.fields,
     fieldViewObjects = {},
     fieldOrder = [];
 
   for (const fieldName in fields) {
-    let field = fields[fieldName];
+    const field = fields[fieldName];
       
     fieldViewObjects[fieldName] = yield field[viewObjects.METHOD_NAME](ctx);
     fieldOrder.push(fieldName);

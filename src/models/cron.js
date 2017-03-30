@@ -61,7 +61,7 @@ exports.modelMethods = {
    * @return {Cron} new cron task instance.
    */
   create: function*(id, crontab, handler) {
-    let cron = yield this.get(id);
+    const cron = yield this.get(id);
 
     if (!cron) {
       cron = yield this.insert({
@@ -80,7 +80,7 @@ exports.modelMethods = {
 
     // override view object method
     cron[viewObjects.METHOD_NAME] = function*(ctx) {
-      let json = {
+      const json = {
         id: this.id,
         disabled: this.disabled,
         lastRun: this.lastRun ? this.lastRun.when : 'never',
@@ -103,7 +103,7 @@ exports.docMethods = {
    * Start the cron scheduler for this job.
    */
   startScheduler: function(crontab) {
-    let _config = this[$EXTRA];
+    const _config = this[$EXTRA];
     
     _config.logger.info(`Setting up cron schedule ${crontab}`);
 
@@ -117,7 +117,7 @@ exports.docMethods = {
     
     // we add 1 second to next date otherwise, _getNextDateFrom() returns 
     // the same date back
-    let nextRunDate = _config.job.nextDate().add(1, 'seconds');
+    const nextRunDate = _config.job.nextDate().add(1, 'seconds');
 
     _config.timeBetweenRunsMs = 
       _config.job.cronTime._getNextDateFrom(nextRunDate).valueOf() - nextRunDate.valueOf();
@@ -126,7 +126,7 @@ exports.docMethods = {
    * Stop the cron scheduler for this job.
    */
   stopScheduler: function() {
-    let _config = this[$EXTRA];
+    const _config = this[$EXTRA];
 
     _config.logger.info(`Stopping cron scheduler`);
 
@@ -139,14 +139,14 @@ exports.docMethods = {
    * @return {[type]} [description]
    */
   _cronCallback: function*() {
-    let _config = this[$EXTRA];
+    const _config = this[$EXTRA];
 
     _config.logger.info('Starting scheduled run');
 
     try {
       // always reload data at the start in case other app instances have 
       // executed the task recently
-      let dbData = yield this.__model.get(this.id);
+      const dbData = yield this.__model.get(this.id);
 
       // if disabled then don't run
       if (dbData.disabled) {
@@ -159,7 +159,7 @@ exports.docMethods = {
        */
       
       // first we check to see that it wasn't run recently
-      let timeSinceLastRunMs = Date.now() - 
+      const timeSinceLastRunMs = Date.now() - 
         (dbData.lastRun ? dbData.lastRun.when.getTime() : 0);
 
       if (timeSinceLastRunMs < _config.timeBetweenRunsMs) {
@@ -187,18 +187,18 @@ exports.docMethods = {
    * @param {Object} [ctx] Request context (if available).
    */
   runNow: function*(ctx) {
-    let _config = this[$EXTRA];
+    const _config = this[$EXTRA];
 
-    let runByUser = _.get(ctx, 'currentUser.id', '');
+    const runByUser = _.get(ctx, 'currentUser.id', '');
 
     _config.logger.debug(`Running task (user: ${runByUser})`);
 
     try {
-      let start = Date.now();
+      const start = Date.now();
 
       yield _config.handler(this._App());
 
-      let duration = Date.now() - start;
+      const duration = Date.now() - start;
 
       _config.logger.info(`Run complete: ${duration}ms`);
 
@@ -222,7 +222,7 @@ exports.docMethods = {
    * Set schedule status of this task.
    */
   setActive: function*(active) {
-    let _config = this[$EXTRA];
+    const _config = this[$EXTRA];
 
     _config.logger.debug(`Set active: ${active}`);
 

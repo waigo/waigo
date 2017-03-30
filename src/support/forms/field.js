@@ -157,7 +157,7 @@ class Field {
    */
   * setSanitizedValue (val) {
     for (const sanitizer of this.sanitizers) {
-      let fn = sanitizer.fn,
+      const fn = sanitizer.fn,
         msg = sanitizer.msg;
 
       try {
@@ -192,7 +192,7 @@ class Field {
    * @throws FieldValidationError If validation fails.
    */
   * validate (context) {
-    let errors = [];
+    const errors = [];
 
     // if value is undefined and field is not required then nothing to do
     if (undefined === this.value || null === this.value || '' === this.value) {
@@ -203,7 +203,7 @@ class Field {
       }
     } else {
       for (const validator of this.validators) {
-        let fn = validator.fn,
+        const fn = validator.fn,
           msg = validator.msg;
 
         try {
@@ -250,7 +250,7 @@ Field.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
  * @return {Field}
  */
 Field.new = function(form, config) {
-  let type = config.type,
+  const type = config.type,
     FieldClass = waigo.load(`support/forms/fields/${type}`);
 
   return new FieldClass(form, config);

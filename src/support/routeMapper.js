@@ -41,10 +41,10 @@ class RouteMapper {
 
     require('koa-trie-router')(this.App.koa);
 
-    let possibleMappings = [];
+    const possibleMappings = [];
 
     // resolve middleware for different HTTP methods
-    let commonMiddleware = {};
+    const commonMiddleware = {};
     _.each(METHODS, (method) => {
       logger.debug('Setting up HTTP method middleware', method);
 
@@ -66,7 +66,7 @@ class RouteMapper {
 
     // now order by path (specific to general)
     // put the routes into order (specific to general)
-    let orderedMappings = possibleMappings.sort(function(a, b) {
+    const orderedMappings = possibleMappings.sort(function(a, b) {
       return a.url < b.url;
     });
 
@@ -79,7 +79,7 @@ class RouteMapper {
     logger.debug('Building reverse lookup table');
 
     _.each(orderedMappings, (mapping) => {
-      let route = this.App.koa.route(mapping.url);
+      const route = this.App.koa.route(mapping.url);
 
       route[mapping.method.toLowerCase()].apply(route, mapping.resolvedMiddleware);
 
@@ -132,12 +132,12 @@ class RouteMapper {
   _loadController (controller) {
     logger.debug('Load controller', controller);
 
-    let tokens = controller.split('.'),
+    const tokens = controller.split('.'),
       controllerPath = tokens,
       methodName = tokens.pop(),
       controllerName = controllerPath.join('.');
 
-    let mod = waigo.load(`controllers/${controllerPath.join('/')}`);
+    const mod = waigo.load(`controllers/${controllerPath.join('/')}`);
 
     if (!_.isFunction(mod[methodName])) {
       throw new RouteError(`Unable to find method "${methodName}" on controller "${controllerName}"`);
@@ -228,17 +228,17 @@ class RouteMapper {
     node = _.extend({}, node);
 
     // load parent middleware
-    let resolvedPreMiddleware = parentConfig.preMiddleware.concat(
+    const resolvedPreMiddleware = parentConfig.preMiddleware.concat(
       _.map(node.pre || [], _.bind(this._loadMiddleware, this))
     );
     delete node.pre;
 
-    let mappings = [];
+    const mappings = [];
 
     // iterate through each possible method
     _.each(METHODS , (method) => {
       if (node[method]) {
-        let routeMiddleware = _.isArray(node[method]) ? node[method] : [node[method]];
+        const routeMiddleware = _.isArray(node[method]) ? node[method] : [node[method]];
 
         mappings.push({
           method: method,
@@ -284,7 +284,7 @@ class RouteMapper {
  * @return {RouteMapper}
  */
 exports.setup = function*(app, middlewareConfig, routeConfig) {
-  let mapper = new RouteMapper(app);
+  const mapper = new RouteMapper(app);
 
   yield mapper.setup(middlewareConfig, routeConfig);
 

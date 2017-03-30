@@ -22,7 +22,7 @@ module.exports = function*(App) {
 
   const routeFiles = waigo.getItemsInFolder('routes');
 
-  let routes = {};
+  const routes = {};
 
   _.each(routeFiles, function(routeFile) {
     App.logger.debug('Loading ' + routeFile);

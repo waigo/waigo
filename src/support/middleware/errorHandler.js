@@ -48,7 +48,7 @@ module.exports = function() {
 const render = function*(config, err) {
   this.status = err.status || 500;
 
-  let error = yield viewObjects.toViewObjectYieldable(err, this);
+  const error = yield viewObjects.toViewObjectYieldable(err, this);
 
   error.status = this.status;
   error.request = {
@@ -81,7 +81,7 @@ const render = function*(config, err) {
  * @throws Error
  */
 const _throw = function() {
-  let args = Array.prototype.slice.call(arguments),
+  const args = Array.prototype.slice.call(arguments),
     ErrorClass = args[0];
 
   if (_.isObject(ErrorClass)) {

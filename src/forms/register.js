@@ -28,18 +28,18 @@ module.exports = {
   method: 'POST',
   postValidation: [
     function* createUserAndLogin(next) {
-      let ctx = this.context,
+      const ctx = this.context,
         App = ctx.App,
         User = App.models.User;
 
       // check if there's an admin user
-      let adminUserExists = yield User.haveAdminUsers(),
+      const adminUserExists = yield User.haveAdminUsers(),
         roles = (adminUserExists ? [] : ['admin']);
 
       App.logger.info('Registering user ' + this.fields.email.value, roles);
 
       // create user
-      let user = yield User.register({
+      const user = yield User.register({
         username: this.fields.email.value,
         email: this.fields.email.value,
         password: this.fields.password.value,
@@ -50,7 +50,7 @@ module.exports = {
       yield user.login(this.context);
 
       // send confirmation email
-      let token = yield App.actionTokens.create('verify_email', user, {
+      const token = yield App.actionTokens.create('verify_email', user, {
         email: this.fields.email.value,
       });
       

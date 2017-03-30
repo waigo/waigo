@@ -58,9 +58,9 @@ class GenericOauth {
    * @return {String}
    */
   getAuthorizeUrl () {
-    let params = this._buildAuthorizeParams();
+    const params = this._buildAuthorizeParams();
 
-    let url = this.oauth2.getAuthorizeUrl(params);
+    const url = this.oauth2.getAuthorizeUrl(params);
 
     this.logger.debug('authorize url', url);
 
@@ -69,7 +69,7 @@ class GenericOauth {
 
 
   * handleAuthorizationCallback() {
-    let user = this._user();
+    const user = this._user();
 
     this.App.emit('record', 'oauth_callback', user || 'anon', {
       provider: this.provider,
@@ -77,7 +77,7 @@ class GenericOauth {
     });
 
     try {
-      let errorMsg = this.context.request.query.error,
+      const errorMsg = this.context.request.query.error,
         errorDesc = this.context.request.query.error_description;
 
       if (errorMsg) {
@@ -85,13 +85,13 @@ class GenericOauth {
       }
       
       // we got the code!
-      let code = this.context.request.query.code;
+      const code = this.context.request.query.code;
 
       if (!code) {
         throw new OauthError('Failed to obtain OAuth code', 400);
       }
 
-      let response = yield this.getAccessToken(code);
+      const response = yield this.getAccessToken(code);
 
       yield this._handlePostAuthorizationSuccess(response);
     } catch (err) {
@@ -105,13 +105,13 @@ class GenericOauth {
    * @param {String} code Code returned by OAuth provider.
    */
   * getAccessToken (code) {
-    let user = this._user();
+    const user = this._user();
 
     this.logger.info(`Get access token: user=${user ? user.id : 'anon'} code=${code}`);
 
     try {
       return yield new Q((resolve, reject) => {
-        let params = this._buildAccessTokenParams();
+        const params = this._buildAccessTokenParams();
 
         this.oauth2.getOAuthAccessToken(code, params, (err, access_token, refresh_token, result) => {
           if (err) {
@@ -172,7 +172,7 @@ class GenericOauth {
 
 
   _buildRequestUrl (url, queryParams) {
-    let apiBaseUrl = this.config.apiBaseUrl;
+    const apiBaseUrl = this.config.apiBaseUrl;
 
     if (!_.get(apiBaseUrl, 'length')) {
       throw new OauthError(`${this.provider}: apiBaseUrl must be provided`);
@@ -228,9 +228,9 @@ class GenericOauth {
 
 
   _buildAuthorizeParams () {
-    let params = _.extend({}, _.get(this.config, 'authorizeParams'));
+    const params = _.extend({}, _.get(this.config, 'authorizeParams'));
 
-    let callbackParamName = _.get(this.config, 'callbackParam', 'redirect_uri');
+    const callbackParamName = _.get(this.config, 'callbackParam', 'redirect_uri');
 
     params[callbackParamName] = this.callbackURL;
 
@@ -239,9 +239,9 @@ class GenericOauth {
 
 
   _buildAccessTokenParams () {
-    let params = _.extend({}, _.get(this.config, 'accessTokenParams'));
+    const params = _.extend({}, _.get(this.config, 'accessTokenParams'));
 
-    let callbackParamName = _.get(this.config, 'callbackParam', 'redirect_uri');
+    const callbackParamName = _.get(this.config, 'callbackParam', 'redirect_uri');
 
     params[callbackParamName] = this.callbackURL;
 

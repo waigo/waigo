@@ -35,20 +35,20 @@ class Select extends Field {
     // default validator
     this._addValidator(
       function*(context, field, val) {
-        let options = yield field.getOptions();
+        const options = yield field.getOptions();
 
         if (!_.isArray(val)) {
           val = [val];
         }
 
         val = _arrayToStr(val);
-        let expected = _arrayToStr(_.keys(options));
+        const expected = _arrayToStr(_.keys(options));
 
-        let diff = _.difference(val, expected);
+        const diff = _.difference(val, expected);
         
         // if unknown option given OR if more than one given for a non-multiple select
         if (diff.length || (1 < val.length && !field.config.multiple)) {
-          let str = field.config.multiple ? 'one or more of' : 'one of';
+          const str = field.config.multiple ? 'one or more of' : 'one of';
 
           throw new FieldValidationError(`Must be ${str}: ${_.values(options).join(', ')}`);
         }
@@ -76,7 +76,7 @@ class Select extends Field {
  * @override
  */
 Select.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
-  let ret = yield Field.prototype.toViewObject.call(this, ctx);
+  const ret = yield Field.prototype.toViewObject.call(this, ctx);
 
   ret.options = yield this.getOptions();
 

@@ -20,7 +20,7 @@ const waigo = global.waigo,
 module.exports = function(options) {
   options = (options || {});
   
-  let min = options.min,
+  const min = options.min,
     max = options.max;
 
   return function*(context, field, value) {

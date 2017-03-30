@@ -29,9 +29,9 @@ const OutputFormatError = errors.define('OutputFormatError');
  * @return {Function} Express middleware.
  */
 module.exports = function(App, options) {
-  let enabledFormats = {};
+  const enabledFormats = {};
 
-  let formatNames = Object.keys(options.formats);
+  const formatNames = Object.keys(options.formats);
 
   for (const format of formatNames) {
     enabledFormats[format] = 
@@ -42,9 +42,9 @@ module.exports = function(App, options) {
   }
 
   return function* setOutputFormat(next) {
-    let ctx = this;
+    const ctx = this;
     
-    let requestedFormat = 
+    const requestedFormat = 
       _.get(this.query, options.paramName, options.default).toLowerCase();
 
     // check format is valid
@@ -69,7 +69,7 @@ module.exports = function(App, options) {
       }
 
       // get yieldables
-      let localsViewObjects = yield viewObjects.toViewObjectYieldable(locals, ctx);
+      const localsViewObjects = yield viewObjects.toViewObjectYieldable(locals, ctx);
 
       // call actual rendering method
       yield enabledFormats[this.request.outputFormat].render.call(ctx, view, localsViewObjects);

@@ -121,7 +121,7 @@ exports.docMethods = {
    * Get whether user has any of  given roles
    */
   isOneOf: function() {
-    let roles = _.toArray(arguments);
+    const roles = _.toArray(arguments);
 
     return !! (_.intersection(this.roles || [], roles).length);
   },
@@ -132,7 +132,7 @@ exports.docMethods = {
    * @return {Boolean} true if password matches, false otherwise
    */
   isPasswordCorrect: function*(password) {
-    let passAuth = _.find(this.auth, function(a) {
+    const passAuth = _.find(this.auth, function(a) {
       return 'password' === a.type;
     });
 
@@ -140,11 +140,11 @@ exports.docMethods = {
       return false;
     }
 
-    let sepPos = passAuth.token.indexOf('-'),
+    const sepPos = passAuth.token.indexOf('-'),
       salt = passAuth.token.substr(0, sepPos),
       hash = passAuth.token.substr(sepPos + 1);
 
-    let generatedHash = yield this.__model.generatePasswordHash(
+    const generatedHash = yield this.__model.generatePasswordHash(
       password, salt
     );
 
@@ -171,7 +171,7 @@ exports.docMethods = {
    * @param {String} email Email address to verify.
    */
   verifyEmail: function*(email) {
-    let theEmail = _.find(this.emails, function(e) {
+    const theEmail = _.find(this.emails, function(e) {
       return email === e.email;
     });
 
@@ -206,7 +206,7 @@ exports.docMethods = {
    * @return {Boolean}
    */
   isEmailVerified: function*(email) {
-    let item = _.find(this.emails || [], function(e) {
+    const item = _.find(this.emails || [], function(e) {
       return email === e.email;
     });
 
@@ -218,7 +218,7 @@ exports.docMethods = {
    * @param {Boolea} verified Whether address is verified.
    */
   addEmail: function*(email, verified) {
-    let theEmail = _.find(this.emails, function(e) {
+    const theEmail = _.find(this.emails, function(e) {
       return email === e.email;
     });
 
@@ -248,7 +248,7 @@ exports.docMethods = {
   updatePassword: function*(newPassword) {
     this._logger().debug('Update user password', this.username);
 
-    let passAuth = _.find(this.auth, function(a) {
+    const passAuth = _.find(this.auth, function(a) {
       return 'password' === a.type;
     });
 
@@ -300,7 +300,7 @@ exports.docMethods = {
   saveAuth: function*(type, data) {
     this._logger().debug('Save user auth', this.id, type, data);
 
-    let existing = _.find(this.auth, function(a) {
+    const existing = _.find(this.auth, function(a) {
       return type === a.type;
     });
 
@@ -350,7 +350,7 @@ exports.modelMethods = {
    * @return {User}
    */
   getByUsername: function*(username) {
-    let ret = yield this.rawQry().filter(function(user) {
+    const ret = yield this.rawQry().filter(function(user) {
       return user('username').eq(username);
     }).run();
 
@@ -363,7 +363,7 @@ exports.modelMethods = {
   getByEmail: function*(email) {
     const r = this.db;
 
-    let ret = yield this.rawQry().filter(
+    const ret = yield this.rawQry().filter(
       r.row('emails').contains(function(e) {
         return e('email').eq(email);
       })
@@ -376,7 +376,7 @@ exports.modelMethods = {
    * @return {User}
    */
   getByEmailOrUsername: function*(str) {
-    let ret = yield this.rawQry().filter(function(user) {
+    const ret = yield this.rawQry().filter(function(user) {
       return user('emails')('email')(0).eq(str).or(user('username').eq(str));
     }).run();
 
@@ -387,7 +387,7 @@ exports.modelMethods = {
    * @return {User}
    */
   findWithIds: function*(ids) {
-    let qry = this.rawQry();
+    const qry = this.rawQry();
 
     qry = qry.getAll.apply(qry, ids.concat([{index: 'id'}]));
 
@@ -398,7 +398,7 @@ exports.modelMethods = {
    * @return {Array}
    */
   findAdminUsers: function*() {
-    let ret = yield this.rawQry().filter(function(user) {
+    const ret = yield this.rawQry().filter(function(user) {
       return user('roles').contains('admin')
     }).run();
 
@@ -409,7 +409,7 @@ exports.modelMethods = {
    * @return {Number}
    */
   haveAdminUsers: function*() {
-    let count = yield this.rawQry().count(function(user) {
+    const count = yield this.rawQry().count(function(user) {
       return user('roles').contains('admin')
     }).run();
 
@@ -422,7 +422,7 @@ exports.modelMethods = {
    * @return {String} hash to store
    */
   generatePasswordHash: function*(password, salt) {
-    let hash = crypto.createHash('sha256');
+    const hash = crypto.createHash('sha256');
 
     salt = salt || (yield randomBytesQ(64)).toString('hex');
     hash.update(salt);
@@ -442,7 +442,7 @@ exports.modelMethods = {
    */
   register: function*(properties) {
     // create user
-    let attrs = {
+    const attrs = {
       username: properties.username,
       emails: [],
       auth: [],
@@ -472,7 +472,7 @@ exports.modelMethods = {
 
     attrs.created = new Date();
 
-    let user = yield this.insert(attrs);
+    const user = yield this.insert(attrs);
 
     if (!user) {
       throw new Error('Error creating new user: ' + properties.username);
@@ -487,7 +487,7 @@ exports.modelMethods = {
     return user;
   },
   loadLoggedIn: function*(context) {
-    let userId = _.get(context, 'session.user.id');
+    const userId = _.get(context, 'session.user.id');
 
     if (!userId) {
       return null;
@@ -496,7 +496,7 @@ exports.modelMethods = {
     return yield this.get(userId);
   },
   getUsersCreatedSince: function*(date) {
-    let ret = yield this.rawQry().filter(function(doc) {
+    const ret = yield this.rawQry().filter(function(doc) {
       return doc('created').ge(date)
     }).run();
 

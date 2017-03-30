@@ -41,7 +41,7 @@ class Csrf extends HiddenField {
  * @override
  */
 Csrf.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
-  let ret = yield HiddenField.prototype[viewObjects.METHOD_NAME].call(this, ctx);
+  const ret = yield HiddenField.prototype[viewObjects.METHOD_NAME].call(this, ctx);
 
   ret.value = ctx.csrf;
 

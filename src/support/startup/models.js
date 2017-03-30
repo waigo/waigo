@@ -18,21 +18,21 @@ const waigo = global.waigo,
 module.exports = function*(App) {
   App.logger.debug('Loading models');
 
-  let modelModuleFiles = waigo.getItemsInFolder('models');
+  const modelModuleFiles = waigo.getItemsInFolder('models');
 
   App.models = {};
 
   for (const modulePath of modelModuleFiles) {
-    let modelName = _.capitalize(path.basename(modulePath));
+    const modelName = _.capitalize(path.basename(modulePath));
 
     App.logger.debug(`Loading ${modelName}`);
 
-    let modelConfig = waigo.load(modulePath);
+    const modelConfig = waigo.load(modulePath);
 
-    let modelLogger = logger.create(modelName);
+    const modelLogger = logger.create(modelName);
 
     // add logger and app getter methods
-    let helperMethods = {
+    const helperMethods = {
       _logger: () => modelLogger,
       _App: () => App,      
     };

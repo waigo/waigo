@@ -20,19 +20,19 @@ const waigo = global.waigo,
 module.exports = function*(App) {
   App.logger.info(`Setting up notifications`);
 
-  let ids = _.keys(App.config.notifications || {});
+  const ids = _.keys(App.config.notifications || {});
 
   App.notifiers = {};
 
   for (const id of ids) {
     App.logger.debug(`Setting up notifier: ${id}`);
 
-    let cfg = App.config.notifications[id];
+    const cfg = App.config.notifications[id];
 
-    let transports = yield _.map(cfg.transports || [], function*(transport) {
+    const transports = yield _.map(cfg.transports || [], function*(transport) {
       App.logger.debug(`Setting up transport: ${transport.type}`);
 
-      let builder = waigo.load(`support/notifications/${transport.type}`);
+      const builder = waigo.load(`support/notifications/${transport.type}`);
 
       return yield builder(App, id, transport.config);
     });

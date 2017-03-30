@@ -16,7 +16,7 @@ const waigo = global.waigo,
  */
 module.exports = function(options) {
   return function*(context, field, value) {
-    let fields = field.form.fields,
+    const fields = field.form.fields,
       otherField = fields[options.field]
 
     if (!otherField) {

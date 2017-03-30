@@ -161,12 +161,12 @@ loader.init = function*(options) {
     debug('Getting plugin names...');
     
     // based on code from https://github.com/sindresorhus/load-grunt-tasks/blob/master/load-grunt-tasks.js
-    let pattern = options.plugins.glob || ['waigo-plugin-*'];
-    let config = options.plugins.config || null;
-    let scope = options.plugins.configKey || ['dependencies', 'devDependencies', 'peerDependencies'];
+    const pattern = options.plugins.glob || ['waigo-plugin-*'];
+    const config = options.plugins.config || null;
+    const scope = options.plugins.configKey || ['dependencies', 'devDependencies', 'peerDependencies'];
     
     if (null === config || typeof config === 'string') {
-      let pathToConfig = config;
+      const pathToConfig = config;
 
       if (!pathToConfig || 'package.json' === pathToConfig) {
         pathToConfig = findup('package.json', {
@@ -185,7 +185,7 @@ loader.init = function*(options) {
       }
     }
 
-    let names = scope.reduce(function (result, prop) {
+    const names = scope.reduce(function (result, prop) {
       return result.concat(Object.keys(config[prop] || {}));
     }, []);
 
@@ -195,13 +195,13 @@ loader.init = function*(options) {
   debug(`Plugins to load: ${options.plugins.names.join(', ')}`);
 
   // what paths will we search?
-  let sourcePaths = loader[$SOURCE_PATHS] = {
+  const sourcePaths = loader[$SOURCE_PATHS] = {
     waigo: WAIGO_FOLDER,
     app: appFolder
   };
 
   _.each(options.plugins.names, function(name) {
-    let fullPath;
+    const fullPath;
 
     try {
       fullPath = path.dirname(require.resolve(name));
@@ -209,7 +209,7 @@ loader.init = function*(options) {
       if (process.env.PLUGIN_SEARCH_FOLDER) {
         fullPath = path.join(process.env.PLUGIN_SEARCH_FOLDER, name);
 
-        let stat = fs.statSync(fullPath);
+        const stat = fs.statSync(fullPath);
 
         if (!stat.isDirectory()) {
           throw err;
@@ -222,14 +222,14 @@ loader.init = function*(options) {
     sourcePaths[name] = path.join(fullPath, 'src');
   });
 
-  let scanOrder = ['waigo'].concat(options.plugins.names, 'app');
+  const scanOrder = ['waigo'].concat(options.plugins.names, 'app');
 
   // reset cache
   loader[$FILE] = {};
 
   // start scanning
   for (const sourceName of scanOrder) {
-    let moduleMap = {};
+    const moduleMap = {};
 
     debug(`Scanning for files in: ${sourceName}`);
 
@@ -259,7 +259,7 @@ loader.init = function*(options) {
 
   // now go through the list of available modules and ensure that there are no ambiguities
   _.each(loader[$FILE], function(moduleConfig, moduleName) {
-    let sourceNames = Object.keys(moduleConfig.sources);
+    const sourceNames = Object.keys(moduleConfig.sources);
 
     // if there is an app implementation then that's the one to use
     if (moduleConfig.sources.app) {
@@ -272,7 +272,7 @@ loader.init = function*(options) {
     // else
     else {
       // get plugin source names
-      let pluginSources = _.filter(sourceNames, function(srcName) {
+      const pluginSources = _.filter(sourceNames, function(srcName) {
         return 'waigo' !== srcName;
       });
 
@@ -307,7 +307,7 @@ loader.init = function*(options) {
  * @see #getPath
  */
 loader.load = function(filePath) {
-  let resolvedPath = loader.getPath(filePath);
+  const resolvedPath = loader.getPath(filePath);
 
   debug(`Load ${filePath} -> ${resolvedPath}`);
 
@@ -355,10 +355,10 @@ loader.getPath = function(filePath) {
   }
 
   // get source to load from
-  let sanitizedFileName = filePath,
+  const sanitizedFileName = filePath,
     source = null;
 
-  let sepPos = filePath.indexOf(':')
+  const sepPos = filePath.indexOf(':')
   if (-1 < sepPos) {
     source = filePath.substr(0, sepPos);
     sanitizedFileName = filePath.substr(sepPos + 1);

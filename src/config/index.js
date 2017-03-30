@@ -60,7 +60,7 @@ module.exports = function() {
   debug('Config mode, user', config.mode, config.user);
 
   // base
-  let fn = loadConfigModule('base');
+  const fn = loadConfigModule('base');
   if (!fn) {
     throw new Error('Base configuration file not found');
   }

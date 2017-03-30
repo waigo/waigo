@@ -23,20 +23,20 @@ module.exports = {
   method: 'POST',
   postValidation: [
     function* sendResetPasswordEmail(next) {
-      let ctx = this.context,
+      const ctx = this.context,
         App = ctx.App;
 
-      let User = App.models.User;
+      const User = App.models.User;
 
       // load user
-      let user = yield User.getByEmailOrUsername(this.fields.email.value);
+      const user = yield User.getByEmailOrUsername(this.fields.email.value);
 
       if (!user) {
         ctx.throw(ForgotPasswordError, 'User not found', 404);
       }
 
       // action
-      let token = yield App.actionTokens.create('reset_password', user);
+      const token = yield App.actionTokens.create('reset_password', user);
 
       App.logger.debug('Reset password token for ' + user.id , token);
 

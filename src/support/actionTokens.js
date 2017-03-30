@@ -49,9 +49,9 @@ class ActionTokens {
 
     // every token is uniquely identied by a salt (this is also doubles up as  
     // a factor for more secure encryption)
-    let salt = _.uuid.v4();
+    const salt = _.uuid.v4();
 
-    let plaintext = JSON.stringify([ 
+    const plaintext = JSON.stringify([ 
       Date.now() + (options.validForSeconds * 1000), 
       salt, 
       type, 
@@ -61,7 +61,7 @@ class ActionTokens {
 
     this.logger.trace('Encrypt: ' + plaintext);
 
-    let cipher = crypto.createCipher(
+    const cipher = crypto.createCipher(
       'aes256', this.config.encryptionKey
     );
 
@@ -84,14 +84,14 @@ class ActionTokens {
     
     this.logger.debug(`Processing action token: ${token}`);
 
-    let json = null;
+    const json = null;
 
     try {
-      let decipher = crypto.createDecipher(
+      const decipher = crypto.createDecipher(
         'aes256', this.config.encryptionKey
       );
 
-      let plaintext = decipher.update(token, 'hex', 'utf8') 
+      const plaintext = decipher.update(token, 'hex', 'utf8') 
         + decipher.final('utf8');
 
       this.logger.trace(`Decrypted: ${plaintext}`);
@@ -103,7 +103,7 @@ class ActionTokens {
       });
     }
 
-    let ts = json[0],
+    const ts = json[0],
       salt = json[1],
       type = json[2],
       userId = json[3],

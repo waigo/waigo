@@ -29,7 +29,7 @@ const _connections = {};
 exports.create = function*(id, logger, dbConfig) {
   logger.info('Connecting to RethinkDB', id);
 
-  let db = yield Thinodium.connect('rethinkdb', dbConfig.serverConfig);
+  const db = yield Thinodium.connect('rethinkdb', dbConfig.serverConfig);
 
   _connections[id] = db;
 

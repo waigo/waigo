@@ -62,9 +62,9 @@ class ACL {
   * reload () {
     this.logger.debug('Reloading rules from db');
 
-    let data = yield this.App.models.Acl.getAll();
+    const data = yield this.App.models.Acl.getAll();
 
-    let res = this.res = {},
+    const res = this.res = {},
       users = this.users = {},
       roles = this.roles = {};
 
@@ -79,7 +79,7 @@ class ACL {
       res[doc.resource][doc.entityType][doc.entity] = true;
 
       // entity perspsective
-      let entity = ('user' === doc.entityType ? users : roles);
+      const entity = ('user' === doc.entityType ? users : roles);
 
       entity[doc.entity] = entity[doc.entity] || {};
       entity[doc.entity][doc.resource] = true;
@@ -130,7 +130,7 @@ class ACL {
     }
 
     // if one of user's roles has access it's ok 
-    let roles = user.roles || [];
+    const roles = user.roles || [];
 
     for (const role of roles) {
       if (_.get(this.roles, role + '.' + resource)) {

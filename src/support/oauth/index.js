@@ -16,14 +16,14 @@ exports.load = function*(ctx, provider, tokens) {
 
   // see if we have an access token for this provider for current user
   if (!tokens) {
-    let user = ctx.currentUser;
+    const user = ctx.currentUser;
 
     if (user) {
       tokens = yield user.getOauth(provider);
     }
   }
 
-  let Impl = GenericOauth;
+  const Impl = GenericOauth;
 
   try {
     Impl = waigo.load(`support/oauth/providers/${provider}`);
