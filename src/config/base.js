@@ -9,18 +9,18 @@ const waigo = global.waigo,
 
 /**
  * # Base configuration
- * 
- * This is the base configuration for Waigo applications and is always loaded 
+ *
+ * This is the base configuration for Waigo applications and is always loaded
  * before any environment-specific configuration files.
- * 
- * This configuration module file is designed for running an app in a 
- * development environment and contains all the default available config 
+ *
+ * This configuration module file is designed for running an app in a
+ * development environment and contains all the default available config
  * options in Waigo.
  *
- * For production-quality deployments it is recommended you create a 
- * `production.js` config file and set the `NODE_ENV` environment variable to 
+ * For production-quality deployments it is recommended you create a
+ * `production.js` config file and set the `NODE_ENV` environment variable to
  * equal `production`.
- * 
+ *
  * @param {Object} config config Initial configuration object.
  */
 module.exports = function(config) {
@@ -108,11 +108,11 @@ module.exports = function(config) {
   ];
 
 
-  /** 
+  /**
    * Error handling config.
    */
   config.errors = {
-    /** 
+    /**
      * Whether stack traces should be included when rendering errors.
      * @type {Boolean}
      */
@@ -125,7 +125,7 @@ module.exports = function(config) {
    * Database connection.
    *
    * You can specify multiple database connections as long as `main` connection
-   * is also always specified. The built-in model classes will store their data 
+   * is also always specified. The built-in model classes will store their data
    * in this connection.
    */
   config.db = {
@@ -146,13 +146,13 @@ module.exports = function(config) {
       }
     }
   };
-  
-   
-   
+
+
+
 
 
   /**
-   * Common middleware for requests. 
+   * Common middleware for requests.
    */
 
   config.middleware = {};
@@ -264,17 +264,17 @@ module.exports = function(config) {
 
 
   /**
-   * Action tokens are enrypted one-time strings sent to users (usually in a 
+   * Action tokens are enrypted one-time strings sent to users (usually in a
    * link by email) which represent a particular action to be taken at a future
-   * point in time. 
-   * 
-   * The next time the server recieves the token it can decode it to find out 
-   * what action should be taken for the associated user. 
-   * 
+   * point in time.
+   *
+   * The next time the server recieves the token it can decode it to find out
+   * what action should be taken for the associated user.
+   *
    * Resetting a user's password is done using action tokens.
    */
   config.actionTokens = {
-    // encryption key to prevent tampering 
+    // encryption key to prevent tampering
     encryptionKey: _.uuid.v4(),
     // default token validity duration from when it was created
     validForSeconds: 60 * 60 * 2, /* 2 hours */
@@ -312,4 +312,3 @@ module.exports = function(config) {
 
 
 };
-

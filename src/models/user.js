@@ -33,38 +33,38 @@ const AuthSchema = {
 
 
 exports.schema = {
-  username: { 
-    type: String, 
+  username: {
+    type: String,
     required: true,
   },
-  profile: { 
-    type: ProfileSchema, 
+  profile: {
+    type: ProfileSchema,
     required: true,
   },
-  emails: { 
+  emails: {
     type: [EmailSchema],
     required: true,
     adminViewOptions: {
       viewSubKey: 'email'
     },
   },
-  auth: { 
-    type: [AuthSchema], 
+  auth: {
+    type: [AuthSchema],
     required: true,
     adminViewOptions: {
       viewSubKey: 'type'
     },
   },
-  roles: { 
-    type: [String], 
+  roles: {
+    type: [String],
     required: false,
   },
   created: {
     type: Date,
     required: true,
   },
-  lastLogin: { 
-    type: Date, 
+  lastLogin: {
+    type: Date,
     required: false,
   },
 };
@@ -89,7 +89,7 @@ exports.indexes = [
     options: {
       multi: true,
     },
-  },  
+  },
 ];
 
 
@@ -122,7 +122,7 @@ exports.docMethods = {
    */
   isOneOf: function() {
     let roles = _.toArray(arguments);
-    
+
     return !! (_.intersection(this.roles || [], roles).length);
   },
   /**
@@ -143,7 +143,7 @@ exports.docMethods = {
     let sepPos = passAuth.token.indexOf('-'),
       salt = passAuth.token.substr(0, sepPos),
       hash = passAuth.token.substr(sepPos + 1);
-    
+
     let generatedHash = yield this.__model.generatePasswordHash(
       password, salt
     );
@@ -268,14 +268,14 @@ exports.docMethods = {
   },
   /**
    * Get OAuth data.
-   * 
+   *
    * @param {String} provider Auth provider.
    *
    * @return {Object} null if not found.
    */
   getOauth: function*(provider)  {
     provider = 'oauth:' + provider;
-    
+
     provider = _.find(this.auth, function(a) {
       return provider === a.type;
     });
@@ -284,7 +284,7 @@ exports.docMethods = {
   },
   /**
    * Save OAuth data.
-   * 
+   *
    * @param {String} provider Auth provider.
    * @param {Object} data Data.
    */
@@ -293,7 +293,7 @@ exports.docMethods = {
   },
   /**
    * Save Auth data.
-   * 
+   *
    * @param {String} type Auth type.
    * @param {Object} data Data.
    */
@@ -325,7 +325,7 @@ exports.docMethods = {
    * Get whether user can access given resource.
    *
    * @param {String} resource      The resource the user wishes to access.
-   * 
+   *
    * @return {Boolean} true if access is possible, false if not.
    */
   canAccess: function*(resource) {
@@ -345,7 +345,7 @@ exports.docMethods = {
 
 
 exports.modelMethods = {
-  /** 
+  /**
    * Get user by username.
    * @return {User}
    */
@@ -356,7 +356,7 @@ exports.modelMethods = {
 
     return this.wrapRaw(_.get(ret, '0'));
   },
-  /** 
+  /**
    * Get user by email address.
    * @return {User}
    */
@@ -371,7 +371,7 @@ exports.modelMethods = {
 
     return this.wrapRaw(_.get(ret, '0'));
   },
-  /** 
+  /**
    * Get user by email address or username.
    * @return {User}
    */
@@ -382,7 +382,7 @@ exports.modelMethods = {
 
     return this.wrapRaw(_.get(ret, '0'));
   },
-  /** 
+  /**
    * Get user by email address or username.
    * @return {User}
    */
@@ -503,8 +503,3 @@ exports.modelMethods = {
     return this.wrapRaw(ret);
   },
 };
-
-
-
-
-

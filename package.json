@@ -1,7 +1,7 @@
 {
   "name": "waigo",
   "description": "Node.js ES6 framework for reactive, data-driven apps and APIs (Koa, RethinkDB)",
-  "version": "2.2.0",
+  "version": "3.0.0",
   "license": "MIT",
   "author": {
     "name": "Ramesh Nair",
