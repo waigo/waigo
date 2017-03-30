@@ -26,7 +26,7 @@ const _connections = {}
  *
  * @return {Object} db connection.
  */
-exports.create = function*(id, logger, dbConfig) {
+exports.create = function *(id, logger, dbConfig) {
   logger.info('Connecting to RethinkDB', id)
 
   const db = yield Thinodium.connect('rethinkdb', dbConfig.serverConfig)
@@ -44,7 +44,7 @@ exports.create = function*(id, logger, dbConfig) {
  *
  * @param {Object} logger The app logger
  */
-exports.closeAll = function*(logger) {
+exports.closeAll = function *(logger) {
   logger.info('Close all connections')
 
   yield _.map(_connections, (db) => {

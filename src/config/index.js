@@ -13,7 +13,7 @@ const waigo = global.waigo,
  * @param  {String} name Config module name.
  * @return {Function} `null` if module not found.
  */
-const loadConfigModule = function(name) {
+const loadConfigModule = function (name) {
   try {
     debug(`Loading ${name} configuration`)
 
@@ -51,7 +51,7 @@ const loadConfigModule = function(name) {
  * configuration module file.
  * @return {Object}
  */
-module.exports = function() {
+module.exports = function () {
   const config = {
     mode: process.env.NODE_ENV || 'development',
     user: process.env.USER

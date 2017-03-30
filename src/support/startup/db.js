@@ -16,7 +16,7 @@ const waigo = global.waigo,
  * 
  * @param {Object} App The application.
  */
-module.exports = function*(App) {
+module.exports = function *(App) {
   App.logger.info(`Setting up database connections`)
 
   App.dbs = {}

@@ -19,8 +19,8 @@ const waigo = global.waigo,
  * 
  * @return {Function} middleware
  */
-module.exports = function() {
-  return function*(next) {
+module.exports = function () {
+  return function *(next) {
     // request template vars
     this.templateVars = this.templateVars || {}
     this.templateVars.currentUser = this.currentUser

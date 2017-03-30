@@ -12,7 +12,7 @@ const waigo = global.waigo
  *
  * @param {Object} App The application.
  */
-module.exports = function*(App) {
+module.exports = function *(App) {
   App.logger.debug('Starting HTTP server')
 
   App.server = App.koa.listen(App.config.port)

@@ -7,7 +7,7 @@ const waigo = global.waigo,
 
 
 
-exports.getAuthorizeUrl = function*() {
+exports.getAuthorizeUrl = function *() {
   const impl = yield oauth.load(this, this.request.query.provider)
 
   yield this.render('getAuthorizeUrl', {
@@ -17,7 +17,7 @@ exports.getAuthorizeUrl = function*() {
 
 
 
-exports.callback = function*() {
+exports.callback = function *() {
   const provider = this.request.params.provider
 
   const impl = yield oauth.load(this, provider)

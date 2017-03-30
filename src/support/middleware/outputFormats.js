@@ -28,7 +28,7 @@ const OutputFormatError = errors.define('OutputFormatError')
  * 
  * @return {Function} Express middleware.
  */
-module.exports = function(App, options) {
+module.exports = function (App, options) {
   const enabledFormats = {}
 
   const formatNames = Object.keys(options.formats)
@@ -57,7 +57,7 @@ module.exports = function(App, options) {
     logger.debug('Output format', requestedFormat)
 
     // attach renderer
-    this.render = function*(view, locals, options) {
+    this.render = function *(view, locals, options) {
       locals = locals || {}
       options = options || {}
       
@@ -76,7 +76,7 @@ module.exports = function(App, options) {
     }
 
     // redirect method
-    this.redirect = function*(url) {
+    this.redirect = function *(url) {
       logger.debug('Redirect', url)
 
       // call actual rendering method

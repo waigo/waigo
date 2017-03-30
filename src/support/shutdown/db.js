@@ -12,12 +12,12 @@ const waigo = global.waigo,
  *
  * @param {Object} App The application.
  */
-module.exports = function*(App) {
+module.exports = function *(App) {
   App.logger.debug('Shutting down database connections')
 
   const dbAdapters = waigo.getItemsInFolder('support/db')
 
-  yield _.map(dbAdapters, function(adapter) {
+  yield _.map(dbAdapters, function (adapter) {
     return waigo.load(adapter).closeAll(App.logger)
   })
 }

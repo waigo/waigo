@@ -17,7 +17,7 @@ const waigo = global.waigo,
  * 
  * @param {Object} App The application.
  */
-module.exports = function*(App) {
+module.exports = function *(App) {
   App.logger.info(`Setting up notifications`)
 
   const ids = _.keys(App.config.notifications || {})
@@ -29,7 +29,7 @@ module.exports = function*(App) {
 
     const cfg = App.config.notifications[id]
 
-    const transports = yield _.map(cfg.transports || [], function*(transport) {
+    const transports = yield _.map(cfg.transports || [], function *(transport) {
       App.logger.debug(`Setting up transport: ${transport.type}`)
 
       const builder = waigo.load(`support/notifications/${transport.type}`)
@@ -42,7 +42,7 @@ module.exports = function*(App) {
     }
   }
 
-  App.on('notify', co.wrap(function*(id, messageOrObject) {
+  App.on('notify', co.wrap(function *(id, messageOrObject) {
     if (!App.notifiers[id]) {
       return App.logger.warn(`Skipping invalid notifier target: ${id}`)
     }

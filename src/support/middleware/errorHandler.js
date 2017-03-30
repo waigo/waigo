@@ -16,8 +16,8 @@ const waigo = global.waigo,
  * 
  * @return {Function} middleware
  */
-module.exports = function() {
-  return function*(next) {
+module.exports = function () {
+  return function *(next) {
     // convenient throw method
     this.throw = _throw
 
@@ -45,7 +45,7 @@ module.exports = function() {
  * @return {*}
  * @private
  */
-const render = function*(config, err) {
+const render = function *(config, err) {
   this.status = err.status || 500
 
   const error = yield viewObjects.toViewObjectYieldable(err, this)
@@ -80,7 +80,7 @@ const render = function*(config, err) {
  * @param  {Any} ...       Additional arguments get passed to error class constructor.
  * @throws Error
  */
-const _throw = function() {
+const _throw = function () {
   const args = Array.prototype.slice.call(arguments),
     ErrorClass = args[0]
 

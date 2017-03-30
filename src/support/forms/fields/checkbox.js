@@ -24,7 +24,7 @@ class Checkbox extends Field {
     super(form, config)
 
     this._addSanitizer(
-      function*(field, value) {
+      function *(field, value) {
         return value ? validator.toBoolean('' + value) : false
       }
     )

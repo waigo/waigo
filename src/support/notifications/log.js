@@ -6,10 +6,10 @@ const waigo = global.waigo,
 
 
 
-module.exports = function*(App, id, config) {
+module.exports = function *(App, id, config) {
   const _logger = logger.create(id)
 
-  return function*(messageOrObject) {
+  return function *(messageOrObject) {
     const msg = (typeof messageOrObject === 'string' ? messageOrObject : JSON.stringify(messageOrObject))
     
     _logger.info(msg)

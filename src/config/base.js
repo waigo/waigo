@@ -23,7 +23,7 @@ const waigo = global.waigo,
  *
  * @param {Object} config config Initial configuration object.
  */
-module.exports = function(config) {
+module.exports = function (config) {
   /**
    * Server listening port.
    */

@@ -1,7 +1,7 @@
 const genomatic = require('genomatic')
 
 
-module.exports = function(_) {
+module.exports = function (_) {
   _.mixin({
     bindGen: genomatic.bind,
     isGenFn: genomatic.isGenFn,
@@ -15,7 +15,7 @@ module.exports = function(_) {
      * @param  {User|String} obj  The user object or username string.
      * @return {*}
      */
-    emailFormat: function(type, obj) {
+    emailFormat: function (type, obj) {
      switch (type) {
        case 'greet':
          const name = _.get(obj, 'profile.displayName') || _.get(obj, 'username', '') || obj

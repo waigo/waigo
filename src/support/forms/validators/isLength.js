@@ -15,13 +15,13 @@ const waigo = global.waigo,
  * 
  * @throws Error If not an email address.
  */
-module.exports = function(options) {
+module.exports = function (options) {
   options = _.extend({
     min: 0,
     max: 10000000,
   }, options)
 
-  return function*(context, field, value) {
+  return function *(context, field, value) {
     const len = _.get(value, 'length', 0)
     const min = options.min
     const max = options.max

@@ -10,7 +10,7 @@ const waigo = global.waigo,
  *
  * @param {Object} App The application.
  */
-module.exports = function*(App) {
+module.exports = function *(App) {
   App.logger.debug('Setting up common middleware')
 
   for (const m of App.config.middleware.ALL._order) {

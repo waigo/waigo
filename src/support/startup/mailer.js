@@ -14,7 +14,7 @@ const waigo = global.waigo,
  * 
  * @param {Object} App The application.
  */
-module.exports = function*(App) {
+module.exports = function *(App) {
   const mailerConfig = _.get(App.config, 'mailer', {})
 
   if (!_.get(mailerConfig, 'type')) {

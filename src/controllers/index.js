@@ -5,6 +5,6 @@
  */
 
 
-exports.main = function*() {
+exports.main = function *() {
   yield this.render('index')
 }

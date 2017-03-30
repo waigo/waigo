@@ -8,7 +8,7 @@ const waigo = global.waigo,
 
 
 
-const checkCSRF = function*(context, field, value) {
+const checkCSRF = function *(context, field, value) {
   try {
     context.assertCSRF(value)
   } catch (err) {
@@ -40,7 +40,7 @@ class Csrf extends HiddenField {
 /**
  * @override
  */
-Csrf.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
+Csrf.prototype[viewObjects.METHOD_NAME] = function *(ctx) {
   const ret = yield HiddenField.prototype[viewObjects.METHOD_NAME].call(this, ctx)
 
   ret.value = ctx.csrf

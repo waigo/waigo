@@ -17,13 +17,13 @@ const waigo = global.waigo,
  * 
  * @throws Error If not an email address.
  */
-module.exports = function(options) {
+module.exports = function (options) {
   options = (options || {})
   
   const min = options.min,
     max = options.max
 
-  return function*(context, field, value) {
+  return function *(context, field, value) {
     value = Number(value)
     
     if ( (undefined !== min && value < min) 

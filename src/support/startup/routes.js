@@ -17,14 +17,14 @@ const waigo = global.waigo,
  * 
  * @param {Object} App The application.
  */
-module.exports = function*(App) {
+module.exports = function *(App) {
   App.logger.debug('Setting up routes')
 
   const routeFiles = waigo.getItemsInFolder('routes')
 
   const routes = {}
 
-  _.each(routeFiles, function(routeFile) {
+  _.each(routeFiles, function (routeFile) {
     App.logger.debug('Loading ' + routeFile)
 
     _.merge(routes, waigo.load(routeFile))

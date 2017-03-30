@@ -12,12 +12,12 @@ const waigo = module.exports = require('./loader')
  *
  * @return {Function} Function to start the app and which returns a `Promise`.
  */
-waigo._bootstrap = function() {
-  return co(function*() {
+waigo._bootstrap = function () {
+  return co(function *() {
     /*
     Initialise the framework.
 
-    If you need to override the application source folder and/or plugins to 
+    If you need to override the application source folder and/or plugins to
     be loaded then this is the place to do it.
 
      */
@@ -26,12 +26,11 @@ waigo._bootstrap = function() {
     /*
     Start the application.
 
-    This loads in application configuration, runs all startup steps, sets up 
+    This loads in application configuration, runs all startup steps, sets up
     the middleware and kicks off the HTTP listener.
      */
-    waigo.App = new (waigo.load('application'))
+    waigo.App = new (waigo.load('application'))()
 
     yield waigo.App.start()
   })
 }
-

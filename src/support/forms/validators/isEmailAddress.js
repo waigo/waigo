@@ -11,8 +11,8 @@ const waigo = global.waigo,
  *
  * @throws Error If not an email address.
  */
-module.exports = function() {
-  return function*(context, field, value) {
+module.exports = function () {
+  return function *(context, field, value) {
     if (!validator.isEmail('' + value)) {
       throw new FieldValidationError('Must be an email address')
     }

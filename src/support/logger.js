@@ -7,7 +7,7 @@ const config = {
 }
 
 
-exports.init = function(cfg) {
+exports.init = function (cfg) {
   config = cfg
 
   log4js.configure({
@@ -25,13 +25,13 @@ exports.init = function(cfg) {
 
 
 
-exports.create = function(category) {
+exports.create = function (category) {
   const logger = log4js.getLogger(category)
 
   logger.setLevel(config.minLevel)
 
   // Allow for easy creation of sub-categories.
-  logger.create = function(subCategory) {
+  logger.create = function (subCategory) {
       return exports.create(`${category}/${subCategory}`)
   }
 

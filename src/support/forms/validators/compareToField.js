@@ -14,8 +14,8 @@ const waigo = global.waigo,
  * 
  * @throws Error If not an email address.
  */
-module.exports = function(options) {
-  return function*(context, field, value) {
+module.exports = function (options) {
+  return function *(context, field, value) {
     const fields = field.form.fields,
       otherField = fields[options.field]
 

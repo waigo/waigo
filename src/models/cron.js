@@ -60,7 +60,7 @@ exports.modelMethods = {
    * 
    * @return {Cron} new cron task instance.
    */
-  create: function*(id, crontab, handler) {
+  create: function *(id, crontab, handler) {
     const cron = yield this.get(id)
 
     if (!cron) {
@@ -79,7 +79,7 @@ exports.modelMethods = {
     cron.startScheduler(crontab)
 
     // override view object method
-    cron[viewObjects.METHOD_NAME] = function*(ctx) {
+    cron[viewObjects.METHOD_NAME] = function *(ctx) {
       const json = {
         id: this.id,
         disabled: this.disabled,
@@ -102,7 +102,7 @@ exports.docMethods = {
   /**
    * Start the cron scheduler for this job.
    */
-  startScheduler: function(crontab) {
+  startScheduler: function (crontab) {
     const _config = this[$EXTRA]
     
     _config.logger.info(`Setting up cron schedule ${crontab}`)
@@ -125,7 +125,7 @@ exports.docMethods = {
   /**
    * Stop the cron scheduler for this job.
    */
-  stopScheduler: function() {
+  stopScheduler: function () {
     const _config = this[$EXTRA]
 
     _config.logger.info(`Stopping cron scheduler`)
@@ -138,7 +138,7 @@ exports.docMethods = {
    * Callback for cron job when task needs to run.
    * @return {[type]} [description]
    */
-  _cronCallback: function*() {
+  _cronCallback: function *() {
     const _config = this[$EXTRA]
 
     _config.logger.info('Starting scheduled run')
@@ -186,7 +186,7 @@ exports.docMethods = {
    *
    * @param {Object} [ctx] Request context (if available).
    */
-  runNow: function*(ctx) {
+  runNow: function *(ctx) {
     const _config = this[$EXTRA]
 
     const runByUser = _.get(ctx, 'currentUser.id', '')
@@ -221,7 +221,7 @@ exports.docMethods = {
   /**
    * Set schedule status of this task.
    */
-  setActive: function*(active) {
+  setActive: function *(active) {
     const _config = this[$EXTRA]
 
     _config.logger.debug(`Set active: ${active}`)

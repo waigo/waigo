@@ -9,8 +9,8 @@ const waigo = global.waigo,
  * 
  * @return {Function} Sanitizaton function.
  */
-module.exports = function() {
-  return function*(field, value) {
+module.exports = function () {
+  return function *(field, value) {
     return (typeof value === 'string' ? _.trim(value) : value)
   }
 }

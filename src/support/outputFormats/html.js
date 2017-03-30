@@ -19,9 +19,9 @@ const waigo = global.waigo,
  *
  * @return {Object} Object with `render` and `redirect` methods.
  */
-exports.create = function(logger, config) {
+exports.create = function (logger, config) {
   return {
-    render: function*(view, templateVars) {
+    render: function *(view, templateVars) {
       // what type of template is this?
       const ext = path.extname(view).slice(1)  // slice(1) to remove '.' prefix
       if (!ext.length) {
@@ -45,7 +45,7 @@ exports.create = function(logger, config) {
       this.type = 'html'
     },
 
-    redirect: function*(url) {
+    redirect: function *(url) {
       logger.debug('Redirect', url)
 
       this.response.redirect(url)

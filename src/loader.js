@@ -65,20 +65,20 @@ loader[$SOURCE_PATHS] = null
  * @return {Promise}
  * @private
  */
-const _walk = function(folder, options) {
+const _walk = function (folder, options) {
   options = _.extend({
     matchFiles: /.+/ig,
     keepExtensions: false,
   }, options)
 
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     const files = {}
 
     const walker = walk(folder, {
       followSymlinks: false
     })
 
-    walker.on('file', function(file, stat) {
+    walker.on('file', function (file, stat) {
       const dirname = path.dirname(file)
       let filename = path.join(path.relative(folder, dirname), path.basename(file))
 
@@ -96,7 +96,7 @@ const _walk = function(folder, options) {
       files[filename] = file
     })
 
-    walker.on('end', function() {
+    walker.on('end', function () {
       resolve(files)
     })
   })
@@ -109,7 +109,7 @@ const _walk = function(folder, options) {
  *
  * Note: `init()` must be called after this to re-initialize the loader.
  */
-loader.reset = function() {
+loader.reset = function () {
   debug('Reset loader config')
 
   appFolder = null
@@ -144,7 +144,7 @@ loader.reset = function() {
  *
  * @return {Object} Final augmented options, in case you wish to check the loading config.
  */
-loader.init = function*(options) {
+loader.init = function *(options) {
   if (loader[$FILE]) {
     debug('Waigo was already initialised. Re-initialising...')
 
@@ -201,7 +201,7 @@ loader.init = function*(options) {
     app: appFolder
   }
 
-  _.each(options.plugins.names, function(name) {
+  _.each(options.plugins.names, function (name) {
     const fullPath
 
     try {
@@ -249,7 +249,7 @@ loader.init = function*(options) {
     )
 
     /*jshint -W083 */
-    _.each(moduleMap, function(modulePath, moduleName) {
+    _.each(moduleMap, function (modulePath, moduleName) {
       loader[$FILE] = loader[$FILE] || {}
       loader[$FILE][moduleName] = _.get(loader[$FILE], moduleName, {
         sources: {}
@@ -259,7 +259,7 @@ loader.init = function*(options) {
   }
 
   // now go through the list of available modules and ensure that there are no ambiguities
-  _.each(loader[$FILE], function(moduleConfig, moduleName) {
+  _.each(loader[$FILE], function (moduleConfig, moduleName) {
     const sourceNames = Object.keys(moduleConfig.sources)
 
     // if there is an app implementation then that's the one to use
@@ -273,7 +273,7 @@ loader.init = function*(options) {
     // else
     else {
       // get plugin source names
-      const pluginSources = _.filter(sourceNames, function(srcName) {
+      const pluginSources = _.filter(sourceNames, function (srcName) {
         return 'waigo' !== srcName
       })
 
@@ -307,7 +307,7 @@ loader.init = function*(options) {
  * @throws Error if there was an error loading the file.
  * @see #getPath
  */
-loader.load = function(filePath) {
+loader.load = function (filePath) {
   const resolvedPath = loader.getPath(filePath)
 
   debug(`Load ${filePath} -> ${resolvedPath}`)
@@ -350,7 +350,7 @@ loader.load = function(filePath) {
  * @see getSources
  * @see load
  */
-loader.getPath = function(filePath) {
+loader.getPath = function (filePath) {
   if (!loader[$FILE]) {
     throw new Error('Please initialise Waigo first')
   }
@@ -397,7 +397,7 @@ loader.getPath = function(filePath) {
  * @see #getPath
  * @see #load
  */
-loader.getSources = function() {
+loader.getSources = function () {
   return loader[$SOURCE_PATHS]
 }
 
@@ -418,14 +418,14 @@ loader.getSources = function() {
  * @return {Array} List of file paths.
  * @throws Error If the loader hasn't been initialised yet.
  */
-loader.getItemsInFolder = function(folder) {
+loader.getItemsInFolder = function (folder) {
   if (!loader[$FILE]) {
     throw new Error('Please initialise Waigo first')
   }
 
   const ret = _.chain(loader[$FILE])
     .keys()
-    .filter(function(filePath) {
+    .filter(function (filePath) {
       return (0 === filePath.indexOf(folder))
     })
     .value()
@@ -441,7 +441,7 @@ loader.getItemsInFolder = function(folder) {
  * Get absolute path to folder containing the Waigo framework.
  * @return {String}
  */
-loader.getWaigoFolder = function() {
+loader.getWaigoFolder = function () {
   return WAIGO_FOLDER
 }
 
@@ -452,7 +452,7 @@ loader.getWaigoFolder = function() {
  * Get absolute path to folder containing the application code.
  * @return {String}
  */
-loader.getAppFolder = function() {
+loader.getAppFolder = function () {
   return appFolder
 }
 
@@ -465,6 +465,6 @@ loader.getAppFolder = function() {
  * @return {Module}
  * @private
  */
-loader.__require = function(p) {
+loader.__require = function (p) {
   return require(p)
 }

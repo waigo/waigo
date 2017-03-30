@@ -66,7 +66,7 @@ class RouteMapper {
 
     // now order by path (specific to general)
     // put the routes into order (specific to general)
-    const orderedMappings = possibleMappings.sort(function(a, b) {
+    const orderedMappings = possibleMappings.sort(function (a, b) {
       return a.url < b.url
     })
 
@@ -139,7 +139,7 @@ class RouteMapper {
 
     const mod = waigo.load(`controllers/${controllerPath.join('/')}`)
 
-    if (!_.isFunction(mod[methodName])) {
+    if (!_.isfunction (mod[methodName])) {
       throw new RouteError(`Unable to find method "${methodName}" on controller "${controllerName}"`)
     }
 
@@ -194,7 +194,7 @@ class RouteMapper {
     str += route.url
 
     // route params
-    _.each(urlParams, function(value, key) {
+    _.each(urlParams, function (value, key) {
       str = str.replace(`:${key}`, value)
     })
 
@@ -283,7 +283,7 @@ class RouteMapper {
  * @param {Object} routeConfig      Route configuration.
  * @return {RouteMapper}
  */
-exports.setup = function*(app, middlewareConfig, routeConfig) {
+exports.setup = function *(app, middlewareConfig, routeConfig) {
   const mapper = new RouteMapper(app)
 
   yield mapper.setup(middlewareConfig, routeConfig)

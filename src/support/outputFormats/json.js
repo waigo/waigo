@@ -18,9 +18,9 @@ const JsonRenderError = errors.define('JsonRenderError')
  * @param {Object} logger Logger to use.
  * @return {Object} Object with render method.
  */
-exports.create = function(logger) {
+exports.create = function (logger) {
   return {
-    render: function*(view, templateVars) {
+    render: function *(view, templateVars) {
       logger.debug('View', view)
 
       templateVars = templateVars || {}
@@ -34,7 +34,7 @@ exports.create = function(logger) {
     },
 
 
-    redirect: function*(url) {
+    redirect: function *(url) {
       logger.debug('Redirect', url)
       
       this.type = 'json'

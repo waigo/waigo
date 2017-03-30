@@ -9,7 +9,7 @@ const waigo = global.waigo,
 /**
  * Sanitizer which excutes a function from valiator lib
  */
-module.exports = function(options) {
+module.exports = function (options) {
   const method = options.method,
     args = options.args
 
@@ -19,7 +19,7 @@ module.exports = function(options) {
     throw new FieldValidationError(`Invalid method: ${method}`)
   }
 
-  return function*(field, value) {
+  return function *(field, value) {
     return validator[method].apply(validator, [value].concat(args))
   }
 }

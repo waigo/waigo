@@ -23,8 +23,8 @@ const waigo = global.waigo,
  * 
  * @return {Function} middleware
  */
-const fn = module.exports = function(App, options) {
-  return function*(next) {
+const fn = module.exports = function (App, options) {
+  return function *(next) {
     this.request.body = yield fn._bodyParser(this, options)
 
     yield next

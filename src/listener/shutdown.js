@@ -8,7 +8,7 @@ const waigo = global.waigo,
  *
  * @param {Object} App The application.
  */
-module.exports = function*(App) {
+module.exports = function *(App) {
   if (App.server) {
     App.logger.debug('Shutting down HTTP server')
 

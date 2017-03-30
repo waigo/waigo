@@ -77,7 +77,7 @@ exports.indexes = [
   },
   {
     name: 'email',
-    def: function(doc) {
+    def: function (doc) {
       return doc('emails')('email')
     },
     options: {
@@ -98,17 +98,17 @@ exports.indexes = [
 
 exports.docVirtuals = {
   isAdmin: {
-    get: function() {
+    get: function () {
       return true === _.includes(this.roles, 'admin')
     }
   },
   emailAddress: {
-    get: function() {
+    get: function () {
       return _.get(this.emails, '0.email')
     }
   },
   emailAddresses: {
-    get: function() {
+    get: function () {
       return _.map(this.emails || [], 'email')
     }
   },
@@ -120,7 +120,7 @@ exports.docMethods = {
   /**
    * Get whether user has any of  given roles
    */
-  isOneOf: function() {
+  isOneOf: function () {
     const roles = _.toArray(arguments)
 
     return !! (_.intersection(this.roles || [], roles).length)
@@ -131,8 +131,8 @@ exports.docMethods = {
    * @param {String} storedHash
    * @return {Boolean} true if password matches, false otherwise
    */
-  isPasswordCorrect: function*(password) {
-    const passAuth = _.find(this.auth, function(a) {
+  isPasswordCorrect: function *(password) {
+    const passAuth = _.find(this.auth, function (a) {
       return 'password' === a.type
     })
 
@@ -154,7 +154,7 @@ exports.docMethods = {
    * Log the user into given context.
    * @param {Object} context waigo client request context.
    */
-  login: function*(context) {
+  login: function *(context) {
     this._logger().debug(`Logging in user: ${this.id} = ${this.username}`)
 
     context.session.user = {
@@ -170,8 +170,8 @@ exports.docMethods = {
    * Verify an email address.
    * @param {String} email Email address to verify.
    */
-  verifyEmail: function*(email) {
-    const theEmail = _.find(this.emails, function(e) {
+  verifyEmail: function *(email) {
+    const theEmail = _.find(this.emails, function (e) {
       return email === e.email
     })
 
@@ -195,8 +195,8 @@ exports.docMethods = {
    * @param {String} email Email address to check.
    * @return {Boolean}
    */
-  hasEmail: function*(email) {
-    return 0 <= _.findIndex(this.emails || [], function(e) {
+  hasEmail: function *(email) {
+    return 0 <= _.findIndex(this.emails || [], function (e) {
       return email === e.email
     })
   },
@@ -205,8 +205,8 @@ exports.docMethods = {
    * @param {String} email Email address to check.
    * @return {Boolean}
    */
-  isEmailVerified: function*(email) {
-    const item = _.find(this.emails || [], function(e) {
+  isEmailVerified: function *(email) {
+    const item = _.find(this.emails || [], function (e) {
       return email === e.email
     })
 
@@ -217,8 +217,8 @@ exports.docMethods = {
    * @param {String} email Email address to verify.
    * @param {Boolea} verified Whether address is verified.
    */
-  addEmail: function*(email, verified) {
-    const theEmail = _.find(this.emails, function(e) {
+  addEmail: function *(email, verified) {
+    const theEmail = _.find(this.emails, function (e) {
       return email === e.email
     })
 
@@ -245,10 +245,10 @@ exports.docMethods = {
    * Update this user's password.
    * @param {String} newPassword New password.
    */
-  updatePassword: function*(newPassword) {
+  updatePassword: function *(newPassword) {
     this._logger().debug('Update user password', this.username)
 
-    const passAuth = _.find(this.auth, function(a) {
+    const passAuth = _.find(this.auth, function (a) {
       return 'password' === a.type
     })
 
@@ -273,10 +273,10 @@ exports.docMethods = {
    *
    * @return {Object} null if not found.
    */
-  getOauth: function*(provider)  {
+  getOauth: function *(provider)  {
     provider = 'oauth:' + provider
 
-    provider = _.find(this.auth, function(a) {
+    provider = _.find(this.auth, function (a) {
       return provider === a.type
     })
 
@@ -288,7 +288,7 @@ exports.docMethods = {
    * @param {String} provider Auth provider.
    * @param {Object} data Data.
    */
-  saveOAuth: function*(provider, data) {
+  saveOAuth: function *(provider, data) {
     yield this.saveAuth('oauth:' + provider, data)
   },
   /**
@@ -297,10 +297,10 @@ exports.docMethods = {
    * @param {String} type Auth type.
    * @param {Object} data Data.
    */
-  saveAuth: function*(type, data) {
+  saveAuth: function *(type, data) {
     this._logger().debug('Save user auth', this.id, type, data)
 
-    const existing = _.find(this.auth, function(a) {
+    const existing = _.find(this.auth, function (a) {
       return type === a.type
     })
 
@@ -328,7 +328,7 @@ exports.docMethods = {
    *
    * @return {Boolean} true if access is possible, false if not.
    */
-  canAccess: function*(resource) {
+  canAccess: function *(resource) {
     return this._App().acl.can(resource, this)
   },
   /**
@@ -338,7 +338,7 @@ exports.docMethods = {
    *
    * @throws {Error} If not allowed to access.
    */
-  assertAccess: function*(resource) {
+  assertAccess: function *(resource) {
     return this._App().acl.assert(resource, this)
   },
 }
@@ -349,8 +349,8 @@ exports.modelMethods = {
    * Get user by username.
    * @return {User}
    */
-  getByUsername: function*(username) {
-    const ret = yield this.rawQry().filter(function(user) {
+  getByUsername: function *(username) {
+    const ret = yield this.rawQry().filter(function (user) {
       return user('username').eq(username)
     }).run()
 
@@ -360,11 +360,11 @@ exports.modelMethods = {
    * Get user by email address.
    * @return {User}
    */
-  getByEmail: function*(email) {
+  getByEmail: function *(email) {
     const r = this.db
 
     const ret = yield this.rawQry().filter(
-      r.row('emails').contains(function(e) {
+      r.row('emails').contains(function (e) {
         return e('email').eq(email)
       })
     ).run()
@@ -375,8 +375,8 @@ exports.modelMethods = {
    * Get user by email address or username.
    * @return {User}
    */
-  getByEmailOrUsername: function*(str) {
-    const ret = yield this.rawQry().filter(function(user) {
+  getByEmailOrUsername: function *(str) {
+    const ret = yield this.rawQry().filter(function (user) {
       return user('emails')('email')(0).eq(str).or(user('username').eq(str))
     }).run()
 
@@ -386,7 +386,7 @@ exports.modelMethods = {
    * Get user by email address or username.
    * @return {User}
    */
-  findWithIds: function*(ids) {
+  findWithIds: function *(ids) {
     const qry = this.rawQry()
 
     qry = qry.getAll.apply(qry, ids.concat([{index: 'id'}]))
@@ -397,8 +397,8 @@ exports.modelMethods = {
    * Find all admin users.
    * @return {Array}
    */
-  findAdminUsers: function*() {
-    const ret = yield this.rawQry().filter(function(user) {
+  findAdminUsers: function *() {
+    const ret = yield this.rawQry().filter(function (user) {
       return user('roles').contains('admin')
     }).run()
 
@@ -408,8 +408,8 @@ exports.modelMethods = {
    * Get whether any admin users exist.
    * @return {Number}
    */
-  haveAdminUsers: function*() {
-    const count = yield this.rawQry().count(function(user) {
+  haveAdminUsers: function *() {
+    const count = yield this.rawQry().count(function (user) {
       return user('roles').contains('admin')
     }).run()
 
@@ -421,7 +421,7 @@ exports.modelMethods = {
    * @param {String} [salt] Salt to use.
    * @return {String} hash to store
    */
-  generatePasswordHash: function*(password, salt) {
+  generatePasswordHash: function *(password, salt) {
     const hash = crypto.createHash('sha256')
 
     salt = salt || (yield randomBytesQ(64)).toString('hex')
@@ -440,7 +440,7 @@ exports.modelMethods = {
    * @param {String} [properties.password] User's password.
    * @return {User} The registered user.
    */
-  register: function*(properties) {
+  register: function *(properties) {
     // create user
     const attrs = {
       username: properties.username,
@@ -486,7 +486,7 @@ exports.modelMethods = {
 
     return user
   },
-  loadLoggedIn: function*(context) {
+  loadLoggedIn: function *(context) {
     const userId = _.get(context, 'session.user.id')
 
     if (!userId) {
@@ -495,8 +495,8 @@ exports.modelMethods = {
 
     return yield this.get(userId)
   },
-  getUsersCreatedSince: function*(date) {
-    const ret = yield this.rawQry().filter(function(doc) {
+  getUsersCreatedSince: function *(date) {
+    const ret = yield this.rawQry().filter(function (doc) {
       return doc('created').ge(date)
     }).run()
 

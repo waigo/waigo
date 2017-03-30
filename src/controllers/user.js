@@ -5,14 +5,14 @@
  */
 
 
-exports.logout = function*() {
+exports.logout = function *() {
   delete this.session.user
 
   yield this.redirect('/')
 }
 
 
-exports.login = function*() {
+exports.login = function *() {
   const reason = this.request.query.r || null
 
   const form = yield this.form.create('login', {
@@ -31,7 +31,7 @@ exports.login = function*() {
 
 
 
-exports.login_submit = function*() {
+exports.login_submit = function *() {
   this.logger.debug('Logging in')
 
   const form = yield this.form.create('login', {
@@ -59,7 +59,7 @@ exports.login_submit = function*() {
 
 
 
-exports.register = function*() {
+exports.register = function *() {
   const form = yield this.form.create('register', {
     context: this
   })
@@ -76,7 +76,7 @@ exports.register = function*() {
 
 
 
-exports.register_submit = function*() {
+exports.register_submit = function *() {
   this.logger.debug('Registering user')
 
   const form = yield this.form.create('register', {
@@ -109,7 +109,7 @@ exports.register_submit = function*() {
 
 
 
-exports.verify_email = function*() {
+exports.verify_email = function *() {
   const action = yield this.App.actionTokens.process(
     this.request.query.c, {
       type: 'verify_email'
@@ -133,7 +133,7 @@ exports.verify_email = function*() {
 
 
 
-exports.forgot_password = function*() {
+exports.forgot_password = function *() {
   const form = yield this.form.create('forgotPassword', {
     context: this
   })
@@ -146,7 +146,7 @@ exports.forgot_password = function*() {
 
 
 
-exports.forgot_password_submit = function*() {
+exports.forgot_password_submit = function *() {
   const form = yield this.form.create('forgotPassword', {
     context: this
   })
@@ -174,7 +174,7 @@ exports.forgot_password_submit = function*() {
 
 
 
-exports.reset_password = function*() {
+exports.reset_password = function *() {
   const action = yield this.App.actionTokens.process(
     this.request.query.c, {
       type: 'reset_password'
@@ -197,7 +197,7 @@ exports.reset_password = function*() {
 
 
 
-exports.reset_password_submit = function*() {
+exports.reset_password_submit = function *() {
   this.logger.debug('Resetting password')
 
   const form = yield this.form.create('resetPassword', {

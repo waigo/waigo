@@ -11,8 +11,8 @@ const waigo = global.waigo,
 
 
 
-const _arrayToStr = function(arr) {
-  return _.map(arr, function(v) {
+const _arrayToStr = function (arr) {
+  return _.map(arr, function (v) {
     return '' + v
   })
 }
@@ -34,7 +34,7 @@ class Select extends Field {
 
     // default validator
     this._addValidator(
-      function*(context, field, val) {
+      function *(context, field, val) {
         const options = yield field.getOptions()
 
         if (!_.isArray(val)) {
@@ -75,7 +75,7 @@ class Select extends Field {
 /**
  * @override
  */
-Select.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
+Select.prototype[viewObjects.METHOD_NAME] = function *(ctx) {
   const ret = yield Field.prototype.toViewObject.call(this, ctx)
 
   ret.options = yield this.getOptions()

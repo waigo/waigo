@@ -15,8 +15,8 @@ const waigo = global.waigo,
  * 
  * @return {Function} middleware
  */
-module.exports = function() {
-  return function*(next) {
+module.exports = function () {
+  return function *(next) {
     if (this.session.user) {
       this.App.logger.debug('Current user', this.session.user)
 

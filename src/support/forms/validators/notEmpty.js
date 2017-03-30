@@ -12,8 +12,8 @@ const waigo = global.waigo,
  *
  * @return {Function} Validation function.
  */
-module.exports = function() {
-  return function*(context, field, value) {
+module.exports = function () {
+  return function *(context, field, value) {
     if (null === value 
         || undefined === value 
         || (typeof value === 'string' && !value.length)

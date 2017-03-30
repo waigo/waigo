@@ -50,7 +50,7 @@ class Mailer {
     const emailTemplate = new EmailTemplate(templatePath)
 
     return new Q((resolve, reject) => {
-      emailTemplate.render(templateVars, function(err, result) {
+      emailTemplate.render(templateVars, function (err, result) {
         if (err) {
           reject(err)
         } else {
@@ -153,7 +153,7 @@ class Mailer {
     mailOptions = yield self._prepareMailOptions(mailOptions)
 
     return yield _.map(mailOptions.to, (recipient) => {
-      return co.wrap(function*() {
+      return co.wrap(function *() {
         // email address
         const email = _.get(recipient, 'emailAddress', recipient)
 

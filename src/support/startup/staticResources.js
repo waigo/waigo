@@ -17,7 +17,7 @@ const waigo = global.waigo,
  *
  * @param {Object} app The application.
  */
-module.exports = function*(App) {
+module.exports = function *(App) {
   App.logger.debug('Copying static resources into public folder')
   
   const tmpFolder = path.join(shell.tempdir(), 'waigo-app')

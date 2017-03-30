@@ -6,7 +6,7 @@
  *
  * @param {Object} app The application.
  */
-module.exports = function*(App) {
+module.exports = function *(App) {
   App.logger.debug('Shutting down ACL')
 
   if (App.acl) {

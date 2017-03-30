@@ -24,7 +24,7 @@ class NumberField extends TextField {
     super(form, config)
 
     this._addSanitizer(
-      function*(field, value) {
+      function *(field, value) {
         return Number(value)
       }
     )

@@ -9,7 +9,7 @@ const waigo = global.waigo,
 
 
 
-exports.load = function*(ctx, provider, tokens) {
+exports.load = function *(ctx, provider, tokens) {
   if (!provider) {
     throw new OauthError('No OAuth provider given', 404)
   }  

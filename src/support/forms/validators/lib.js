@@ -11,7 +11,7 @@ const waigo = global.waigo,
  *
  * @throws Error If not an email address.
  */
-module.exports = function(options) {
+module.exports = function (options) {
   const method = options.method,
     args = options.args
 
@@ -21,7 +21,7 @@ module.exports = function(options) {
     throw new FieldValidationError(`Invalid method: ${method}`)
   }
 
-  return function*(context, field, value) {
+  return function *(context, field, value) {
     if (!validator[method].apply(validator, [value].concat(args))) {
       throw new FieldValidationError(`Validation failed: ${method}`)
     }

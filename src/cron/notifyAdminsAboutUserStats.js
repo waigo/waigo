@@ -13,7 +13,7 @@ const  moment = require('moment')
 exports.schedule = '0 0 3 * * 1'   // every monday morning at 3am
 
 
-exports.handler = function*(App) {
+exports.handler = function *(App) {
   // get admins
   const admins = yield App.models.User.findAdminUsers()
 

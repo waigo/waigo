@@ -15,7 +15,7 @@ const waigo = global.waigo,
  *
  * @param {Object} App The application.
  */
-module.exports = function*(App) {
+module.exports = function *(App) {
   App.logger.debug('Loading models')
 
   const modelModuleFiles = waigo.getItemsInFolder('models')
@@ -38,7 +38,7 @@ module.exports = function*(App) {
     }
 
     modelConfig.docMethods = _.extend({}, modelConfig.docMethods, helperMethods)
-    modelConfig.docMethods[viewObjects.METHOD_NAME] = function*() {
+    modelConfig.docMethods[viewObjects.METHOD_NAME] = function *() {
       return this.toJSON()
     }
     

@@ -13,7 +13,7 @@ const waigo = global.waigo,
  *
  * @param {Object} app The application.
  */
-module.exports = function*(App) {
+module.exports = function *(App) {
   App.cron = {}
 
   const cronTasks = waigo.getItemsInFolder('support/cronTasks')

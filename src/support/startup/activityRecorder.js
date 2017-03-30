@@ -16,10 +16,10 @@ const waigo = global.waigo,
  *
  * @param {Object} App The application.
  */
-module.exports = function*(App) {
+module.exports = function *(App) {
   App.logger.debug('Setting up Activity recording')
 
-  App.on('record', co.wrap(function*() {
+  App.on('record', co.wrap(function *() {
     yield App.models.Activity.record.apply(App.models.Activity, arguments)
   }))
 }

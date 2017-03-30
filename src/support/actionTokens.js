@@ -11,7 +11,7 @@ const waigo = global.waigo,
 const ActionTokensError = exports.ActionTokensError = errors.define('ActionTokensError')
 
 
-const _throw = function(msg, status, data) {
+const _throw = function (msg, status, data) {
   throw new ActionTokensError(msg, status, data)
 }
 
@@ -166,7 +166,7 @@ class ActionTokens {
  * 
  * @return {ActionTokens}
  */
-exports.init = function*(App, actionTokensConfig) {
+exports.init = function *(App, actionTokensConfig) {
   return new ActionTokens(App, actionTokensConfig)
 }
 

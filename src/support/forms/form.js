@@ -43,7 +43,7 @@ const cache = {}
  * @param {Object} [options.context] The current request context.
  * @param {Object} [options.state] The internal state to set for this form.
  */
-exports.create = function*(config, options) {
+exports.create = function *(config, options) {
   if (_.isString(config)) {
     const cachedSpec = cache[config]
 
@@ -259,7 +259,7 @@ exports.Form = Form
  *
  * @return {Object} Renderable plain object representation.
  */
-Form.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
+Form.prototype[viewObjects.METHOD_NAME] = function *(ctx) {
   const ret = _.omit(this.config, 'fields', 'postValidation')
 
   const fields = this.fields,

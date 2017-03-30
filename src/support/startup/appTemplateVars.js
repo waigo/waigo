@@ -11,7 +11,7 @@ const waigo = global.waigo,
  *
  * @param {Object} App The application.
  */
-module.exports = function*(App) {
+module.exports = function *(App) {
   App.templateVars = {
     _: _,
     config: App.config,

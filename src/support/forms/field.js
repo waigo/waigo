@@ -229,7 +229,7 @@ class Field {
  * 
  * @return {Object}
  */
-Field.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
+Field.prototype[viewObjects.METHOD_NAME] = function *(ctx) {
   return _.extend({}, this.config, {
     value: this.value,
     originalValue: this.originalValue,
@@ -249,7 +249,7 @@ Field.prototype[viewObjects.METHOD_NAME] = function*(ctx) {
  * @param {Object} config The field configuration.
  * @return {Field}
  */
-Field.new = function(form, config) {
+Field.new = function (form, config) {
   const type = config.type,
     FieldClass = waigo.load(`support/forms/fields/${type}`)
 

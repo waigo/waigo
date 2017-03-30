@@ -68,7 +68,7 @@ class ACL {
       users = this.users = {},
       roles = this.roles = {}
 
-    data.forEach(function(doc){
+    data.forEach(function (doc){
       // resource perspective
       res[doc.resource] = 
         res[doc.resource] || {}
@@ -166,7 +166,7 @@ exports.ACL = ACL
  * 
  * @param {App} App The App instance.
  */
-exports.init = function*(App) {
+exports.init = function *(App) {
   const a = new ACL(App)
 
   yield a.startup()

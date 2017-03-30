@@ -11,8 +11,8 @@ const waigo = global.waigo,
  *
  * @throws Error If not an email address.
  */
-module.exports = function() {
-  return function*(context, field, value) {
+module.exports = function () {
+  return function *(context, field, value) {
     const existingUser = yield context.App.models.User.getByEmail(value)
 
     if (existingUser) {

@@ -27,7 +27,7 @@ const waigo = global.waigo
  * @param {String} options.cookie.path Cookie path.
  * @param {Application} The active application instance.
  */
-module.exports = function(App, options) {
+module.exports = function (App, options) {
   if (!options.keys) {
     throw new Error('Please specify cookie signing keys in the config file.')
   }

@@ -28,7 +28,7 @@ exports.Console = Console
 
 
 
-exports.create = function*(App, config) {
+exports.create = function *(App, config) {
   const c = new Console(App, config)
   
   yield c._init(nodemailerStubTransport())
