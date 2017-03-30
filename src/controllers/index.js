@@ -1,4 +1,4 @@
-"use strict";
+
 
 /**
  * @fileOverview Main controller

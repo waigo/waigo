@@ -1,4 +1,4 @@
-"use strict";
+
 
 const waigo = global.waigo,
   _ = waigo._,

@@ -1,4 +1,4 @@
-"use strict";
+
 
 
 const bodyParser = require('co-body'),

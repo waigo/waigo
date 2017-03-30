@@ -1,4 +1,4 @@
-"use strict";
+
 
 const waigo = global.waigo,
   errors = waigo.load('support/errors');

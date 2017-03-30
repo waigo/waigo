@@ -1,4 +1,3 @@
-"use strict";
 /**
  * @file
  * The Waigo application object.
@@ -6,38 +5,36 @@
 
 const debug = require('debug')('waigo_application'),
   koa = require('koa'),
-  log4js = require('log4js'),
-  EventEmitter = require('eventemitter3'),
-  path = require('path');
+  EventEmitter = require('eventemitter3')
 
 
 const waigo = global.waigo,
   _ = waigo._,
   logger = waigo.load('support/logger'),
-  errors = waigo.load('support/errors');
+  errors = waigo.load('support/errors')
 
 
 // underscore mixins
-waigo.load('support/lodashMixins')(_);
+waigo.load('support/lodashMixins')(_)
 
 
-const AppError = errors.define('AppError');
+const AppError = errors.define('AppError')
 
 
-/** 
+/**
  * The application object.
- * 
- * This is the main entry point for all Waigo applications. It is responsible 
- * for constructing the Koa `app` object, loading in the app 
+ *
+ * This is the main entry point for all Waigo applications. It is responsible
+ * for constructing the Koa `app` object, loading in the app
  * configuration, initialising logging and running all startup steps.
  */
 class Application extends EventEmitter {
   constructor () {
-    super();
+    super()
 
-    this._initKoa();
+    this._initKoa()
 
-    this._onError = this._onError.bind(this);
+    this._onError = this._onError.bind(this)
   }
 
 
@@ -47,18 +44,18 @@ class Application extends EventEmitter {
    * @protected
    */
   _initKoa () {
-    var self = this;
+    this.koa = koa()
 
-    this.koa = koa();
+    const self = this
 
     /**
      * Default middleware!
      */
-    this.koa.use(function*(next) {
-      this.App = self;
+    this.koa.use(function *(next) {
+      this.App = self
 
-      yield next;
-    });
+      yield next
+    })
   }
 
 
@@ -71,20 +68,20 @@ class Application extends EventEmitter {
    * @param {Object} [options] Additional options.
    * @param {Function} [options.postConfig] Function to pass configuration object to once loaded.
    * Should have signature `function (config: Object)`.
-   * 
+   *
    * @protected
    */
-  * _loadConfig (options) {
-    options = options || {};
+  *_loadConfig (options) {
+    options = options || {}
 
-    debug('Loading configuration');
+    debug('Loading configuration')
 
-    this.config = waigo.load('config/index')();
+    this.config = waigo.load('config/index')()
 
     if (options.postConfig) {
-      debug('Executing dynamic configuration');
+      debug('Executing dynamic configuration')
 
-      options.postConfig.call(null, this.config);
+      options.postConfig.call(null, this.config)
     }
   }
 
@@ -93,11 +90,11 @@ class Application extends EventEmitter {
    * Handle an error.
    *
    * @param {Error} err The error.
-   * 
+   *
    * @protected
    */
   _onError (err) {
-    this.logger.error(err.stack ? err.stack : err);
+    this.logger.error(err.stack ? err.stack : err)
   };
 
 
@@ -112,14 +109,14 @@ class Application extends EventEmitter {
    * @see support/logger.js
    * @protected
    */
-  * _setupLogger (cfg) {
-    debug('Setup logging');
+  *_setupLogger (cfg) {
+    debug('Setup logging')
 
-    this.logger = logger.init(cfg);
+    this.logger = logger.init(cfg)
 
-    process.on('uncaughtException', this._onError);
-    this.koa.on('error', this._onError);
-    this.on('error', this._onError);
+    process.on('uncaughtException', this._onError)
+    this.koa.on('error', this._onError)
+    this.on('error', this._onError)
   }
 
 
@@ -131,25 +128,24 @@ class Application extends EventEmitter {
    * @param {Function} [options.postConfig] Function to pass configuration object to once loaded.
    * Should have signature `function (config: Object)`.
    */
-  * start (options) {
+  *start (options) {
     if (this.config) {
-      throw new AppError('Application already started');
+      throw new AppError('Application already started')
     }
 
     // load config
-    yield this._loadConfig(options);
+    yield this._loadConfig(options)
 
     // logging
-    yield this._setupLogger(this.config.logging);
+    yield this._setupLogger(this.config.logging)
 
     for (let stepName of this.config.startupSteps) {
-      this.logger.debug(`Running startup step: ${stepName}`);
-      
-      /*jshint -W030 */
-      yield waigo.load(`support/startup/${stepName}`)(this);
+      this.logger.debug(`Running startup step: ${stepName}`)
+
+      yield waigo.load(`${stepName}/startup`)(this)
     }
 
-    this.logger.info('Startup complete');
+    this.logger.info('Startup complete')
   }
 
 
@@ -159,31 +155,28 @@ class Application extends EventEmitter {
    *
    * This will reset the internal Koa `app` object.
    */
-  * shutdown () {
+  *shutdown () {
     if (!this.config) {
-      throw new AppError('Application not started');
+      throw new AppError('Application not started')
     }
 
     // remove uncaught exception handler
-    process.removeListener('uncaughtException', this._onError);
+    process.removeListener('uncaughtException', this._onError)
 
     // run shutdown steps
     for (let stepName of this.config.shutdownSteps) {
-      this.logger.debug(`Running shutdown step: ${stepName}`);
+      this.logger.debug(`Running shutdown step: ${stepName}`)
 
-      /*jshint -W030 */
-      yield waigo.load(`support/shutdown/${stepName}`)(this);
+      yield waigo.load(`${stepName}/shutdown`)(this)
     }
 
-    this.logger.info('Shutdown complete');
+    this.logger.info('Shutdown complete')
 
-    delete this.config;
+    delete this.config
 
     // reset koa
-    this._initKoa();
-  };
-
-
+    this._initKoa()
+  }
 }
 
 
@@ -191,9 +184,4 @@ class Application extends EventEmitter {
 /**
  * @type {Class}
  */
-module.exports = Application;
-
-
-
-
-
+module.exports = Application

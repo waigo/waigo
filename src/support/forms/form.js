@@ -1,4 +1,4 @@
-"use strict";
+
 
 
 const compose = require('generator-compose');

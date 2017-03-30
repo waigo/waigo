@@ -1,4 +1,4 @@
-"use strict";
+
 /**
  * @file The Waigo module loader.
  */

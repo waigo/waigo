@@ -1,4 +1,4 @@
-"use strict";
+
 
 const qs = require('query-string'),
   OAuth2 = require('oauth').OAuth2;

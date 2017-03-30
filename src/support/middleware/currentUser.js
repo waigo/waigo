@@ -1,4 +1,4 @@
-"use strict";
+
 
 /**
  * @fileOverview Setup current user on request context.

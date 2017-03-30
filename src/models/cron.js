@@ -1,4 +1,4 @@
-"use strict";
+
 
 const co = require('co'),
   CronJob = require('cron').CronJob;

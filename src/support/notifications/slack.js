@@ -1,4 +1,4 @@
-"use strict";
+
 
 const Slack = require('slack-node');
 

@@ -1,4 +1,4 @@
-"use strict";
+
 
 const waigo = global.waigo,
   TextField = waigo.load('support/forms/fields/text');

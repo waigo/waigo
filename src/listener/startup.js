@@ -1,6 +1,3 @@
-"use strict";
-
-
 const cluster = require('cluster');
 
 const waigo = global.waigo;
@@ -12,7 +9,7 @@ const waigo = global.waigo;
  * Start the server HTTP listener.
  *
  * If successful `App.server` will point to the HTTP server object.
- * 
+ *
  * @param {Object} App The application.
  */
 module.exports = function*(App) {
@@ -28,7 +25,3 @@ module.exports = function*(App) {
 
   App.emit('notify', 'admins', msg);
 };
-
-
-
-

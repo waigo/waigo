@@ -1,5 +1,3 @@
-
-
 const waigo = global.waigo,
   Q = waigo.load('support/promise');
 

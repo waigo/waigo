@@ -1,6 +1,3 @@
-
-
-
 const waigo = global.waigo;
 
 

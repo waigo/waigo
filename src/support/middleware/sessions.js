@@ -1,4 +1,4 @@
-"use strict";
+
 
 
 const koaSessionStore = require('koa-session-store'),

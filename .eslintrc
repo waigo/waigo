@@ -1,0 +1,18 @@
+{
+  "extends": "standard",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true,
+    },
+  },
+  "rules": {
+    "generator-star-spacing": ["error", {"before": true, "after": false}],
+    "yoda": 0,
+    "brace-style": 0,
+    "no-multiple-empty-lines": 0,
+    "one-var": 0
+  },
+  "globals": {
+  }
+}

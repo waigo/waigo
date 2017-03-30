@@ -1,4 +1,4 @@
-"use strict";
+
 
 /**
  * @fileOverview Setup context-level convenient accessors and template helpers

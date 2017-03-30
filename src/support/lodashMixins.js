@@ -1,6 +1,4 @@
-"use strict";
-
-const genomatic = require('genomatic');
+const genomatic = require('genomatic')
 
 
 module.exports = function(_) {
@@ -26,7 +24,7 @@ module.exports = function(_) {
          break;
      }
 
-     return obj; 
+     return obj;
     }
   });
 };

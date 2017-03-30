@@ -56,6 +56,10 @@
     "clockmaker": "^2.0.0",
     "co-mocha": "^1.1.2",
     "coffee-script": "^1.9.2",
+    "eslint": "^3.18.0",
+    "eslint-config-standard": "^7.1.0",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^2.1.1",
     "event-stream": "^3.3.0",
     "form-data": "^1.0.0-rc4",
     "got": "^6.3.0",
@@ -114,7 +118,7 @@
     "test-ci": "NODE_ENV=test gulp test --ci"
   },
   "engines": {
-    "node": ">=4.4.5"
+    "node": ">=6.0.0"
   },
   "engine-strict": true,
   "readmeFilename": "README.md",

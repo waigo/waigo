@@ -1,4 +1,4 @@
-"use strict";
+
 
 
 const route = require('koa-trie-router'),

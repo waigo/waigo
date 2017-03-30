@@ -1,4 +1,4 @@
-"use strict";
+
 
 /** 
  * @fileOverview Console mailer - prints emails to console.
