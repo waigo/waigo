@@ -16,15 +16,14 @@ module.exports = function (_) {
      * @return {*}
      */
     emailFormat: function (type, obj) {
-     switch (type) {
-       case 'greet':
-         const name = _.get(obj, 'profile.displayName') || _.get(obj, 'username', '') || obj
+      switch (type) {
+        case 'greet':
+          const name = _.get(obj, 'profile.displayName') || _.get(obj, 'username', '') || obj
 
-         return _.get(name, 'length') ? name : 'Hey'
-         break
-     }
+          return _.get(name, 'length') ? name : 'Hey'
+      }
 
-     return obj
+      return obj
     }
   })
 }

@@ -1,19 +1,16 @@
-
-
-
 const waigo = global.waigo,
   _ = waigo._,
-  viewObjects = waigo.load('support/viewObjects')
+  viewObjects = waigo.load('viewObjects')
 
 
 
 /**
  * Get renderable representation of this `Error`.
  *
- * Is is better to use `RuntimeError`-derived error classes instead of `Error` 
- * as they provide other useful features. However unexpected errors may occur 
+ * Is is better to use `RuntimeError`-derived error classes instead of `Error`
+ * as they provide other useful features. However unexpected errors may occur
  * which is why it is important to be able to process them for output.
- * 
+ *
  * @return {Object} Plain object.
  */
 Error.prototype[viewObjects.METHOD_NAME] = function *(ctx) {
@@ -38,9 +35,9 @@ Error.prototype[viewObjects.METHOD_NAME] = function *(ctx) {
 
 /**
  * A runtime error.
- * 
- * Use this in preference to `Error` where possible as it provides for more 
- * descriptive output. 
+ *
+ * Use this in preference to `Error` where possible as it provides for more
+ * descriptive output.
  */
 class RuntimeError extends Error {
   /**
@@ -93,7 +90,7 @@ RuntimeError.prototype[viewObjects.METHOD_NAME] = function *(ctx) {
 /**
  * Represents multiple errors grouped together.
  *
- * Sometimes we may wish to report multiple related errors (e.g. form field 
+ * Sometimes we may wish to report multiple related errors (e.g. form field
  * validation failures). This error class makes it easy to do so.
  */
 class MultipleError extends RuntimeError {
@@ -115,7 +112,7 @@ exports.MultipleError = MultipleError
 /**
  * Get renderable representation of this error.
  *
- * This collects view object representations of all the sub-errors and into a 
+ * This collects view object representations of all the sub-errors and into a
  * single object.
  *
  * @return {Object} Plain object.
@@ -148,8 +145,8 @@ MultipleError.prototype[viewObjects.METHOD_NAME] = function *(ctx) {
 /**
  * Define a new error class.
  *
- * This is a convenience method for quickly creating custom error classes which 
- * inherit from existing classes. 
+ * This is a convenience method for quickly creating custom error classes which
+ * inherit from existing classes.
  *
  * @param {String} newClassName Name of this new error type.
  * @param {Class} [baseClass] Base class to derive the new class from. Default is `RuntimeError`.
@@ -169,5 +166,3 @@ exports.define = function (newClassName, baseClass) {
 
   return newErrorClass
 }
-
-

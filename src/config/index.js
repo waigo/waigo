@@ -1,11 +1,6 @@
+const debug = require('debug')('waigo_config')
 
-
-
-const debug = require('debug')('waigo_config'),
-  fs = require('fs')
-
-const waigo = global.waigo,
-  _ = waigo._
+const waigo = global.waigo
 
 
 /**
@@ -60,7 +55,7 @@ module.exports = function () {
   debug('Config mode, user', config.mode, config.user)
 
   // base
-  const fn = loadConfigModule('base')
+  let fn = loadConfigModule('base')
   if (!fn) {
     throw new Error('Base configuration file not found')
   }

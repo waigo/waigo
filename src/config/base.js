@@ -309,6 +309,4 @@ module.exports = function (config) {
       ]
     },
   }
-
-
 }

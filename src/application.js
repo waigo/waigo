@@ -10,12 +10,12 @@ const debug = require('debug')('waigo_application'),
 
 const waigo = global.waigo,
   _ = waigo._,
-  logger = waigo.load('support/logger'),
-  errors = waigo.load('support/errors')
+  logger = waigo.load('logger'),
+  errors = waigo.load('errors')
 
 
 // underscore mixins
-waigo.load('support/lodashMixins')(_)
+waigo.load('lodash/mixins')(_)
 
 
 const AppError = errors.define('AppError')
@@ -115,7 +115,9 @@ class Application extends EventEmitter {
     this.logger = logger.init(cfg)
 
     process.on('uncaughtException', this._onError)
+
     this.koa.on('error', this._onError)
+
     this.on('error', this._onError)
   }
 

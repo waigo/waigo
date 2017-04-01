@@ -1,8 +1,6 @@
-
-
 const log4js = require('log4js')
 
-const config = {
+let config = {
   minLevel: 'DEBUG',
 }
 
@@ -32,11 +30,8 @@ exports.create = function (category) {
 
   // Allow for easy creation of sub-categories.
   logger.create = function (subCategory) {
-      return exports.create(`${category}/${subCategory}`)
+    return exports.create(`${category}/${subCategory}`)
   }
 
   return logger
 }
-
-
-

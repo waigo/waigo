@@ -1,9 +1,6 @@
-
-
-
 const waigo = global.waigo,
   _ = waigo._,
-  Q = waigo.load('support/promise')
+  Q = waigo.load('promise')
 
 
 
@@ -15,7 +12,6 @@ const METHOD_NAME = exports.METHOD_NAME = 'toViewObject'
 
 
 
-
 /**
  * Get yieldable for converting given object into a view object.
  *
@@ -24,7 +20,6 @@ const METHOD_NAME = exports.METHOD_NAME = 'toViewObject'
  * @return A yieldable value.
  */
 const toViewObjectYieldable = exports.toViewObjectYieldable = function (inputObject, ctx) {
-
   if (inputObject) {
     // if it's one of our model schema types
     // (see https://github.com/hiddentao/simple-nosql-schema)
@@ -45,7 +40,7 @@ const toViewObjectYieldable = exports.toViewObjectYieldable = function (inputObj
 
     // has view object method
     if ('function' === typeof inputObject[METHOD_NAME]) {
-      return inputObject[METHOD_NAME].call(inputObject, ctx)
+      return inputObject[METHOD_NAME](inputObject, ctx)
     }
     // is an array
     else if (_.isArray(inputObject)) {
@@ -68,6 +63,3 @@ const toViewObjectYieldable = exports.toViewObjectYieldable = function (inputObj
 
   return Q.resolve(inputObject)
 }
-
-
-
