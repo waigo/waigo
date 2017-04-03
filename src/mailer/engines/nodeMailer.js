@@ -32,7 +32,7 @@ class NodeMailer {
   /**
    * Send an email.
    */
-  * send (params) {
+  *send (params) {
     if (!params.replyTo) {
       params.replyTo = params.from
     }

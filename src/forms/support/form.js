@@ -150,7 +150,7 @@ class Form {
    *
    * @param {Object} values Mapping from field name to field value.
    */
-  * setValues (values) {
+  *setValues (values) {
     for (const fieldName in this.fields) {
       yield this.fields[fieldName].setSanitizedValue(values[fieldName])
     }
@@ -165,7 +165,7 @@ class Form {
    * 
    * @param {Object} values Mapping from field name to field original value.
    */
-  * setOriginalValues (values) {
+  *setOriginalValues (values) {
     for (const fieldName in this.fields) {
       this.fields[fieldName].originalValue = values[fieldName]
     }
@@ -193,7 +193,7 @@ class Form {
    *
    * @throws FormValidationError If validation fails.
    */
-  * validate () {
+  *validate () {
     const fields = this.fields,
       errors = null
 
@@ -225,7 +225,7 @@ class Form {
    * all sanitization and validation. If validation succeeds then post-validation
    * hooks will be run.
    */
-  * process () {
+  *process () {
     const body = _.get(this.context, 'request.body')
 
     if (!body) {
@@ -245,7 +245,7 @@ class Form {
    *
    * @param {String} hookName Hooks to run.
    */
-  * runHook (hookName) {
+  *runHook (hookName) {
     yield compose(this.config[hookName] || []).call(this)
   }
 

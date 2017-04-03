@@ -38,7 +38,7 @@ class ActionTokens {
    *
    * @return {String} the action token. 
    */
-  * create (type, user, data, options) {
+  *create (type, user, data, options) {
     data = data || ''
 
     options = _.extend({
@@ -79,7 +79,7 @@ class ActionTokens {
    * 
    * @param {Object} token `type`, `user` and `data`.
    */
-  * process (token, options) {
+  *process (token, options) {
     options = options || {}
     
     this.logger.debug(`Processing action token: ${token}`)

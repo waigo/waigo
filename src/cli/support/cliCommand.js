@@ -40,7 +40,7 @@ class AbstractCommand {
    *
    * This function gets passed to [Commander.action](http://visionmedia.github.io/commander.js/#Command.prototype.action) as the command handler.
    */
-  * run () {
+  *run () {
     throw new Error('Not yet implemented')
   }
 
@@ -65,7 +65,7 @@ class AbstractCommand {
    * @param {String} src Source folder path.
    * @param {String} dst Destination folder path.
    */
-  * copyFolder (src, dst) {
+  *copyFolder (src, dst) {
     const fullDstPath = path.join(this._getProjectFolder(), dst)
 
     if (! (shell.test('-f', fullDstPath)) ) {
@@ -97,7 +97,7 @@ class AbstractCommand {
    * @param {String} dst Destination file path.
    * @param {Boolean} [overwrite] Whether to overwrite if already exists. Default is `false`.
    */
-  * copyFile (src, dst, overwrite) {
+  *copyFile (src, dst, overwrite) {
     const fullDstPath = path.join(this._getProjectFolder(), dst)
 
     const fileExistsAlready = !!shell.test('-f', fullDstPath)
@@ -127,7 +127,7 @@ class AbstractCommand {
    *
    * @param {String} dst Destination file path.
    */
-  * deleteFile (dst) {
+  *deleteFile (dst) {
     const fullDstPath = path.join(this._getProjectFolder(), dst)
 
     this.log('Deleting: ' + dst)
@@ -148,7 +148,7 @@ class AbstractCommand {
    * @param {Object} [options] Options.
    * @param {Boolean} [options.dev] Whether to save as dev-dependency.
    */
-  * installPkgs (pkgs, options) {
+  *installPkgs (pkgs, options) {
     options = _.extend({
       dev: false,
     }, options)

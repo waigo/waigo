@@ -41,7 +41,7 @@ module.exports = function (App, options) {
       )
   }
 
-  return function* setOutputFormat(next) {
+  return function*setOutputFormat (next) {
     const ctx = this
     
     const requestedFormat = 

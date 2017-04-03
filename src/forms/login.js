@@ -34,7 +34,7 @@ module.exports = {
   ],
   method: 'POST',
   postValidation: [
-    function* checkUserCredentials(next) {
+    function*checkUserCredentials (next) {
       const ctx = this.context
 
       const User = ctx.App.models.User

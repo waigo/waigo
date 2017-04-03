@@ -17,7 +17,7 @@ class Console extends Mailer {
     super(App, config, 'console')
   }
 
-  * send (params) {
+  *send (params) {
     return yield this._send(params)
   }
 

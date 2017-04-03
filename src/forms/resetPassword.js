@@ -31,7 +31,7 @@ module.exports = {
   ],
   method: 'POST',
   postValidation: [
-    function* updateUserPassword(next) {
+    function*updateUserPassword (next) {
       const ctx = this.context,
         App = ctx.App,
         user = ctx.currentUser
@@ -43,7 +43,7 @@ module.exports = {
 
       yield next
     },
-    function* emailUser(next) {
+    function*emailUser (next) {
       const ctx = this.context,
         App = ctx.App,
         user = ctx.currentUser

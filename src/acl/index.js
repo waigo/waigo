@@ -1,11 +1,9 @@
-
-
 const co = require('co')
 
 const waigo = global.waigo,
   _ = waigo._,
-  logger = waigo.load('support/logger'),
-  errors = waigo.load('support/errors')
+  logger = waigo.load('logger'),
+  errors = waigo.load('errors')
 
 
 const AclError = exports.AclError = errors.define('AclError')
@@ -21,7 +19,7 @@ class ACL {
   /**
    * Initialise ACL
    */
-  * startup () {
+  *startup () {
     this.logger.info('Initialising')
 
     yield this.reload()
@@ -47,7 +45,7 @@ class ACL {
   }
 
 
-  * shutdown () {
+  *shutdown () {
     if (this._changeFeedCursor) {
       yield this._changeFeedCursor.close()
 
@@ -59,7 +57,7 @@ class ACL {
   /**
    * Reload ACL rules from DB.
    */
-  * reload () {
+  *reload () {
     this.logger.debug('Reloading rules from db')
 
     const data = yield this.App.models.Acl.getAll()
@@ -68,12 +66,12 @@ class ACL {
       users = this.users = {},
       roles = this.roles = {}
 
-    data.forEach(function (doc){
+    data.forEach(function (doc) {
       // resource perspective
-      res[doc.resource] = 
+      res[doc.resource] =
         res[doc.resource] || {}
 
-      res[doc.resource][doc.entityType] = 
+      res[doc.resource][doc.entityType] =
         res[doc.resource][doc.entityType] || {}
 
       res[doc.resource][doc.entityType][doc.entity] = true
@@ -129,7 +127,7 @@ class ACL {
       return true
     }
 
-    // if one of user's roles has access it's ok 
+    // if one of user's roles has access it's ok
     const roles = user.roles || []
 
     for (const role of roles) {
@@ -163,7 +161,7 @@ exports.ACL = ACL
 
 /**
  * Initialise ACL
- * 
+ *
  * @param {App} App The App instance.
  */
 exports.init = function *(App) {
@@ -173,6 +171,3 @@ exports.init = function *(App) {
 
   return a
 }
-
-
-

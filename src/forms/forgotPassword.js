@@ -22,7 +22,7 @@ module.exports = {
   ],
   method: 'POST',
   postValidation: [
-    function* sendResetPasswordEmail(next) {
+    function*sendResetPasswordEmail (next) {
       const ctx = this.context,
         App = ctx.App
 

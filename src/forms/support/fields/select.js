@@ -61,7 +61,7 @@ class Select extends Field {
    *
    * @return {Object} key-value pairs representing options.
    */
-  * getOptions () {
+  *getOptions () {
     if (this.config.options instanceof Function) {
       return yield this.config.options()
     } else {

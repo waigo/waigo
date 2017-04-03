@@ -12,5 +12,5 @@ const waigo = global.waigo
 module.exports = function *(App) {
   App.logger.debug('Setting up ACL')
 
-  App.acl = yield (waigo.load('support/acl')).init(App)
+  App.acl = yield (waigo.load('acl')).init(App)
 }

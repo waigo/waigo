@@ -68,7 +68,7 @@ class GenericOauth {
   }
 
 
-  * handleAuthorizationCallback() {
+  *handleAuthorizationCallback () {
     const user = this._user()
 
     this.App.emit('record', 'oauth_callback', user || 'anon', {
@@ -104,7 +104,7 @@ class GenericOauth {
    * Get OAuth access token.
    * @param {String} code Code returned by OAuth provider.
    */
-  * getAccessToken (code) {
+  *getAccessToken (code) {
     const user = this._user()
 
     this.logger.info(`Get access token: user=${user ? user.id : 'anon'} code=${code}`)

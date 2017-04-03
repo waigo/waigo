@@ -26,7 +26,7 @@ class Command extends AbstractCommand {
   /**
    * Run this command.
    */
-  * run () {
+  *run () {
     if (!this.fileExists('package.json')) {
       return this.log('Please run "npm init" first')
     }

@@ -1,17 +1,13 @@
-
-
+const Thinodium = require('thinodium')
 
 const waigo = global.waigo,
   _ = waigo._,
-  logger = waigo.load('support/logger').create('rethinkdb'),
-  Q = waigo.load('support/promise'),
-  Thinodium = require('thinodium')
+  Q = waigo.load('promise')
 
 
 
 // keep track of connections
 const _connections = {}
-
 
 
 
@@ -51,9 +47,7 @@ exports.closeAll = function *(logger) {
     return Q.try(() => {
       if (db.isConnected) {
         return db.disconnect()
-      }      
+      }
     })
   })
 }
-
-

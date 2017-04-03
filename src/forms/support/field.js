@@ -155,7 +155,7 @@ class Field {
    * @param {*} val The value.
    * @throws FieldSanitizationError If any errors occur.
    */
-  * setSanitizedValue (val) {
+  *setSanitizedValue (val) {
     for (const sanitizer of this.sanitizers) {
       const fn = sanitizer.fn,
         msg = sanitizer.msg
@@ -191,7 +191,7 @@ class Field {
    *
    * @throws FieldValidationError If validation fails.
    */
-  * validate (context) {
+  *validate (context) {
     const errors = []
 
     // if value is undefined and field is not required then nothing to do

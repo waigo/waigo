@@ -1,12 +1,5 @@
-
-
-
-
 const waigo = global.waigo,
   _ = waigo._
-
-
-
 
 
 /**

@@ -197,7 +197,7 @@ class Mailer {
 
 
 
-  * render (mailOptions) {
+  *render (mailOptions) {
     mailOptions = yield this._prepareMailOptions(mailOptions)
 
     const recipient = mailOptions.to.pop()

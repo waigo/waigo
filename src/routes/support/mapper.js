@@ -1,14 +1,9 @@
-
-
-
-const route = require('koa-trie-router'),
-  util = require('util'),
-  queryString = require('query-string')
+const queryString = require('query-string')
 
 const waigo = global.waigo,
   _ = waigo._,
-  logger = waigo.load('support/logger').create('RouteMapper'),
-  errors = waigo.load('support/errors')
+  logger = waigo.load('logger').create('RouteMapper'),
+  errors = waigo.load('errors')
 
 
 const RouteError = exports.RouteError = errors.define('RouteError')
@@ -32,23 +27,23 @@ class RouteMapper {
 
   /**
    * Setup routes and middleware.
-   * 
+   *
    * @param {Object} middlewareConfig Middleware config.
    * @param {Object} routeConfig Route config.
    */
-  * setup (middlewareConfig, routeConfig) {
+  *setup (middlewareConfig, routeConfig) {
     logger.info('Initialise...')
 
     require('koa-trie-router')(this.App.koa)
 
-    const possibleMappings = []
+    let possibleMappings = []
 
     // resolve middleware for different HTTP methods
     const commonMiddleware = {}
     _.each(METHODS, (method) => {
       logger.debug('Setting up HTTP method middleware', method)
 
-      commonMiddleware[method] = 
+      commonMiddleware[method] =
         this._loadCfgMiddleware(middlewareConfig[method])
     })
 
@@ -96,10 +91,10 @@ class RouteMapper {
 
   /**
    * Load and initialise given middleware module.
-   * 
+   *
    * @param  {Object|String} middlewareName Name of middleware module file or object representing combined name and options: `{ id: <middleware mame>, ...}`.
    * @param  {Object} [middlewareOptions] Middleware options.
-   * 
+   *
    * @return {Function}
    */
   _loadMiddleware (middlewareName, middlewareOptions) {
@@ -124,9 +119,9 @@ class RouteMapper {
 
   /**
    * Load given controller method.
-   * 
+   *
    * @param  {String} controller String of form `<controller path>.<method name>`.
-   * 
+   *
    * @return {Function}
    */
   _loadController (controller) {
@@ -139,7 +134,7 @@ class RouteMapper {
 
     const mod = waigo.load(`controllers/${controllerPath.join('/')}`)
 
-    if (!_.isfunction (mod[methodName])) {
+    if (!_.isfunction(mod[methodName])) {
       throw new RouteError(`Unable to find method "${methodName}" on controller "${controllerName}"`)
     }
 
@@ -149,8 +144,8 @@ class RouteMapper {
 
 
   /**
-   * Load middleware specified in given config object.
-   * 
+   * Load middleware specified in given config object.
+   *
    * @return {Array}
    */
   _loadCfgMiddleware (cfg) {
@@ -166,9 +161,9 @@ class RouteMapper {
 
 
 
-  /** 
+  /**
    * Build URL to given route.
-   * 
+   *
    * @param  {String} routeName   Name of route.
    * @param  {Object} [urlParams]   URL params for route.
    * @param  {Object} [queryParams] URL query params.
@@ -189,7 +184,7 @@ class RouteMapper {
       throw new Error('No route named: ' + routeName)
     }
 
-    const str = options.absolute ? this.App.config.baseURL : ''
+    let str = options.absolute ? this.App.config.baseURL : ''
 
     str += route.url
 
@@ -209,14 +204,14 @@ class RouteMapper {
 
   /**
    * Build routes from given configuration config node.
-   * 
+   *
    * @param  {Object} commonMiddleware Common middleware to use for every route.
    * @param  {Object} urlPath URL path of this node (relative to parent URL path).
    * @param  {Object} node Config node.
-   * @param  {Object} parentConfig parent node config. 
+   * @param  {Object} parentConfig parent node config.
    * @param  {Object} parentConfig.urlPath URL path of parent node.
    * @param  {Object} parentConfig.preMiddleware Resolved pre-middleware for all routes in this node.
-   * 
+   *
    * @return {Array} List of route mappings.
    */
   _buildRoutes (commonMiddleware, urlPath, node, parentConfig) {
@@ -233,10 +228,10 @@ class RouteMapper {
     )
     delete node.pre
 
-    const mappings = []
+    let mappings = []
 
     // iterate through each possible method
-    _.each(METHODS , (method) => {
+    _.each(METHODS, (method) => {
       if (node[method]) {
         const routeMiddleware = _.isArray(node[method]) ? node[method] : [node[method]]
 
@@ -245,7 +240,7 @@ class RouteMapper {
           name: node.name || urlPath,
           url: urlPath,
           resolvedMiddleware: commonMiddleware[method].concat(
-            resolvedPreMiddleware, 
+            resolvedPreMiddleware,
             _.map(routeMiddleware, (rm) => {
               return this._loadMiddleware(rm)
             })
@@ -271,13 +266,12 @@ class RouteMapper {
 
     return mappings
   }
-
 }
 
 
-/** 
+/**
  * Setup routes.
- * 
+ *
  * @param {Object} app Koa app.
  * @param {Object} middlewareConfig Middleware configuration.
  * @param {Object} routeConfig      Route configuration.
@@ -290,9 +284,3 @@ exports.setup = function *(app, middlewareConfig, routeConfig) {
 
   return mapper
 }
-
-
-
-
-
-
