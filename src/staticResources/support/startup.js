@@ -1,5 +1,3 @@
-
-
 const path = require('path'),
   shell = require('shelljs')
 
@@ -12,14 +10,14 @@ const waigo = global.waigo,
 
 
 /**
- * Copy all built static resources from plugin and core framework folders into 
+ * Copy all built static resources from plugin and core framework folders into
  * app's folder. And also setup static resource URL helper.
  *
  * @param {Object} app The application.
  */
 module.exports = function *(App) {
   App.logger.debug('Copying static resources into public folder')
-  
+
   const tmpFolder = path.join(shell.tempdir(), 'waigo-app')
 
   // clean old stuff from tmp folder
@@ -47,7 +45,7 @@ module.exports = function *(App) {
     shell.rm('-rf', path.join(dst, '_gen'))
   }
 
-  const destFolder = 
+  const destFolder =
     path.join(waigo.getAppFolder(), App.config.staticResources.folder, '_gen')
 
   logger.debug('Copy ' + tmpFolder + ' -> ' + destFolder)
@@ -66,34 +64,29 @@ module.exports = function *(App) {
 /**
  * Helper to generate static URL (relative to base site URL).
  *
- * The given `resourcePath` may be prefixed with `<module name>:`. This is extracted 
- * (if present) and used to generate the correct path. If not present then it 
+ * The given `resourcePath` may be prefixed with `<module name>:`. This is extracted
+ * (if present) and used to generate the correct path. If not present then it
  * is assumed that the static resource belongs to the app.
- * 
+ *
  * @param {String} resourcePath Path to static resource.
- * 
+ *
  * @return {String}
  */
-function _staticUrl(logger, resourcePath) {
+function _staticUrl (logger, resourcePath) {
   const pos = resourcePath.indexOf(':'),
-    owner =  (0 <= pos) ? resourcePath.substr(0, pos) : '',
-    theUrl = (0 <= pos) ? resourcePath.substr(pos+1) : resourcePath
+    owner = (0 <= pos) ? resourcePath.substr(0, pos) : '',
+    theUrl = (0 <= pos) ? resourcePath.substr(pos + 1) : resourcePath
 
   logger.trace('Static resource: ' + resourcePath + ' -> owner:' + owner + ', url:' + theUrl)
 
   if (
-    /* app */ 
+    /* app */
     !owner.length ||
     /* if want 'waigo' resource and the current app is the waigo framework itself */
-      ('waigo' === owner && 0 === waigo.getAppFolder().indexOf(waigo.getWaigoFolder())) 
+      ('waigo' === owner && 0 === waigo.getAppFolder().indexOf(waigo.getWaigoFolder()))
   ) {
     return path.join('/', theUrl)
   } else {
     return path.join('/_gen', owner, theUrl)
   }
 }
-
-
-
-
-

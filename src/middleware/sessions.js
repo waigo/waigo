@@ -1,6 +1,3 @@
-
-
-
 const koaSessionStore = require('koa-session-store'),
   moment = require('moment')
 
@@ -12,8 +9,8 @@ const waigo = global.waigo
 
 /**
  * Build session middleware.
- *  
- * This middleware uses [koa-session-store](https://github.com/hiddentao/koa-session-store) 
+ *
+ * This middleware uses [koa-session-store](https://github.com/hiddentao/koa-session-store)
  * to enable session data storage.
  *
  * @param {Object} options Configuration options.
@@ -31,12 +28,12 @@ module.exports = function (App, options) {
   if (!options.keys) {
     throw new Error('Please specify cookie signing keys in the config file.')
   }
-  
+
   App.koa.keys = options.keys
 
   return koaSessionStore({
     name: options.name,
-    store: waigo.load(`support/session/store/${options.store.type}`)
+    store: waigo.load(`sessions/${options.store.type}`)
                   .create(App, options.store.config),
     cookie: {
       expires: moment().add('days', options.cookie.validForDays).toDate(),
