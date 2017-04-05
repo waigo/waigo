@@ -327,11 +327,17 @@ loader.load = function (filePath) {
  * For example, when a call to load the `support/errors` module is made Waigo
  * checks the following paths in order until a match is found:
  *
+ * * `<app folder>/support/errors/index.js`
  * * `<app folder>/support/errors.js`
+ * * `<waigo plugin 1>/src/support/errors/index.js`
  * * `<waigo plugin 1>/src/support/errors.js`
+ * * `<waigo plugin 2>/src/support/errors/index.js`
  * * `<waigo plugin 2>/src/support/errors.js`
+ * * `<waigo plugin...>/src/support/errors/index.js`
  * * `<waigo plugin...>/src/support/errors.js`
+ * * `<waigo plugin N>/src/support/errors/index.js`
  * * `<waigo plugin N>/src/support/errors.js`
+ * * `<waigo module>/src/support/errors/index.js`
  * * `<waigo module>/src/support/errors.js`
  *
  * In the above example, if the caller wishes to explicitly load the version
@@ -359,6 +365,11 @@ loader.getPath = function (filePath) {
   if (-1 < sepPos) {
     source = filePath.substr(0, sepPos)
     sanitizedFileName = filePath.substr(sepPos + 1)
+  }
+
+  // prefer name/directory/index over name
+  if (loader[$FILE][`${sanitizedFileName}/index`]) {
+    sanitizedFileName = `${sanitizedFileName}/index`
   }
 
   if (!loader[$FILE][sanitizedFileName]) {
