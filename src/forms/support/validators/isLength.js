@@ -1,8 +1,6 @@
-
-
 const waigo = global.waigo,
   _ = waigo._,
-  FieldValidationError = waigo.load('support/forms/field').FieldValidationError
+  FieldValidationError = waigo.load('forms/support/field').FieldValidationError
 
 
 
@@ -12,7 +10,7 @@ const waigo = global.waigo,
  * @param options {Object} Options.
  * @param options.min {Object} Minimum length.
  * @param options.max {Object} Maximum length.
- * 
+ *
  * @throws Error If not an email address.
  */
 module.exports = function (options) {
@@ -27,11 +25,9 @@ module.exports = function (options) {
     const max = options.max
 
     if (min > len || max < len) {
-      throw new FieldValidationError('Must be between ' 
-        + options.min + ' and ' 
-        + options.max + ' characters in length'
+      throw new FieldValidationError(
+        `Must be between ${options.min} and ${options.max} characters in length`
       )
     }
   }
 }
-

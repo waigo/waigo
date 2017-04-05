@@ -1,6 +1,3 @@
-
-
-
 const waigo = global.waigo,
   _ = waigo._
 
@@ -16,7 +13,7 @@ module.exports = function *(App) {
   for (const m of App.config.middleware.ALL._order) {
     App.logger.debug(`Loading middleware: ${m}`)
 
-    App.koa.use(waigo.load(`support/middleware/${m}`)(
+    App.koa.use(waigo.load(`middleware/${m}`)(
       App,
       _.get(App.config.middleware.ALL, m, {})
     ))

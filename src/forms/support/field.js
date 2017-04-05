@@ -1,13 +1,10 @@
-
-
-
 const waigo = global.waigo,
   _ = waigo._,
-  errors = waigo.load('support/errors'),
-  viewObjects = waigo.load('support/viewObjects')
+  errors = waigo.load('errors'),
+  viewObjects = waigo.load('viewObjects')
 
 
-/** 
+/**
  * # Form fields
  *
  * This module provides a base `Field` class for use with the `Form` class.
@@ -26,12 +23,12 @@ const waigo = global.waigo,
 
 
 /** A field validation error. */
-const FieldValidationError = exports.FieldValidationError = 
+const FieldValidationError = exports.FieldValidationError =
   errors.define('FieldValidationError', errors.MultipleError)
 
-  
+
 /** A field sanitization error. */
-const FieldSanitizationError = exports.FieldSanitizationError = 
+const FieldSanitizationError = exports.FieldSanitizationError =
   errors.define('FieldSanitizationError')
 
 
@@ -40,7 +37,7 @@ const FieldSanitizationError = exports.FieldSanitizationError =
 class Field {
   /**
    * A form field.
-   * 
+   *
    * @param  {Form} form   Parent form
    * @param  {Object} config Configuration options
    * @constructor
@@ -64,7 +61,7 @@ class Field {
 
   /**
    * Add a validator
-   * @param {String|Object|GeneratorFunction} def 
+   * @param {String|Object|GeneratorFunction} def
    */
   _addValidator (def) {
     if (_.isGenFn(def)) {
@@ -73,7 +70,7 @@ class Field {
       })
     }
 
-    const options = {}
+    let options = {}
 
     if (def.id) {
       options = _.omit(def, 'id')
@@ -81,7 +78,7 @@ class Field {
     }
 
     this.validators.push({
-      fn: waigo.load(`support/forms/validators/${def}`)(options),
+      fn: waigo.load(`forms/support/validators/${def}`)(options),
       msg: options.msg,
     })
   }
@@ -89,7 +86,7 @@ class Field {
 
   /**
    * Add a sanitizer
-   * @param {String|Object|GeneratorFunction} def 
+   * @param {String|Object|GeneratorFunction} def
    */
   _addSanitizer (def) {
     if (_.isGenFn(def)) {
@@ -98,7 +95,7 @@ class Field {
       })
     }
 
-    const options = {}
+    let options = {}
 
     if (def.id) {
       options = _.omit(def, 'id')
@@ -106,7 +103,7 @@ class Field {
     }
 
     this.sanitizers.push({
-      fn: waigo.load(`support/forms/sanitizers/${def}`)(options),
+      fn: waigo.load(`forms/support/sanitizers/${def}`)(options),
       msg: options.msg,
     })
   }
@@ -124,7 +121,7 @@ class Field {
   /**
    * Field original value.
    *
-   * This is useful if we wish to check whether the field value has changed 
+   * This is useful if we wish to check whether the field value has changed
    * from its previous value.
    */
   get originalValue () {
@@ -132,7 +129,7 @@ class Field {
   }
 
   set originalValue (value) {
-    this.form.state[this.name].originalValue = value 
+    this.form.state[this.name].originalValue = value
   }
 
 
@@ -151,7 +148,7 @@ class Field {
    * This will run the given value through all available sanitizers prior to
    * actually setting it. Subclasses should override this method if they wish to
    * perform any additional processing of the value.
-   * 
+   *
    * @param {*} val The value.
    * @throws FieldSanitizationError If any errors occur.
    */
@@ -171,11 +168,11 @@ class Field {
   }
 
 
-  /** 
+  /**
    * Get whether this field is dirty.
    *
    * It is dirty if its current value is different from its original value.
-   * 
+   *
    * @return {Boolean}
    */
   isDirty () {
@@ -211,7 +208,7 @@ class Field {
         } catch (err) {
           errors.push(msg || err.message)
         }
-      }    
+      }
     }
 
     if (0 < errors.length) {
@@ -226,7 +223,7 @@ class Field {
  * Get renderable representation of this field.
  *
  * @param {Object} ctx Current request context.
- * 
+ *
  * @return {Object}
  */
 Field.prototype[viewObjects.METHOD_NAME] = function *(ctx) {
@@ -239,19 +236,19 @@ Field.prototype[viewObjects.METHOD_NAME] = function *(ctx) {
 
 
 
-/** 
+/**
  * Create a `Field` instance.
  *
  * This will load and intialise an instance of the correct `Field` subtype
  * according to the given field definition.
- * 
+ *
  * @param {Form} form The parent form which holds this field's internal state.
  * @param {Object} config The field configuration.
  * @return {Field}
  */
 Field.new = function (form, config) {
   const type = config.type,
-    FieldClass = waigo.load(`support/forms/fields/${type}`)
+    FieldClass = waigo.load(`forms/support/fields/${type}`)
 
   return new FieldClass(form, config)
 }
@@ -260,4 +257,3 @@ Field.new = function (form, config) {
 
 
 exports.Field = Field
-

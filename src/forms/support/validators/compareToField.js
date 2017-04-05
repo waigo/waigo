@@ -1,7 +1,5 @@
-
-
 const waigo = global.waigo,
-  FieldValidationError = waigo.load('support/forms/field').FieldValidationError
+  FieldValidationError = waigo.load('forms/support/field').FieldValidationError
 
 
 
@@ -11,7 +9,7 @@ const waigo = global.waigo,
  * @param {Object} options Options.
  * @param {String} options.field Field to compare to.
  * @param {String} options.comparison `gt`, `gte`, `lt`, `lte`, `neq` or `eq`.
- * 
+ *
  * @throws Error If not an email address.
  */
 module.exports = function (options) {
@@ -57,4 +55,3 @@ module.exports = function (options) {
     }
   }
 }
-

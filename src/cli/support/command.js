@@ -1,6 +1,3 @@
-
-
-
 const debug = require('debug')('waigo_cli'),
   path = require('path'),
   shell = require('shelljs')
@@ -8,7 +5,7 @@ const debug = require('debug')('waigo_cli'),
 
 const waigo = global.waigo,
   _ = waigo._,
-  Q = waigo.load('support/promise')
+  Q = waigo.load('promise')
 
 
 shell.execAsync = Q.promisify(shell.exec, {
@@ -20,7 +17,7 @@ shell.execAsync = Q.promisify(shell.exec, {
 /**
  * Abstract base class for command-line tool commands.
  *
- * This gets used the command-line executable and is not really meant for 
+ * This gets used the command-line executable and is not really meant for
  * use within your web application.
  *
  */
@@ -35,7 +32,7 @@ class AbstractCommand {
     this.options = options || []
   }
 
-  /** 
+  /**
    * Run this command.
    *
    * This function gets passed to [Commander.action](http://visionmedia.github.io/commander.js/#Command.prototype.action) as the command handler.
@@ -44,7 +41,7 @@ class AbstractCommand {
     throw new Error('Not yet implemented')
   }
 
-  /** 
+  /**
    * Show the user a message.
    *
    * @param {String} msg The log message to write.
@@ -55,11 +52,11 @@ class AbstractCommand {
 
 
 
-  /** 
+  /**
    * Copy a folder to given destination if it doesn't already exist at that destination.
    *
-   * This checks to see if a folder with the same name exists at the 
-   * destination. It doesn't check that it contains the same content as the 
+   * This checks to see if a folder with the same name exists at the
+   * destination. It doesn't check that it contains the same content as the
    * source folder.
    *
    * @param {String} src Source folder path.
@@ -68,7 +65,7 @@ class AbstractCommand {
   *copyFolder (src, dst) {
     const fullDstPath = path.join(this._getProjectFolder(), dst)
 
-    if (! (shell.test('-f', fullDstPath)) ) {
+    if (!shell.test('-f', fullDstPath)) {
       this.log('Creating: ' + dst)
 
       // create intermediate folders
@@ -78,19 +75,18 @@ class AbstractCommand {
       debug('Copying ' + src + ' -> ' + dst)
 
       shell.cp('-R', src, fullDstPath)
-
     } else {
       this.log('Found: ' + dst)
-    }  
-  }  
+    }
+  }
 
 
 
-  /** 
+  /**
    * Copy a file to given destination if it doesn't already exist at that destination.
    *
-   * This checks to see if a file with the same name exists at the 
-   * destination. It doesn't check that it contains the same content as the 
+   * This checks to see if a file with the same name exists at the
+   * destination. It doesn't check that it contains the same content as the
    * source file.
    *
    * @param {String} src Source file path.
@@ -102,11 +98,11 @@ class AbstractCommand {
 
     const fileExistsAlready = !!shell.test('-f', fullDstPath)
 
-    if ( !fileExistsAlready || overwrite ) {
+    if (!fileExistsAlready || overwrite) {
       if (fileExistsAlready) {
         this.log('Overwriting: ' + dst)
       } else {
-        this.log('Creating: ' + dst)      
+        this.log('Creating: ' + dst)
       }
 
       // create intermediate folders
@@ -117,12 +113,12 @@ class AbstractCommand {
       shell.cp(src, fullDstPath)
     } else {
       this.log('Found: ' + dst)
-    }  
-  }  
+    }
+  }
 
 
 
-  /** 
+  /**
    * Delete file at given destination if it exists.
    *
    * @param {String} dst Destination file path.
@@ -131,17 +127,17 @@ class AbstractCommand {
     const fullDstPath = path.join(this._getProjectFolder(), dst)
 
     this.log('Deleting: ' + dst)
-    
+
     shell.rm(fullDstPath)
-  }  
+  }
 
 
 
-  /** 
+  /**
    * Install one or more NPM packages into the local NPM modules folder.
    *
    * If a package is already present then it does not get installed again.
-   * 
+   *
    * _Note: This does not modify the local package.json (if it exists)._
    *
    * @param {Array} pkgs NPM package names.
@@ -153,7 +149,7 @@ class AbstractCommand {
       dev: false,
     }, options)
 
-    const str = pkgs.join(' ')
+    let str = pkgs.join(' ')
 
     if (options.dev) {
       str = '--save-dev ' + str
@@ -165,12 +161,12 @@ class AbstractCommand {
 
     yield shell.execAsync('npm install ' + str, {
       cwd: this._getProjectFolder()
-    })    
-  }  
+    })
+  }
 
 
 
-  /** 
+  /**
    * Check whether given file exists in project folder.
    *
    * @return {Boolean} true if found, false otherwise.
@@ -179,12 +175,12 @@ class AbstractCommand {
     const fullPath = path.join(this._getProjectFolder(), filePath)
 
     return !!(shell.test('-e', fullPath))
-  }  
+  }
 
 
 
 
-  /** 
+  /**
    * Find location of NPM node modules folder.
    *
    * @return {String} location if found, null otherwise.
@@ -202,27 +198,21 @@ class AbstractCommand {
     } else {
       return null
     }
-  }  
+  }
 
 
-  /** 
+  /**
    * Get project folder.
-   * 
+   *
    * @return {String} folder for current app we're working on.
-   * 
+   *
    * @protected
    */
   _getProjectFolder () {
     return path.join(waigo.getAppFolder(), '..')
   }
-
-
 }
 
 
 
-
-
 module.exports = AbstractCommand
-
-

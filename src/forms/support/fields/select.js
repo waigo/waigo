@@ -1,12 +1,8 @@
-
-
-
 const waigo = global.waigo,
   _ = waigo._,
-  errors = waigo.load('support/errors'),
-  viewObjects = waigo.load('support/viewObjects'),
-  FieldExports = waigo.load('support/forms/field'),
-  Field = FieldExports.Field, 
+  viewObjects = waigo.load('viewObjects'),
+  FieldExports = waigo.load('forms/support/field'),
+  Field = FieldExports.Field,
   FieldValidationError = FieldExports.FieldValidationError
 
 
@@ -29,7 +25,7 @@ class Select extends Field {
    * @param  {Object} config Configuration options
    * @constructor
    */
-  constructor(form, config) {
+  constructor (form, config) {
     super(form, config)
 
     // default validator
@@ -45,7 +41,7 @@ class Select extends Field {
         const expected = _arrayToStr(_.keys(options))
 
         const diff = _.difference(val, expected)
-        
+
         // if unknown option given OR if more than one given for a non-multiple select
         if (diff.length || (1 < val.length && !field.config.multiple)) {
           const str = field.config.multiple ? 'one or more of' : 'one of'
@@ -86,6 +82,3 @@ Select.prototype[viewObjects.METHOD_NAME] = function *(ctx) {
 
 
 module.exports = Select
-
-
-

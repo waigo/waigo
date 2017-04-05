@@ -1,9 +1,7 @@
-
-
 const validator = require('validator')
 
 const waigo = global.waigo,
-  FieldValidationError = waigo.load('support/forms/field').FieldValidationError
+  FieldValidationError = waigo.load('forms/support/field').FieldValidationError
 
 
 /**
@@ -18,4 +16,3 @@ module.exports = function () {
     }
   }
 }
-

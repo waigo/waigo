@@ -1,15 +1,12 @@
-
-
-
 const compose = require('generator-compose')
 
 const waigo = global.waigo,
   _ = waigo._,
-  logger = waigo.load('support/logger'),
-  errors = waigo.load('support/errors'),
-  FieldExports = waigo.load('support/forms/field'),
+  logger = waigo.load('logger'),
+  errors = waigo.load('errors'),
+  FieldExports = waigo.load('forms/support/field'),
   Field = FieldExports.Field,
-  viewObjects = waigo.load('support/viewObjects')
+  viewObjects = waigo.load('viewObjects')
 
 
 exports.Field = FieldExports.Field
@@ -17,7 +14,7 @@ exports.Field = FieldExports.Field
 
 
 /** Form validation error. */
-const FormValidationError = exports.FormValidationError = 
+const FormValidationError = exports.FormValidationError =
   errors.define('FormValidationError', errors.MultipleError)
 
 
@@ -31,13 +28,13 @@ const cache = {}
 /**
  * Construct a form.
  *
- * Form field values get stored in an internal state object which can be retrieved 
- * and set at any time, thus allowing you to share state between `Form` instances 
+ * Form field values get stored in an internal state object which can be retrieved
+ * and set at any time, thus allowing you to share state between `Form` instances
  * as well as quickly restore a `Form` to a previously set state.
  *
- * Constructing a form using this function rather than the `Form` constructor will 
+ * Constructing a form using this function rather than the `Form` constructor will
  * also ensure that the `postCreation` hooks get run.
- * 
+ *
  * @param {Object|String|Form} config form configuration,  name of a form, or an existing `Form`.
  * @param {Object} [options] Additional options.
  * @param {Object} [options.context] The current request context.
@@ -45,14 +42,14 @@ const cache = {}
  */
 exports.create = function *(config, options) {
   if (_.isString(config)) {
-    const cachedSpec = cache[config]
+    let cachedSpec = cache[config]
 
     if (!cachedSpec) {
-      cache[config]  = cachedSpec = waigo.load('forms/' + config)
+      cache[config] = cachedSpec = waigo.load('forms/' + config)
       cachedSpec.id = config
     }
 
-    config = cachedSpec    
+    config = cachedSpec
   }
 
   const f = new Form(config, options)
@@ -69,15 +66,15 @@ class Form {
   /**
    * Construct a form.
    *
-   * Form field values get stored in an internal state object which can be retrieved 
-   * and set at any time, thus allowing you to share state between `Form` instances 
+   * Form field values get stored in an internal state object which can be retrieved
+   * and set at any time, thus allowing you to share state between `Form` instances
    * as well as quickly restore a `Form` to a previously set state.
    *
    * @param {Object|Form} config form configuration,  name of a form, or an existing `Form`.
    * @param {Object} [options] Additional options.
    * @param {Object} [options.context] The current request context.
    * @param {Object} [options.state] The internal state to set for this form.
-   * 
+   *
    * @constructor
    */
   constructor (config, options) {
@@ -88,7 +85,7 @@ class Form {
 
     if (config instanceof Form) {
       // passed-in state overrides existing form's state
-      options.state = options.state || config.state  
+      options.state = options.state || config.state
       config = config.config
     }
 
@@ -105,7 +102,7 @@ class Form {
     }
 
     // CSRF enabled (set by koa-csrf package)?
-    if (!!_.get(this.context, 'assertCSRF')) {
+    if (_.get(this.context, 'assertCSRF')) {
       this.logger.debug('Adding CSRF field')
 
       this._fields.__csrf = Field.new(this, {
@@ -117,7 +114,7 @@ class Form {
     }
 
     // initial state
-    this.state = _.extend({}, options.state)    
+    this.state = _.extend({}, options.state)
   }
 
   get fields () {
@@ -160,9 +157,9 @@ class Form {
   /**
    * Set original values.
    *
-   * _Note: unlike when setting the current field values these values do not 
+   * _Note: unlike when setting the current field values these values do not
    * get sanitized._
-   * 
+   *
    * @param {Object} values Mapping from field name to field original value.
    */
   *setOriginalValues (values) {
@@ -172,9 +169,9 @@ class Form {
   }
 
 
-  /** 
+  /**
    * Get whether this form is dirty.
-   * 
+   *
    * @return {Boolean} True if any fields are dirty false otherwise.
    */
   isDirty () {
@@ -194,8 +191,8 @@ class Form {
    * @throws FormValidationError If validation fails.
    */
   *validate () {
-    const fields = this.fields,
-      errors = null
+    const fields = this.fields
+    let errors = null
 
     for (const fieldName in fields) {
       const field = fields[fieldName]
@@ -221,7 +218,7 @@ class Form {
   /**
    * Process this submitted form.
    *
-   * This will insert values from the current context request body and run 
+   * This will insert values from the current context request body and run
    * all sanitization and validation. If validation succeeds then post-validation
    * hooks will be run.
    */
@@ -248,8 +245,8 @@ class Form {
   *runHook (hookName) {
     yield compose(this.config[hookName] || []).call(this)
   }
-
 }
+
 
 exports.Form = Form
 
@@ -268,7 +265,7 @@ Form.prototype[viewObjects.METHOD_NAME] = function *(ctx) {
 
   for (const fieldName in fields) {
     const field = fields[fieldName]
-      
+
     fieldViewObjects[fieldName] = yield field[viewObjects.METHOD_NAME](ctx)
     fieldOrder.push(fieldName)
   }
@@ -278,7 +275,3 @@ Form.prototype[viewObjects.METHOD_NAME] = function *(ctx) {
 
   return ret
 }
-
-
-
-

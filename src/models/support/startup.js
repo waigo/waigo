@@ -1,12 +1,9 @@
-
-
-
 const path = require('path')
 
 const waigo = global.waigo,
   _ = waigo._,
-  logger = waigo.load('support/logger').create('Models'),
-  viewObjects = waigo.load('support/viewObjects')
+  logger = waigo.load('logger').create('Models'),
+  viewObjects = waigo.load('viewObjects')
 
 
 
@@ -34,14 +31,14 @@ module.exports = function *(App) {
     // add logger and app getter methods
     const helperMethods = {
       _logger: () => modelLogger,
-      _App: () => App,      
+      _App: () => App,
     }
 
     modelConfig.docMethods = _.extend({}, modelConfig.docMethods, helperMethods)
     modelConfig.docMethods[viewObjects.METHOD_NAME] = function *() {
       return this.toJSON()
     }
-    
+
     modelConfig.modelMethods = _.extend({}, modelConfig.modelMethods, helperMethods)
 
     App.models[modelName] = yield App.db.model(modelName, modelConfig)

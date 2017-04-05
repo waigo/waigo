@@ -1,9 +1,5 @@
-
-
-
 const waigo = global.waigo,
-  _ = waigo._,
-  errors = waigo.load('support/errors')
+  errors = waigo.load('errors')
 
 
 const ForgotPasswordError = errors.define('ForgotPasswordError')
@@ -22,7 +18,7 @@ module.exports = {
   ],
   method: 'POST',
   postValidation: [
-    function*sendResetPasswordEmail (next) {
+    function *sendResetPasswordEmail (next) {
       const ctx = this.context,
         App = ctx.App
 
@@ -38,7 +34,7 @@ module.exports = {
       // action
       const token = yield App.actionTokens.create('reset_password', user)
 
-      App.logger.debug('Reset password token for ' + user.id , token)
+      App.logger.debug('Reset password token for ' + user.id, token)
 
       // record
       App.emit('record', 'reset_password', user)
@@ -61,4 +57,3 @@ module.exports = {
     }
   ]
 }
-

@@ -1,11 +1,6 @@
-
-
-
-const path = require('path')
-
 const waigo = global.waigo,
   _ = waigo._,
-  errors = waigo.load('support/errors')
+  errors = waigo.load('errors')
 
 
 const JsonRenderError = errors.define('JsonRenderError')
@@ -36,7 +31,7 @@ exports.create = function (logger) {
 
     redirect: function *(url) {
       logger.debug('Redirect', url)
-      
+
       this.type = 'json'
       this.status = 200
       this.body = {
@@ -45,5 +40,3 @@ exports.create = function (logger) {
     },
   }
 }
-
-

@@ -1,11 +1,8 @@
-
-
 const crypto = require('crypto')
 
 const waigo = global.waigo,
   _ = waigo._,
-  Q = waigo.load('support/promise'),
-  errors = waigo.load('support/errors')
+  Q = waigo.load('promise')
 
 
 const randomBytesQ = Q.promisify(crypto.pseudoRandomBytes, {
@@ -118,12 +115,12 @@ exports.docVirtuals = {
 
 exports.docMethods = {
   /**
-   * Get whether user has any of  given roles
+   * Get whether user has any of  given roles
    */
   isOneOf: function () {
     const roles = _.toArray(arguments)
 
-    return !! (_.intersection(this.roles || [], roles).length)
+    return !!(_.intersection(this.roles || [], roles).length)
   },
   /**
    * Check password against hash.
@@ -141,8 +138,7 @@ exports.docMethods = {
     }
 
     const sepPos = passAuth.token.indexOf('-'),
-      salt = passAuth.token.substr(0, sepPos),
-      hash = passAuth.token.substr(sepPos + 1)
+      salt = passAuth.token.substr(0, sepPos)
 
     const generatedHash = yield this.__model.generatePasswordHash(
       password, salt
@@ -218,7 +214,7 @@ exports.docMethods = {
    * @param {Boolea} verified Whether address is verified.
    */
   addEmail: function *(email, verified) {
-    const theEmail = _.find(this.emails, function (e) {
+    let theEmail = _.find(this.emails, function (e) {
       return email === e.email
     })
 
@@ -273,7 +269,7 @@ exports.docMethods = {
    *
    * @return {Object} null if not found.
    */
-  getOauth: function *(provider)  {
+  getOauth: function *(provider) {
     provider = 'oauth:' + provider
 
     provider = _.find(this.auth, function (a) {
@@ -300,7 +296,7 @@ exports.docMethods = {
   saveAuth: function *(type, data) {
     this._logger().debug('Save user auth', this.id, type, data)
 
-    const existing = _.find(this.auth, function (a) {
+    let existing = _.find(this.auth, function (a) {
       return type === a.type
     })
 
@@ -387,7 +383,7 @@ exports.modelMethods = {
    * @return {User}
    */
   findWithIds: function *(ids) {
-    const qry = this.rawQry()
+    let qry = this.rawQry()
 
     qry = qry.getAll.apply(qry, ids.concat([{index: 'id'}]))
 

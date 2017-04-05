@@ -9,9 +9,9 @@ const waigo = global.waigo,
  * Setup emailer system.
  *
  * Upon completion:
- * 
+ *
  * * `App.mailer` will be the emailer interface.
- * 
+ *
  * @param {Object} App The application.
  */
 module.exports = function *(App) {
@@ -23,9 +23,7 @@ module.exports = function *(App) {
 
   App.logger.debug(`Initializing mailer: ${mailerConfig.type}`)
 
-  const mailer = waigo.load(`support/mailer/${mailerConfig.type}`)
+  const mailer = waigo.load(`mailer/${mailerConfig.type}`)
 
   App.mailer = yield mailer.create(App, mailerConfig)
 }
-
-

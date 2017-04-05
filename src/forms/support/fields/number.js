@@ -1,11 +1,5 @@
-
-
-
-const validator = require('validator')
-
 const waigo = global.waigo,
-  _ = waigo._,
-  TextField = waigo.load('support/forms/fields/text')
+  TextField = waigo.load('forms/support/fields/text')
 
 
 
@@ -20,7 +14,7 @@ class NumberField extends TextField {
    * @param  {Object} config Configuration options
    * @constructor
    */
-  constructor(form, config) {
+  constructor (form, config) {
     super(form, config)
 
     this._addSanitizer(
@@ -34,6 +28,3 @@ class NumberField extends TextField {
 
 
 module.exports = NumberField
-
-
-

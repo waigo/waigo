@@ -1,9 +1,5 @@
-
-
-
 const waigo = global.waigo,
-  _ = waigo._,
-  FieldValidationError = waigo.load('support/forms/field').FieldValidationError
+  FieldValidationError = waigo.load('forms/support/field').FieldValidationError
 
 
 
@@ -14,12 +10,8 @@ const waigo = global.waigo,
  */
 module.exports = function () {
   return function *(context, field, value) {
-    if (null === value 
-        || undefined === value 
-        || (typeof value === 'string' && !value.length)
-    ) {
+    if (null === value || undefined === value || (typeof value === 'string' && !value.length)) {
       throw new FieldValidationError('Must not be empty')
     }
   }
 }
-

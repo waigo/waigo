@@ -1,11 +1,7 @@
-
-
-
 const validator = require('validator')
 
 const waigo = global.waigo,
-  _ = waigo._,
-  FieldExports = waigo.load('support/forms/field'),
+  FieldExports = waigo.load('forms/support/field'),
   Field = FieldExports.Field
 
 
@@ -20,7 +16,7 @@ class Checkbox extends Field {
    * @param  {Object} config Configuration options
    * @constructor
    */
-  constructor(form, config) {
+  constructor (form, config) {
     super(form, config)
 
     this._addSanitizer(
@@ -33,6 +29,3 @@ class Checkbox extends Field {
 
 
 module.exports = Checkbox
-
-
-

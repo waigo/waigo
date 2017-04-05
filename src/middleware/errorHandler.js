@@ -1,19 +1,16 @@
-
-
-
 const waigo = global.waigo,
   _ = waigo._,
-  errors = waigo.load('support/errors'),
-  viewObjects = waigo.load('support/viewObjects')
+  errors = waigo.load('errors'),
+  viewObjects = waigo.load('viewObjects')
 
 
 
 /**
  * Build error handler middleware.
  *
- * This will catch any errors thrown from downstream middleware or controller 
+ * This will catch any errors thrown from downstream middleware or controller
  * handler functions.
- * 
+ *
  * @return {Function} middleware
  */
 module.exports = function () {
@@ -57,7 +54,7 @@ const render = function *(config, err) {
   }
 
   if (config.showStack) {
-    error.stack = err.stack.split("\n")
+    error.stack = err.stack.split('\n')
   }
 
   try {
@@ -81,8 +78,8 @@ const render = function *(config, err) {
  * @throws Error
  */
 const _throw = function () {
-  const args = Array.prototype.slice.call(arguments),
-    ErrorClass = args[0]
+  const args = Array.prototype.slice.call(arguments)
+  let ErrorClass = args[0]
 
   if (_.isObject(ErrorClass)) {
     args.shift()
@@ -92,7 +89,5 @@ const _throw = function () {
 
   args.unshift(null)   // the this arg for the .bind() call
 
-  throw new (Function.prototype.bind.apply(ErrorClass, args))
+  throw new (Function.prototype.bind.apply(ErrorClass, args))()
 }
-
-

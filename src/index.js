@@ -1,4 +1,3 @@
-
 /**
  * @file The default entry point for Waigo.
  */

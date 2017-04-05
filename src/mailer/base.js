@@ -1,6 +1,4 @@
-
-
-/** 
+/**
  * @fileOverview Base class for mailer types.
  */
 
@@ -11,11 +9,11 @@ const co = require('co'),
 
 const waigo = global.waigo,
   _ = waigo._,
-  logger = waigo.load('support/logger'),
-  Q = waigo.load('support/promise'),
-  errors = waigo.load('support/errors'),
-  NodeMailer = waigo.load('support/mailer/engines/nodeMailer').NodeMailer,
-  viewObjects = waigo.load('support/viewObjects')
+  logger = waigo.load('logger'),
+  Q = waigo.load('promise'),
+  errors = waigo.load('errors'),
+  NodeMailer = waigo.load('mailer/engines/nodeMailer').NodeMailer,
+  viewObjects = waigo.load('viewObjects')
 
 const EmailTemplate = require('email-templates').EmailTemplate
 const MailerError = errors.define('MailerError')
@@ -32,9 +30,9 @@ class Mailer {
   }
 
 
-  * _init (transport) {
+  *_init (transport) {
     this._nodeMailer = new NodeMailer(
-      this.logger.create('NodeMailer'), 
+      this.logger.create('NodeMailer'),
       this.config, transport
     )
   }
@@ -44,8 +42,8 @@ class Mailer {
   _renderEmailTemplate (templateName, templateVars) {
     this.logger.debug('Rendering template ' + templateName)
 
-    const templatePath = 
-      path.dirname( waigo.getPath(`emails/${templateName}/html.pug`) )
+    const templatePath =
+      path.dirname(waigo.getPath(`emails/${templateName}/html.pug`))
 
     const emailTemplate = new EmailTemplate(templatePath)
 
@@ -62,7 +60,7 @@ class Mailer {
 
 
 
-  * _renderBodyMarkdown (template, templateVars) {
+  *_renderBodyMarkdown (template, templateVars) {
     const compiled = _.template(template, {
       interpolate: /{{([\s\S]+?)}}/img
     })
@@ -71,7 +69,7 @@ class Mailer {
   }
 
 
-  * _renderBodyTemplate (templateName, templateVars) {
+  *_renderBodyTemplate (templateName, templateVars) {
     const body = yield this._renderEmailTemplate(templateName, templateVars)
 
     return body.html
@@ -79,8 +77,8 @@ class Mailer {
 
 
 
-  * _renderBody (mailOptions, templateVars) {
-    const content
+  *_renderBody (mailOptions, templateVars) {
+    let content
 
     if (mailOptions.bodyTemplate) {
       content = yield this._renderBodyTemplate(mailOptions.bodyTemplate, templateVars)
@@ -88,7 +86,7 @@ class Mailer {
       content = yield this._renderBodyMarkdown(mailOptions.body, templateVars)
     }
 
-    const templateVars = _.extend({}, this.App.templateVars, templateVars, {
+    templateVars = _.extend({}, this.App.templateVars, templateVars, {
       content: content
     })
 
@@ -99,7 +97,7 @@ class Mailer {
 
 
 
-  * _renderSubject (mailOptions, templateVars) {
+  *_renderSubject (mailOptions, templateVars) {
     const compiled = _.template(mailOptions.subject, {
       interpolate: /{{([\s\S]+?)}}/img
     })
@@ -109,7 +107,7 @@ class Mailer {
 
 
 
-  * _prepareMailOptions (mailOptions) {
+  *_prepareMailOptions (mailOptions) {
     mailOptions = _.extend({
       from: this.config.from,
       subject: null,
@@ -127,10 +125,10 @@ class Mailer {
 
     // it not allowed to send empty email
     if (!mailOptions.allowEmpty) {
-      if (_.isEmpty(mailOptions.subject) || 
-          (_.isEmpty(mailOptions.body) && _.isEmpty(mailOptions.bodyTemplate)) ) {
+      if (_.isEmpty(mailOptions.subject) ||
+          (_.isEmpty(mailOptions.body) && _.isEmpty(mailOptions.bodyTemplate))) {
         throw new MailerError('Subject and body/template must be set')
-      }    
+      }
     }
 
     if (!_.isArray(mailOptions.to)) {
@@ -138,7 +136,7 @@ class Mailer {
     }
 
     // templateVars common to all recipients
-    mailOptions.templateVars = _.extend({}, this.App.templateVars, mailOptions.ctx.templateVars, 
+    mailOptions.templateVars = _.extend({}, this.App.templateVars, mailOptions.ctx.templateVars,
       yield viewObjects.toViewObjectYieldable(mailOptions.templateVars, mailOptions.ctx)
     )
 
@@ -147,7 +145,7 @@ class Mailer {
 
 
 
-  * _send (mailOptions) {
+  *_send (mailOptions) {
     const self = this
 
     mailOptions = yield self._prepareMailOptions(mailOptions)
@@ -160,7 +158,7 @@ class Mailer {
         self.logger.debug('Email ' + email + ': ' + mailOptions.subject)
 
         // user-specific templateVars
-        const userLocals = _.extend({}, mailOptions.templateVars, 
+        const userLocals = _.extend({}, mailOptions.templateVars,
           yield viewObjects.toViewObjectYieldable({
             recipient: recipient
           }, mailOptions.ctx)
@@ -190,7 +188,7 @@ class Mailer {
         })
 
         return ret
-      })()    
+      })()
     })
   }
 
@@ -207,7 +205,7 @@ class Mailer {
     this.logger.debug('Render email ' + email + ': ' + mailOptions.subject)
 
     // user-specific templateVars
-    const userLocals = _.extend({}, mailOptions.templateVars, 
+    const userLocals = _.extend({}, mailOptions.templateVars,
       yield viewObjects.toViewObjectYieldable({
         recipient: recipient
       }, mailOptions.ctx)
@@ -218,14 +216,8 @@ class Mailer {
       subject: yield this._renderSubject(mailOptions, userLocals),
     }
   }
-
 }
 
 
 
 module.exports = Mailer
-
-
-
-
-

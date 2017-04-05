@@ -1,11 +1,9 @@
-
-
 const crypto = require('crypto')
 
 const waigo = global.waigo,
   _ = waigo._,
-  logger = waigo.load('support/logger'),
-  errors = waigo.load('support/errors')
+  logger = waigo.load('logger'),
+  errors = waigo.load('errors')
 
 
 const ActionTokensError = exports.ActionTokensError = errors.define('ActionTokensError')
@@ -31,12 +29,12 @@ class ActionTokens {
    * Create a token representing the given action.
    *
    * @param {String} type email action type.
-   * @param {User} user User this action is for. 
+   * @param {User} user User this action is for.
    * @param {Object} [data] Additional data to associate with this action (must be JSON-stringify-able)
    * @param {Object} [options] Additional options.
    * @param {Number} [options.validForSeconds] Override default `validForSeconds` settings with this.
    *
-   * @return {String} the action token. 
+   * @return {String} the action token.
    */
   *create (type, user, data, options) {
     data = data || ''
@@ -47,16 +45,16 @@ class ActionTokens {
 
     this.logger.debug(`Creating action token: ${type} for user ${user.id}`, data)
 
-    // every token is uniquely identied by a salt (this is also doubles up as  
+    // every token is uniquely identied by a salt (this is also doubles up as
     // a factor for more secure encryption)
     const salt = _.uuid.v4()
 
-    const plaintext = JSON.stringify([ 
-      Date.now() + (options.validForSeconds * 1000), 
-      salt, 
-      type, 
-      user.id, 
-      data 
+    const plaintext = JSON.stringify([
+      Date.now() + (options.validForSeconds * 1000),
+      salt,
+      type,
+      user.id,
+      data
     ])
 
     this.logger.trace('Encrypt: ' + plaintext)
@@ -68,31 +66,30 @@ class ActionTokens {
     return cipher.update(plaintext, 'utf8', 'hex') + cipher.final('hex')
   }
 
-  /** 
+  /**
    * Process the given action token.
    *
    * Note: A given token can only be processed once.
-   * 
+   *
    * @param {String} token the token to process.
    * @param {Object} [options] Additional options.
    * @param {String} [options.type] Expected token type.
-   * 
+   *
    * @param {Object} token `type`, `user` and `data`.
    */
   *process (token, options) {
     options = options || {}
-    
+
     this.logger.debug(`Processing action token: ${token}`)
 
-    const json = null
+    let json = null
 
     try {
       const decipher = crypto.createDecipher(
         'aes256', this.config.encryptionKey
       )
 
-      const plaintext = decipher.update(token, 'hex', 'utf8') 
-        + decipher.final('utf8')
+      const plaintext = decipher.update(token, 'hex', 'utf8') + decipher.final('utf8')
 
       this.logger.trace(`Decrypted: ${plaintext}`)
 
@@ -150,8 +147,7 @@ class ActionTokens {
       user: user,
       data: data,
     }
-  }  
-
+  }
 }
 
 
@@ -163,12 +159,9 @@ class ActionTokens {
  *
  * @param {App} App The App.
  * @param {Object} actionTokensConfig Config.
- * 
+ *
  * @return {ActionTokens}
  */
 exports.init = function *(App, actionTokensConfig) {
   return new ActionTokens(App, actionTokensConfig)
 }
-
-
-

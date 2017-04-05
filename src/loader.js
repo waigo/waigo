@@ -1,4 +1,3 @@
-
 /**
  * @file The Waigo module loader.
  */

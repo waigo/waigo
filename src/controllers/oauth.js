@@ -1,8 +1,5 @@
-
-
 const waigo = global.waigo,
-  oauth = waigo.load('support/oauth/index')
-
+  oauth = waigo.load('oauth')
 
 
 

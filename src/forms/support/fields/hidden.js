@@ -1,9 +1,7 @@
-
-
 const waigo = global.waigo,
-  TextField = waigo.load('support/forms/fields/text'),
-  viewObjects = waigo.load('support/viewObjects')
-  
+  TextField = waigo.load('forms/support/fields/text'),
+  viewObjects = waigo.load('viewObjects')
+
 
 class HiddenField extends TextField {}
 

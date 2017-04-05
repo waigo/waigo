@@ -1,9 +1,5 @@
-
-
-
 const waigo = global.waigo,
-  _ = waigo._,
-  errors = waigo.load('support/errors')
+  errors = waigo.load('errors')
 
 const LoginError = errors.define('LoginError')
 
@@ -34,7 +30,7 @@ module.exports = {
   ],
   method: 'POST',
   postValidation: [
-    function*checkUserCredentials (next) {
+    function *checkUserCredentials (next) {
       const ctx = this.context
 
       const User = ctx.App.models.User
@@ -43,8 +39,7 @@ module.exports = {
       const user = yield User.getByEmailOrUsername(this.fields.email.value)
 
       // check user and password
-      if (!user 
-          || !(yield user.isPasswordCorrect(this.fields.password.value)) ) {
+      if (!user || !(yield user.isPasswordCorrect(this.fields.password.value))) {
         ctx.throw(LoginError, 'Incorrect username or password', 400)
       }
 
@@ -55,4 +50,3 @@ module.exports = {
     }
   ]
 }
-

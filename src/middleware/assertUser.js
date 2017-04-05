@@ -1,9 +1,5 @@
-
-
-
 const waigo = global.waigo,
-  _ = waigo._,
-  RuntimeError = waigo.load('support/errors').RuntimeError
+  RuntimeError = waigo.load('errors').RuntimeError
 
 
 
@@ -13,9 +9,9 @@ const waigo = global.waigo,
  *
  * Should be preceded by middleware: `session`, `outputFormats`, `contextHelpers`.
  *
- * By default it checks that the user is logged in. Note that admin users will 
+ * By default it checks that the user is logged in. Note that admin users will
  * bypass checks and always have access to everything.
- * 
+ *
  * @param {Object} [options] Configuration options.
  * @param {Array} [options.canAccess] User must be allowed to access this resource.
  *
@@ -44,7 +40,7 @@ module.exports = function (App, options) {
         return yield this.redirect(
           this.App.routes.url('user_login', null, {
             r: err.message,
-            u: this.request.url,            
+            u: this.request.url,
           })
         )
       }

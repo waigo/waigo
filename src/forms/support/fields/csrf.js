@@ -1,10 +1,6 @@
-
-
-
 const waigo = global.waigo,
-  _ = waigo._,
-  viewObjects = waigo.load('support/viewObjects'),
-  HiddenField = waigo.load('support/forms/fields/hidden')
+  viewObjects = waigo.load('viewObjects'),
+  HiddenField = waigo.load('forms/support/fields/hidden')
 
 
 
@@ -24,7 +20,7 @@ const checkCSRF = function *(context, field, value) {
 class Csrf extends HiddenField {
   /**
    * Construct.
-   * 
+   *
    * @param  {Form} form   Parent form
    * @param  {Object} config Configuration options
    * @constructor
@@ -51,4 +47,3 @@ Csrf.prototype[viewObjects.METHOD_NAME] = function *(ctx) {
 
 
 module.exports = Csrf
-

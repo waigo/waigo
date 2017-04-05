@@ -6,9 +6,9 @@ const qs = require('query-string'),
 
 const waigo = global.waigo,
   _ = waigo._,
-  logger = waigo.load('support/logger'),
-  Q = waigo.load('support/promise'),
-  OauthError = waigo.load('support/oauth/error')
+  logger = waigo.load('logger'),
+  Q = waigo.load('promise'),
+  OauthError = waigo.load('oauth/error')
 
 
 
@@ -40,7 +40,7 @@ class GenericOauth {
 
     this.oauth2 = new OAuth2(
       this.config.clientId,
-      this.config.clientSecret, 
+      this.config.clientSecret,
       this.config.baseURL,
       this.config.authorizePath,
       this.config.accessTokenPath,
@@ -83,7 +83,7 @@ class GenericOauth {
       if (errorMsg) {
         throw new OauthError(errorMsg, 400, errorDesc)
       }
-      
+
       // we got the code!
       const code = this.context.request.query.code
 
@@ -130,17 +130,16 @@ class GenericOauth {
 
           this._setTokens({
             access_token: access_token,
-            refresh_token: refresh_token,             
+            refresh_token: refresh_token,
           })
 
           resolve({
             access_token: access_token,
-            refresh_token: refresh_token, 
+            refresh_token: refresh_token,
             result: result,
           })
         })
       })
-
     } catch (err) {
       yield this._handleError(err, {
         method: 'getOAuthAccessToken',
@@ -161,12 +160,12 @@ class GenericOauth {
   }
 
 
-  * _get (url, queryParams) {
+  *_get (url, queryParams) {
     return yield this._request('GET', url, queryParams)
   }
 
 
-  * _post (url, queryParams, body) {
+  *_post (url, queryParams, body) {
     return yield this._request('POST', url, queryParams, body)
   }
 
@@ -191,7 +190,7 @@ class GenericOauth {
 
 
 
-  * _request (method, url, queryParams, body) {
+  *_request (method, url, queryParams, body) {
     url = this._buildRequestUrl(url, queryParams)
 
     this.logger.debug(method, url)
@@ -216,7 +215,6 @@ class GenericOauth {
           resolve(result)
         })
       })
-
     } catch (err) {
       yield this._handleError(err, {
         method: method,
@@ -254,12 +252,12 @@ class GenericOauth {
   }
 
 
-  * _handlePostAuthorizationSuccess (accessTokenResponse) {
-    yield this.context.redirect("/")
+  *_handlePostAuthorizationSuccess (accessTokenResponse) {
+    yield this.context.redirect('/')
   }
 
 
-  * _handleError (err, attrs) {
+  *_handleError (err, attrs) {
     this.logger.error(err)
 
     this.App.emit('record', 'oauth_request', this._user() || 'anon', _.extend({}, attrs, {
@@ -271,13 +269,6 @@ class GenericOauth {
 
     throw err
   }
-
 }
 
 module.exports = GenericOauth
-
-
-
-
-
-

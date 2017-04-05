@@ -4,7 +4,7 @@ const path = require('path'),
 
 const waigo = global.waigo,
   _ = waigo._,
-  logger = waigo.load('support/logger').create('StaticResources')
+  logger = waigo.load('logger').create('StaticResources')
 
 
 

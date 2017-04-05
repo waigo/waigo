@@ -23,6 +23,6 @@ module.exports = function *(App) {
     _.merge(routes, waigo.load(routeFile))
   })
 
-  App.routes = yield waigo.load('routeMapper')
+  App.routes = yield waigo.load('routes/support/mapper')
     .setup(App, App.config.middleware, routes)
 }

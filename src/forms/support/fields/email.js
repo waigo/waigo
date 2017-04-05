@@ -1,9 +1,5 @@
-
-
-
 const waigo = global.waigo,
-  _ = waigo._,
-  TextField = waigo.load('support/forms/fields/text')
+  TextField = waigo.load('forms/support/fields/text')
 
 
 
@@ -18,17 +14,13 @@ class Email extends TextField {
    * @param  {Object} config Configuration options
    * @constructor
    */
-  constructor(form, config) {
+  constructor (form, config) {
     super(form, config)
 
     this._addValidator('isEmailAddress')
   }
-
 }
 
 
 
 module.exports = Email
-
-
-

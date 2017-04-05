@@ -10,10 +10,10 @@ const waigo = global.waigo,
  * Setup database connections.
  *
  * Upon completion:
- * 
+ *
  * * `App.dbs` will be consist key-value pairs mapping database connection id to database instance.
  * * `App.db` will be an alias for `App.dbs.main`.
- * 
+ *
  * @param {Object} App The application.
  */
 module.exports = function *(App) {
@@ -31,8 +31,8 @@ module.exports = function *(App) {
     if (!cfg) {
       throw new Error(`Unable to find configuration for database: ${id}`)
     }
-    
-    const builder = waigo.load(`support/db/${cfg.type}`)
+
+    const builder = waigo.load(`db/${cfg.type}`)
 
     App.dbs[id] = yield builder.create(id, App.logger.create(id), cfg)
   }
@@ -40,5 +40,3 @@ module.exports = function *(App) {
   // for convenience
   App.db = _.get(App.dbs, 'main')
 }
-
-

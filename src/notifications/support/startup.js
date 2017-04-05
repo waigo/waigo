@@ -1,5 +1,3 @@
-
-
 const co = require('co')
 
 const waigo = global.waigo,
@@ -12,9 +10,9 @@ const waigo = global.waigo,
  * Setup notification mechanisms.
  *
  * Upon completion:
- * 
+ *
  * `App.emit('notify')` will trigger a notification.
- * 
+ *
  * @param {Object} App The application.
  */
 module.exports = function *(App) {
@@ -32,7 +30,7 @@ module.exports = function *(App) {
     const transports = yield _.map(cfg.transports || [], function *(transport) {
       App.logger.debug(`Setting up transport: ${transport.type}`)
 
-      const builder = waigo.load(`support/notifications/${transport.type}`)
+      const builder = waigo.load(`notifications/${transport.type}`)
 
       return yield builder(App, id, transport.config)
     })
@@ -54,5 +52,3 @@ module.exports = function *(App) {
     })
   }))
 }
-
-

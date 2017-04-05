@@ -1,7 +1,4 @@
-
-
-const waigo = global.waigo,
-  _ = waigo._
+const waigo = global.waigo
 
 
 /**
@@ -12,16 +9,9 @@ const waigo = global.waigo,
 module.exports = function *(App) {
   App.logger.debug('Setting up action tokens system')
 
-  const mod = waigo.load('support/actionTokens')
+  const mod = waigo.load('actionTokens')
 
   App.actionTokens = yield mod.init(
     App, App.config.actionTokens
   )
 }
-
-
-
-
-
-
-

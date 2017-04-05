@@ -1,12 +1,10 @@
-
-
 const co = require('co'),
   CronJob = require('cron').CronJob
 
 
 const waigo = global.waigo,
   _ = waigo._,
-  viewObjects = waigo.load('support/viewObjects')
+  viewObjects = waigo.load('viewObjects')
 
 
 const $EXTRA = Symbol('cron extra data')
@@ -25,8 +23,8 @@ const LastRunSchema = {
 
 
 exports.schema = {
-  id: { 
-    type: String, 
+  id: {
+    type: String,
     required: true,
   },
   disabled: {
@@ -51,13 +49,13 @@ exports.modelMethods = {
   /**
    * Create a cron task.
    *
-   * This will create a new `Cron` and save it to the db (if it isn't 
+   * This will create a new `Cron` and save it to the db (if it isn't
    * already saved).
-   * 
+   *
    * @param  {String} id Unique id for job.
    * @param  {String} crontab Crontab spec.
    * @param  {Function} handler  The job handler.
-   * 
+   *
    * @return {Cron} new cron task instance.
    */
   create: function *(id, crontab, handler) {
@@ -83,7 +81,7 @@ exports.modelMethods = {
       const json = {
         id: this.id,
         disabled: this.disabled,
-        lastRun: this.lastRun ? this.lastRun.when : 'never',
+        lastRun: this.lastRun ? this.lastRun.when : 'never',
       }
 
       json.schedule = crontab
@@ -104,7 +102,7 @@ exports.docMethods = {
    */
   startScheduler: function (crontab) {
     const _config = this[$EXTRA]
-    
+
     _config.logger.info(`Setting up cron schedule ${crontab}`)
 
     _config.job = new CronJob({
@@ -114,12 +112,12 @@ exports.docMethods = {
     })
 
     /* calculate and save time between runs */
-    
-    // we add 1 second to next date otherwise, _getNextDateFrom() returns 
+
+    // we add 1 second to next date otherwise, _getNextDateFrom() returns
     // the same date back
     const nextRunDate = _config.job.nextDate().add(1, 'seconds')
 
-    _config.timeBetweenRunsMs = 
+    _config.timeBetweenRunsMs =
       _config.job.cronTime._getNextDateFrom(nextRunDate).valueOf() - nextRunDate.valueOf()
   },
   /**
@@ -144,7 +142,7 @@ exports.docMethods = {
     _config.logger.info('Starting scheduled run')
 
     try {
-      // always reload data at the start in case other app instances have 
+      // always reload data at the start in case other app instances have
       // executed the task recently
       const dbData = yield this.__model.get(this.id)
 
@@ -154,12 +152,12 @@ exports.docMethods = {
       }
 
       /*
-      If another worker process beats us to the punch then we don't want to 
+      If another worker process beats us to the punch then we don't want to
       repeat their work.
        */
-      
+
       // first we check to see that it wasn't run recently
-      const timeSinceLastRunMs = Date.now() - 
+      const timeSinceLastRunMs = Date.now() -
         (dbData.lastRun ? dbData.lastRun.when.getTime() : 0)
 
       if (timeSinceLastRunMs < _config.timeBetweenRunsMs) {
@@ -174,7 +172,6 @@ exports.docMethods = {
       yield this.save()
 
       yield this.runNow()
-
     } catch (err) {
       _config.logger.error('Scheduled run error', err.stack)
     }
@@ -231,4 +228,3 @@ exports.docMethods = {
     yield this.save()
   },
 }
-

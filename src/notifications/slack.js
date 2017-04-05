@@ -1,11 +1,8 @@
-
-
 const Slack = require('slack-node')
 
 const waigo = global.waigo,
-  _ = waigo._,
-  logger = waigo.load('support/logger').create('SlackNotifier'),
-  Q = waigo.load('support/promise')
+  logger = waigo.load('logger').create('SlackNotifier'),
+  Q = waigo.load('promise')
 
 
 
@@ -18,7 +15,7 @@ module.exports = function *(App, id, config) {
 
   return function *(messageOrObject) {
     const msg = (typeof messageOrObject === 'string' ? messageOrObject : JSON.stringify(messageOrObject))
-    
+
     _logger.debug(`Notify`)
 
     yield new Q(function (resolve, reject) {
@@ -39,5 +36,3 @@ module.exports = function *(App, id, config) {
     })
   }
 }
-
-

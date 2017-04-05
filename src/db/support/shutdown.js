@@ -15,11 +15,9 @@ const waigo = global.waigo,
 module.exports = function *(App) {
   App.logger.debug('Shutting down database connections')
 
-  const dbAdapters = waigo.getItemsInFolder('support/db')
+  const dbAdapters = waigo.getItemsInFolder('db')
 
   yield _.map(dbAdapters, function (adapter) {
     return waigo.load(adapter).closeAll(App.logger)
   })
 }
-
-

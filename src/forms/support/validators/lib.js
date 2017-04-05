@@ -1,9 +1,7 @@
-
-
 const validator = require('validator')
 
 const waigo = global.waigo,
-  FieldValidationError = waigo.load('support/forms/field').FieldValidationError
+  FieldValidationError = waigo.load('forms/support/field').FieldValidationError
 
 
 /**
@@ -12,8 +10,8 @@ const waigo = global.waigo,
  * @throws Error If not an email address.
  */
 module.exports = function (options) {
-  const method = options.method,
-    args = options.args
+  const method = options.method
+  let args = options.args
 
   args = args || []
 
@@ -27,4 +25,3 @@ module.exports = function (options) {
     }
   }
 }
-

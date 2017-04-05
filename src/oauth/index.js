@@ -1,9 +1,6 @@
-
-
 const waigo = global.waigo,
-  _ = waigo._,
-  OauthError = waigo.load('support/oauth/error'),
-  GenericOauth = waigo.load('support/oauth/providers/generic')
+  OauthError = waigo.load('oauth/error'),
+  GenericOauth = waigo.load('oauth/providers/generic')
 
 
 
@@ -12,7 +9,7 @@ const waigo = global.waigo,
 exports.load = function *(ctx, provider, tokens) {
   if (!provider) {
     throw new OauthError('No OAuth provider given', 404)
-  }  
+  }
 
   // see if we have an access token for this provider for current user
   if (!tokens) {
@@ -23,16 +20,13 @@ exports.load = function *(ctx, provider, tokens) {
     }
   }
 
-  const Impl = GenericOauth
+  let Impl = GenericOauth
 
   try {
-    Impl = waigo.load(`support/oauth/providers/${provider}`)
+    Impl = waigo.load(`oauth/providers/${provider}`)
   } catch (err) {
     ctx.logger.warn(`No OAuth implementation found for "${provider}", using generic.`, err)
   }
 
   return new Impl(ctx, provider, tokens)
 }
-
-
-

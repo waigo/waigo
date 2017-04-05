@@ -1,5 +1,3 @@
-
-
 /**
  * @fileOverview Nodemailer engine.
  */
@@ -10,12 +8,11 @@ const nodemailer = require('nodemailer'),
 
 const waigo = global.waigo,
   _ = waigo._,
-  Q = waigo.load('support/promise'),
-  errors = waigo.load('support/errors')
+  Q = waigo.load('promise'),
+  errors = waigo.load('errors')
 
 
-const NodeMailerError = exports.NodeMailerError = 
-  errors.define('NodeMailerError')
+const NodeMailerError = exports.NodeMailerError = errors.define('NodeMailerError')
 
 
 
@@ -51,4 +48,3 @@ class NodeMailer {
 
 
 exports.NodeMailer = NodeMailer
-
