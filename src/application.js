@@ -106,7 +106,7 @@ class Application extends EventEmitter {
    *
    * @param {Object} cfg Logger configuration.
    *
-   * @see support/logger.js
+   * @see logger
    * @protected
    */
   *_setupLogger (cfg) {
@@ -144,7 +144,7 @@ class Application extends EventEmitter {
     for (const stepName of this.config.startupSteps) {
       this.logger.debug(`Running startup step: ${stepName}`)
 
-      yield waigo.load(`${stepName}/startup`)(this)
+      yield waigo.load(`${stepName}/support/startup`)(this)
     }
 
     this.logger.info('Startup complete')
@@ -169,7 +169,7 @@ class Application extends EventEmitter {
     for (const stepName of this.config.shutdownSteps) {
       this.logger.debug(`Running shutdown step: ${stepName}`)
 
-      yield waigo.load(`${stepName}/shutdown`)(this)
+      yield waigo.load(`${stepName}/support/shutdown`)(this)
     }
 
     this.logger.info('Shutdown complete')

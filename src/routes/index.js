@@ -32,7 +32,7 @@
  * For the above example, Waigo will process the request in the following
  * order:
  *
- * - Load `support/middleware/acccessControl.js` and pass request to its exported method
+ * - Load `middleware/acccessControl.js` and pass request to its exported method
  * - Load `controllers/user.js` and pass request to its `load` method
  * - Load `controllers/main.js` and pass request to its `index` method
  *

@@ -2,9 +2,9 @@
 
 const waigo = global.waigo,
   _ = waigo._,
-  logger = waigo.load('support/logger').create('OutputFormats'),
-  errors = waigo.load('support/errors'),
-  viewObjects = waigo.load('support/viewObjects')
+  logger = waigo.load('logger').create('OutputFormats'),
+  errors = waigo.load('errors'),
+  viewObjects = waigo.load('viewObjects')
 
 
 const OutputFormatError = errors.define('OutputFormatError')
@@ -16,16 +16,16 @@ const OutputFormatError = errors.define('OutputFormatError')
 /**
  * Build output formats middleware.
  *
- * Each format specified in `options.formats` is a key-value mapping where the 
- * key is the canonical name of the format and the mapped value specifies the 
- * configuration options for the format. See [html](../outputFormats/html.js.html) and 
+ * Each format specified in `options.formats` is a key-value mapping where the
+ * key is the canonical name of the format and the mapped value specifies the
+ * configuration options for the format. See [html](../outputFormats/html.js.html) and
  * [json](../outputFormats/json.js.html) for more details.
- * 
+ *
  * @param {Object} options Configuration options.
  * @param {Object} [options.formats] The supported formats.
  * @param {String} [options.default] Default format when none is specified.
  * @param {String} [options.paramName] Name of format query parameter.
- * 
+ *
  * @return {Function} Express middleware.
  */
 module.exports = function (App, options) {
@@ -34,17 +34,17 @@ module.exports = function (App, options) {
   const formatNames = Object.keys(options.formats)
 
   for (const format of formatNames) {
-    enabledFormats[format] = 
-      waigo.load(`support/outputFormats/${format}`).create(
-        logger.create(format), 
+    enabledFormats[format] =
+      waigo.load(`outputFormats/${format}`).create(
+        logger.create(format),
         options.formats[format]
       )
   }
 
-  return function*setOutputFormat (next) {
+  return function *setOutputFormat (next) {
     const ctx = this
-    
-    const requestedFormat = 
+
+    const requestedFormat =
       _.get(this.query, options.paramName, options.default).toLowerCase()
 
     // check format is valid
@@ -60,7 +60,7 @@ module.exports = function (App, options) {
     this.render = function *(view, locals, options) {
       locals = locals || {}
       options = options || {}
-      
+
       logger.debug('Render', view)
 
       // set status code
@@ -87,6 +87,3 @@ module.exports = function (App, options) {
     yield next
   }
 }
-
-
-

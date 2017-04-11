@@ -74,7 +74,7 @@ module.exports = function (config) {
   /**
    * The steps to execute as part of the application startup process.
    *
-   * Each of these corresponds to a module file under the `support/startup` path.
+   * Each of these corresponds to a module file under the `<module name>support/startup` path.
    */
   config.startupSteps = [
     'db',
@@ -98,7 +98,7 @@ module.exports = function (config) {
   /**
    * The steps to execute as part of the application shutdown process.
    *
-   * Each of these corresponds to a module file under the `support/shutdown` path.
+   * Each of these corresponds to a module file under the `<module name>/support/shutdown` path.
    */
   config.shutdownSteps = [
     'listener',
@@ -171,7 +171,7 @@ module.exports = function (config) {
     staticResources: {
       // relative to app folder
       folder: config.staticResources.folder,
-      // see support/middleware/staticResources for options
+      // see middleware/staticResources for options
       options: {}
     },
     sessions: {
@@ -185,7 +185,7 @@ module.exports = function (config) {
       name: 'waigo',
       // session storage
       store: {
-        // session store type (name of module file in `support/session/store`)
+        // session store type (name of module file in `sessions`)
         type: 'cookie',
         // session store config
         config: {
