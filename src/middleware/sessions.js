@@ -2,7 +2,8 @@ const koaSessionStore = require('koa-session-store'),
   moment = require('moment')
 
 
-const waigo = global.waigo
+const waigo = global.waigo,
+  logger = waigo.load('logger').create('Middleware').create('Sessions')
 
 
 
@@ -25,19 +26,23 @@ const waigo = global.waigo
  * @param {Application} The active application instance.
  */
 module.exports = function (App, options) {
-  if (!options.keys) {
+  const { keys, name, store: { type, config }, cookie: { validForDays, path } } = options
+
+  if (!keys) {
     throw new Error('Please specify cookie signing keys in the config file.')
   }
 
-  App.koa.keys = options.keys
+  App.koa.keys = keys
+
+  logger.info(`Initializing ${name} store of type ${type}`)
 
   return koaSessionStore({
-    name: options.name,
-    store: waigo.load(`sessions/${options.store.type}`)
-                  .create(App, options.store.config),
+    name: name,
+    store: waigo.load(`sessions/${type}`)
+                  .create(App, config),
     cookie: {
-      expires: moment().add('days', options.cookie.validForDays).toDate(),
-      path: options.cookie.path,
+      expires: moment().add('days', validForDays).toDate(),
+      path: path,
       signed: false,
     }
   })

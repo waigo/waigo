@@ -105,7 +105,7 @@ class RouteMapper {
       middlewareName = middlewareName.id
     } else {
       // if reference is of form 'moduleName.xx.yy' then it's a controller reference
-      if (0 < middlewareName.indexOf('.')) {
+      if (middlewareName.includes('.')) {
         return this._loadController(middlewareName)
       }
 

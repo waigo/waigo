@@ -1,5 +1,3 @@
-
-
 /**
  * @fileOverview
  *
@@ -7,7 +5,7 @@
  * - users signed up in past 7 days
  */
 
-const  moment = require('moment')
+const moment = require('moment')
 
 
 exports.schedule = '0 0 3 * * 1'   // every monday morning at 3am

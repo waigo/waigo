@@ -23,7 +23,7 @@ exports.create = function (logger, config) {
   return {
     render: function *(view, templateVars) {
       // what type of template is this?
-      const ext = path.extname(view).slice(1)  // slice(1) to remove '.' prefix
+      let ext = path.extname(view).slice(1)  // slice(1) to remove '.' prefix
       if (!ext.length) {
         ext = config.ext
       }
@@ -52,7 +52,3 @@ exports.create = function (logger, config) {
     },
   }
 }
-
-
-
-

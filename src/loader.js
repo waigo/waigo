@@ -423,12 +423,12 @@ loader.getSources = function () {
  *
  * @param {String} folder Folder to check under, relative to app folder.
  * @param {Object} [options] Additional options
- * @param {Boolean} [options.recursive] Whether to check in subfolders too. Default is `true`.
+ * @param {Boolean} [options.recursive] Whether to check in subfolders too. Default is `false`.
  * @return {Array} List of file paths.
  * @throws Error If the loader hasn't been initialised yet.
  */
 loader.getItemsInFolder = function (folder, options = {}) {
-  const { recursive } = _.extend({ recursive: true }, options)
+  const { recursive } = options
 
   if (!loader[$FILE]) {
     throw new Error('Please initialise Waigo first')
@@ -442,7 +442,7 @@ loader.getItemsInFolder = function (folder, options = {}) {
        */
       return (
         0 === filePath.indexOf(`${folder}/`) &&
-        (recursive || 0 > filePath.substr(folder.length + 1).indexOf('/ '))
+        (recursive || !filePath.substr(folder.length + 1).includes('/'))
       )
     })
     .value()
