@@ -134,7 +134,7 @@ class RouteMapper {
 
     const mod = waigo.load(`controllers/${controllerPath.join('/')}`)
 
-    if (!_.isfunction(mod[methodName])) {
+    if (!_.isFunction(mod[methodName])) {
       throw new RouteError(`Unable to find method "${methodName}" on controller "${controllerName}"`)
     }
 

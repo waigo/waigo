@@ -59,7 +59,7 @@ exports.modelMethods = {
    * @return {Cron} new cron task instance.
    */
   create: function *(id, crontab, handler) {
-    const cron = yield this.get(id)
+    let cron = yield this.get(id)
 
     if (!cron) {
       cron = yield this.insert({
@@ -204,7 +204,6 @@ exports.docMethods = {
         duration: duration,
         by: runByUser
       })
-
     } catch (err) {
       this._App().emit('record', 'run_fail', 'cron', {
         task: this.id,
