@@ -1,53 +1,38 @@
 const Thinodium = require('thinodium')
 
-const waigo = global.waigo,
-  _ = waigo._,
-  Q = waigo.load('promise')
-
-
-
-// keep track of connections
-const _connections = {}
-
-
 
 /**
  * Create a database connection.
  *
- * @param {Object} id Database id.
- * @param {Object} logger The app logger
  * @param {Object} dbConfig configuration
  * @param {String} dbConfig.poolConfig connection pool config
  * @param {String} dbConfig.name db name
  *
  * @return {Object} db connection.
  */
-exports.create = function *(id, logger, dbConfig) {
-  logger.info('Connecting to RethinkDB', id)
-
-  const db = yield Thinodium.connect('rethinkdb', dbConfig.serverConfig)
-
-  _connections[id] = db
-
-  return db
+exports.connect = function *(dbConfig) {
+  return yield Thinodium.connect('rethinkdb', dbConfig.serverConfig)
 }
 
 
-
+/**
+ * Disconnect a connection.
+ *
+ * @param {Object} db The database connection.
+ */
+exports.disconnect = function *(db) {
+  if (db.isConnected) {
+    yield db.disconnect()
+  }
+}
 
 /**
- * Shutdown all database connections.
+ * Create a db model.
  *
- * @param {Object} logger The app logger
+ * @param {Object} db The database connection.
+ * @param {String} modelName The model name.
+ * @param {Object} modelSpec The model spec.
  */
-exports.closeAll = function *(logger) {
-  logger.info('Close all connections')
-
-  yield _.map(_connections, (db) => {
-    return Q.try(() => {
-      if (db.isConnected) {
-        return db.disconnect()
-      }
-    })
-  })
+exports.model = function *(db, modelName, modelSpec) {
+  yield db.model(modelName, modelSpec)
 }

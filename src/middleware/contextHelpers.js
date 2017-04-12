@@ -14,9 +14,9 @@ const waigo = global.waigo,
 /**
  * Build middleware for setting up context-level helpers and template vars.
  *
- * This should be the last middleware which gets run prior to route-specific 
+ * This should be the last middleware which gets run prior to route-specific
  * middleware.
- * 
+ *
  * @return {Function} middleware
  */
 module.exports = function () {
@@ -28,13 +28,10 @@ module.exports = function () {
 
     // convenient accessors
     this.logger = this.App.logger
-    this.acl = this.App.acl
     this.models = this.App.models
+    this.acl = _.get(this.App.models, 'acl')
     this.form = this.App.form
 
     yield next
   }
 }
-
-
-

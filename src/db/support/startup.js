@@ -1,8 +1,6 @@
-
-
-
 const waigo = global.waigo,
-  _ = waigo._
+  _ = waigo._,
+  DbWrapper = waigo.load('support/db/wrapper')
 
 
 
@@ -17,7 +15,9 @@ const waigo = global.waigo,
  * @param {Object} App The application.
  */
 module.exports = function *(App) {
-  App.logger.info(`Setting up database connections`)
+  const logger = App.logger.create('Db')
+
+  logger.info(`Setting up connections...`)
 
   App.dbs = {}
 
@@ -32,9 +32,11 @@ module.exports = function *(App) {
       throw new Error(`Unable to find configuration for database: ${id}`)
     }
 
-    const builder = waigo.load(`db/${cfg.type}`)
+    const db = new DbWrapper(id, logger.create(id), cfg.type, cfg)
 
-    App.dbs[id] = yield builder.create(id, App.logger.create(id), cfg)
+    yield db.init()
+
+    App.dbs[id] = db
   }
 
   // for convenience

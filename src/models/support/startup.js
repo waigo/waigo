@@ -2,8 +2,7 @@ const path = require('path')
 
 const waigo = global.waigo,
   _ = waigo._,
-  logger = waigo.load('logger').create('Models'),
-  viewObjects = waigo.load('viewObjects')
+  logger = waigo.load('logger').create('Models')
 
 
 
@@ -24,25 +23,14 @@ module.exports = function *(App) {
 
     App.logger.debug(`Loading ${modelName}`)
 
-    const modelConfig = waigo.load(modulePath)
+    const ModelClass = waigo.load(modulePath)
 
-    const modelLogger = logger.create(modelName)
+    const m = new ModelClass(App, logger.create(modelName))
 
-    // add logger and app getter methods
-    const helperMethods = {
-      _logger: () => modelLogger,
-      _App: () => App,
-    }
+    yield m.init()
 
-    modelConfig.docMethods = _.extend({}, modelConfig.docMethods, helperMethods)
-    modelConfig.docMethods[viewObjects.METHOD_NAME] = function *() {
-      return this.toJSON()
-    }
+    App.models[modelName] = m
 
-    modelConfig.modelMethods = _.extend({}, modelConfig.modelMethods, helperMethods)
-
-    App.models[modelName] = yield App.db.model(modelName, modelConfig)
-
-    App.logger.debug('Added model', modelName)
+    App.logger.debug('Loaded model', modelName)
   }
 }

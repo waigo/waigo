@@ -82,7 +82,6 @@ module.exports = function (config) {
     'forms',
     'activityRecorder',
     'notifications',
-    'acl',
     'middleware',
     'routes',
     'staticResources',
@@ -103,7 +102,7 @@ module.exports = function (config) {
   config.shutdownSteps = [
     'listener',
     'cron',
-    'acl',
+    'models',
     'db',
   ]
 
