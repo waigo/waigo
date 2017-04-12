@@ -40,7 +40,7 @@ const toViewObjectYieldable = exports.toViewObjectYieldable = function (inputObj
 
     // has view object method
     if ('function' === typeof inputObject[METHOD_NAME]) {
-      return inputObject[METHOD_NAME](inputObject, ctx)
+      return inputObject[METHOD_NAME](ctx)
     }
     // is an array
     else if (_.isArray(inputObject)) {
