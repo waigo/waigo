@@ -41,7 +41,7 @@ class DbWrapper {
     }
   }
 
-  *model (modelName, modelSpec) {
+  *model (modelName, modelSpec = {}) {
     if (!this.models[modelName]) {
       this.logger.info(`Setting up model ${modelName}`)
 

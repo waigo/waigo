@@ -1,65 +1,58 @@
-const waigo = global.waigo,
-  _ = waigo._
+const waigo = require('waigo'),
+  Base = waigo.load('models/support/base')
 
 
-const UserSchema = {
-  // unique id (if null then by the system)
-  id: {
-    type: String,
-    required: false,
-  },
-  // friendly display name
-  displayName: {
-    type: String,
-    required: true,
+const ActivityDbModel = {
+  // Based on https://tools.ietf.org/html/draft-snell-activitystreams-09
+  schema: {
+    // what
+    verb: {
+      type: String,
+      required: true,
+    },
+    // when
+    published: {
+      type: Date,
+      required: true,
+    },
+    // who
+    actor: {
+      type: {
+        // unique id (if null then by the system)
+        id: {
+          type: String,
+          required: false,
+        },
+        // friendly display name
+        displayName: {
+          type: String,
+          required: true,
+        }
+      },
+      required: true,
+    },
+    // additional details
+    details: {
+      type: Object,
+      adminViewOptions: {
+        hide: true,
+      },
+    }
   }
 }
 
 
-// Based on https://tools.ietf.org/html/draft-snell-activitystreams-09
-exports.schema = {
-  // what
-  verb: {
-    type: String,
-    required: true,
-  },
-  // when
-  published: {
-    type: Date,
-    required: true,
-  },
-  // who
-  actor: {
-    type: UserSchema,
-    required: true,
-  },
-  // additional details
-  details: {
-    type: Object,
-    adminViewOptions: {
-      hide: true,
-    },
-  },
-}
+class Activity extends Base {
+  /**
+   * @override
+   */
+  *init () {
+    this.logger.info('Creating Activity db model')
+
+    this.dbModel = yield this.App.db.model('activity', ActivityDbModel)
+  }
 
 
-exports.indexes = [
-  {
-    name: 'verb',
-  },
-  {
-    name: 'published',
-  },
-  {
-    name: 'actor',
-    def: function (doc) {
-      return doc('actor')('id')
-    },
-  },
-]
-
-
-exports.modelMethods = {
   /**
    * Record an activity.
    *
@@ -67,9 +60,9 @@ exports.modelMethods = {
    * @param {String|User} actor    `User` who did it. Or name of system process.
    * @param {Object} [details]     Additional details.
    *
-   * @return {Activity} the created activity object
+   * @return {Object} the created activity object
    */
-  record: function *(verb, actor, details) {
+  *record (verb, actor, details) {
     this._logger().debug('Recording activity', verb, actor.id || actor, details)
 
     if (!actor || !actor.id) {
@@ -94,22 +87,31 @@ exports.modelMethods = {
     }
 
     return yield this.insert(qry)
-  },
-  getByFilter: function *(filter) {
-    const ret = yield this.rawQry().filter(filter).run()
+  }
 
-    return this.wrapRaw(ret)
-  },
-  getLatest: function *(verb, actorId) {
-    const r = this.db
 
-    const ret = yield this.rawQry().filter(function (doc) {
-      return doc('user')('id').eq(actorId) && doc('verb').eq(verb)
-    })
-      .orderBy(r.desc('published'))
-      .limit(1)
-      .run()
+  /**
+   * Get activities.
+   *
+   * @param {Object} filter Query filter.
+   *
+   * @return {Array} The matching activities.
+   */
+  *getByFilter (filter) {
+    return yield this.dbModel.getFiltered(filter)
+  }
 
-    return this.wrapRaw(_.get(ret, '0'))
+  /**
+   * Get latest activity of given type by given actor.
+   *
+   * @param {String} verb Activity type.
+   * @param {String} actorId Actor id.
+   *
+   * @return {Object} The matching activity, otherwise `null`.
+   */
+  *getLatestOfTypeByActor (verb, actorId) {
+    return yield this.dbModel.getLatestOfTypeByActor(verb, actorId)
   }
 }
+
+module.exports = Activity

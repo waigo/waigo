@@ -22,11 +22,6 @@ const AclDbModel = {
       type: String,
       required: true,
     }
-  },
-  modelMethods: {
-    onChange: function (cb) {
-      /* To be overridden in db-specific implementations */
-    }
   }
 }
 
