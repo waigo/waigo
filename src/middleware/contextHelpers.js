@@ -1,13 +1,6 @@
-
-
 /**
  * @fileOverview Setup context-level convenient accessors and template helpers
  */
-
-
-
-const waigo = global.waigo,
-  _ = waigo._
 
 
 
@@ -29,7 +22,7 @@ module.exports = function () {
     // convenient accessors
     this.logger = this.App.logger
     this.models = this.App.models
-    this.acl = _.get(this.App.models, 'acl')
+    this.acl = this.App.acl
     this.form = this.App.form
 
     yield next

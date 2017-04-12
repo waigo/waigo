@@ -4,46 +4,49 @@ const co = require('co'),
 
 const waigo = global.waigo,
   _ = waigo._,
+  Base = waigo.load('models/support/base'),
   viewObjects = waigo.load('viewObjects')
 
 
 const $EXTRA = Symbol('cron extra data')
 
 
-const LastRunSchema = {
-  when: {
-    type: Date,
-    required: true,
-  },
-  by: {
-    type: String,
-    required: true,
-  },
+const CronDbModel = {
+  schema: {
+    id: {
+      type: String,
+      required: true,
+    },
+    disabled: {
+      type: Boolean,
+      required: true,
+    },
+    lastRun: {
+      type: {
+        when: {
+          type: Date,
+          required: true,
+        },
+        by: {
+          type: String,
+          required: true,
+        },
+      },
+      required: false,
+    }
+  }
 }
 
+class Cron extends Base {
+  /**
+   * @override
+   */
+  *init () {
 
-exports.schema = {
-  id: {
-    type: String,
-    required: true,
-  },
-  disabled: {
-    type: Boolean,
-    required: true,
-  },
-  lastRun: {
-    type: LastRunSchema,
-    required: false,
-  },
+  }
 }
 
-
-exports.indexes = [
-  {
-    name: 'name',
-  },
-]
-
+module.exports = Cron
 
 exports.modelMethods = {
   /**

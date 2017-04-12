@@ -2,7 +2,6 @@ const co = require('co')
 
 const waigo = require('waigo'),
   _ = waigo._,
-  Base = waigo.load('models/support/base'),
   errors = waigo.load('errors')
 
 const AclError = exports.AclError = errors.define('AclError')
@@ -25,13 +24,20 @@ const AclDbModel = {
   }
 }
 
-class Acl extends Base {
+class Acl {
+  /**
+   * @constructor
+   * @param  {Application} App The Waigo app.
+   */
+  constructor (App) {
+    this.App = App
+    this.logger = App.logger.create('ACL')
+  }
+
   /**
    * @override
    */
   *init () {
-    this.logger.info('Creating Acl db model')
-
     this.dbModel = yield this.App.db.model('acl', AclDbModel)
 
     // reload data
@@ -171,4 +177,16 @@ class Acl extends Base {
   }
 }
 
-module.exports = Acl
+/**
+ * Initialise ACL manager.
+ *
+ * @param  {Object} App Appliaction object.
+ * @return {Object} ACL manager.
+ */
+exports.init = function *(App) {
+  const acl = new Acl(App)
+
+  yield acl.init()
+
+  return acl
+}
