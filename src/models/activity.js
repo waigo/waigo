@@ -1,4 +1,4 @@
-const waigo = require('waigo'),
+const waigo = global.waigo,
   Base = waigo.load('models/support/base')
 
 

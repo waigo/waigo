@@ -1,6 +1,6 @@
 const co = require('co')
 
-const waigo = require('waigo'),
+const waigo = global.waigo,
   _ = waigo._,
   errors = waigo.load('errors')
 

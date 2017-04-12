@@ -1,9 +1,6 @@
-
-
 const co = require('co')
 
-const waigo = global.waigo,
-  _ = waigo._
+const waigo = global.waigo
 
 
 
@@ -15,9 +12,9 @@ const waigo = global.waigo,
 module.exports = function *(App) {
   App.logger.info('Setting up Activity recorder')
 
-  const activityRecorder = yield (waigo.load('activityRecorder')).init()
+  App.activity = yield (waigo.load('activityRecorder')).init()
 
   App.on('record', co.wrap(function *() {
-    yield activityRecorder.record.apply(activityRecorder, arguments)
+    yield App.activity.record.apply(App.activity, arguments)
   }))
 }
