@@ -88,7 +88,6 @@ module.exports = function (config) {
     'actionTokens',
     'mailer',
     'cron',
-    'appTemplateVars',
     'listener',
   ]
 

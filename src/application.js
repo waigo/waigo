@@ -141,6 +141,12 @@ class Application extends EventEmitter {
     // logging
     yield this._setupLogger(this.config.logging)
 
+    // template utils
+    this.templateVars = {
+      _: _,
+      config: this.config
+    }
+
     for (const stepName of this.config.startupSteps) {
       this.logger.debug(`Running startup step: ${stepName}`)
 

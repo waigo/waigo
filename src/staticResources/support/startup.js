@@ -57,6 +57,7 @@ module.exports = function *(App) {
 
   // Static URL helper
   App.staticUrl = _.curry(_staticUrl, 2)(logger)
+  App.templateVars.staticUrl = App.staticUrl
 }
 
 

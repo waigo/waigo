@@ -25,4 +25,6 @@ module.exports = function *(App) {
 
   App.routes = yield waigo.load('routes/support/mapper')
     .setup(App, App.config.middleware, routes)
+
+  App.templateVars.routeUrl = App.routes.url.bind(App.routes)
 }
