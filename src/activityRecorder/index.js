@@ -1,57 +1,19 @@
-const waigo = global.waigo,
-  Base = waigo.load('models/support/base')
-
-
-const ActivityDbModel = {
-  // Based on https://tools.ietf.org/html/draft-snell-activitystreams-09
-  schema: {
-    // what
-    verb: {
-      type: String,
-      required: true,
-    },
-    // when
-    published: {
-      type: Date,
-      required: true,
-    },
-    // who
-    actor: {
-      type: {
-        // unique id (if null then by the system)
-        id: {
-          type: String,
-          required: false,
-        },
-        // friendly display name
-        displayName: {
-          type: String,
-          required: true,
-        }
-      },
-      required: true,
-    },
-    // additional details
-    details: {
-      type: Object,
-      adminViewOptions: {
-        hide: true,
-      },
-    }
-  }
-}
-
-
-class Activity extends Base {
+class Activity {
   /**
-   * @override
+   * @constructor
+   * @param  {Application} App The Waigo app.
+   */
+  constructor (App) {
+    this.App = App
+    this.logger = App.logger.create('Activity')
+  }
+
+  /**
+   * Initialize
    */
   *init () {
-    this.logger.info('Creating Activity db model')
-
-    this.dbModel = yield this.App.db.model('activity', ActivityDbModel)
+    this.dbModel = yield this.App.db.model('activity')
   }
-
 
   /**
    * Record an activity.
@@ -63,7 +25,7 @@ class Activity extends Base {
    * @return {Object} the created activity object
    */
   *record (verb, actor, details) {
-    this._logger().debug('Recording activity', verb, actor.id || actor, details)
+    this.logger.debug('Recording activity', verb, actor.id || actor, details)
 
     if (!actor || !actor.id) {
       actor = {
@@ -76,42 +38,47 @@ class Activity extends Base {
       }
     }
 
-    const qry = {
-      verb: verb,
-      actor: actor,
+    const data = {
+      verb,
+      actor,
       published: new Date(),
     }
 
     if (details) {
-      qry.details = details
+      data.details = details
     }
 
-    return yield this.insert(qry)
+    yield this.dbModel.insert(data)
   }
 
 
   /**
-   * Get activities.
+   * Get whether given activity exists.
    *
-   * @param {Object} filter Query filter.
+   * @param {String} verb          activity name
+   * @param {String|User} actor    `User` who did it. Or name of system process.
+   * @param {Object} [details]     Additional details.
    *
    * @return {Array} The matching activities.
    */
-  *getByFilter (filter) {
-    return yield this.dbModel.getFiltered(filter)
-  }
-
-  /**
-   * Get latest activity of given type by given actor.
-   *
-   * @param {String} verb Activity type.
-   * @param {String} actorId Actor id.
-   *
-   * @return {Object} The matching activity, otherwise `null`.
-   */
-  *getLatestOfTypeByActor (verb, actorId) {
-    return yield this.dbModel.getLatestOfTypeByActor(verb, actorId)
+  *exists (verb, details) {
+    return yield this.dbModel.exists(verb, details)
   }
 }
 
 module.exports = Activity
+
+
+/**
+ * Initialise Activity recorder.
+ *
+ * @param  {Object} App Application object.
+ * @return {Object} Activity recorder.
+ */
+exports.init = function *(App) {
+  const activityRecorder = new Activity(App)
+
+  yield activityRecorder.init()
+
+  return activityRecorder
+}

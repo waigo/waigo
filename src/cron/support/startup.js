@@ -11,6 +11,8 @@ const waigo = global.waigo,
  * @param {Object} app The application.
  */
 module.exports = function *(App) {
+  const dbModel = yield this.App.db.model('cron', CronDbModel)
+
   App.cron = {}
 
   const cronTasks = waigo.getItemsInFolder('cron')

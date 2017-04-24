@@ -12,5 +12,5 @@ const waigo = global.waigo,
 module.exports = function *(App) {
   App.logger.debug('Shutting down database connections')
 
-  yield _.map(App.dbs || {}, db => db.disconnect())
+  yield _.map(App.dbs || {}, db => db.destroy())
 }

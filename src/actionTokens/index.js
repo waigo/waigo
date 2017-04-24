@@ -122,7 +122,7 @@ class ActionTokens {
     }
 
     // check if we've already executed this request before
-    const activity = yield this.App.models.Activity.getByFilter({
+    const processed = yield this.App.models.Activity.exists('action_token_processed', {
       verb: 'action_token_processed',
       details: {
         type: type,
@@ -130,7 +130,7 @@ class ActionTokens {
       },
     })
 
-    if (activity.length) {
+    if (processed) {
       _throw('This action token has already been processed and is no longer valid.', 403)
     }
 

@@ -17,7 +17,7 @@ class DbWrapper {
 
     this.logger.debug(`Loading db adapater for ${this.type}`)
 
-    this.builder = waigo.load(`db/${this.type}`)
+    this.builder = waigo.load(`db/${this.type}/adapter`)
     this.models = {}
   }
 
@@ -44,6 +44,8 @@ class DbWrapper {
   *model (modelName, modelSpec = {}) {
     if (!this.models[modelName]) {
       this.logger.info(`Setting up model ${modelName}`)
+
+      modelSpec = waigo.load(`db/${this.type}/models/${modelName}`)
 
       this.models[modelName] = this.builder.model(this.db, modelName, modelSpec)
     }

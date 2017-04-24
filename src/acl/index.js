@@ -6,23 +6,6 @@ const waigo = global.waigo,
 
 const AclError = exports.AclError = errors.define('AclError')
 
-const AclDbModel = {
-  schema: {
-    resource: {
-      type: String,
-      required: true,
-    },
-    entityType: {
-      type: String,
-      required: true,
-      enum: ['role', 'user'],
-    },
-    entity: {
-      type: String,
-      required: true,
-    }
-  }
-}
 
 class Acl {
   /**
@@ -35,10 +18,10 @@ class Acl {
   }
 
   /**
-   * @override
+   * Initialize.
    */
   *init () {
-    this.dbModel = yield this.App.db.model('acl', AclDbModel)
+    this.dbModel = yield this.App.db.model('acl')
 
     // reload data
     yield this.reload()
@@ -64,7 +47,7 @@ class Acl {
   }
 
   /**
-   * @override
+   * Destroy.
    */
   *destroy () {
     if (this._changeFeedCursor) {
