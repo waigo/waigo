@@ -1,6 +1,6 @@
 const waigo = global.waigo,
   _ = waigo._,
-  DbWrapper = waigo.load('support/db/wrapper')
+  DbWrapper = waigo.load('db/support/wrapper')
 
 
 

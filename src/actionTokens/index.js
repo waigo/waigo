@@ -151,8 +151,7 @@ class ActionTokens {
 }
 
 
-
-
+let instance
 
 /**
  * Initialise action tokens manager.
@@ -163,5 +162,9 @@ class ActionTokens {
  * @return {ActionTokens}
  */
 exports.init = function *(App, actionTokensConfig) {
-  return new ActionTokens(App, actionTokensConfig)
+  if (!instance) {
+    instance = new ActionTokens(App, actionTokensConfig)
+  }
+
+  return instance
 }

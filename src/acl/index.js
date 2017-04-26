@@ -160,6 +160,9 @@ class Acl {
   }
 }
 
+
+let instance
+
 /**
  * Initialise ACL manager.
  *
@@ -167,9 +170,11 @@ class Acl {
  * @return {Object} ACL manager.
  */
 exports.init = function *(App) {
-  const acl = new Acl(App)
+  if (!instance) {
+    instance = new Acl(App)
 
-  yield acl.init()
+    yield instance.init()
+  }
 
-  return acl
+  return instance
 }

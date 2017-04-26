@@ -379,7 +379,7 @@ exports.modelMethods = {
     return this.wrapRaw(_.get(ret, '0'))
   },
   /**
-   * Get user by email address or username.
+   * Get users with given ids.
    * @return {User}
    */
   findWithIds: function *(ids) {
@@ -410,21 +410,6 @@ exports.modelMethods = {
     }).run()
 
     return count > 0
-  },
-  /**
-   * Generate a secure SHA256 representing given password.
-   * @param {String} password The password.
-   * @param {String} [salt] Salt to use.
-   * @return {String} hash to store
-   */
-  generatePasswordHash: function *(password, salt) {
-    const hash = crypto.createHash('sha256')
-
-    salt = salt || (yield randomBytesQ(64)).toString('hex')
-    hash.update(salt)
-    hash.update(password)
-
-    return salt + '-' + hash.digest('hex')
   },
   /**
    * Register a new user

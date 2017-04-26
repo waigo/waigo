@@ -1,4 +1,5 @@
-const waigo = global.waigo
+const waigo = global.waigo,
+  _ = waigo._
 
 
 class DbWrapper {
@@ -45,7 +46,10 @@ class DbWrapper {
     if (!this.models[modelName]) {
       this.logger.info(`Setting up model ${modelName}`)
 
-      modelSpec = waigo.load(`db/${this.type}/models/${modelName}`)
+      modelSpec = _.extend(
+        waigo.load(`db/${this.type}/models/${modelName}`),
+        modelSpec
+      )
 
       this.models[modelName] = this.builder.model(this.db, modelName, modelSpec)
     }
