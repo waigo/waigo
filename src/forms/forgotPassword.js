@@ -22,10 +22,8 @@ module.exports = {
       const ctx = this.context,
         App = ctx.App
 
-      const User = App.models.User
-
       // load user
-      const user = yield User.getByEmailOrUsername(this.fields.email.value)
+      const user = yield App.users.getByEmailOrUsername(this.fields.email.value)
 
       if (!user) {
         ctx.throw(ForgotPasswordError, 'User not found', 404)

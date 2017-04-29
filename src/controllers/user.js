@@ -66,7 +66,7 @@ exports.register = function *() {
 
   this.logger.debug('Register')
 
-  const adminUserExists = yield this.models.User.haveAdminUsers()
+  const adminUserExists = yield this.App.users.haveAdminUsers()
 
   yield this.render('user/register', {
     form: form,
@@ -84,7 +84,7 @@ exports.register_submit = function *() {
     submitted: true,
   })
 
-  const adminUserExists = yield this.models.User.haveAdminUsers()
+  const adminUserExists = yield this.App.users.haveAdminUsers()
 
   try {
     yield form.process()

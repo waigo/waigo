@@ -162,6 +162,8 @@ class Cron {
   constructor (App) {
     this.App = App
     this.logger = App.logger.create('Cron')
+
+    this.jobs = {}
   }
 
   /**
@@ -169,6 +171,16 @@ class Cron {
    */
   *init () {
     this.dbModel = yield this.App.db.model('cron', modelSpec)
+  }
+
+
+  /**
+   * Destroy
+   */
+  *destroy () {
+    this.logger.info('Stopping jobs')
+
+    yield _.map(this.job, (job) => job.stopScheduler())
   }
 
 
@@ -189,7 +201,7 @@ class Cron {
     let cron = yield this.dbModel.get(id)
 
     if (!cron) {
-      cron = yield this.insert({
+      cron = yield this.dbModel.insert({
         id,
         disabled: false,
       })
@@ -216,10 +228,12 @@ class Cron {
 
       return json
     }
+
+    this.jobs[id] = cron
   }
 
-  *get (id) {
-    return yield this.dbModel.get(id)
+  get (id) {
+    return this.jobs[id]
   }
 }
 

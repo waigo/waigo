@@ -34,5 +34,5 @@ exports.disconnect = function *(db) {
  * @param {Object} modelSpec The model spec.
  */
 exports.model = function *(db, modelName, modelSpec) {
-  yield db.model(modelName, modelSpec)
+  return yield db.model(modelName, modelSpec)
 }

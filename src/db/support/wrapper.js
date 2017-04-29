@@ -51,7 +51,7 @@ class DbWrapper {
         modelSpec
       )
 
-      this.models[modelName] = this.builder.model(this.db, modelName, modelSpec)
+      this.models[modelName] = yield this.builder.model(this.db, modelName, modelSpec)
     }
 
     return this.models[modelName]

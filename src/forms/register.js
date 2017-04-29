@@ -1,11 +1,5 @@
 
 
-
-const waigo = global.waigo,
-  _ = waigo._
-
-
-
 module.exports = {
   fields: [
     {
@@ -27,19 +21,18 @@ module.exports = {
   ],
   method: 'POST',
   postValidation: [
-    function*createUserAndLogin (next) {
+    function *createUserAndLogin (next) {
       const ctx = this.context,
-        App = ctx.App,
-        User = App.models.User
+        App = ctx.App
 
       // check if there's an admin user
-      const adminUserExists = yield User.haveAdminUsers(),
+      const adminUserExists = yield App.users.haveAdminUsers(),
         roles = (adminUserExists ? [] : ['admin'])
 
       App.logger.info('Registering user ' + this.fields.email.value, roles)
 
       // create user
-      const user = yield User.register({
+      const user = yield App.users.register({
         username: this.fields.email.value,
         email: this.fields.email.value,
         password: this.fields.password.value,
@@ -53,7 +46,7 @@ module.exports = {
       const token = yield App.actionTokens.create('verify_email', user, {
         email: this.fields.email.value,
       })
-      
+
       yield App.mailer.send({
         to: user,
         subject: 'Thanks for signing up!',
@@ -71,4 +64,3 @@ module.exports = {
     }
   ]
 }
-

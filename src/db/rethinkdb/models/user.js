@@ -133,17 +133,6 @@ exports.modelMethods = {
     return this.wrapRaw(yield qry.run())
   },
   /**
-   * Find all admin users.
-   * @return {Array}
-   */
-  findAdminUsers: function *() {
-    const ret = yield this.rawQry().filter(function (user) {
-      return user('roles').contains('admin')
-    }).run()
-
-    return this.wrapRaw(ret)
-  },
-  /**
    * Get whether any admin users exist.
    * @return {Number}
    */

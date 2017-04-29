@@ -78,9 +78,10 @@ module.exports = function (config) {
    */
   config.startupSteps = [
     'db',
-    'models',
+    'users',
+    'acl',
     'forms',
-    'activityRecorder',
+    'activities',
     'notifications',
     'middleware',
     'routes',
@@ -101,7 +102,7 @@ module.exports = function (config) {
   config.shutdownSteps = [
     'listener',
     'cron',
-    'models',
+    'acl',
     'db',
   ]
 

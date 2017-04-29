@@ -299,6 +299,13 @@ class UserManager {
   }
 
   /**
+   * Get user by id
+   */
+  *get (id) {
+    return yield this.dbModel.get(id)
+  }
+
+  /**
    * Get user by username.
    * @return {User}
    */
@@ -331,19 +338,11 @@ class UserManager {
   }
 
   /**
-   * Find all admin users.
-   * @return {Array}
-   */
-  *findAdminUsers () {
-    return yield this.dbModel.findAdminUsers()
-  }
-
-  /**
    * Get whether any admin users exist.
    * @return {Number}
    */
   *haveAdminUsers () {
-    return yield this.dbModel.haveAdminUser()
+    return yield this.dbModel.haveAdminUsers()
   }
 
   /**
@@ -414,8 +413,6 @@ class UserManager {
     return yield this.dbModel.get(userId)
   }
 }
-
-module.exports = UserManager
 
 
 /**

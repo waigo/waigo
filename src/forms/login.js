@@ -31,12 +31,11 @@ module.exports = {
   method: 'POST',
   postValidation: [
     function *checkUserCredentials (next) {
-      const ctx = this.context
-
-      const User = ctx.App.models.User
+      const ctx = this.context,
+        App = ctx.App
 
       // load user
-      const user = yield User.getByEmailOrUsername(this.fields.email.value)
+      const user = yield App.users.getByEmailOrUsername(this.fields.email.value)
 
       // check user and password
       if (!user || !(yield user.isPasswordCorrect(this.fields.password.value))) {
