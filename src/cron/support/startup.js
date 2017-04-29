@@ -1,7 +1,7 @@
 const path = require('path')
 
 const waigo = global.waigo,
-  logger = waigo.load('logger').create('Cron')
+  CronMgr = waigo.load('cron/support/manager')
 
 
 
@@ -11,22 +11,15 @@ const waigo = global.waigo,
  * @param {Object} app The application.
  */
 module.exports = function *(App) {
-  const dbModel = yield this.App.db.model('cron', CronDbModel)
-
-  App.cron = {}
+  App.cron = new CronMgr(App)
 
   const cronTasks = waigo.getItemsInFolder('cron')
 
-  logger.info(`${cronTasks.length} cron tasks found`)
-
-  for (const taskFilePath of cronTasks) {
+  yield cronTasks.map(taskFilePath => {
     const name = path.basename(taskFilePath, path.extname(taskFilePath))
-
-    logger.debug(`Adding cron task: ${name}`)
 
     const job = waigo.load(taskFilePath)
 
-    App.cron[name] =
-      yield App.models.Cron.create(name, job.schedule, job.handler)
-  }
+    return App.cron.addJob(name, job)
+  })
 }

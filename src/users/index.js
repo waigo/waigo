@@ -303,11 +303,7 @@ class UserManager {
    * @return {User}
    */
   *getByUsername (username) {
-    const ret = yield this.rawQry().filter(function (user) {
-      return user('username').eq(username)
-    }).run()
-
-    return this.wrapRaw(_.get(ret, '0'))
+    return yield this.dbModel.getByUsername(username)
   }
 
   /**
@@ -315,61 +311,41 @@ class UserManager {
    * @return {User}
    */
   *getByEmail (email) {
-    const r = this.db
-
-    const ret = yield this.rawQry().filter(
-      r.row('emails').contains(function (e) {
-        return e('email').eq(email)
-      })
-    ).run()
-
-    return this.wrapRaw(_.get(ret, '0'))
+    return yield this.dbModel.getByEmail(email)
   }
 
   /**
    * Get user by email address or username.
    * @return {User}
    */
-  getByEmailOrUsername: function *(str) {
-    const ret = yield this.rawQry().filter(function (user) {
-      return user('emails')('email')(0).eq(str).or(user('username').eq(str))
-    }).run()
+  *getByEmailOrUsername (str) {
+    return yield this.dbModel.getByEmailOrUsername(str)
+  }
 
-    return this.wrapRaw(_.get(ret, '0'))
-  },
   /**
    * Get users with given ids.
    * @return {User}
    */
-  findWithIds: function *(ids) {
-    let qry = this.rawQry()
+  *findWithIds (ids) {
+    return yield this.dbModel.findWithIds(ids)
+  }
 
-    qry = qry.getAll.apply(qry, ids.concat([{index: 'id'}]))
-
-    return this.wrapRaw(yield qry.run())
-  },
   /**
    * Find all admin users.
    * @return {Array}
    */
-  findAdminUsers: function *() {
-    const ret = yield this.rawQry().filter(function (user) {
-      return user('roles').contains('admin')
-    }).run()
+  *findAdminUsers () {
+    return yield this.dbModel.findAdminUsers()
+  }
 
-    return this.wrapRaw(ret)
-  },
   /**
    * Get whether any admin users exist.
    * @return {Number}
    */
-  haveAdminUsers: function *() {
-    const count = yield this.rawQry().count(function (user) {
-      return user('roles').contains('admin')
-    }).run()
+  *haveAdminUsers () {
+    return yield this.dbModel.haveAdminUser()
+  }
 
-    return count > 0
-  },
   /**
    * Register a new user
    * @param {Object} properties User props.
@@ -380,7 +356,7 @@ class UserManager {
    * @param {String} [properties.password] User's password.
    * @return {User} The registered user.
    */
-  register: function *(properties) {
+  *register (properties) {
     // create user
     const attrs = {
       username: properties.username,
@@ -412,37 +388,31 @@ class UserManager {
 
     attrs.created = new Date()
 
-    const user = yield this.insert(attrs)
+    // create user
+    const user = yield this.dbModel.insert(attrs)
 
     if (!user) {
       throw new Error('Error creating new user: ' + properties.username)
     }
 
     // log activity
-    this._App().emit('record', 'register', user)
+    this.App.emit('record', 'register', user)
 
     // notify admins
-    this._App().emit('notify', 'admins', `New user: ${user.id} - ${user.username}`)
+    this.App.emit('notify', 'admins', `New user: ${user.id} - ${user.username}`)
 
     return user
-  },
-  loadLoggedIn: function *(context) {
+  }
+
+  *loadLoggedIn (context) {
     const userId = _.get(context, 'session.user.id')
 
     if (!userId) {
       return null
     }
 
-    return yield this.get(userId)
-  },
-  getUsersCreatedSince: function *(date) {
-    const ret = yield this.rawQry().filter(function (doc) {
-      return doc('created').ge(date)
-    }).run()
-
-    return this.wrapRaw(ret)
-  },
-
+    return yield this.dbModel.get(userId)
+  }
 }
 
 module.exports = UserManager
