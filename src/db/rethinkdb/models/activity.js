@@ -65,6 +65,8 @@ exports.modelMethods = {
       qry.details = details
     }
 
-    return !!(this.wrapRaw(yield this.rawQry().filter(qry).run()).length)
+    const ret = yield this.rawQry().filter(qry).run()
+
+    return !!(ret.length)
   }
 }

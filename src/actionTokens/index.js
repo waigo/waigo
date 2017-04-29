@@ -135,7 +135,7 @@ class ActionTokens {
     }
 
     // record activity
-    yield this.App.emit('record', 'action_token_processed', user, {
+    this.App.emit('record', 'action_token_processed', user, {
       type: type,
       salt: salt,
     })

@@ -9,9 +9,9 @@ const waigo = global.waigo
 module.exports = function *(App) {
   App.logger.debug('Setting up action tokens system')
 
-  const mod = waigo.load('actionTokens')
+  const actionTokens = waigo.load('actionTokens')
 
-  App.actionTokens = yield mod.init(
+  App.actionTokens = yield actionTokens.init(
     App, App.config.actionTokens
   )
 }
