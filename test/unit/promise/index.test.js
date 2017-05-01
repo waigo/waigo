@@ -36,14 +36,14 @@ test['promise'] = {
     'fail': function *() {
       this.retErr = new Error('test error')
 
-      this.awaitAsync(this.fn(2)).must.reject.with.error('test error')
+      yield this.awaitAsync(this.fn(2)).must.reject.with.error('test error')
 
       this.spy.calledWith(2).must.be.true()
     },
     'pass': function *() {
       this.retVal = 234
 
-      this.awaitAsync(this.fn(2)).must.then.eql(234)
+      yield this.awaitAsync(this.fn(2)).must.resolve.to.eql(234)
 
       this.spy.calledWith(2).must.be.true()
     },
