@@ -14,11 +14,13 @@ test['cli - init'] = {
 
   'inherits from base Command class': function () {
     const c = new this.InitCommand()
+
     expect(c).to.be.instanceOf(this.AbstractCommand)
   },
 
   'construction': function () {
     const c = new this.InitCommand()
+
     expect(c.description).to.eql('Initialise and create a skeleton Waigo app')
     expect(c.options).to.eql([])
   },

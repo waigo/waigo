@@ -1,30 +1,62 @@
+const path = require('path'),
+  Q = require('bluebird')
+
+const test = require(path.join(process.cwd(), 'test', '_base'))(module)
 
 
-const _ = require('lodash'),
-  co = require('co'),
-  path = require('path'),
-  moment = require('moment'),
-  shell = require('shelljs'),
-  Q = require('bluebird')const test = require(path.join(process.cwd(), 'test', '_base'))(module)const waigo = global.waigovar AbstractCommand, InitCommandtest['cli - init-gulp'] = {
+test['cli - init-gulp'] = {
   beforeEach: function *() {
-    yield this.initApp()AbstractCommand = waigo.load('support/cliCommand')InitCommand = waigo.load('cli/init-gulp')},
+    yield this.initApp()
+
+    this.AbstractCommand = this.waigo.load('cli/support/command')
+    this.InitCommand = this.waigo.load('cli/init-gulp')
+  },
 
   'inherits from base Command class': function () {
-    var c = new InitCommand()c.should.be.instanceOf(AbstractCommand)},
+    const c = new this.InitCommand()
+
+    expect(c).to.be.instanceOf(this.AbstractCommand)
+  },
 
   'construction': function () {
-    var c = new InitCommand()this.expect(c.description).to.eql('Initialise and create a Gulpfile and associated tasks for development purposes')this.expect(c.options).to.eql([])},
+    const c = new this.InitCommand()
+
+    expect(c.description).to.eql('Initialise and create a Gulpfile and associated tasks for development purposes')
+    expect(c.options).to.eql([])
+  },
 
   'run - need package.json present': function *() {
-    var c = new InitCommand()var logSpy = this.mocker.stub(c, 'log', function () {})yield c.run()logSpy.should.have.been.calledWithExactly('Please run "npm init" first')},
+    const c = new this.InitCommand()
+
+    const logSpy = this.mocker.stub(c, 'log', function () {})
+
+    yield c.run()
+
+    logSpy.calledWithExactly('Please run "npm init" first').must.be.true()
+  },
 
   'run - action handler': function *() {
-    this.writeFile(path.join(waigo.getAppFolder(), '..', 'package.json'), '')var c = new InitCommand()var installPkgSpy = this.mocker.stub(c, 'installPkgs', function () {
-      return Q.resolve()})
+    this.writeFile(path.join(this.waigo.getAppFolder(), '..', 'package.json'), '')
 
-    var copyFileSpy = this.mocker.stub(c, 'copyFile', function () {
-      return Q.resolve()})var copyFolderSpy = this.mocker.stub(c, 'copyFolder', function () {
-      return Q.resolve()})yield c.run()installPkgSpy.should.have.been.calledOnceinstallPkgSpy.should.have.been.calledWithExactly([
+    const c = new this.InitCommand()
+
+    const installPkgSpy = this.mocker.stub(c, 'installPkgs', function () {
+      return Q.resolve()
+    })
+
+    const copyFileSpy = this.mocker.stub(c, 'copyFile', function () {
+      return Q.resolve()
+    })
+
+    const copyFolderSpy = this.mocker.stub(c, 'copyFolder', function () {
+      return Q.resolve()
+    })
+
+    yield c.run()
+
+    installPkgSpy.calledOnce.must.be.true()
+
+    installPkgSpy.calledWithExactly([
       'lodash',
       'coffee-script',
       'gulp@3.9.x',
@@ -46,19 +78,32 @@ const _ = require('lodash'),
       'yargs',
     ], {
       dev: true,
-    })this.expect(copyFileSpy.callCount).to.eql(8)const dataFolder = path.join(process.cwd(), 'src', 'cli', 'data', 'init')const waigoFolder = path.join(waigo.getWaigoFolder())const frameworkFolder = path.join(waigo.getWaigoFolder(), '..')copyFileSpy.should.have.been.calledWithExactly(
+    }).must.be.true()
+
+    copyFileSpy.callCount.must.eql(8)
+
+    const frameworkFolder = path.join(this.waigo.getWaigoFolder(), '..')
+
+    copyFileSpy.calledWithExactly(
       path.join(frameworkFolder, 'gulpfile.coffee'), 'gulpfile.coffee'
-    )copyFolderSpy.should.have.been.calledWithExactly(
+    ).must.be.true()
+
+    copyFolderSpy.calledWithExactly(
       path.join(frameworkFolder, 'gulp', 'utils'), 'gulp/utils'
-    )['dev-frontend',
-    'dev-server',
-    'dev',
-    'frontend-css',
-    'frontend-img',
-    'frontend-js',
-    'frontend'].forEach((file) => {
-      copyFileSpy.should.have.been.calledWithExactly(
+    ).must.be.true()
+
+    ;['dev-frontend',
+      'dev-server',
+      'dev',
+      'frontend-css',
+      'frontend-img',
+      'frontend-js',
+      'frontend'
+    ].forEach((file) => {
+      copyFileSpy.calledWithExactly(
         path.join(frameworkFolder, 'gulp', `${file}.coffee`), `gulp/${file}.coffee`
-      )})},
+      ).must.be.true()
+    })
+  },
 
 }
