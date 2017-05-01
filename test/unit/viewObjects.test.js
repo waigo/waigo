@@ -15,7 +15,7 @@ const _ = require('lodash'),
   afterEach: function *() {
     yield this.shutdownApp()},
 
-  'method name': function() {
+  'method name': function () {
     this.expect(viewObjects.METHOD_NAME).to.eql('toViewObject')},
 
   'get view object yieldables': {

@@ -5,7 +5,7 @@ const _ = require('lodash'),
   path = require('path'),
   moment = require('moment'),
   shell = require('shelljs'),
-  Q = require('bluebird')const test = require(path.join(process.cwd(), 'test', '_base'))(module)const waigo = global.waigoconst pathToBin = path.join(process.cwd(), 'bin', 'waigo')const execBin = function(args) {
+  Q = require('bluebird')const test = require(path.join(process.cwd(), 'test', '_base'))(module)const waigo = global.waigoconst pathToBin = path.join(process.cwd(), 'bin', 'waigo')const execBin = function (args) {
   return new Q((resolve, reject) => {
     let ret = shell.exec('node ' + pathToBin + ' ' + args, {
       silent: true

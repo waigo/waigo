@@ -7,7 +7,7 @@ const _ = require('lodash'),
   yield this.initApp()this.App.koa.should.be.instanceof(require('koa'))}test['load config'] = {
   beforeEach: function *() {
     this.createAppModules({
-      'config/index': 'module.exports = function() { return { done: 1 }}',
+      'config/index': 'module.exports = function () { return { done: 1 }}',
     })yield this.initApp()},
 
   'loads config': function *() {
@@ -17,7 +17,7 @@ const _ = require('lodash'),
 
   'post config function': function *() {
     yield this.App._loadConfig({
-      postConfig: function(cfg) {
+      postConfig: function (cfg) {
         cfg.again = 2}
     })this.App.config.should.eql({
       done: 1,
@@ -52,7 +52,7 @@ const _ = require('lodash'),
         appenders: [],
       },      
     }this.startOptions = {
-      postConfig: function(cfg) {
+      postConfig: function (cfg) {
         _.extend(cfg, postConfig)}
     }},
 
@@ -110,7 +110,7 @@ const _ = require('lodash'),
         appenders: [],
       },      
     }this.startOptions = {
-      postConfig: function(cfg) {
+      postConfig: function (cfg) {
         _.extend(cfg, postConfig)}
     }},
 

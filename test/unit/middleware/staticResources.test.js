@@ -8,7 +8,7 @@ const _ = require('lodash'),
   beforeEach: function *() {
     yield this.initApp()},
 
-  'app relative folder': function() {
+  'app relative folder': function () {
     var m = waigo.load('support/middleware/staticResources')var pathJoinSpy = this.mocker.spy(path, 'join')var fn = m(this.App, {
       folder: 'static'
     })_.isGenFn(fn).should.be.truepathJoinSpy.should.have.been.calledWithExactly(waigo.getAppFolder(), 'static')}

@@ -10,19 +10,19 @@ const _ = require('lodash'),
   viewObjectMethodName = nulltest['form fields'] = {
   beforeEach: function *() {
     this.createAppModules({
-      'support/forms/sanitizers/test': 'module.exports = function() { return function *(fo,fi,v) { return v}}',
-      'support/forms/sanitizers/test_wo': 'module.exports = function(o) { return function *(fo,fi,v) { return [o, v]}}',
-      'support/forms/validators/testv': 'module.exports = function() { return function *(fo,fi,v) { return v}}',
-      'support/forms/validators/testv_wo': 'module.exports = function(o) { return function *(fo,fi,v) { return [o, v]}}'
+      'support/forms/sanitizers/test': 'module.exports = function () { return function *(fo,fi,v) { return v}}',
+      'support/forms/sanitizers/test_wo': 'module.exports = function (o) { return function *(fo,fi,v) { return [o, v]}}',
+      'support/forms/validators/testv': 'module.exports = function () { return function *(fo,fi,v) { return v}}',
+      'support/forms/validators/testv_wo': 'module.exports = function (o) { return function *(fo,fi,v) { return [o, v]}}'
     })yield this.initApp()form = waigo.load('support/forms/form')field = waigo.load('support/forms/field')errors = waigo.load('support/errors')viewObjectMethodName = waigo.load('support/viewObjects').METHOD_NAMEtoViewObjectYieldable = waigo.load('support/viewObjects').toViewObjectYieldable},
 
   'FieldValidationError': {
-    'extends MultipleError': function() {
+    'extends MultipleError': function () {
       var e = new field.FieldValidationError()e.should.be.instanceOf(errors.MultipleError)},
   },
 
   'FieldSanitizationError': {
-    'extends RuntimeError': function() {
+    'extends RuntimeError': function () {
       var e = new field.FieldSanitizationError()e.should.be.instanceOf(errors.RuntimeError)}
   },
 
@@ -43,7 +43,7 @@ const _ = require('lodash'),
       })},
 
     'construction': {
-      'sets properties': function() {
+      'sets properties': function () {
         var f = field.Field.new(this.form, {
           type: 'text',
         })this.expect(f.form).to.eql(this.form)this.expect(f.config).to.eql({ type: 'text', })this.expect(f.sanitizers).to.eql([])this.expect(f.validators).to.eql([])},
@@ -73,13 +73,13 @@ const _ = require('lodash'),
         ])}
     },
 
-    'get name': function() {
+    'get name': function () {
       var f = field.Field.new(this.form, {
         type: 'text',
         name: 'test'
       })f.name.should.eql('test')},
 
-    'get value': function() {
+    'get value': function () {
       var f = field.Field.new(this.form, {
         type: 'text',
         name: 'test'
@@ -87,7 +87,7 @@ const _ = require('lodash'),
         value: 'blah'
       }f.value.should.eql('blah')},
 
-    'set value': function() {
+    'set value': function () {
       var f = field.Field.new(this.form, {
         type: 'text',
         name: 'test'
@@ -97,13 +97,13 @@ const _ = require('lodash'),
         value: 'ah'
       })},
 
-    'get/set original value': function() {
+    'get/set original value': function () {
       var f = field.Field.new(this.form, {
         type: 'text',
         name: 'test'
       })f.originalValue = 'ah'f.originalValue.should.eql('ah')},
 
-    'check if dirty': function() {
+    'check if dirty': function () {
       var f = field.Field.new(this.form, {
         type: 'text',
         name: 'test'

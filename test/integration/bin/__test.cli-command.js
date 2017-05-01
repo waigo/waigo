@@ -1,7 +1,7 @@
 /**
  * Test command.
  */
-var Command = module.exports = function() {
+var Command = module.exports = function () {
   this.description = 'Test command'this.options = []}/**
  * Run this command.
  */

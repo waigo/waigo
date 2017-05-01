@@ -7,9 +7,9 @@ const _ = require('lodash'),
   Q = require('bluebird')const test = require(path.join(process.cwd(), 'test', '_base'))(module)const waigo = global.waigotest['notifications'] = {
   beforeEach: function *() {
     this.createAppModules({
-      'support/notifications/test1': 'module.exports = function(app, id, cfg) { return function *() { app.count1.push(arguments)} }',
-      'support/notifications/test2': 'module.exports = function(app, id, cfg) { return function *() { app.count2.push(arguments)} }',
-      'support/notifications/test3': 'module.exports = function(app, id, cfg) { return function *() { app.count3.push(arguments)} }',
+      'support/notifications/test1': 'module.exports = function (app, id, cfg) { return function *() { app.count1.push(arguments)} }',
+      'support/notifications/test2': 'module.exports = function (app, id, cfg) { return function *() { app.count2.push(arguments)} }',
+      'support/notifications/test3': 'module.exports = function (app, id, cfg) { return function *() { app.count3.push(arguments)} }',
     })yield this.initApp()yield this.startApp({
       startupSteps: [],
       shutdownSteps: [],

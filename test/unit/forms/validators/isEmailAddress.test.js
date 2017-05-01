@@ -6,7 +6,7 @@ const _ = require('lodash'),
   Q = require('bluebird')const test = require(path.join(process.cwd(), 'test', '_base'))(module)const waigo = global.waigolet validator = null,
   validationResult = undefinedtest['isEmailAddress'] = {
   beforeEach: function *() {
-    this.spy = this.mocker.stub(require('validator'), 'isEmail', function() { 
+    this.spy = this.mocker.stub(require('validator'), 'isEmail', function () { 
       return validationResult})yield this.initApp()validator = waigo.load('support/forms/validators/isEmailAddress')},
 
   'calls through to validator module isEmail()': function *() {

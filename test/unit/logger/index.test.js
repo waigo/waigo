@@ -78,7 +78,7 @@ test['logger'] = {
 
       expect(level).to.eql('ERROR')
 
-      expect(log.create).to.be.a.function()
+      expect(log.create).to.be.a.function ()
 
       spy2.calledWithExactly('test').must.be.true()
 
@@ -88,7 +88,7 @@ test['logger'] = {
 
       expect(level).to.eql('ERROR')
 
-      expect(child.create).to.be.a.function()
+      expect(child.create).to.be.a.function ()
 
       spy2.calledWithExactly('test/blah').must.be.true()
     },

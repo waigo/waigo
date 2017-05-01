@@ -6,10 +6,10 @@ const _ = require('lodash'),
   Q = require('bluebird')const test = require(path.join(process.cwd(), 'test', '_base'))(module)const waigo = global.waigo// waigo = waigo.load('loader') but we do this just to make sure the loader can load itself
 var loader = require('../../src/loader')test.beforeEach = function *() {
   waigo.reset()}test['app folder'] = {
-  'get': function() {
+  'get': function () {
     this.expect(loader.getAppFolder()).to.be.defined}
 }test['waigo folder'] = {
-  'get': function() {
+  'get': function () {
     let expectedFolder = path.join(__dirname, '..', '..', 'src')loader.getWaigoFolder().should.eql(expectedFolder)}
 }test['init()'] = {
   beforeEach: function *() {
@@ -124,33 +124,33 @@ var loader = require('../../src/loader')test.beforeEach = function *() {
     'ignores frontend/': function *() {
       this.writeFile(path.join(this.appFolder, 'frontend', 'test.js'))yield loader.init({
         appFolder: this.appFolder,
-      })this.expect(function() {
+      })this.expect(function () {
         loader.load('frontend/test')}).to.throw.Error},
     'ignores views/': function *() {
       this.writeFile(path.join(this.appFolder, 'views', 'test.js'))yield loader.init({
         appFolder: this.appFolder,
-      })this.expect(function() {
+      })this.expect(function () {
         loader.load('views/test')}).to.throw.Error},
     'ignores cli/data/': function *() {
       this.writeFile(path.join(this.appFolder, 'cli', 'data', 'test.js'))yield loader.init({
         appFolder: this.appFolder,
-      })this.expect(function() {
+      })this.expect(function () {
         loader.load('cli/data/test')}).to.throw.Error},
     'when loading view templates': {
       'ignores files in emails/ prefixed with _': function *() {
         this.writeFile(path.join(this.appFolder, 'emails', 'test1.pug'))this.writeFile(path.join(this.appFolder, 'emails', '_test2.pug'))yield loader.init({
           appFolder: this.appFolder,
-        })loader.load('emails/test1.pug')this.expect(function() {
+        })loader.load('emails/test1.pug')this.expect(function () {
           loader.load('emails/_test2.pug')}).to.throw.Error},
       'ignores files in views/ prefixed with _': function *() {
         this.writeFile(path.join(this.appFolder, 'views', 'test1.pug'))this.writeFile(path.join(this.appFolder, 'views', '_test2.pug'))yield loader.init({
           appFolder: this.appFolder,
-        })loader.load('views/test1.pug')this.expect(function() {
+        })loader.load('views/test1.pug')this.expect(function () {
           loader.load('views/_test2.pug')}).to.throw.Error},
     },
   },
 }test['getPath()'] = {
-  beforeEach: function() {
+  beforeEach: function () {
     loader.reset()},
   'fails if not initialised': function *(){
     this.expect(() => {
@@ -165,35 +165,35 @@ var loader = require('../../src/loader')test.beforeEach = function *() {
       })},
     afterEach: function *() {
       this.deleteTestFolders()},
-    'app overrides core': function() {
+    'app overrides core': function () {
       loader.getPath('support/errors').should.eql(
         path.resolve(this.appFolder + '/support/errors.js')
       )},
-    'load core version': function() {
+    'load core version': function () {
       loader.getPath('waigo:support/lodashMixins').should.eql(
         path.resolve(__dirname + '/../../src/support/lodashMixins.js')
       )},
-    'not in app - core fallback': function() {
+    'not in app - core fallback': function () {
       loader.getPath('routes/index').should.eql(
         path.resolve(__dirname + '/../../src/routes/index.js')
       )},
-    'load plugin version': function() {
+    'load plugin version': function () {
       loader.getPath('waigo-plugin-1_TESTPLUGIN:support/errors').should.eql(
         path.resolve(this.pluginsFolder + '/waigo-plugin-1_TESTPLUGIN/src/support/errors.js')
       )},
-    'app overrides plugin': function() {
+    'app overrides plugin': function () {
       loader.getPath('support/appoverride').should.eql(
         path.resolve(this.appFolder + '/support/appoverride.js')
       )},
-    'not in app - plugin fallback': function() {
+    'not in app - plugin fallback': function () {
       loader.getPath('support/onlyme').should.eql(
         path.resolve(this.pluginsFolder + '/waigo-plugin-2_TESTPLUGIN/src/support/onlyme.js')
       )},
-    'file not found': function() {
-      this.expect(function() {
+    'file not found': function () {
+      this.expect(function () {
         loader.getPath(':support/errors34')}).to.throw('File not found: support/errors34')},
-    'file source not found': function() {
-      this.expect(function() {
+    'file source not found': function () {
+      this.expect(function () {
         loader.getPath('random2:support/errors')}).to.throw('File source not found: random2')},
   },
 }test['load()'] = {

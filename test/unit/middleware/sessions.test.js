@@ -8,7 +8,7 @@ const _ = require('lodash'),
   ctx = nulltest['sessions'] = {
   beforeEach: function *() {
     this.createAppModules({
-      'support/session/store/testStore': 'module.exports = { create: function(app, cfg) { return cfg} }'
+      'support/session/store/testStore': 'module.exports = { create: function (app, cfg) { return cfg} }'
     })yield this.initApp()yield this.startApp({
       startupSteps: [],
       shutdownSteps: [],
@@ -21,7 +21,7 @@ const _ = require('lodash'),
     yield this.shutdownApp()},
 
   'verifies that cookie signing keys are set': function *() {
-    this.expect(function() {
+    this.expect(function () {
       middleware({}, {})}).to.throw('Please specify cookie signing keys in the config file.')},
   'default': function *() {
     var createStoreSpy = this.mocker.spy(

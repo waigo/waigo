@@ -8,11 +8,11 @@ const _ = require('lodash'),
   this.deleteTestFolders()}test['config loader'] = {
   beforeEach: function *() {
     this.originalMode = process.env.NODE_ENVlet modulesToCreate = {
-      'config/base': 'module.exports = function(config) { config.base = 1 }',
-      'config/development': 'module.exports = function(config) { config.dev = 1 }',
-      'config/random': 'module.exports = function(config) { config.random = 1 }',
-      'config/error': 'module.exports = function(config) { throw new Error("haha") }'
-    }modulesToCreate['config/development.' + process.env.USER] = 'module.exports = function(config) { config.dev_user = 1 }'this.createAppModules(modulesToCreate)yield this.initApp()},
+      'config/base': 'module.exports = function (config) { config.base = 1 }',
+      'config/development': 'module.exports = function (config) { config.dev = 1 }',
+      'config/random': 'module.exports = function (config) { config.random = 1 }',
+      'config/error': 'module.exports = function (config) { throw new Error("haha") }'
+    }modulesToCreate['config/development.' + process.env.USER] = 'module.exports = function (config) { config.dev_user = 1 }'this.createAppModules(modulesToCreate)yield this.initApp()},
   afterEach: function *() {
     process.env.NODE_ENV = this.originalModethis.deleteTestFolders()},
   'defaults': function *() {

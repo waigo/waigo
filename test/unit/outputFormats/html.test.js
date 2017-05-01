@@ -45,7 +45,7 @@ const _ = require('lodash'),
         ctx.templateVars = {
           text: 'sheep',
           text2: 'bee',
-          prettyPrint: function(str) {
+          prettyPrint: function (str) {
             return '^' + str + '^'}
         }yield render.call(ctx, 'test_params_2', {
           text2: 'cow'  // should override app.templateVars.text2
@@ -57,7 +57,7 @@ const _ = require('lodash'),
           templateVars: {
             text: 'goat',
             text2: 'bee',
-            prettyPrint: function(str) {
+            prettyPrint: function (str) {
               return '^' + str + '^'}
           }
         }ctx.templateVars = {

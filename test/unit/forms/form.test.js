@@ -29,7 +29,7 @@ const _ = require('lodash'),
 
   'Form': {
     'beforeEach': function *() {
-      this.newFieldSpy = this.mocker.stub(field.Field, 'new', function(form, def) {
+      this.newFieldSpy = this.mocker.stub(field.Field, 'new', function (form, def) {
         return {
           name: def.name + ' created'
         }})this.formConfig = {
@@ -115,7 +115,7 @@ const _ = require('lodash'),
       })},
 
     'set field values': function *() {
-      var f = this.formvar values = {}_.each(f.fields, function(field, name) {
+      var f = this.formvar values = {}_.each(f.fields, function (field, name) {
         field.setSanitizedValue = function *(v) {
           values[name] = v}})yield f.setValues({
         email: '123',
@@ -133,17 +133,17 @@ const _ = require('lodash'),
 
     'check if dirty': function *() {
       var f = this.form,
-        fields = f.fieldsvar emailDirty = falsefields.email.isDirty = function() {
-        return emailDirty}var ageDirty = falsefields.age.isDirty = function() {
+        fields = f.fieldsvar emailDirty = falsefields.email.isDirty = function () {
+        return emailDirty}var ageDirty = falsefields.age.isDirty = function () {
         return ageDirty}f.isDirty().should.be.falseemailDirty = trueageDirty = falsef.isDirty().should.be.trueemailDirty = falseageDirty = truef.isDirty().should.be.trueemailDirty = trueageDirty = truef.isDirty().should.be.true},
 
     'validate': {
       'pass': function *() {
-        var f = this.form_.each(f.fields, function(_field, name) {
+        var f = this.form_.each(f.fields, function (_field, name) {
           _field.validate = function *() {}})yield f.validate()},
 
       'fail': function *() {
-        var f = this.form_.each(f.fields, function(_field, name) {
+        var f = this.form_.each(f.fields, function (_field, name) {
           _field.validate = function *() {
             throw new field.FieldValidationError('fail', 400, [
               `${name} failed`,
@@ -173,7 +173,7 @@ const _ = require('lodash'),
     },
 
     'to view object': function *() {
-      var f = this.formf.config.id = 'testForm'_.each(f.fields, function(field, name) {
+      var f = this.formf.config.id = 'testForm'_.each(f.fields, function (field, name) {
         field[viewObjectMethodName] = function *(ctx) {
           return _.extend({}, ctx, {
             name: name
@@ -198,7 +198,7 @@ const _ = require('lodash'),
 
   'create new Form': {
     beforeEach: function *() {
-      var formDef = this.formDef = {}this.waigoLoadStub = this.mocker.stub(waigo, 'load', function(){
+      var formDef = this.formDef = {}this.waigoLoadStub = this.mocker.stub(waigo, 'load', function (){
         return formDef})},
 
     'loads form definition to create the form': function *() {

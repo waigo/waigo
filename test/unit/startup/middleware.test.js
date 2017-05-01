@@ -7,8 +7,8 @@ const _ = require('lodash'),
   Q = require('bluebird')const test = require(path.join(process.cwd(), 'test', '_base'))(module)const waigo = global.waigotest['middleware'] = {
   beforeEach: function *() {
     this.createAppModules({
-      'support/middleware/test1': 'module.exports = function(App, options) { return function *() { return ["test1", options, arguments[0]]}}',
-      'support/middleware/test2': 'module.exports = function(App, options) { return function *() { return ["test2", options, arguments[0]]}}',
+      'support/middleware/test1': 'module.exports = function (App, options) { return function *() { return ["test1", options, arguments[0]]}}',
+      'support/middleware/test2': 'module.exports = function (App, options) { return function *() { return ["test2", options, arguments[0]]}}',
     })yield this.initApp()yield this.startApp({
       startupSteps: [],
       shutdownSteps: [],

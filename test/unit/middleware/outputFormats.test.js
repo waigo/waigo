@@ -8,7 +8,7 @@ const _ = require('lodash'),
   ctx = nulltest['output formats'] = {
   beforeEach: function *() {
     this.createAppModules({
-      'support/outputFormats/html2': 'module.exports = { create: function() { return { render: function *() { this.body = 123} }} }'
+      'support/outputFormats/html2': 'module.exports = { create: function () { return { render: function *() { this.body = 123} }} }'
     })yield this.initApp()yield this.startApp({
       startupSteps: [],
       shutdownSteps: [],
@@ -20,8 +20,8 @@ const _ = require('lodash'),
   afterEach: function *() {
     yield this.shutdownApp()},
 
-  'invalid format in config': function() {
-    this.expect(function() {
+  'invalid format in config': function () {
+    this.expect(function () {
       outputFormats({}, {
         formats: {
           html3: true          

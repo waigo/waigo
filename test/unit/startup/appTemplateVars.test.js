@@ -15,7 +15,7 @@ const _ = require('lodash'),
   'sets template vars': function *() {
     this.App.routes = {
       url: {
-        bind: function() {
+        bind: function () {
           return 'blah'}
       }
     }this.App.staticUrl = 'blah2'yield this.setup(this.App)this.App.templateVars.should.eql({

@@ -8,6 +8,6 @@ const _ = require('lodash'),
   beforeEach: function *() {
     yield this.initApp()},
 
-  'default': function() {
+  'default': function () {
     var conn = waigo.load('support/session/store/cookie').create(null, {})this.expect(conn).to.eql(null)}
 }

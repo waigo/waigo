@@ -20,7 +20,7 @@ const _ = require('lodash'),
 
   'shuts down HTTP listener': function *() {
     var closed = 0this.App.server = {
-      close: function(cb) {
+      close: function (cb) {
         closed += 1cb()}
     }yield this.step.call(this.step, this.App)closed.should.eql(1)}
 
