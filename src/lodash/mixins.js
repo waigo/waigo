@@ -7,7 +7,7 @@ module.exports = function (_) {
     isGenFn: genomatic.isGenFn,
     classnames: require('classnames'),
     pluralize: require('pluralize'),
-    uuid: require('node-uuid'),
+    uuid: require('uuid'),
     /**
      * Format user name for display.
      *

@@ -33,7 +33,6 @@
     "log4js": "^0.6.36",
     "marked": "^0.3.6",
     "moment": "^2.11.2",
-    "node-uuid": "^1.4.2",
     "nodemailer": "^2.4.2",
     "nodemailer-html-to-text": "^2.1.0",
     "nodemailer-markdown": "^1.0.0",
@@ -47,6 +46,7 @@
     "slack-node": "^0.2.0",
     "thinodium": "^1.1.4",
     "thinodium-rethinkdb": "^1.1.2",
+    "uuid": "^3.0.1",
     "validator": "^5.0.0"
   },
   "devDependencies": {
