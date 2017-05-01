@@ -10,7 +10,7 @@ module.exports = (paths, options = {}) ->
 
     if options.onlyTest
       p = [options.onlyTest]
-    else 
+    else
       p = [path.join(paths.test, '**', '**', '**', '*.test.js')]
       if options.ci
         # remove stuff that fails for unknown reasons

@@ -172,10 +172,20 @@ class Application extends EventEmitter {
     process.removeListener('uncaughtException', this._onError)
 
     // run shutdown steps
-    for (const stepName of this.config.shutdownSteps) {
+    for (const stepName of this.config.startupSteps) {
+      let shutdownStep
+
+      try {
+        shutdownStep = waigo.load(`${stepName}/support/shutdown`)
+      } catch (err) {
+        this.logger.debug(`No shutdown step found: ${stepName}`)
+        // next loop iteration
+        continue
+      }
+
       this.logger.debug(`Running shutdown step: ${stepName}`)
 
-      yield waigo.load(`${stepName}/support/shutdown`)(this)
+      yield shutdownStep(this)
     }
 
     this.logger.info('Shutdown complete')

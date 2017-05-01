@@ -6,7 +6,7 @@ gulp = require('gulp')
 gutil = require 'gulp-util'
 args = require('yargs').argv
 
-options = 
+options =
   minifiedBuild: !!args.minified
   dontExitOnError: false
   onlyTest: args.onlyTest || args.limitTest
@@ -17,7 +17,7 @@ if options.minifiedBuild
   console.log 'MINIFIED build'
 else
   console.log 'Non-MINIFIED build'
- 
+
 
 # paths
 
@@ -25,15 +25,15 @@ paths =
   npm: path.join(__dirname, 'node_modules')
   projectRoot: __dirname
   test: path.join(__dirname, 'test')
-  frontend: 
+  frontend:
     src: path.join(__dirname, 'src', 'frontend')
-    build: path.join(__dirname, 'public') 
+    build: path.join(__dirname, 'public')
     lib: path.join(__dirname, 'public', 'lib')
 
 
 
 # initialisation
-# 
+#
 
 # find available gulp task files
 tasksFolder = path.join(__dirname, 'gulp')
@@ -53,7 +53,7 @@ _.each tasks, (file, name) ->
   { handler, deps } = constructorFn(paths, options, tasks)
 
   handler or= undefined
-  deps or = []
+  deps or= []
 
   gulp.task name, deps, handler
 

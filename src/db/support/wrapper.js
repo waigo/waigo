@@ -26,25 +26,29 @@ class DbWrapper {
    * Initialize this connection
    */
   *init () {
-    this.logger.info(`Creating connection ${this.id} of type ${this.type}`)
+    this.logger.debug(`Creating connection ${this.id} of type ${this.type}`)
 
     this.db = yield this.builder.connect(this.dbConfig)
+
+    this.logger.debug(`Created connection ${this.id}`)
   }
 
   /**
    * Destroy this connection
    */
   *destroy () {
-    this.logger.info(`Disconnecting connection ${this.id}`)
+    this.logger.debug(`Disconnecting connection ${this.id}`)
 
     if (this.db) {
       yield this.builder.disconnect(this.db)
+
+      this.logger.debug(`Disconnected connection ${this.id}`)
     }
   }
 
   *model (modelName, modelSpec = {}) {
     if (!this.models[modelName]) {
-      this.logger.info(`Setting up model ${modelName}`)
+      this.logger.debug(`Setting up model ${modelName}`)
 
       modelSpec = _.extend(
         waigo.load(`db/${this.type}/models/${modelName}`),

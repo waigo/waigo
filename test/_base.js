@@ -1,56 +1,38 @@
-"use strict";
+require('co-mocha')/* enable generator test functions */
 
-const path = require('path');
+const path = require('path')
+const testUtils = require('waigo-test-utils')
+const Q = require('bluebird')
+const waigo = require('..')
 
-require('co-mocha');  /* enable generator test functions */
-const testUtils = require('waigo-test-utils');
-
-const Q = require('bluebird');
 Q.config({
   longStackTraces: true
-});
+})
 
-const waigo = require('../src'),
-  _ = waigo._;
+module.exports = (_module) => {
+  const test = testUtils.mocha(_module, waigo, {
+    name: path.relative(process.cwd(), _module.filename)
+  })
 
+  test.beforeEach = function *() {
+    const testPackageJsonFile = path.join(process.cwd(), 'test', 'data', 'package.json')
 
-
-
-module.exports = function(_module) {
-  let test = testUtils.mocha(_module, {
-    name: path.relative(process.cwd(), _module.filename),
-    extraDataAndMethods: {
-      shouldThrow: function*(gen, err) {
-        try {
-          yield gen;
-        } catch (e) {
-          (function() { throw e; }).should.throw(err);
-          return;
-        }
-        
-        throw new Error('Expected error not thrown: ' + err);
-      },
-    },
-  });
-
-  test.beforeEach = function*() {
-    const testPackageJsonFile = path.join(process.cwd(), 'test', 'data', 'package.json');
-    
     if (this.fileExists(testPackageJsonFile)) {
-      this.deleteFile(testPackageJsonFile);
+      this.deleteFile(testPackageJsonFile)
     }
-    
-    this.deleteTestFolders();
-    this.createTestFolders();
-  };
 
-  test.afterEach = function*() {
-    this.deleteTestFolders();
-  };
+    this.deleteTestFolders()
 
-  let tests = {};
+    this.createTestFolders()
+  }
 
-  test.tests = tests;
+  test.afterEach = function *() {
+    this.deleteTestFolders()
+  }
 
-  return tests;
-};
+  const tests = {}
+
+  test.tests = tests
+
+  return tests
+}

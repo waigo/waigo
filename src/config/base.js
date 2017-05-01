@@ -72,9 +72,14 @@ module.exports = function (config) {
 
 
   /**
-   * The steps to execute as part of the application startup process.
+   * The steps to execute as part of the application startup and shutdown processes.
    *
-   * Each of these corresponds to a module file under the `<module name>support/startup` path.
+   * The steps given will be executed in order during startup. During shutdown
+   * they will be executed in the reverse order - note that shutdown code is
+   * not mandatory.
+   *
+   * Each step must be matched a file at the `<name>/support/startup` path. The
+   * equivalent optional shutdown code for the step must be at `<name>/support/shutdown`.
    */
   config.startupSteps = [
     'db',
@@ -90,20 +95,6 @@ module.exports = function (config) {
     'mailer',
     'cron',
     'listener',
-  ]
-
-
-
-  /**
-   * The steps to execute as part of the application shutdown process.
-   *
-   * Each of these corresponds to a module file under the `<module name>/support/shutdown` path.
-   */
-  config.shutdownSteps = [
-    'listener',
-    'cron',
-    'acl',
-    'db',
   ]
 
 
