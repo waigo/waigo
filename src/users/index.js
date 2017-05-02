@@ -10,12 +10,6 @@ const randomBytesQ = Q.promisify(crypto.pseudoRandomBytes, {
 })
 
 
-/**
- * Singleton instance
- * @type {Object}
- */
-let userMgr
-
 
 const modelSpec = {
   docVirtuals: {
@@ -62,7 +56,7 @@ const modelSpec = {
       const sepPos = passAuth.token.indexOf('-'),
         salt = passAuth.token.substr(0, sepPos)
 
-      const generatedHash = yield userMgr.generatePasswordHash(
+      const generatedHash = yield this.getModel().mgr().generatePasswordHash(
         password, salt
       )
 
@@ -73,7 +67,7 @@ const modelSpec = {
     * @param {Object} context waigo client request context.
     */
     login: function *(context) {
-      userMgr.logger.debug(`Logging in user: ${this.id} = ${this.username}`)
+      this.getModel().mgr().logger.debug(`Logging in user: ${this.id} = ${this.username}`)
 
       context.session.user = {
         id: this.id,
@@ -104,7 +98,7 @@ const modelSpec = {
       yield this.save()
 
       // record
-      userMgr.App.emit('record', 'verify_email', this, {
+      this.getModel().mgr().App.emit('record', 'verify_email', this, {
         email: email
       })
     },
@@ -155,7 +149,7 @@ const modelSpec = {
       yield this.save()
 
       // record
-      userMgr.App.emit('record', 'add_email', this, {
+      this.getModel().mgr().App.emit('record', 'add_email', this, {
         email: email
       })
     },
@@ -164,7 +158,7 @@ const modelSpec = {
     * @param {String} newPassword New password.
     */
     updatePassword: function *(newPassword) {
-      userMgr.logger.debug('Update user password', this.username)
+      this.getModel().mgr().logger.debug('Update user password', this.username)
 
       const passAuth = _.find(this.auth, function (a) {
         return 'password' === a.type
@@ -175,14 +169,14 @@ const modelSpec = {
       }
 
       // update password
-      passAuth.token = yield userMgr.generatePasswordHash(newPassword)
+      passAuth.token = yield this.getModel().mgr().generatePasswordHash(newPassword)
 
       // save
       this.markChanged('auth')
       yield this.save()
 
       // record
-      userMgr.App.emit('record', 'update_password', this)
+      this.getModel().mgr().App.emit('record', 'update_password', this)
     },
     /**
     * Get OAuth data.
@@ -216,7 +210,7 @@ const modelSpec = {
     * @param {Object} data Data.
     */
     saveAuth: function *(type, data) {
-      userMgr.logger.debug('Save user auth', this.id, type, data)
+      this.getModel().mgr().logger.debug('Save user auth', this.id, type, data)
 
       let existing = _.find(this.auth, function (a) {
         return type === a.type
@@ -237,7 +231,7 @@ const modelSpec = {
       yield this.save()
 
       // record
-      userMgr.App.emit('record', 'save_oauth', this, _.pick(existing, 'type', 'access_token'))
+      this.getModel().mgr().App.emit('record', 'save_oauth', this, _.pick(existing, 'type', 'access_token'))
     },
     /**
     * Get whether user can access given resource.
@@ -247,7 +241,7 @@ const modelSpec = {
     * @return {Boolean} true if access is possible, false if not.
     */
     canAccess: function *(resource) {
-      userMgr.App.acl.can(resource, this)
+      this.getModel().mgr().App.acl.can(resource, this)
     },
     /**
     * Assert that user can access given resource.
@@ -257,7 +251,7 @@ const modelSpec = {
     * @throws {Error} If not allowed to access.
     */
     assertAccess: function *(resource) {
-      userMgr.App.acl.assert(resource, this)
+      this.getModel().mgr().App.acl.assert(resource, this)
     },
   }
 }
@@ -278,7 +272,11 @@ class UserManager {
    * Initialize
    */
   *init () {
-    this.dbModel = yield this.App.db.model('user', modelSpec)
+    this.dbModel = yield this.App.db.model('User', Object.assign(modelSpec, {
+      modelMethods: {
+        mgr: () => this
+      }
+    }))
   }
 
 
@@ -422,11 +420,9 @@ class UserManager {
  * @return {Object} Activity recorder.
  */
 exports.init = function *(App) {
-  if (!userMgr) {
-    userMgr = new UserManager(App)
+  const userMgr = new UserManager(App)
 
-    yield userMgr.init()
-  }
+  yield userMgr.init()
 
   return userMgr
 }

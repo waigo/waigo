@@ -10,13 +10,14 @@ class DbWrapper {
    * @param {String} type Database engine type
    * @param {Object} dbConfig db engine options
    */
-  constructor (id, logger, type, dbConfig) {
+  constructor (App, id, logger, type, dbConfig) {
+    this.App = App
     this.id = id
     this.logger = logger
     this.type = type
     this.dbConfig = dbConfig
 
-    this.logger.debug(`Loading db adapater for ${this.type}`)
+    this.logger.debug(`Loading ${this.type} adapter for connection: ${this.id}`)
 
     this.builder = waigo.load(`db/${this.type}/adapter`)
     this.models = {}
@@ -26,7 +27,7 @@ class DbWrapper {
    * Initialize this connection
    */
   *init () {
-    this.logger.debug(`Creating connection ${this.id} of type ${this.type}`)
+    this.logger.debug(`Creating ${this.type} connection: ${this.id}`)
 
     this.db = yield this.builder.connect(this.dbConfig)
 
@@ -51,7 +52,7 @@ class DbWrapper {
       this.logger.debug(`Setting up model ${modelName}`)
 
       modelSpec = _.extend(
-        waigo.load(`db/${this.type}/models/${modelName}`),
+        waigo.load(`db/${this.type}/models/${modelName.toLowerCase()}`),
         modelSpec
       )
 

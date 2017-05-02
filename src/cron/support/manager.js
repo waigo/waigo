@@ -14,12 +14,6 @@ const waigo = global.waigo,
 
 const $EXTRA = Symbol('cron extra data')
 
-/**
- * Singleton instance.
- * @type {Object}
- */
-let cronMgr
-
 
 const modelSpec = {
   docMethods: {
@@ -68,7 +62,7 @@ const modelSpec = {
       try {
         // always reload data at the start in case other app instances have
         // executed the task recently
-        const dbData = yield cronMgr.dbModel.get(this.id)
+        const dbData = yield this.getModel().mgr().dbModel.get(this.id)
 
         // if disabled then don't run
         if (dbData.disabled) {
@@ -123,13 +117,13 @@ const modelSpec = {
 
         _config.logger.info(`Run complete: ${duration}ms`)
 
-        cronMgr.App.emit('record', 'run_pass', 'cron', {
+        this.getModel().mgr().App.emit('record', 'run_pass', 'cron', {
           task: this.id,
           duration: duration,
           by: runByUser
         })
       } catch (err) {
-        cronMgr.App.emit('record', 'run_fail', 'cron', {
+        this.getModel().mgr().App.emit('record', 'run_fail', 'cron', {
           task: this.id,
           err: err.stack,
           by: runByUser
@@ -170,7 +164,11 @@ class Cron {
    * Initialize.
    */
   *init () {
-    this.dbModel = yield this.App.db.model('cron', modelSpec)
+    this.dbModel = yield this.App.db.model('Cron', Object.assign(modelSpec, {
+      modelMethods: {
+        mgr: () => this
+      }
+    }))
   }
 
 
@@ -245,11 +243,9 @@ class Cron {
  * @return {Object} Cron manager.
  */
 exports.init = function *(App) {
-  if (!cronMgr) {
-    cronMgr = new Cron(App)
+  const cronMgr = new Cron(App)
 
-    yield cronMgr.init()
-  }
+  yield cronMgr.init()
 
   return cronMgr
 }

@@ -21,7 +21,7 @@ class Acl {
    * Initialize.
    */
   *init () {
-    this.dbModel = yield this.App.db.model('acl')
+    this.dbModel = yield this.App.db.model('Acl')
 
     // reload data
     yield this.reload()
@@ -161,8 +161,6 @@ class Acl {
 }
 
 
-let instance
-
 /**
  * Initialise ACL manager.
  *
@@ -170,11 +168,9 @@ let instance
  * @return {Object} ACL manager.
  */
 exports.init = function *(App) {
-  if (!instance) {
-    instance = new Acl(App)
+  const acl = new Acl(App)
 
-    yield instance.init()
-  }
+  yield acl.init()
 
-  return instance
+  return acl
 }

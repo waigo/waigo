@@ -22,7 +22,7 @@ exports.connect = function *(dbConfig) {
  */
 exports.disconnect = function *(db) {
   if (db.isConnected) {
-    yield db.disconnect()
+    return yield db.disconnect()
   }
 }
 

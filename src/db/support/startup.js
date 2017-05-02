@@ -32,7 +32,7 @@ module.exports = function *(App) {
       throw new Error(`Unable to find configuration for database: ${id}`)
     }
 
-    const db = new DbWrapper(id, logger.create(id), cfg.type, cfg)
+    const db = new DbWrapper(App, id, logger.create(id), cfg.type, cfg)
 
     yield db.init()
 

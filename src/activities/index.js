@@ -12,7 +12,7 @@ class Activity {
    * Initialize
    */
   *init () {
-    this.dbModel = yield this.App.db.model('activity')
+    this.dbModel = yield this.App.db.model('Activity')
   }
 
   /**
