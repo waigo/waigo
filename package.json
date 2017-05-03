@@ -44,7 +44,7 @@
     "semver": "^5.1.0",
     "shelljs": "^0.7.0",
     "slack-node": "^0.2.0",
-    "thinodium": "^1.1.4",
+    "thinodium": "^1.2.2",
     "thinodium-rethinkdb": "^1.1.2",
     "uuid": "^3.0.1",
     "validator": "^5.0.0"

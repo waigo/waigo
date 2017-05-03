@@ -11,23 +11,22 @@ Q.config({
 
 module.exports = (_module) => {
   const test = testUtils.mocha(_module, waigo, {
-    name: path.relative(process.cwd(), _module.filename),
-    extraDataAndMethods: {
-      clearDb: function *() {
-        const _ = waigo._
-
-        const modelNames = _.flatten(_.toArray(arguments))
-
-        for (const model of modelNames) {
-          const modelInstance = yield this.App.db.model(model)
-
-          yield modelInstance.rawQry().delete().run()
-        }
-      }
-    }
+    name: path.relative(process.cwd(), _module.filename)
   })
 
   test.beforeEach = function *() {
+    this.clearDb = function *() {
+      const _ = waigo._
+
+      const modelNames = _.flatten(_.toArray(arguments))
+
+      for (const model of modelNames) {
+        const modelInstance = yield this.App.db.model(model)
+
+        yield modelInstance.rawQry().delete().run()
+      }
+    }
+
     const testPackageJsonFile = path.join(process.cwd(), 'test', 'data', 'package.json')
 
     if (this.fileExists(testPackageJsonFile)) {
