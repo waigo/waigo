@@ -18,10 +18,9 @@ class ActionTokens {
   constructor (App, config) {
     this.App = App
     this.config = config
-
     this.logger = logger.create('ActionTokens')
 
-    this.logger.debug(`encryption key is: ${this.config.encryptionKey}`)
+    this.logger.debug(`Encryption key is: ${this.config.encryptionKey}`)
   }
 
 
@@ -95,7 +94,7 @@ class ActionTokens {
 
       json = JSON.parse(plaintext)
     } catch (err) {
-      _throw('Error parsing action token', 400, {
+      _throw('Error parsing request token', 400, {
         error: err.stack
       })
     }
@@ -107,22 +106,22 @@ class ActionTokens {
       data = json[4]
 
     if (!_.isEmpty(options.type) && type !== options.type) {
-      _throw(`Action token type mismatch: ${type}`, 400)
+      _throw(`Request type mismatch: ${type}`, 400)
     }
 
     // check if action still valid
     if (Date.now() > ts) {
-      _throw('This action token has expired.', 403)
+      _throw('This request has expired', 403)
     }
 
     const user = yield this.App.users.get(userId)
 
     if (!user) {
-      _throw('Unable to find user information related to action token', 404)
+      _throw('Unable to find user information related to this request', 404)
     }
 
     // check if we've already executed this request before
-    const processed = yield this.App.activities.exists('action_token_processed', {
+    const processed = yield this.App.activities.getLatest({
       verb: 'action_token_processed',
       details: {
         type: type,
@@ -131,13 +130,13 @@ class ActionTokens {
     })
 
     if (processed) {
-      _throw('This action token has already been processed and is no longer valid.', 403)
+      _throw('This request has already been processed and is no longer valid', 403)
     }
 
     // record activity
-    this.App.emit('record', 'action_token_processed', user, {
+    yield this.App.activities.record('action_token_processed', user, {
       type: type,
-      salt: salt,
+      salt: salt
     })
 
     this.logger.debug(`Action token processed: ${token}`)
@@ -151,8 +150,6 @@ class ActionTokens {
 }
 
 
-let instance
-
 /**
  * Initialise action tokens manager.
  *
@@ -162,9 +159,5 @@ let instance
  * @return {ActionTokens}
  */
 exports.init = function *(App, actionTokensConfig) {
-  if (!instance) {
-    instance = new ActionTokens(App, actionTokensConfig)
-  }
-
-  return instance
+  return new ActionTokens(App, actionTokensConfig)
 }

@@ -1,3 +1,6 @@
+const waigo = global.waigo,
+  _ = waigo._
+
 const UserSchema = {
   // unique id (if null then by the system)
   id: {
@@ -56,17 +59,15 @@ exports.indexes = [
 
 
 exports.modelMethods = {
-  exists: function *(verb, details) {
-    const qry = {
-      verb
-    }
+  getLatest: function *(params) {
+    const r = this.db
 
-    if (details) {
-      qry.details = details
-    }
+    const ret = yield this.rawQry()
+      .filter(params)
+      .orderBy(r.desc('published'))
+      .limit(1)
+      .run()
 
-    const ret = yield this.rawQry().filter(qry).run()
-
-    return !!(ret.length)
+    return this.wrapRaw(_.get(ret, '0'))
   }
 }

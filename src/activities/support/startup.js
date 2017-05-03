@@ -19,7 +19,8 @@ module.exports = function *(App) {
 
   App.activities = yield Activities.init(App)
 
-  App.on('record', co.wrap(function *() {
-    App.activities.record(arguments)
-  }))
+  App.on('record', function () {
+    co(App.activities.record.apply(App.activities, arguments))
+    .catch(err => App.logger.warn(err))
+  })
 }

@@ -1,3 +1,6 @@
+const waigo = global.waigo,
+  _ = waigo._
+
 class Activity {
   /**
    * @constructor
@@ -25,16 +28,18 @@ class Activity {
    * @return {Object} the created activity object
    */
   *record (verb, actor, details) {
-    this.logger.debug('Recording activity', verb, actor.id || actor, details)
+    const actorId = _.get(actor, 'id', actor)
 
-    if (!actor || !actor.id) {
+    this.logger.debug('Recording activity', verb, actorId, details)
+
+    if (!actorId) {
       actor = {
-        displayName: (typeof actor === 'string' ? actor : 'system')
+        displayName: 'system'
       }
     } else {
       actor = {
-        id: '' + actor.id,
-        displayName: actor.username,
+        id: '' + actorId,
+        displayName: _.get(actor, 'username', ''),
       }
     }
 
@@ -51,18 +56,15 @@ class Activity {
     yield this.dbModel.insert(data)
   }
 
-
   /**
-   * Get whether given activity exists.
+   * Get latest matching activity exists.
    *
-   * @param {String} verb          activity name
-   * @param {String|User} actor    `User` who did it. Or name of system process.
-   * @param {Object} [details]     Additional details.
+   * @param {Object} params         Activity attributes
    *
-   * @return {Array} The matching activities.
+   * @return {Object} The matching activity or `null` if none found.
    */
-  *exists (verb, details) {
-    return yield this.dbModel.exists(verb, details)
+  *getLatest (params) {
+    return yield this.dbModel.getLatest(params)
   }
 }
 
