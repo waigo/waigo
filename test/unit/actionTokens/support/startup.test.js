@@ -1,34 +1,24 @@
-
-
-const _ = require('lodash'),
-  co = require('co'),
-  path = require('path'),
-  moment = require('moment'),
-  Q = require('bluebird')
-
+const path = require('path')
 
 const test = require(path.join(process.cwd(), 'test', '_base'))(module)
-const waigo = global.waigo
-
 
 
 test['action tokens'] = {
   beforeEach: function *() {
     this.createAppModules({
-      'support/actionTokens': 'module.exports = { init: function *() { return Array.from(arguments).concat(1) } } '
+      'actionTokens/index': 'module.exports = { init: function *() { return Array.from(arguments).concat(1) } } '
     })
 
     yield this.initApp()
 
     yield this.startApp({
       startupSteps: [],
-      shutdownSteps: [],
       actionTokens: {
         dummy: true,
       },
     })
 
-    this.setup = this.waigo.load('support/startup/actionTokens')
+    this.setup = this.waigo.load('actionTokens/support/startup')
   },
   afterEach: function *() {
     yield this.shutdownApp()
@@ -36,6 +26,8 @@ test['action tokens'] = {
   'init action tokens': function *() {
     yield this.setup(this.App)
 
-    this.App.actionTokens.should.eql([this.App, { dummy: true }, 1])
+    expect(this.App.actionTokens).to.eql([
+      this.App, { dummy: true }, 1
+    ])
   },
 }
