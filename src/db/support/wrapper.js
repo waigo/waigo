@@ -51,7 +51,7 @@ class DbWrapper {
     if (!this.models[modelName]) {
       this.logger.debug(`Setting up model ${modelName}`)
 
-      modelSpec = _.extend(
+      modelSpec = _.extend({},
         waigo.load(`db/${this.type}/models/${modelName.toLowerCase()}`),
         modelSpec
       )

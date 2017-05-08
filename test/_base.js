@@ -21,9 +21,7 @@ module.exports = (_module) => {
       const modelNames = _.flatten(_.toArray(arguments))
 
       for (const model of modelNames) {
-        const modelInstance = yield this.App.db.model(model)
-
-        yield modelInstance.rawQry().delete().run()
+        yield this.App.db.db._connection.table(model).delete().run()
       }
     }
 

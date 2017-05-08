@@ -62,7 +62,7 @@ const modelSpec = {
       try {
         // always reload data at the start in case other app instances have
         // executed the task recently
-        const dbData = yield this.getModel().mgr().dbModel.get(this.id)
+        const dbData = yield this.getModel().get(this.id)
 
         // if disabled then don't run
         if (dbData.disabled) {
@@ -108,26 +108,31 @@ const modelSpec = {
 
       _config.logger.debug(`Running task (user: ${runByUser})`)
 
+      let App
       try {
+        App = this.getModel().mgr().App
+
         const start = Date.now()
 
-        yield _config.handler(this._App())
+        yield _config.handler(App)
 
         const duration = Date.now() - start
 
         _config.logger.info(`Run complete: ${duration}ms`)
 
-        this.getModel().mgr().App.emit('record', 'run_pass', 'cron', {
+        App.emit('record', 'run_pass', 'cron', {
           task: this.id,
           duration: duration,
           by: runByUser
         })
       } catch (err) {
-        this.getModel().mgr().App.emit('record', 'run_fail', 'cron', {
-          task: this.id,
-          err: err.stack,
-          by: runByUser
-        })
+        if (App) {
+          App.emit('record', 'run_fail', 'cron', {
+            task: this.id,
+            err: err.stack,
+            by: runByUser
+          })
+        }
 
         throw err
       }
@@ -164,7 +169,7 @@ class Cron {
    * Initialize.
    */
   *init () {
-    this.dbModel = yield this.App.db.model('Cron', Object.assign(modelSpec, {
+    this.dbModel = yield this.App.db.model('Cron', Object.assign({}, modelSpec, {
       modelMethods: {
         mgr: () => this
       }
