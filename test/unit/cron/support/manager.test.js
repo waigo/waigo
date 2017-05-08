@@ -1,4 +1,5 @@
 const path = require('path'),
+  moment = require('moment'),
   Q = require('bluebird')
 
 
@@ -93,7 +94,7 @@ test['cron manager'] = {
     expect(json.disabled).to.be.false()
     expect(json.lastRun).to.eql('never')
     expect(json.schedule).to.eql('0 0 3 * * 1')
-    expect(json.nextRun.getTime() > Date.now()).to.be.true()
+    expect(json.nextRun.getTime()).to.be.gt(Date.now())
   },
 
   'records last run time': function *() {
@@ -109,7 +110,7 @@ test['cron manager'] = {
     let dbJob = yield this.inst.dbModel.get('sample')
 
     expect(dbJob).to.exist()
-    expect(dbJob.lastRun.when.getTime() > genesisTime).to.be.true()
+    expect(dbJob.lastRun.when.getTime()).to.be.gt(genesisTime)
     expect(dbJob.lastRun.by).to.eql(`worker ${process.pid}`)
 
     const lastRun = dbJob.lastRun.when.getTime()
@@ -118,7 +119,7 @@ test['cron manager'] = {
 
     dbJob = yield this.inst.dbModel.get('sample')
 
-    expect(dbJob.lastRun.when.getTime() > lastRun).to.be.true()
+    expect(dbJob.lastRun.when.getTime()).to.be.gt(lastRun)
   },
 
   'manual runs do not affect last run time': function *() {
@@ -153,7 +154,7 @@ test['cron manager'] = {
 
     yield job.setActive(false)
 
-    expect(ret.length > 0).to.be.true()
+    expect(ret.length).to.be.gt(0)
 
     const lastLength = ret.length
 
@@ -165,7 +166,47 @@ test['cron manager'] = {
 
     yield Q.delay(1500)
 
-    expect(ret.length > lastLength).to.be.true()
+    expect(ret.length).to.be.gt(lastLength)
+  },
+
+  'strictly controls when it is automatically run': function *() {
+    const ret = []
+
+    yield this.inst.addJob('sample', {
+      schedule: '0 0 3 * * 1',
+      handler: function *(App) {
+        ret.push(1)
+      }
+    })
+
+    const job = this.inst.get('sample')
+
+    // simulate auto-run
+    yield job._cronCallback()
+
+    let dbJob = yield this.inst.dbModel.get('sample')
+
+    expect(dbJob).to.exist()
+    expect(dbJob.lastRun.when).to.exist()
+
+    const lastRun = dbJob.lastRun.when
+
+    yield job._cronCallback()
+
+    // expect it didn't get run again
+    dbJob = yield this.inst.dbModel.get('sample')
+    expect(dbJob.lastRun.when).to.eql(lastRun)
+
+    // now wait over a week
+    dbJob.lastRun.when = moment().subtract(-1, 'week').toDate()
+    dbJob.markChanged('lastRun')
+    yield dbJob.save()
+
+    yield job._cronCallback()
+
+    // expect it did get run again
+    dbJob = yield this.inst.dbModel.get('sample')
+    expect(dbJob.lastRun.when).to.be.gt(lastRun)
   },
 
   'records event': {
