@@ -3,7 +3,7 @@ const path = require('path')
 const test = require(path.join(process.cwd(), 'test', '_base'))(module)
 
 
-test['activities'] = {
+test['activities startup'] = {
   beforeEach: function *() {
     this.createAppModules({
       'activities/index': `module.exports = {
