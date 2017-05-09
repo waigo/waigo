@@ -11,22 +11,22 @@ test['index controller'] = {
       startupSteps: []
     })
 
-    this.method = this.waigo.load('cron/support/shutdown')
+    this.controller = this.waigo.load('controllers/index')
   },
   afterEach: function *() {
     yield this.shutdownApp()
   },
-  'destroys cron': function *() {
-    let called = false
+  'renders main': function *() {
+    const ret = []
 
-    this.App.cron = {
-      destroy: function *() {
-        called = true
+    const ctx = {
+      render: function *() {
+        ret.push(Array.from(arguments))
       }
     }
 
-    yield this.method(this.App)
+    yield this.controller.main.call(ctx)
 
-    called.must.be.true()
-  },
+    ret.must.eql([['index']])
+  }
 }
