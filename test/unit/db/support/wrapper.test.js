@@ -6,6 +6,12 @@ const test = require(path.join(process.cwd(), 'test', '_base'))(module)
 test['db wrapper'] = {
   beforeEach: function *() {
     this.createAppModules({
+      'db/type1/models/model1': `
+        exports.schema = 7;
+      `,
+      'db/type1/models/model2': `
+        exports.schema = 8;
+      `,
       'db/type1/adapter': `
         const adapter = exports.adapter = {}
 
@@ -17,6 +23,10 @@ test['db wrapper'] = {
 
         exports.disconnect = function *(c) {
           adapter.disconnected = c
+        }
+
+        exports.model = function *(db, name, spec) {
+          return [db, name, spec]
         }
       `,
       'db/type2/adapter': `
@@ -30,6 +40,10 @@ test['db wrapper'] = {
 
         exports.disconnect = function *(c) {
           adapter.disconnected = c
+        }
+
+        exports.model = function *(db, name, spec) {
+          return [db, name, spec]
         }
       `,
     })
@@ -72,4 +86,42 @@ test['db wrapper'] = {
 
     inst.builder.adapter.disconnected.must.eql(456)
   },
+
+  models: {
+    'model not found': function *() {
+      const inst = new this.Wrapper(
+        this.App, 'test', this.App.logger, 'type1', {
+          dummy: true
+        }
+      )
+
+      yield inst.init()
+
+      this.awaitAsync(
+        inst.model('unknown')
+      ).must.reject.with.error('File not found: db/type1/models/unknown')
+    },
+    'loads model': function *() {
+      const inst = new this.Wrapper(
+        this.App, 'test', this.App.logger, 'type1', {
+          dummy: true
+        }
+      )
+
+      yield inst.init()
+
+      const model = yield inst.model('Model1', {
+        table: 'abc'
+      })
+
+      model.must.eql([
+        123,
+        'Model1',
+        {
+          schema: 7,
+          table: 'abc'
+        }
+      ])
+    },
+  }
 }
