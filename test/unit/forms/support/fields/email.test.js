@@ -1,23 +1,13 @@
-
-
-const _ = require('lodash'),
-  co = require('co'),
-  path = require('path'),
-  Q = require('bluebird')
-
+const path = require('path')
 
 const test = require(path.join(process.cwd(), 'test', '_base'))(module)
-const waigo = global.waigo
-
-
 
 
 test['email field'] = {
   beforeEach: function *() {
     yield this.initApp()
 
-    const form = this.waigo.load('support/forms/form'),
-      field = this.waigo.load('support/forms/field')
+    const form = this.waigo.load('forms/support/form')
 
     this.form = yield form.create({
       fields: [
@@ -30,8 +20,8 @@ test['email field'] = {
   },
 
   'extends text field': function *() {
-    const EmailField = this.waigo.load('support/forms/fields/email'),
-      TextField = this.waigo.load('support/forms/fields/text')
+    const EmailField = this.waigo.load('forms/support/fields/email'),
+      TextField = this.waigo.load('forms/support/fields/text')
 
     this.form.fields.field1.must.be.instanceof(EmailField)
     this.form.fields.field1.must.be.instanceof(TextField)
@@ -43,12 +33,9 @@ test['email field'] = {
     try {
       yield field.setSanitizedValue('test')
       yield field.validate()
-      throw -1
+      throw new Error()
     } catch (err) {
       expect(err.details).to.eql(['Must be an email address'])
     }
   },
 }
-
-
-
