@@ -26,7 +26,7 @@ test['isLength'] = {
     })
 
     yield fn(null, null, 5)
-    yield this.shouldThrow(fn(null, null, 4), 'Must be greater than or equal to 5')
+    yield this.must.Throw(fn(null, null, 4), 'Must be greater than or equal to 5')
   },
 
   'too big': function *() {
@@ -35,7 +35,7 @@ test['isLength'] = {
     })
 
     yield fn(null, null, 3)
-    yield this.shouldThrow(fn(null, null, 4), 'Must be less than or equal to 3')
+    yield this.must.Throw(fn(null, null, 4), 'Must be less than or equal to 3')
   },
 
 
@@ -48,7 +48,7 @@ test['isLength'] = {
     yield fn(null, null, 1)
     yield fn(null, null, 2)
     yield fn(null, null, 3)
-    yield this.shouldThrow(fn(null, null, 4), 'Must be between 1 and 3 inclusive')
+    yield this.must.Throw(fn(null, null, 4), 'Must be between 1 and 3 inclusive')
   },
 
 
@@ -59,7 +59,7 @@ test['isLength'] = {
     })
 
     yield fn(null, null, 2)
-    yield this.shouldThrow(fn(null, null, 4), 'Must be between 1 and 3 inclusive')
+    yield this.must.Throw(fn(null, null, 4), 'Must be between 1 and 3 inclusive')
   },
 
 

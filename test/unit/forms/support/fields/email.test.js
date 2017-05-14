@@ -33,8 +33,8 @@ test['email field'] = {
     const EmailField = this.waigo.load('support/forms/fields/email'),
       TextField = this.waigo.load('support/forms/fields/text')
 
-    this.form.fields.field1.should.be.instanceof(EmailField)
-    this.form.fields.field1.should.be.instanceof(TextField)
+    this.form.fields.field1.must..be.instanceof(EmailField)
+    this.form.fields.field1.must..be.instanceof(TextField)
   },
 
   'auto-adds email validator': function *() {

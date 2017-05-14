@@ -38,8 +38,8 @@ test['select'] = {
     const SelectField = this.waigo.load('support/forms/fields/select'),
       Field = this.waigo.load('support/forms/field').Field
 
-    this.field.should.be.instanceof(SelectField)
-    this.field.should.be.instanceof(Field)
+    this.field.must..be.instanceof(SelectField)
+    this.field.must..be.instanceof(Field)
   },
 
   'has options': {
@@ -49,7 +49,7 @@ test['select'] = {
         key2: 'label2',        
       }
 
-      (yield this.field.getOptions()).should.eql({
+      (yield this.field.getOptions()).must..eql({
         key1: 'label1',
         key2: 'label2',        
       })
@@ -59,7 +59,7 @@ test['select'] = {
         return 234
       }
 
-      (yield this.field.getOptions()).should.eql(234)      
+      (yield this.field.getOptions()).must..eql(234)      
     },
   },
 
@@ -68,7 +68,7 @@ test['select'] = {
 
     this.mocker.stub(this.field, 'getOptions').returns(Q.resolve(123))
 
-    (yield toViewObjectYieldable(this.field)).options.should.eql(123)
+    (yield toViewObjectYieldable(this.field)).options.must..eql(123)
   },
 
   'validate': {

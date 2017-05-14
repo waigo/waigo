@@ -33,7 +33,7 @@ test['isEmailAddress'] = {
     } catch (err) {
       /* nothing */
     } finally {
-      this.spy.should.have.been.calledWithExactly('test')
+      this.spy.must..have.been.calledWithExactly('test')
     }
   },
 
@@ -41,7 +41,7 @@ test['isEmailAddress'] = {
     const fn = validator()
     validationResult = false
 
-    yield this.shouldThrow(fn(null, null, 'test'), 'Must be an email address')
+    yield this.must.Throw(fn(null, null, 'test'), 'Must be an email address')
   },
 
   'pass': function *() {

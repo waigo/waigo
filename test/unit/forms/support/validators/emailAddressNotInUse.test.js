@@ -48,7 +48,7 @@ test['emailAddressNotInUse'] = {
       email: 'test@test.com',
     })
 
-    yield this.shouldThrow(fn(this.ctx, null, 'test@test.com'), 'Email already in use')
+    yield this.must.Throw(fn(this.ctx, null, 'test@test.com'), 'Email already in use')
   },
 
 }

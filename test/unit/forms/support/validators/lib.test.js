@@ -35,8 +35,8 @@ test['lib'] = {
       args: [3, 4],
     })
 
-    yield this.shouldThrow(fn(null, null, 'ab'), 'Validation failed: isLength')
-    yield this.shouldThrow(fn(null, null, 'abcde'), 'Validation failed: isLength')
+    yield this.must.Throw(fn(null, null, 'ab'), 'Validation failed: isLength')
+    yield this.must.Throw(fn(null, null, 'abcde'), 'Validation failed: isLength')
     yield fn(null, null, 'abcd')
     yield fn(null, null, 'abc')
   },

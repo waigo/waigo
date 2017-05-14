@@ -31,7 +31,7 @@ test['isLength'] = {
       min: 5
     })
 
-    yield this.shouldThrow(fn(null, null, 'test'), 'Must be between 5 and 10000000 characters')
+    yield this.must.Throw(fn(null, null, 'test'), 'Must be between 5 and 10000000 characters')
     yield fn(null, null, 'teste')
   },
 
@@ -40,7 +40,7 @@ test['isLength'] = {
       max: 3
     })
 
-    yield this.shouldThrow(fn(null, null, 'test'), 'Must be between 0 and 3 characters')
+    yield this.must.Throw(fn(null, null, 'test'), 'Must be between 0 and 3 characters')
     yield fn(null, null, 'tes')
   },
 

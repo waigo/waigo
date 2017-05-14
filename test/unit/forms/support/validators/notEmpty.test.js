@@ -23,17 +23,17 @@ test['notEmpty'] = {
   'null': function *() {
     const fn = validator()
 
-    yield this.shouldThrow(fn(null, null, null), 'Must not be empty')
+    yield this.must.Throw(fn(null, null, null), 'Must not be empty')
   },
   'undefined': function *() {
     const fn = validator()
 
-    yield this.shouldThrow(fn(null, null, undefined), 'Must not be empty')
+    yield this.must.Throw(fn(null, null, undefined), 'Must not be empty')
   },
   'empty string': function *() {
     const fn = validator()
 
-    yield this.shouldThrow(fn(null, null, ''), 'Must not be empty')
+    yield this.must.Throw(fn(null, null, ''), 'Must not be empty')
   },
   'non-empty string': function *() {
     const fn = validator()

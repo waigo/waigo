@@ -1,13 +1,6 @@
-
-
-const _ = require('lodash'),
-  co = require('co'),
-  path = require('path'),
-  Q = require('bluebird')
-
+const path = require('path')
 
 const test = require(path.join(process.cwd(), 'test', '_base'))(module)
-const waigo = global.waigo
 
 
 
@@ -15,8 +8,9 @@ test['number'] = {
   beforeEach: function *() {
     yield this.initApp()
 
-    const form = this.waigo.load('support/forms/form'),
-      field = this.waigo.load('support/forms/field')
+    const form = this.waigo.load('forms/support/form')
+
+    this.field = this.waigo.load('forms/support/field')
 
     this.form = yield form.create({
       fields: [
@@ -31,76 +25,76 @@ test['number'] = {
   },
 
   'extends text field': function *() {
-    const CheckboxField = this.waigo.load('support/forms/fields/checkbox'),
-      Field = this.waigo.load('support/forms/field').Field
+    const CheckboxField = this.waigo.load('forms/support/fields/checkbox'),
+      Field = this.waigo.load('forms/support/field').Field
 
-    this.field.should.be.instanceof(CheckboxField)
-    this.field.should.be.instanceof(Field)
+    this.field.must.be.instanceof(CheckboxField)
+    this.field.must.be.instanceof(Field)
   },
 
   'view object': function *() {
-    const toViewObjectYieldable = this.waigo.load('support/viewObjects').toViewObjectYieldable
+    const toViewObjectYieldable = this.waigo.load('viewObjects').toViewObjectYieldable
 
-    (yield toViewObjectYieldable(this.field)).type.should.eql('checkbox')
+    const vo = yield toViewObjectYieldable(this.field)
+
+    vo.type.must.eql('checkbox')
   },
 
   'sanitize': {
     'boolean - false': function *() {
       yield this.field.setSanitizedValue(false)
 
-      this.field.value.should.eql(false)
+      this.field.value.must.eql(false)
     },
     'boolean - true': function *() {
       yield this.field.setSanitizedValue(true)
 
-      this.field.value.should.eql(true)
+      this.field.value.must.eql(true)
     },
     'number - 0': function *() {
       yield this.field.setSanitizedValue(0)
 
-      this.field.value.should.eql(false)
+      this.field.value.must.eql(false)
     },
     'number - 1': function *() {
       yield this.field.setSanitizedValue(1)
 
-      this.field.value.should.eql(true)
+      this.field.value.must.eql(true)
     },
     'string - false': function *() {
       yield this.field.setSanitizedValue('false')
 
-      this.field.value.should.eql(false)
+      this.field.value.must.eql(false)
     },
     'string - true': function *() {
       yield this.field.setSanitizedValue('true')
 
-      this.field.value.should.eql(true)
+      this.field.value.must.eql(true)
     },
     'string - 0': function *() {
       yield this.field.setSanitizedValue('0')
 
-      this.field.value.should.eql(false)
+      this.field.value.must.eql(false)
     },
     'string - 1': function *() {
       yield this.field.setSanitizedValue('1')
 
-      this.field.value.should.eql(true)
+      this.field.value.must.eql(true)
     },
     'string - no': function *() {
       yield this.field.setSanitizedValue('no')
 
-      this.field.value.should.eql(true)
+      this.field.value.must.eql(true)
     },
     'string - yes': function *() {
       yield this.field.setSanitizedValue('yes')
 
-      this.field.value.should.eql(true)
+      this.field.value.must.eql(true)
     },
     'empty string': function *() {
       yield this.field.setSanitizedValue('')
 
-      this.field.value.should.eql(false)      
+      this.field.value.must.eql(false)
     }
   },
 }
-
-

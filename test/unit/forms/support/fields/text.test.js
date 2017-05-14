@@ -14,7 +14,7 @@ const waigo = global.waigo
 test['text field'] = function *() {
   yield this.initApp()
 
-  this.waigo.load('support/forms/fields/text').should.eql(
+  this.waigo.load('support/forms/fields/text').must..eql(
     this.waigo.load('support/forms/field').Field
   )
 }

@@ -34,8 +34,8 @@ test['csrf'] = {
     const CsrfField = this.waigo.load('support/forms/fields/csrf'),
       HiddenField = this.waigo.load('support/forms/fields/hidden')
 
-    this.field.should.be.instanceof(CsrfField)
-    this.field.should.be.instanceof(HiddenField)
+    this.field.must..be.instanceof(CsrfField)
+    this.field.must..be.instanceof(HiddenField)
   },
 
   'view object': function *() {
@@ -45,7 +45,7 @@ test['csrf'] = {
 
     (yield toViewObjectYieldable(this.field, {
       csrf: 'blah',
-    })).value.should.eql('blah')
+    })).value.must..eql('blah')
   },
 
   'validate': {
