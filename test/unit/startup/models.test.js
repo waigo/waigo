@@ -17,13 +17,13 @@ const _ = require('lodash'),
     yield this.clearDb()yield this.shutdownApp()},
 
   'loads models': function *() {
-    yield this.setup(this.App)this.App.models.Dummy.should.be.defined},
+    yield this.setup(this.App)this.App.models.Dummy.must.be.defined},
 
   'model methods': function *() {
-    yield this.setup(this.App)this.App.models.Dummy._App().should.eql(this.App)this.App.models.Dummy._logger().info.should.be.a.Function},
+    yield this.setup(this.App)this.App.models.Dummy._App().must.eql(this.App)this.App.models.Dummy._logger().info.must.be.a.Function},
 
   'doc methods': function *() {
-    yield this.setup(this.App)let doc = yield this.App.models.Dummy.insert({ name: 'James' })doc._App().should.eql(this.App)doc._logger().info.should.be.a.Functionlet vo = 
-      yield waigo.load('support/viewObjects').toViewObjectYieldable(doc)vo.id.should.be.definedvo.name.should.eql('James')},
+    yield this.setup(this.App)let doc = yield this.App.models.Dummy.insert({ name: 'James' })doc._App().must.eql(this.App)doc._logger().info.must.be.a.Functionlet vo = 
+      yield waigo.load('support/viewObjects').toViewObjectYieldable(doc)vo.id.must.be.definedvo.name.must.eql('James')},
 
 }

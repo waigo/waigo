@@ -21,6 +21,6 @@ const _ = require('lodash'),
     }let count = 0let next = function *() {
       count++}
 
-    yield middleware().call(ctx, next)this.expect(ctx.assertCSRF).to.be.definedthis.expect(ctx.request.assertCSRF).to.be.definedcount.should.eql(1)},
+    yield middleware().call(ctx, next)this.expect(ctx.assertCSRF).to.be.definedthis.expect(ctx.request.assertCSRF).to.be.definedcount.must.eql(1)},
 
 }

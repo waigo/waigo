@@ -29,6 +29,6 @@ const _ = require('lodash'),
     }let count = 0let next = function *() {
       count++}
 
-    yield middleware().call(ctx, next)this.expect(_.get(ctx, 'templateVars.currentUser', '')).to.eql(2)this.expect(_.get(ctx, 'templateVars.currentUrl', '')).to.eql(53)this.expect(ctx.logger).to.eql(1)this.expect(ctx.acl).to.eql(3)this.expect(ctx.models).to.eql(4)this.expect(ctx.form).to.eql(5)count.should.eql(1)},
+    yield middleware().call(ctx, next)this.expect(_.get(ctx, 'templateVars.currentUser', '')).to.eql(2)this.expect(_.get(ctx, 'templateVars.currentUrl', '')).to.eql(53)this.expect(ctx.logger).to.eql(1)this.expect(ctx.acl).to.eql(3)this.expect(ctx.models).to.eql(4)this.expect(ctx.form).to.eql(5)count.must.eql(1)},
 
 }

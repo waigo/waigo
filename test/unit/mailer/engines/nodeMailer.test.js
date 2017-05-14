@@ -24,14 +24,14 @@ const _ = require('lodash'),
       replyTo: 'abcd@waigojs.com',
       from: 'admin@waigojs.com',
       text: 'hello1',
-    })_.get(this.mailer._send.args, '0.0.replyTo', '').should.eql('admin@waigojs.com')_.get(this.mailer._send.args, '1.0.replyTo', '').should.eql('abcd@waigojs.com')},
+    })_.get(this.mailer._send.args, '0.0.replyTo', '').must.eql('admin@waigojs.com')_.get(this.mailer._send.args, '1.0.replyTo', '').must.eql('abcd@waigojs.com')},
 
   'only html': function *() {
     yield this.mailer.send({
       to: 'test@waigojs.com',
       from: 'admin@waigojs.com',
       html: 'hello1',
-    })_.get(this.mailer._send.args, '0.0.html', '').should.eql('hello1')_.get(this.mailer._send.args, '0.0.text', 'nf').should.eql('nf')},
+    })_.get(this.mailer._send.args, '0.0.html', '').must.eql('hello1')_.get(this.mailer._send.args, '0.0.text', 'nf').must.eql('nf')},
 
   'text and html': function *() {
     yield this.mailer.send({
@@ -39,5 +39,5 @@ const _ = require('lodash'),
       from: 'admin@waigojs.com',
       text: 'text2',
       html: 'hello1',
-    })_.get(this.mailer._send.args, '0.0.html', '').should.eql('hello1')_.get(this.mailer._send.args, '0.0.text', '').should.eql('text2')},
+    })_.get(this.mailer._send.args, '0.0.html', '').must.eql('hello1')_.get(this.mailer._send.args, '0.0.text', '').must.eql('text2')},
 }

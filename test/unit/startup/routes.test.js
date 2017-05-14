@@ -21,6 +21,6 @@ const _ = require('lodash'),
 
   'loads routes': function *() {
     yield this.setup(this.App)let routesToLoad = _.reduce(waigo.getItemsInFolder('routes'), (soFar, n) => {
-      return _.merge(soFar, waigo.load(n))}, {})_.get(this.App, 'routes.2').should.eql(routesToLoad)_.get(this.App, 'routes.1').should.eql({ dummy: true })_.get(this.App, 'routes.0').should.eql(this.App)},
+      return _.merge(soFar, waigo.load(n))}, {})_.get(this.App, 'routes.2').must.eql(routesToLoad)_.get(this.App, 'routes.1').must.eql({ dummy: true })_.get(this.App, 'routes.0').must.eql(this.App)},
 
 }

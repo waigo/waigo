@@ -33,6 +33,6 @@ const _ = require('lodash'),
       admins2: {
         transports: [{ type: 'test3'}]
       },
-    }yield this.setup(this.App)this.App.emit('notify', 'admins', 'test')this.App.emit('notify', 'admins2', 'test2')this.App.count1.should.eql['test']this.App.count2.should.eql['test']this.App.count3.should.eql['test2']},
+    }yield this.setup(this.App)this.App.emit('notify', 'admins', 'test')this.App.emit('notify', 'admins2', 'test2')this.App.count1.must.eql['test']this.App.count2.must.eql['test']this.App.count3.must.eql['test2']},
 
 }

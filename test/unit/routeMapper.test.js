@@ -38,11 +38,11 @@ const _ = require('lodash'),
         },
       })this.ctx.mega = []},
     'test - basic': function *() {
-      this.ctx.request.url = '/'this.ctx.request.method = 'GET'yield this.App.koa.router.call(this.ctx, noop)this.ctx.mega.should.eql(['hello world'])},
+      this.ctx.request.url = '/'this.ctx.request.method = 'GET'yield this.App.koa.router.call(this.ctx, noop)this.ctx.mega.must.eql(['hello world'])},
     'test - same url, different method': function *() {
-      this.ctx.request.url = '/'this.ctx.request.method = 'POST'yield this.App.koa.router.call(this.ctx, noop)this.ctx.mega.should.eql(['goodbye'])},
+      this.ctx.request.url = '/'this.ctx.request.method = 'POST'yield this.App.koa.router.call(this.ctx, noop)this.ctx.mega.must.eql(['goodbye'])},
     'test - different url': function *() {
-      this.ctx.request.url = '/blah'this.ctx.request.method = 'PUT'yield this.App.koa.router.call(this.ctx, noop)this.ctx.mega.should.eql(['hello world'])},
+      this.ctx.request.url = '/blah'this.ctx.request.method = 'PUT'yield this.App.koa.router.call(this.ctx, noop)this.ctx.mega.must.eql(['hello world'])},
     /*TODO: FIX 'test - bad url': function *() {
       this.ctx.request.url = '/ark'this.ctx.request.method = 'GET'yield this.App.koa.router.call(this.ctx, noop)},*/
     'test - bad method': function *() {
@@ -64,13 +64,13 @@ const _ = require('lodash'),
       })this.ctx.mega = []},
 
     'pre': function *() {
-      this.ctx.request.url = '/parent'this.ctx.request.method = 'GET'yield this.App.koa.router.call(this.ctx, noop)this.ctx.mega.should.eql(['test', 'hello world'])},
+      this.ctx.request.url = '/parent'this.ctx.request.method = 'GET'yield this.App.koa.router.call(this.ctx, noop)this.ctx.mega.must.eql(['test', 'hello world'])},
 
     'non-pre': function *() {
-      this.ctx.request.url = '/parent'this.ctx.request.method = 'POST'yield this.App.koa.router.call(this.ctx, noop)this.ctx.mega.should.eql(['test','test','goodbye'])},
+      this.ctx.request.url = '/parent'this.ctx.request.method = 'POST'yield this.App.koa.router.call(this.ctx, noop)this.ctx.mega.must.eql(['test','test','goodbye'])},
 
     'child': function *() {
-      this.ctx.request.url = '/parent/child'this.ctx.request.method = 'GET'yield this.App.koa.router.call(this.ctx, noop)this.ctx.mega.should.eql(['test','hello world','test_123'])},  
+      this.ctx.request.url = '/parent/child'this.ctx.request.method = 'GET'yield this.App.koa.router.call(this.ctx, noop)this.ctx.mega.must.eql(['test','hello world','test_123'])},  
   },
 
 
@@ -98,7 +98,7 @@ const _ = require('lodash'),
       })this.ctx.mega = []},
 
     'default': function *() {
-      this.ctx.request.url = '/parent'this.ctx.request.method = 'POST'yield this.App.koa.router.call(this.ctx, noop)this.ctx.mega.should.eql(['test', 'goodbye', 'test_111', 'test_999'])},
+      this.ctx.request.url = '/parent'this.ctx.request.method = 'POST'yield this.App.koa.router.call(this.ctx, noop)this.ctx.mega.must.eql(['test', 'goodbye', 'test_111', 'test_999'])},
   },
 
 
@@ -126,7 +126,7 @@ const _ = require('lodash'),
       })this.ctx.mega = []},
 
     'default': function *() {
-      this.ctx.request.url = '/parent'this.ctx.request.method = 'POST'yield this.App.koa.router.call(this.ctx, noop)this.ctx.mega.should.eql(['test', 'goodbye', 'test_111', 'test_999'])},
+      this.ctx.request.url = '/parent'this.ctx.request.method = 'POST'yield this.App.koa.router.call(this.ctx, noop)this.ctx.mega.must.eql(['test', 'goodbye', 'test_111', 'test_999'])},
   },
 
 
@@ -139,7 +139,7 @@ const _ = require('lodash'),
       })this.ctx.mega = []},
 
     'default': function *() {
-      this.ctx.request.url = '/parent'this.ctx.request.method = 'POST'yield this.App.koa.router.call(this.ctx, noop)this.ctx.mega.should.eql(['hello world'])},
+      this.ctx.request.url = '/parent'this.ctx.request.method = 'POST'yield this.App.koa.router.call(this.ctx, noop)this.ctx.mega.must.eql(['hello world'])},
   },
 
 
@@ -182,7 +182,7 @@ const _ = require('lodash'),
         name: 'john',
         age: 23,
         state: 'CO',
-      })url.should.eql('/bar/john/23')},
+      })url.must.eql('/bar/john/23')},
 
     'query': function *() {
       let url = this.mapper.url('test', {
@@ -192,7 +192,7 @@ const _ = require('lodash'),
       }, {
         master: 'blaster',
         hood: 'wink'
-      })url.should.eql('/bar/john/23?hood=wink&master=blaster')},
+      })url.must.eql('/bar/john/23?hood=wink&master=blaster')},
 
     'absolute url': function *() {
       this.App.config.baseURL = 'http://waigojs.com'let url = this.mapper.url('test2', {
@@ -204,6 +204,6 @@ const _ = require('lodash'),
         hood: 'wink'
       }, {
         absolute: true,
-      })url.should.eql('http://waigojs.com/pub?hood=wink&master=blaster')},
+      })url.must.eql('http://waigojs.com/pub?hood=wink&master=blaster')},
   },
 }

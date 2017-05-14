@@ -22,6 +22,6 @@ const _ = require('lodash'),
     var closed = 0this.App.server = {
       close: function (cb) {
         closed += 1cb()}
-    }yield this.step.call(this.step, this.App)closed.should.eql(1)}
+    }yield this.step.call(this.step, this.App)closed.must.eql(1)}
 
 }

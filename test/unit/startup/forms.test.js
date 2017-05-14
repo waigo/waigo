@@ -13,5 +13,5 @@ const _ = require('lodash'),
   afterEach: function *() {
     yield this.shutdownApp()},
   'sets form accessor': function *() {
-    yield this.setup(this.App)this.App.form.should.eql(waigo.load('support/forms/form'))},
+    yield this.setup(this.App)this.App.form.must.eql(waigo.load('support/forms/form'))},
 }

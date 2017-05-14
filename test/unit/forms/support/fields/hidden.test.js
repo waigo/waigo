@@ -34,14 +34,14 @@ test['hidden'] = {
     const HiddenField = this.waigo.load('support/forms/fields/hidden'),
       Field = this.waigo.load('support/forms/fields/text')
 
-    this.field.must..be.instanceof(HiddenField)
-    this.field.must..be.instanceof(Field)
+    this.field.must.be.instanceof(HiddenField)
+    this.field.must.be.instanceof(Field)
   },
 
   'view object': function *() {
     const toViewObjectYieldable = this.waigo.load('support/viewObjects').toViewObjectYieldable
 
-    (yield toViewObjectYieldable(this.field)).type.must..eql('hidden')
+    (yield toViewObjectYieldable(this.field)).type.must.eql('hidden')
   },
 }
 

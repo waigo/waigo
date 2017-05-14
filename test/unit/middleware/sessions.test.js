@@ -41,5 +41,5 @@ const _ = require('lodash'),
         validForDays: 3,
         path: '/blah'
       }
-    }var fn = middleware(this.App, options)this.App.koa.keys.should.eql(['my', 'key'])createStoreSpy.should.have.been.calledOncecreateStoreSpy.should.have.been.calledWithExactly(this.App, {hello: 'world'})}
+    }var fn = middleware(this.App, options)this.App.koa.keys.must.eql(['my', 'key'])createStoreSpy.must.have.been.calledOncecreateStoreSpy.must.have.been.calledWithExactly(this.App, {hello: 'world'})}
 }

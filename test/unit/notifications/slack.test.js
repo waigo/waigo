@@ -21,7 +21,7 @@ const _ = require('lodash'),
   'sets webhook url': function *() {
     let fn = yield notifier(this.App, 'test', {
       url: '/test'
-    })this.urlSpy.should.have.been.calledWithExactly('/test')},
+    })this.urlSpy.must.have.been.calledWithExactly('/test')},
 
   'error sending to slack': function *() {
     this.webhookSpyResult = new Error('errorblah')let fn = yield notifier(this.App, 'test', {
@@ -29,7 +29,7 @@ const _ = require('lodash'),
       channel: 'ch1',
       username: 'user1',
       icon_emoji: 'emoji1',
-    })yield this.shouldThrow(fn('msg'), 'errorblah')this.webhookSpy.should.have.been.calledWith({
+    })yield this.shouldThrow(fn('msg'), 'errorblah')this.webhookSpy.must.have.been.calledWith({
       channel: 'ch1',
       username: 'user1',
       icon_emoji: 'emoji1',
@@ -39,12 +39,12 @@ const _ = require('lodash'),
   'string': function *() {
     let fn = yield notifier(this.App, 'test', {
       url: '/test',
-    })yield fn('msg')_.get(this.webhookSpy.getCall(0), 'args.0.text', '').should.eql('msg')},
+    })yield fn('msg')_.get(this.webhookSpy.getCall(0), 'args.0.text', '').must.eql('msg')},
 
   'object': function *() {
     let fn = yield notifier(this.App, 'test', {
       url: '/test',
-    })let data = { dummy: true, abc: 123 }yield fn(data)_.get(this.webhookSpy.getCall(0), 'args.0.text', '').should.eql(
+    })let data = { dummy: true, abc: 123 }yield fn(data)_.get(this.webhookSpy.getCall(0), 'args.0.text', '').must.eql(
       JSON.stringify(data)
     )},
 }

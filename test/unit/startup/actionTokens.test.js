@@ -18,5 +18,5 @@ const _ = require('lodash'),
   afterEach: function *() {
     yield this.shutdownApp()},
   'init action tokens': function *() {
-    yield this.setup(this.App)this.App.actionTokens.should.eql([this.App, { dummy: true }, 1])},
+    yield this.setup(this.App)this.App.actionTokens.must.eql([this.App, { dummy: true }, 1])},
 }

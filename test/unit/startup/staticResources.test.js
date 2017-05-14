@@ -51,12 +51,12 @@ const _ = require('lodash'),
       fs.writeFileSync(path.join(this.publicFolder, 'test.js'), 'test')yield this.setup(this.App)},
 
     'app': function *() {
-      this.App.staticUrl('test.js').should.eql('/test.js')},
+      this.App.staticUrl('test.js').must.eql('/test.js')},
 
     'plugin': function *() {
-      this.App.staticUrl('waigo_TESTPLUGIN:js/app.js').should.eql('/_gen/waigo_TESTPLUGIN/js/app.js')},
+      this.App.staticUrl('waigo_TESTPLUGIN:js/app.js').must.eql('/_gen/waigo_TESTPLUGIN/js/app.js')},
 
     'waigo': function *() {
-      this.App.staticUrl('waigo:js/app.js').should.eql('/_gen/waigo/js/app.js')},
+      this.App.staticUrl('waigo:js/app.js').must.eql('/_gen/waigo/js/app.js')},
   }
 }

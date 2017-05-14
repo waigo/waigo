@@ -25,11 +25,11 @@ const _ = require('lodash'),
   'check if can access': function *() {
     let spy = this.mocker.spy(() => Q.resolve())this.ctx.currentUser = {
       assertAccess: spy,
-    }yield assertUser(this.App, {canAccess: 'admin'}).call(this.ctx, Q.resolve())spy.should.have.been.calledWithExactly('admin')},
+    }yield assertUser(this.App, {canAccess: 'admin'}).call(this.ctx, Q.resolve())spy.must.have.been.calledWithExactly('admin')},
 
   'calls next if ok': function *() {
     let count = 0this.ctx.currentUser = {}yield assertUser(this.App, {}).call(this.ctx, function *() {
-      count++})count.should.eql(1)},
+      count++})count.must.eql(1)},
 
   'fail - redirect': function *() {
     _.extend(this.ctx, {
@@ -44,10 +44,10 @@ const _ = require('lodash'),
     })let routeSpy = this.mocker.spy(this.App.routes, 'url')yield assertUser(this.App, { 
       redirectToLogin: true, 
       canAccess: 'admin' 
-    }).call(this.ctx)routeSpy.should.have.been.calledWithExactly('user_login', null, {
+    }).call(this.ctx)routeSpy.must.have.been.calledWithExactly('user_login', null, {
       r: 'blah',
       u: 'test2',
-    })this.ctx.redirect.should.have.been.calledWithExactly(
+    })this.ctx.redirect.must.have.been.calledWithExactly(
       routeSpy.getCall(0).returnValue
     )},
 

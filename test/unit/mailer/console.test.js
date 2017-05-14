@@ -33,9 +33,9 @@ const _ = require('lodash'),
     yield this.clearDb()yield this.shutdownApp()},
 
   'app.mailer instance': function *() {
-    this.App.mailer.should.be.instanceof(this.Console)this.App.mailer.should.be.instanceof(this.Base)},
+    this.App.mailer.must.be.instanceof(this.Console)this.App.mailer.must.be.instanceof(this.Base)},
 
   'send calls to base class': function *() {
-    let spy = this.mocker.stub(this.App.mailer, '_send', () => Q.resolve())yield this.App.mailer.send(123)spy.should.have.been.calledWith(123)},
+    let spy = this.mocker.stub(this.App.mailer, '_send', () => Q.resolve())yield this.App.mailer.send(123)spy.must.have.been.calledWith(123)},
 
 }

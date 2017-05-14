@@ -16,7 +16,7 @@ const _ = require('lodash'),
     yield this.shutdownApp()},
 
   'default': function *() {
-    yield this._init()yield this.setup(this.App)this.App.cron.notifyAdminsAboutUserStats.should.be.defined},
+    yield this._init()yield this.setup(this.App)this.App.cron.notifyAdminsAboutUserStats.must.be.defined},
 
   'custom': {
     beforeEach: function *() {
@@ -25,8 +25,8 @@ const _ = require('lodash'),
       })yield this._init()this.App.count = 0},
 
     'view object': function *() {
-      yield this.setup(this.App)this.App.cron.test.should.be.definedlet viewObject = 
-        yield waigo.load('support/viewObjects').toViewObjectYieldable(this.App.cron.test)viewObject.id.should.eql('test')viewObject.disabled.should.be.falseviewObject.lastRun.should.eql('never')viewObject.schedule.should.eql('* * * * * *')this.expect(60 >= moment().diff(viewObject.nextRun, 'seconds')).to.be.true},
+      yield this.setup(this.App)this.App.cron.test.must.be.definedlet viewObject = 
+        yield waigo.load('support/viewObjects').toViewObjectYieldable(this.App.cron.test)viewObject.id.must.eql('test')viewObject.disabled.must.be.falseviewObject.lastRun.must.eql('never')viewObject.schedule.must.eql('* * * * * *')this.expect(60 >= moment().diff(viewObject.nextRun, 'seconds')).to.be.true},
   },
 
 }

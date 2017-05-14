@@ -22,5 +22,5 @@ const _ = require('lodash'),
   afterEach: function *() {
     yield this.shutdownApp()},
   'stops cron job': function *() {
-    yield this.shutdownStep(this.App)this.App.count.should.eql(2)}    
+    yield this.shutdownStep(this.App)this.App.count.must.eql(2)}    
 }

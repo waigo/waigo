@@ -17,5 +17,5 @@ const _ = require('lodash'),
   'init action tokens': function *() {
     yield this.setup(this.App)this.App.emit('record', 'test', this.user, {
       dummy: true
-    })yield Q.delay(10)let activities = yield this.App.models.Activity.rawQry().run()_.get(activities, '0.verb').should.eql('test')_.get(activities, '0.details').should.eql({dummy: true})},
+    })yield Q.delay(10)let activities = yield this.App.models.Activity.rawQry().run()_.get(activities, '0.verb').must.eql('test')_.get(activities, '0.details').must.eql({dummy: true})},
 }

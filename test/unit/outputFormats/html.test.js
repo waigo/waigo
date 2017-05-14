@@ -26,7 +26,7 @@ const _ = require('lodash'),
     yield this.shutdownApp()},
 
   'returns rendering middleware': function *() {
-    var obj = html.create(this.App.logger, config)_.isGenFn(obj.render).should.be.true},
+    var obj = html.create(this.App.logger, config)_.isGenFn(obj.render).must.be.true},
 
   'rendering': {
     beforeEach: function *() {
@@ -74,6 +74,6 @@ const _ = require('lodash'),
       }},
     'redirects to url': function *() {
       var redirect = this.redirect, 
-        ctx = this.ctxyield redirect.call(ctx, 'test_params')ctx.response.redirect.should.have.been.calledOncectx.response.redirect.should.have.been.calledWithExactly('test_params')},
+        ctx = this.ctxyield redirect.call(ctx, 'test_params')ctx.response.redirect.must.have.been.calledOncectx.response.redirect.must.have.been.calledWithExactly('test_params')},
   },
 }

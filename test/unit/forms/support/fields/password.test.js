@@ -14,7 +14,7 @@ const waigo = global.waigo
 test['password field'] = function *() {
   yield this.initApp()
 
-  this.waigo.load('support/forms/fields/password').must..eql(
+  this.waigo.load('support/forms/fields/password').must.eql(
     this.waigo.load('support/forms/field').Field
   )
 }

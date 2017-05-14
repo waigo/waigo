@@ -20,7 +20,7 @@ const _ = require('lodash'),
     }let count = 0let next = function *() {
       count++}
 
-    yield middleware().call(ctx, next)this.expect(ctx.currentUser).to.not.be.definedcount.should.eql(1)},
+    yield middleware().call(ctx, next)this.expect(ctx.currentUser).to.not.be.definedcount.must.eql(1)},
 
   'has user': function *() {
     let user = yield this.App.models.User.register({
@@ -35,5 +35,5 @@ const _ = require('lodash'),
     }let count = 0let next = function *() {
       count++}
 
-    yield middleware().call(ctx, next)this.expect(ctx.currentUser).to.be.definedctx.currentUser.toJSON().should.eql(user.toJSON())count.should.eql(1)},
+    yield middleware().call(ctx, next)this.expect(ctx.currentUser).to.be.definedctx.currentUser.toJSON().must.eql(user.toJSON())count.must.eql(1)},
 }

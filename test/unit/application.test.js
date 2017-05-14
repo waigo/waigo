@@ -4,14 +4,14 @@ const _ = require('lodash'),
   co = require('co'),
   path = require('path'),
   Q = require('bluebird')const test = require(path.join(process.cwd(), 'test', '_base'))(module)const waigo = global.waigotest['exports koa app'] = function *() {
-  yield this.initApp()this.App.koa.should.be.instanceof(require('koa'))}test['load config'] = {
+  yield this.initApp()this.App.koa.must.be.instanceof(require('koa'))}test['load config'] = {
   beforeEach: function *() {
     this.createAppModules({
       'config/index': 'module.exports = function () { return { done: 1 }}',
     })yield this.initApp()},
 
   'loads config': function *() {
-    yield this.App._loadConfig()this.App.config.should.eql({
+    yield this.App._loadConfig()this.App.config.must.eql({
       done: 1
     })},
 
@@ -19,7 +19,7 @@ const _ = require('lodash'),
     yield this.App._loadConfig({
       postConfig: function (cfg) {
         cfg.again = 2}
-    })this.App.config.should.eql({
+    })this.App.config.must.eql({
       done: 1,
       again: 2,
     })},
@@ -28,16 +28,16 @@ const _ = require('lodash'),
     yield this.initApp()},
 
   'sets App.logger': function *() {
-    let App = this.Appyield App._setupLogger({})App.logger.error.should.be.a.functionApp.logger.warn.should.be.a.functionApp.logger.info.should.be.a.functionApp.logger.debug.should.be.a.functionApp.logger.trace.should.be.a.function},
+    let App = this.Appyield App._setupLogger({})App.logger.error.must.be.a.functionApp.logger.warn.must.be.a.functionApp.logger.info.must.be.a.functionApp.logger.debug.must.be.a.functionApp.logger.trace.must.be.a.function},
 
   'error handler': function *() {
-    let App = this.Appyield App._setupLogger({})let spy = this.mocker.stub(App.logger, 'error')let err = { stack: 'abc' }App._onError(err)spy.should.have.been.calledWith('abc')App._onError('another')spy.should.have.been.calledWith('another')},
+    let App = this.Appyield App._setupLogger({})let spy = this.mocker.stub(App.logger, 'error')let err = { stack: 'abc' }App._onError(err)spy.must.have.been.calledWith('abc')App._onError('another')spy.must.have.been.calledWith('another')},
 
   'on App "error" event': function *() {
-    let App = this.Appyield App._setupLogger({})let spy = this.mocker.stub(App.logger, 'error')let err = { stack: 'abc' }App.emit('error', err)spy.should.have.been.calledWith('abc')App.emit('error', 'another')spy.should.have.been.calledWith('another')},
+    let App = this.Appyield App._setupLogger({})let spy = this.mocker.stub(App.logger, 'error')let err = { stack: 'abc' }App.emit('error', err)spy.must.have.been.calledWith('abc')App.emit('error', 'another')spy.must.have.been.calledWith('another')},
 
   'on Koa "error" event': function *() {
-    let App = this.Appyield App._setupLogger({})let spy = this.mocker.stub(App.logger, 'error')let err = { stack: 'abc' }App.koa.emit('error', err)spy.should.have.been.calledWith('abc')App.koa.emit('error', 'another')spy.should.have.been.calledWith('another')}
+    let App = this.Appyield App._setupLogger({})let spy = this.mocker.stub(App.logger, 'error')let err = { stack: 'abc' }App.koa.emit('error', err)spy.must.have.been.calledWith('abc')App.koa.emit('error', 'another')spy.must.have.been.calledWith('another')}
 }test['startup'] = {
   beforeEach: function *() {    
     this.createAppModules({
@@ -62,22 +62,22 @@ const _ = require('lodash'),
       yield this.initApp()this.mocker.spy(this.App, '_loadConfig')this.mocker.spy(this.App, '_setupLogger')},
 
     'loads config': function *() {
-      yield this.App.start(this.startOptions)this.App._loadConfig.should.have.been.calledOncethis.App._loadConfig.should.have.been.calledWithExactly(this.startOptions)},
+      yield this.App.start(this.startOptions)this.App._loadConfig.must.have.been.calledOncethis.App._loadConfig.must.have.been.calledWithExactly(this.startOptions)},
 
     'sets up logger': function *() {
-      yield this.App.start(this.startOptions)this.App._setupLogger.should.have.been.calledOncethis.App._setupLogger.should.have.been.calledWithExactly({
+      yield this.App.start(this.startOptions)this.App._setupLogger.must.have.been.calledOncethis.App._setupLogger.must.have.been.calledWithExactly({
         category:"test",
         minLevel:"DEBUG",
         appenders:[]
       })},
 
     'runs startup steps': function *() {
-      yield this.App.start(this.startOptions)this.App.step1.should.eql(1)this.App.step2.should.eql(2)},
+      yield this.App.start(this.startOptions)this.App.step1.must.eql(1)this.App.step2.must.eql(2)},
 
     'application must not be started': function *() {
       yield this.App.start(this.startOptions)try {
         yield this.App.start(this.startOptions)throw -1} catch (err) {
-        err.message.should.eql('Application already started')}
+        err.message.must.eql('Application already started')}
     },
   },
 
@@ -93,7 +93,7 @@ const _ = require('lodash'),
     'throws error': function *() {
       try {
         yield this.App.start(this.startOptions)throw -1} catch (err) {
-        err.message.should.eql('fail98')}
+        err.message.must.eql('fail98')}
     },
   },
 }test['shutdown'] = {
@@ -117,7 +117,7 @@ const _ = require('lodash'),
   'application must be started': function *() {
     yield this.initApp()delete this.App.configtry {
       yield this.shutdownApp()throw -1} catch (err) {
-      err.message.should.eql('Application not started')}
+      err.message.must.eql('Application not started')}
   },
 
   'ok': {
@@ -125,10 +125,10 @@ const _ = require('lodash'),
       yield this.initApp()yield this.App.start(this.startOptions)},
 
     'runs steps': function *() {
-      let App = this.Appyield this.shutdownApp()App.step1.should.eql('shutdown1')App.step2.should.eql('shutdown2')},
+      let App = this.Appyield this.shutdownApp()App.step1.must.eql('shutdown1')App.step2.must.eql('shutdown2')},
 
     'resets koa app': function *() {
-      let koa = this.App.koayield this.shutdownApp()this.App.koa.should.not.eql(koa)},
+      let koa = this.App.koayield this.shutdownApp()this.App.koa.must.not.eql(koa)},
   },
 
   'fail': {
@@ -140,7 +140,7 @@ const _ = require('lodash'),
     'throws error': function *() {
       try {
         yield this.shutdownApp()throw -1} catch (err) {
-        err.message.should.eql('fail98')}
+        err.message.must.eql('fail98')}
     },
   },
 }

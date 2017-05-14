@@ -21,8 +21,8 @@ const _ = require('lodash'),
     yield this.shutdownApp()},
 
   'string': function *() {
-    let fn = yield notifier(this.App, 'test1')yield fn('dummydave')let logEvent = this.log.pop()_.get(logEvent, 'categoryName').should.eql('LogNotifier/test1')_.get(logEvent, 'data').should.eql(['dummydave'])},
+    let fn = yield notifier(this.App, 'test1')yield fn('dummydave')let logEvent = this.log.pop()_.get(logEvent, 'categoryName').must.eql('LogNotifier/test1')_.get(logEvent, 'data').must.eql(['dummydave'])},
 
   'object': function *() {
-    let fn = yield notifier(this.App, 'test1')let data = { test: 'dummydave', abc: 2 }yield fn(data)let logEvent = this.log.pop()_.get(logEvent, 'categoryName').should.eql('LogNotifier/test1')_.get(logEvent, 'data').should.eql([ JSON.stringify(data) ])},
+    let fn = yield notifier(this.App, 'test1')let data = { test: 'dummydave', abc: 2 }yield fn(data)let logEvent = this.log.pop()_.get(logEvent, 'categoryName').must.eql('LogNotifier/test1')_.get(logEvent, 'data').must.eql([ JSON.stringify(data) ])},
 }

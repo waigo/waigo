@@ -36,7 +36,7 @@ const _ = require('lodash'),
         json: true          
       }
     })let count = 0yield fn.call(ctx, function *() {
-      count++})count.should.eql(1)_.isGenFn(ctx.render).should.be.truethis.expect(ctx.request.outputFormat).to.eql('json')},
+      count++})count.must.eql(1)_.isGenFn(ctx.render).must.be.truethis.expect(ctx.request.outputFormat).to.eql('json')},
 
   'invalid format in request': function *() {
     var fn = outputFormats(this.App, {

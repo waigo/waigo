@@ -25,5 +25,5 @@ const _ = require('lodash'),
   afterEach: function *() {
     yield this.shutdownApp()},
   'shuts down the db': function *() {
-    this.App.db = {}yield this.shutdownStep(this.App)this.App.logger.flag.should.eql([1])}    
+    this.App.db = {}yield this.shutdownStep(this.App)this.App.logger.flag.must.eql([1])}    
 }

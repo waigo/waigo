@@ -15,7 +15,7 @@ const _ = require('lodash'),
     yield this.shutdownApp()},
 
   'returns rendering middleware': function *() {
-    var obj = json.create(this.App.logger)_.isGenFn(obj.render).should.be.true},
+    var obj = json.create(this.App.logger)_.isGenFn(obj.render).must.be.true},
 
   'rendering': {
     beforeEach: function *() {

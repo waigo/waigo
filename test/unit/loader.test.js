@@ -10,7 +10,7 @@ var loader = require('../../src/loader')test.beforeEach = function *() {
     this.expect(loader.getAppFolder()).to.be.defined}
 }test['waigo folder'] = {
   'get': function () {
-    let expectedFolder = path.join(__dirname, '..', '..', 'src')loader.getWaigoFolder().should.eql(expectedFolder)}
+    let expectedFolder = path.join(__dirname, '..', '..', 'src')loader.getWaigoFolder().must.eql(expectedFolder)}
 }test['init()'] = {
   beforeEach: function *() {
     loader.reset()this.options = {
@@ -44,30 +44,30 @@ var loader = require('../../src/loader')test.beforeEach = function *() {
   'set app folder': function *() {
     yield loader.init({
       appFolder: this.appFolder
-    })loader.getAppFolder().should.eql(this.appFolder)},
+    })loader.getAppFolder().must.eql(this.appFolder)},
   'get plugin names': {
     'default options': function *() {
       var options = {
         appFolder: this.appFolder
-      }options = yield loader.init(options)options.plugins.names.should.eql([])},
+      }options = yield loader.init(options)options.plugins.names.must.eql([])},
     'custom config': {
       'object': function *() {
-        var options = this.optionsoptions = yield loader.init(options)options.plugins.names.should.eql(['waigo-plugin-1_TESTPLUGIN', 'waigo-plugin-2_TESTPLUGIN'])},
+        var options = this.optionsoptions = yield loader.init(options)options.plugins.names.must.eql(['waigo-plugin-1_TESTPLUGIN', 'waigo-plugin-2_TESTPLUGIN'])},
       'path to file': {
         'custom': {
           'exists': function *() {
-            var options = this.optionsoptions.plugins.config = path.join(options.appFolder, 'pluginConfig.js')options = yield loader.init(options)options.plugins.names.should.eql(['waigo-plugin-1_TESTPLUGIN'])},
+            var options = this.optionsoptions.plugins.config = path.join(options.appFolder, 'pluginConfig.js')options = yield loader.init(options)options.plugins.names.must.eql(['waigo-plugin-1_TESTPLUGIN'])},
           'does not exist': function *() {
             var options = this.optionsoptions.plugins.config = path.join(options.appFolder, 'invalid.js')co(loader.init(options))
-              .should.be.rejectedWith(`Unable to load config file: ${options.plugins.config}`)}          
+              .must.be.rejectedWith(`Unable to load config file: ${options.plugins.config}`)}          
         },
         'package.json': {
           'exists': function *() {
             var options = this.optionsoptions.plugins.config = 'package.json'this.writePackageJson(
               '{ "dependencies": {"waigo-plugin-1_TESTPLUGIN": "0.0.1"} }'
-            )options = yield loader.init(options)options.plugins.names.should.eql(['waigo-plugin-1_TESTPLUGIN'])},
+            )options = yield loader.init(options)options.plugins.names.must.eql(['waigo-plugin-1_TESTPLUGIN'])},
           'does not exist': function *() {
-            var options = this.optionsoptions.plugins.config = 'package.json'options = yield loader.init(options)options.plugins.names.should.not.contain('waigo-plugin-1_TESTPLUGIN')}          
+            var options = this.optionsoptions.plugins.config = 'package.json'options = yield loader.init(options)options.plugins.names.must.not.contain('waigo-plugin-1_TESTPLUGIN')}          
         }
       }
     },
@@ -78,44 +78,44 @@ var loader = require('../../src/loader')test.beforeEach = function *() {
         delete process.env.PLUGIN_SEARCH_FOLDER},
       'throws error': function *() {
         co(loader.init(this.options))
-          .should.be.rejectedWith("Cannot find module 'waigo-plugin-3_TESTPLUGIN'")},
+          .must.be.rejectedWith("Cannot find module 'waigo-plugin-3_TESTPLUGIN'")},
       'unless present in additional search path': function *() {
         let folder = path.join(this.appFolder, 'extra', 'waigo-plugin-3_TESTPLUGIN', 'src')this.createFolder(folder)this.writeFile(path.join(folder, 'package.json'), '{ "name": "waigo-plugin-3_TESTPLUGIN", "version": "0.0.1" }')this.writeFile(path.join(folder, 'index.js'), 'module.exports = {}')process.env.PLUGIN_SEARCH_FOLDER = path.join(this.appFolder, 'extra')yield loader.init(this.options)},
     },
     'custom globbing pattern': function *() {
-      var options = this.optionsoptions.plugins.glob = ['*another*']options = yield loader.init(options)options.plugins.names.should.eql(['another-plugin_TESTPLUGIN'])},
+      var options = this.optionsoptions.plugins.glob = ['*another*']options = yield loader.init(options)options.plugins.names.must.eql(['another-plugin_TESTPLUGIN'])},
     'custom scope': function *() {
-      var options = this.optionsoptions.plugins.configKey = ['peerDependencies']options = yield loader.init(options)options.plugins.names.should.eql([])},
+      var options = this.optionsoptions.plugins.configKey = ['peerDependencies']options = yield loader.init(options)options.plugins.names.must.eql([])},
     'directly specified': function *() {
       var options = {
         appFolder: this.appFolder,
         plugins: {
           names: ['another-plugin_TESTPLUGIN']
         }
-      }options = yield loader.init(options)options.plugins.names.should.eql(['another-plugin_TESTPLUGIN'])}
+      }options = yield loader.init(options)options.plugins.names.must.eql(['another-plugin_TESTPLUGIN'])}
   },
   'module path resolution': {
     'default version': function *() {
-      var options = this.optionsyield loader.init(options)loader.getPath('support/errors').should.eql(
+      var options = this.optionsyield loader.init(options)loader.getPath('support/errors').must.eql(
         path.join(loader.getWaigoFolder(), 'support', 'errors.js')
       )},
     'app overrides default': function *() {
-      var options = this.optionsthis.createAppModules(['support/errors'])yield loader.init(options)loader.getPath('support/errors').should.eql(
+      var options = this.optionsthis.createAppModules(['support/errors'])yield loader.init(options)loader.getPath('support/errors').must.eql(
         path.join(loader.getAppFolder(), 'support', 'errors.js')
       )},
     'app version only': function *() {
-      var options = this.optionsthis.createAppModules(['support/blabla'])yield loader.init(options)loader.getPath('support/blabla').should.eql(
+      var options = this.optionsthis.createAppModules(['support/blabla'])yield loader.init(options)loader.getPath('support/blabla').must.eql(
         path.join(loader.getAppFolder(), 'support', 'blabla.js')
       )},
     'plugin overrides default': function *() {
-      var options = this.optionsthis.createPluginModules('waigo-plugin-1_TESTPLUGIN', ['support/errors'])yield loader.init(options)loader.getPath('support/errors').should.eql(
+      var options = this.optionsthis.createPluginModules('waigo-plugin-1_TESTPLUGIN', ['support/errors'])yield loader.init(options)loader.getPath('support/errors').must.eql(
         path.join(this.pluginsFolder, 'waigo-plugin-1_TESTPLUGIN', 'src', 'support', 'errors.js')
       )},
     'multiple plugins for module not possible': function *() {
       var options = this.optionsthis.createPluginModules('waigo-plugin-1_TESTPLUGIN', ['support/errors'])this.createPluginModules('waigo-plugin-2_TESTPLUGIN', ['support/errors'])co(loader.init(options))
-        .should.be.rejectedWith('Path "support/errors" has more than one plugin implementation to choose from: waigo-plugin-1_TESTPLUGIN, waigo-plugin-2_TESTPLUGIN')},
+        .must.be.rejectedWith('Path "support/errors" has more than one plugin implementation to choose from: waigo-plugin-1_TESTPLUGIN, waigo-plugin-2_TESTPLUGIN')},
     'app overrides plugins': function *() {
-      var options = this.optionsthis.createPluginModules('waigo-plugin-1_TESTPLUGIN', ['support/errors'])this.createPluginModules('waigo-plugin-2_TESTPLUGIN', ['support/errors'])this.createAppModules(['support/errors'])yield loader.init(options)loader.getPath('support/errors').should.eql(
+      var options = this.optionsthis.createPluginModules('waigo-plugin-1_TESTPLUGIN', ['support/errors'])this.createPluginModules('waigo-plugin-2_TESTPLUGIN', ['support/errors'])this.createAppModules(['support/errors'])yield loader.init(options)loader.getPath('support/errors').must.eql(
         path.join(loader.getAppFolder(), 'support', 'errors.js')
       )}
   },
@@ -166,27 +166,27 @@ var loader = require('../../src/loader')test.beforeEach = function *() {
     afterEach: function *() {
       this.deleteTestFolders()},
     'app overrides core': function () {
-      loader.getPath('support/errors').should.eql(
+      loader.getPath('support/errors').must.eql(
         path.resolve(this.appFolder + '/support/errors.js')
       )},
     'load core version': function () {
-      loader.getPath('waigo:support/lodashMixins').should.eql(
+      loader.getPath('waigo:support/lodashMixins').must.eql(
         path.resolve(__dirname + '/../../src/support/lodashMixins.js')
       )},
     'not in app - core fallback': function () {
-      loader.getPath('routes/index').should.eql(
+      loader.getPath('routes/index').must.eql(
         path.resolve(__dirname + '/../../src/routes/index.js')
       )},
     'load plugin version': function () {
-      loader.getPath('waigo-plugin-1_TESTPLUGIN:support/errors').should.eql(
+      loader.getPath('waigo-plugin-1_TESTPLUGIN:support/errors').must.eql(
         path.resolve(this.pluginsFolder + '/waigo-plugin-1_TESTPLUGIN/src/support/errors.js')
       )},
     'app overrides plugin': function () {
-      loader.getPath('support/appoverride').should.eql(
+      loader.getPath('support/appoverride').must.eql(
         path.resolve(this.appFolder + '/support/appoverride.js')
       )},
     'not in app - plugin fallback': function () {
-      loader.getPath('support/onlyme').should.eql(
+      loader.getPath('support/onlyme').must.eql(
         path.resolve(this.pluginsFolder + '/waigo-plugin-2_TESTPLUGIN/src/support/onlyme.js')
       )},
     'file not found': function () {
@@ -201,7 +201,7 @@ var loader = require('../../src/loader')test.beforeEach = function *() {
     loader.reset()this.deleteTestFolders()this.createTestFolders()this.createAppModules(['support/errors'])},
   'calls getPath()': function *() {
     this.mocker.stub(loader, 'getPath', (fileName) => {
-      return path.resolve(this.appFolder + '/support/errors.js')})loader.load('support/none').should.eql('app')},
+      return path.resolve(this.appFolder + '/support/errors.js')})loader.load('support/none').must.eql('app')},
 }test['getSources()'] = {
   beforeEach: function *() {
     this.deleteTestFolders()this.createTestFolders()this.createPluginModules('waigo-plugin-1_TESTPLUGIN', ['support/errors'])this.createPluginModules('waigo-plugin-2_TESTPLUGIN', ['support/onlyme', 'support/errors'])this.createPluginModules('another-plugin_TESTPLUGIN', ['support/appoverride'])this.createAppModules(['support/errors', 'support/appoverride'])yield loader.init({
@@ -212,7 +212,7 @@ var loader = require('../../src/loader')test.beforeEach = function *() {
     })},
 
   'returns sources': function *() {
-    let sources = loader.getSources()sources.waigo.should.eql(loader.getWaigoFolder())sources.app.should.eql(loader.getAppFolder())sources['waigo-plugin-1_TESTPLUGIN'].should.eql(path.resolve(this.pluginsFolder + '/waigo-plugin-1_TESTPLUGIN/src'))sources['waigo-plugin-2_TESTPLUGIN'].should.eql(path.resolve(this.pluginsFolder + '/waigo-plugin-2_TESTPLUGIN/src'))sources['another-plugin_TESTPLUGIN'].should.eql(path.resolve(this.pluginsFolder + '/another-plugin_TESTPLUGIN/src'))},
+    let sources = loader.getSources()sources.waigo.must.eql(loader.getWaigoFolder())sources.app.must.eql(loader.getAppFolder())sources['waigo-plugin-1_TESTPLUGIN'].must.eql(path.resolve(this.pluginsFolder + '/waigo-plugin-1_TESTPLUGIN/src'))sources['waigo-plugin-2_TESTPLUGIN'].must.eql(path.resolve(this.pluginsFolder + '/waigo-plugin-2_TESTPLUGIN/src'))sources['another-plugin_TESTPLUGIN'].must.eql(path.resolve(this.pluginsFolder + '/another-plugin_TESTPLUGIN/src'))},
 }test['getItemsInFolder()'] = {
   beforeEach: function *() {
     this.deleteTestFolders()this.createTestFolders()this.createPluginModules('waigo-plugin-1_TESTPLUGIN', ['support/items/errors1'])this.createPluginModules('waigo-plugin-2_TESTPLUGIN', ['support/onlyme', 'support/items/errors2'])this.createPluginModules('another-plugin_TESTPLUGIN', ['support/items/appoverride'])this.createAppModules(['support/items/errors3', 'support/appoverride'])yield loader.init({
@@ -223,7 +223,7 @@ var loader = require('../../src/loader')test.beforeEach = function *() {
     })},
 
   'returns items': function *() {
-    let items = loader.getItemsInFolder('support/items')items.sort()items.should.eql([
+    let items = loader.getItemsInFolder('support/items')items.sort()items.must.eql([
       'support/items/appoverride',
       'support/items/errors1',
       'support/items/errors2',

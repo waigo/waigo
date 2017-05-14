@@ -28,5 +28,5 @@ const _ = require('lodash'),
     yield this.shutdownApp()},
 
   'loads and initialises middleware': function *() {
-    let useSpy = this.mocker.spy(this.App.koa, 'use')yield this.setup(this.App)useSpy.callCount.should.eql(2)let fn = useSpy.getCall(0).args[0]let val = yield fn(128)val.should.eql([ 'test1', { dummy: 'foo' }, 128 ])fn = useSpy.getCall(1).args[0]val = yield fn(256)val.should.eql([  'test2', { dummy: 'bar' }, 256 ])}
+    let useSpy = this.mocker.spy(this.App.koa, 'use')yield this.setup(this.App)useSpy.callCount.must.eql(2)let fn = useSpy.getCall(0).args[0]let val = yield fn(128)val.must.eql([ 'test1', { dummy: 'foo' }, 128 ])fn = useSpy.getCall(1).args[0]val = yield fn(256)val.must.eql([  'test2', { dummy: 'bar' }, 256 ])}
 }

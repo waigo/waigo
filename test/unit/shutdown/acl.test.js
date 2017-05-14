@@ -16,5 +16,5 @@ const _ = require('lodash'),
     let count = 0this.App.acl = {
       shutdown: function *() {
         count++}
-    }yield this.shutdownStep(this.App)count.should.eql(1)}    
+    }yield this.shutdownStep(this.App)count.must.eql(1)}    
 }

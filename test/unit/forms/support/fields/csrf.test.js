@@ -1,22 +1,13 @@
-
-
-const _ = require('lodash'),
-  co = require('co'),
-  path = require('path'),
-  Q = require('bluebird')
-
+const path = require('path')
 
 const test = require(path.join(process.cwd(), 'test', '_base'))(module)
-const waigo = global.waigo
-
 
 
 test['csrf'] = {
   beforeEach: function *() {
     yield this.initApp()
 
-    const form = this.waigo.load('support/forms/form'),
-      field = this.waigo.load('support/forms/field')
+    const form = this.waigo.load('forms/support/form')
 
     this.form = yield form.create({
       fields: [
@@ -31,21 +22,23 @@ test['csrf'] = {
   },
 
   'extends text field': function *() {
-    const CsrfField = this.waigo.load('support/forms/fields/csrf'),
-      HiddenField = this.waigo.load('support/forms/fields/hidden')
+    const CsrfField = this.waigo.load('forms/support/fields/csrf'),
+      HiddenField = this.waigo.load('forms/support/fields/hidden')
 
-    this.field.must..be.instanceof(CsrfField)
-    this.field.must..be.instanceof(HiddenField)
+    this.field.must.be.instanceof(CsrfField)
+    this.field.must.be.instanceof(HiddenField)
   },
 
   'view object': function *() {
-    const toViewObjectYieldable = this.waigo.load('support/viewObjects').toViewObjectYieldable
+    const toViewObjectYieldable = this.waigo.load('viewObjects').toViewObjectYieldable
 
     yield this.field.setSanitizedValue('test')
 
-    (yield toViewObjectYieldable(this.field, {
+    const vo = yield toViewObjectYieldable(this.field, {
       csrf: 'blah',
-    })).value.must..eql('blah')
+    })
+
+    vo.value.must.eql('blah')
   },
 
   'validate': {
@@ -67,7 +60,7 @@ test['csrf'] = {
 
       try {
         yield this.field.validate()
-        throw -1
+        throw new Error()
       } catch (err) {
         expect(err.details).to.eql(['CSRF token check failed'])
       }
@@ -79,5 +72,3 @@ test['csrf'] = {
     },
   },
 }
-
-

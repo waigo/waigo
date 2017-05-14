@@ -33,7 +33,7 @@ test['isEmailAddress'] = {
     } catch (err) {
       /* nothing */
     } finally {
-      this.spy.must..have.been.calledWithExactly('test')
+      this.spy.must.have.been.calledWithExactly('test')
     }
   },
 

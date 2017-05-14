@@ -19,5 +19,5 @@ const _ = require('lodash'),
   'mailer type invalid': function *() {
     this.App.config.mailer = { type: 'invalid' }yield this.shouldThrow(this.setup(this.App), 'File not found')},
   'mailer type valid': function *() {
-    this.App.config.mailer = { type: 'test', dummy: true }yield this.setup(this.App)this.App.mailer.should.eql([ this.App, { type: 'test', dummy: true } ])},
+    this.App.config.mailer = { type: 'test', dummy: true }yield this.setup(this.App)this.App.mailer.must.eql([ this.App, { type: 'test', dummy: true } ])},
 }

@@ -11,6 +11,6 @@ const _ = require('lodash'),
   'app relative folder': function () {
     var m = waigo.load('support/middleware/staticResources')var pathJoinSpy = this.mocker.spy(path, 'join')var fn = m(this.App, {
       folder: 'static'
-    })_.isGenFn(fn).should.be.truepathJoinSpy.should.have.been.calledWithExactly(waigo.getAppFolder(), 'static')}
+    })_.isGenFn(fn).must.be.truepathJoinSpy.must.have.been.calledWithExactly(waigo.getAppFolder(), 'static')}
 
 }

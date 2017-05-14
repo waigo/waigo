@@ -14,9 +14,9 @@ const _ = require('lodash'),
     yield this.shutdownApp()},
 
   'starts HTTP listener': function *() {
-    yield this.setup(this.App)this.expect(this.App.server).to.eql('abc')this.App.koa.listen.should.have.been.calledOncethis.App.koa.listen.should.have.been.calledWithExactly(this.App.config.port)},
+    yield this.setup(this.App)this.expect(this.App.server).to.eql('abc')this.App.koa.listen.must.have.been.calledOncethis.App.koa.listen.must.have.been.calledWithExactly(this.App.config.port)},
 
   'notifies admins': function *() {
-    let spy = this.mocker.spy()this.App.on('notify', spy)yield this.setup(this.App)spy.should.have.been.calledOncespy.should.have.been.calledWith('admins')
-    _.get(spy, 'args.0.1').should.contain('listening')},
+    let spy = this.mocker.spy()this.App.on('notify', spy)yield this.setup(this.App)spy.must.have.been.calledOncespy.must.have.been.calledWith('admins')
+    _.get(spy, 'args.0.1').must.contain('listening')},
 }

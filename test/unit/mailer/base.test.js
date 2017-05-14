@@ -29,7 +29,7 @@ const _ = require('lodash'),
     yield this.clearDb()yield this.shutdownApp()},
 
   'app.mailer instance': function *() {
-    this.App.mailer.should.be.instanceof(this.MailerBase)},
+    this.App.mailer.must.be.instanceof(this.MailerBase)},
 
   'rendering': {
     'need recipients': function *() {
@@ -45,27 +45,27 @@ const _ = require('lodash'),
         to: this.users.user1,
         body: '**This** _is_ markdown',
         subject: '**This** _is_ not markdown',
-      })_.get(ret, 'body').should.eql(
+      })_.get(ret, 'body').must.eql(
         '<p>user1,</p><div><p><strong>This</strong> <em>is</em> markdown</p>\n</div><p>thanks,<br />Waigo administrators</p>'
-      )_.get(ret, 'subject').should.eql('**This** _is_ not markdown')},
+      )_.get(ret, 'subject').must.eql('**This** _is_ not markdown')},
 
     'body template': function *() {
       let ret = yield this.App.mailer.render({
         to: this.users.user1,
         bodyTemplate: 'passwordUpdated',
         subject: 'subj',
-      })_.get(ret, 'body').should.contain('user1,')_.get(ret, 'body').should.contain('Waigo administrators')_.get(ret, 'body').should.contain('successfully reset your password')},
+      })_.get(ret, 'body').must.contain('user1,')_.get(ret, 'body').must.contain('Waigo administrators')_.get(ret, 'body').must.contain('successfully reset your password')},
 
     'use email address instead': function *() {
       let ret = yield this.App.mailer.render({
         to: 'user1@waigojs.com',
         bodyTemplate: 'passwordUpdated',
         subject: 'subj',
-      })_.get(ret, 'body').should.contain('user1@waigojs.com,')_.get(ret, 'body').should.contain('Waigo administrators')_.get(ret, 'body').should.contain('successfully reset your password')},
+      })_.get(ret, 'body').must.contain('user1@waigojs.com,')_.get(ret, 'body').must.contain('Waigo administrators')_.get(ret, 'body').must.contain('successfully reset your password')},
   },
 
   'got NodeMailer instance': function *() {
-    this.App.mailer._nodeMailer.should.be.instanceof(this.NodeMailer)},
+    this.App.mailer._nodeMailer.must.be.instanceof(this.NodeMailer)},
 
   'sending': {
     beforeEach: function *() {
@@ -76,33 +76,33 @@ const _ = require('lodash'),
         to: [this.users.user1, this.users.user2, this.users.user3],
         subject: 'subj',
         body: '**body**',
-      })let arr = _.map(spy.args || [], (arg) => _.get(arg, '0.to'))arr.sort()arr.should.eql([
+      })let arr = _.map(spy.args || [], (arg) => _.get(arg, '0.to'))arr.sort()arr.must.eql([
         'user1@waigojs.com', 
         'user2@waigojs.com',
         'user3@waigojs.com',
-      ])_.map(spy.args || [], (arg) => _.get(arg, '0.from')).should.eql([
+      ])_.map(spy.args || [], (arg) => _.get(arg, '0.from')).must.eql([
         'System <waigo@localhost>',
         'System <waigo@localhost>',
         'System <waigo@localhost>',
-      ])_.map(spy.args || [], (arg) => _.get(arg, '0.replyTo')).should.eql([
+      ])_.map(spy.args || [], (arg) => _.get(arg, '0.replyTo')).must.eql([
         'System <waigo@localhost>',
         'System <waigo@localhost>',
         'System <waigo@localhost>',
-      ])_.map(spy.args || [], (arg) => _.get(arg, '0.subject')).should.eql([
+      ])_.map(spy.args || [], (arg) => _.get(arg, '0.subject')).must.eql([
         'subj',
         'subj',
         'subj',
-      ])_.get(spy.args, '0.0.html').should.contain('<div><p><strong>body</strong></p>\n</div>')},
+      ])_.get(spy.args, '0.0.html').must.contain('<div><p><strong>body</strong></p>\n</div>')},
     'records activity': function *() {
       let spy = this.mocker.spy()this.App.on('record', spy)yield this.App.mailer._send({
         to: [this.users.user1, this.users.user2, this.users.user3],
         subject: 'subj',
         body: '**body**',
-      })spy.should.have.been.calledWith('email', this.users.user1, {
+      })spy.must.have.been.calledWith('email', this.users.user1, {
         subject: 'subj',
-      })spy.should.have.been.calledWith('email', this.users.user2, {
+      })spy.must.have.been.calledWith('email', this.users.user2, {
         subject: 'subj',
-      })spy.should.have.been.calledWith('email', this.users.user3, {
+      })spy.must.have.been.calledWith('email', this.users.user3, {
         subject: 'subj',
       })},
   },
