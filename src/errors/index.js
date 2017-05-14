@@ -13,6 +13,7 @@ const waigo = global.waigo,
  *
  * @return {Object} Plain object.
  */
+/* eslint no-extend-native: "off" */
 Error.prototype[viewObjects.METHOD_NAME] = function *(ctx) {
   const ret = {
     type: this.name || 'Error',
