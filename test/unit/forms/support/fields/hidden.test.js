@@ -1,22 +1,13 @@
-
-
-const _ = require('lodash'),
-  co = require('co'),
-  path = require('path'),
-  Q = require('bluebird')
-
+const path = require('path')
 
 const test = require(path.join(process.cwd(), 'test', '_base'))(module)
-const waigo = global.waigo
-
 
 
 test['hidden'] = {
   beforeEach: function *() {
     yield this.initApp()
 
-    const form = this.waigo.load('support/forms/form'),
-      field = this.waigo.load('support/forms/field')
+    const form = this.waigo.load('forms/support/form')
 
     this.form = yield form.create({
       fields: [
@@ -31,18 +22,18 @@ test['hidden'] = {
   },
 
   'extends text field': function *() {
-    const HiddenField = this.waigo.load('support/forms/fields/hidden'),
-      Field = this.waigo.load('support/forms/fields/text')
+    const HiddenField = this.waigo.load('forms/support/fields/hidden'),
+      Field = this.waigo.load('forms/support/fields/text')
 
     this.field.must.be.instanceof(HiddenField)
     this.field.must.be.instanceof(Field)
   },
 
   'view object': function *() {
-    const toViewObjectYieldable = this.waigo.load('support/viewObjects').toViewObjectYieldable
+    const toViewObjectYieldable = this.waigo.load('viewObjects').toViewObjectYieldable
 
-    (yield toViewObjectYieldable(this.field)).type.must.eql('hidden')
+    const vo = yield toViewObjectYieldable(this.field)
+
+    vo.type.must.eql('hidden')
   },
 }
-
-
