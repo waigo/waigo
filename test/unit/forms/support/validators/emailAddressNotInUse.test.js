@@ -23,7 +23,7 @@ test['emailAddressNotInUse'] = {
     })
     yield this.clearDb('User')
 
-    validator = this.waigo.load('support/forms/validators/emailAddressNotInUse')
+    validator = this.waigo.load('forms/support/validators/emailAddressNotInUse')
 
     this.ctx = {
       App: this.App,

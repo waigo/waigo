@@ -17,7 +17,7 @@ test['notEmpty'] = {
   beforeEach: function *() {
     yield this.initApp()
 
-    validator = this.waigo.load('support/forms/validators/notEmpty')
+    validator = this.waigo.load('forms/support/validators/notEmpty')
   },
 
   'null': function *() {

@@ -17,7 +17,7 @@ test['isLength'] = {
   beforeEach: function *() {
     yield this.initApp()
 
-    validator = this.waigo.load('support/forms/validators/isLength')
+    validator = this.waigo.load('forms/support/validators/isLength')
   },
 
   'defaults': function *() {

@@ -22,7 +22,7 @@ test['isEmailAddress'] = {
 
     yield this.initApp()
 
-    validator = this.waigo.load('support/forms/validators/isEmailAddress')
+    validator = this.waigo.load('forms/support/validators/isEmailAddress')
   },
 
   'calls through to validator module isEmail()': function *() {

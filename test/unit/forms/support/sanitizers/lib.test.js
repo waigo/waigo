@@ -1,35 +1,26 @@
-
-
-const _ = require('lodash'),
-  co = require('co'),
-  path = require('path'),
-  Q = require('bluebird')
+const path = require('path')
 
 
 const test = require(path.join(process.cwd(), 'test', '_base'))(module)
-const waigo = global.waigo
-
-
-const sanitizer = null
 
 
 test['lib'] = {
   beforeEach: function *() {
     yield this.initApp()
 
-    sanitizer = this.waigo.load('support/forms/sanitizers/lib')
+    this.sanitizer = this.waigo.load('forms/support/sanitizers/lib')
   },
 
   'invalid method': function *() {
     expect(() => {
-      sanitizer({
+      this.sanitizer({
         method: 'blahblah'
       })
     }).to.throw('Invalid method: blahblah')
   },
 
   'calls method': function *() {
-    const fn = sanitizer({
+    const fn = this.sanitizer({
       method: 'toBoolean',
     })
 

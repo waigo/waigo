@@ -18,7 +18,7 @@ test['lib'] = {
   beforeEach: function *() {
     yield this.initApp()
 
-    validator = this.waigo.load('support/forms/validators/lib')
+    validator = this.waigo.load('forms/support/validators/lib')
   },
 
   'invalid method': function *() {
