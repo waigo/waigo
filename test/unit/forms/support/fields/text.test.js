@@ -1,20 +1,13 @@
-
-
-const _ = require('lodash'),
-  co = require('co'),
-  path = require('path'),
-  Q = require('bluebird')
+const path = require('path')
 
 
 const test = require(path.join(process.cwd(), 'test', '_base'))(module)
-const waigo = global.waigo
-
 
 
 test['text field'] = function *() {
   yield this.initApp()
 
-  this.waigo.load('support/forms/fields/text').must.eql(
-    this.waigo.load('support/forms/field').Field
+  this.waigo.load('forms/support/fields/text').must.eql(
+    this.waigo.load('forms/support/field').Field
   )
 }

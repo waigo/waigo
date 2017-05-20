@@ -1,22 +1,15 @@
-
-
-const _ = require('lodash'),
-  co = require('co'),
-  path = require('path'),
+const path = require('path'),
   Q = require('bluebird')
 
 
 const test = require(path.join(process.cwd(), 'test', '_base'))(module)
-const waigo = global.waigo
-
 
 
 test['select'] = {
   beforeEach: function *() {
     yield this.initApp()
 
-    const form = this.waigo.load('support/forms/form'),
-      field = this.waigo.load('support/forms/field')
+    const form = this.waigo.load('forms/support/form')
 
     this.form = yield form.create({
       fields: [
@@ -35,8 +28,8 @@ test['select'] = {
   },
 
   'extends field': function *() {
-    const SelectField = this.waigo.load('support/forms/fields/select'),
-      Field = this.waigo.load('support/forms/field').Field
+    const SelectField = this.waigo.load('forms/support/fields/select'),
+      Field = this.waigo.load('forms/support/field').Field
 
     this.field.must.be.instanceof(SelectField)
     this.field.must.be.instanceof(Field)
@@ -46,12 +39,14 @@ test['select'] = {
     'object': function *() {
       this.field.config.options = {
         key1: 'label1',
-        key2: 'label2',        
+        key2: 'label2',
       }
 
-      (yield this.field.getOptions()).must.eql({
+      const options = yield this.field.getOptions()
+
+      options.must.eql({
         key1: 'label1',
-        key2: 'label2',        
+        key2: 'label2',
       })
     },
     'function': function *() {
@@ -59,16 +54,20 @@ test['select'] = {
         return 234
       }
 
-      (yield this.field.getOptions()).must.eql(234)      
+      const opts = yield this.field.getOptions()
+
+      opts.must.eql(234)
     },
   },
 
   'view object': function *() {
-    const toViewObjectYieldable = this.waigo.load('support/viewObjects').toViewObjectYieldable
+    const toViewObjectYieldable = this.waigo.load('viewObjects').toViewObjectYieldable
 
     this.mocker.stub(this.field, 'getOptions').returns(Q.resolve(123))
 
-    (yield toViewObjectYieldable(this.field)).options.must.eql(123)
+    const vo = yield toViewObjectYieldable(this.field)
+
+    vo.options.must.eql(123)
   },
 
   'validate': {
@@ -83,7 +82,7 @@ test['select'] = {
 
         try {
           yield this.field.validate()
-          throw -1
+          throw new Error()
         } catch (err) {
           expect(err.details).to.eql(['Must be one of: label1, label2'])
         }
@@ -93,7 +92,7 @@ test['select'] = {
 
         try {
           yield this.field.validate()
-          throw -1
+          throw new Error()
         } catch (err) {
           expect(err.details).to.eql(['Must be one of: label1, label2'])
         }
@@ -118,7 +117,7 @@ test['select'] = {
 
         try {
           yield this.field.validate()
-          throw -1
+          throw new Error()
         } catch (err) {
           expect(err.details).to.eql(['Must be one or more of: label1, label2'])
         }
@@ -126,5 +125,3 @@ test['select'] = {
     },
   },
 }
-
-
