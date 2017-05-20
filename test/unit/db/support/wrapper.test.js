@@ -97,7 +97,7 @@ test['db wrapper'] = {
 
       yield inst.init()
 
-      this.awaitAsync(
+      yield this.awaitAsync(
         inst.model('unknown')
       ).must.reject.with.error('File not found: db/type1/models/unknown')
     },

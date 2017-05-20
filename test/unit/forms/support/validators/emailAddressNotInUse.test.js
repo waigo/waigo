@@ -1,29 +1,18 @@
-
-
-const _ = require('lodash'),
-  co = require('co'),
-  path = require('path'),
-  Q = require('bluebird')
-
+const path = require('path')
 
 const test = require(path.join(process.cwd(), 'test', '_base'))(module)
-const waigo = global.waigo
-
-
-const validator = null,
-  validationResult = undefined
 
 
 test['emailAddressNotInUse'] = {
   beforeEach: function *() {
     yield this.initApp()
     yield this.startApp({
-      startupSteps: ['db', 'models'],
+      startupSteps: ['db', 'users'],
       shutdownSteps: ['db'],
     })
     yield this.clearDb('User')
 
-    validator = this.waigo.load('forms/support/validators/emailAddressNotInUse')
+    this.validator = this.waigo.load('forms/support/validators/emailAddressNotInUse')
 
     this.ctx = {
       App: this.App,
@@ -35,20 +24,20 @@ test['emailAddressNotInUse'] = {
   },
 
   'is not in use': function *() {
-    const fn = validator()
+    const fn = this.validator()
 
     yield fn(this.ctx, null, 'test@test.com')
   },
 
   'in use': function *() {
-    const fn = validator()
+    const fn = this.validator()
 
-    yield this.App.models.User.register({
+    yield this.App.users.register({
       username: 'test',
       email: 'test@test.com',
     })
 
-    yield this.must.Throw(fn(this.ctx, null, 'test@test.com'), 'Email already in use')
+    yield this.awaitAsync(fn(this.ctx, null, 'test@test.com')).must.reject.with.error('Email already in use')
   },
 
 }

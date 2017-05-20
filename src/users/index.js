@@ -316,6 +316,7 @@ class UserManager {
    * @return {User}
    */
   *getByEmail (email) {
+    console.log(this.dbModel.getByEmail)
     return yield this.dbModel.getByEmail(email)
   }
 

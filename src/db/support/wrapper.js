@@ -47,14 +47,14 @@ class DbWrapper {
     }
   }
 
-  *model (modelName, modelSpec = {}) {
+  *model (modelName, modelSpecExtra = {}) {
     if (!this.models[modelName]) {
       this.logger.debug(`Setting up model ${modelName}`)
 
-      modelSpec = _.extend({},
-        waigo.load(`db/${this.type}/models/${modelName.toLowerCase()}`),
-        modelSpec
-      )
+      const modelSpec = waigo.load(`db/${this.type}/models/${modelName.toLowerCase()}`)
+      modelSpec.docVirtuals = _.extend({}, modelSpec.docVirtuals, modelSpecExtra.docVirtuals)
+      modelSpec.docMethods = _.extend({}, modelSpec.docMethods, modelSpecExtra.docMethods)
+      modelSpec.modelMethods = _.extend({}, modelSpec.modelMethods, modelSpecExtra.modelMethods)
 
       this.models[modelName] = yield this.builder.model(this.db, modelName, modelSpec)
     }

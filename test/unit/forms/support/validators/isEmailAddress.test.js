@@ -1,54 +1,42 @@
-
-
-const _ = require('lodash'),
-  co = require('co'),
-  path = require('path'),
-  Q = require('bluebird')
-
+const path = require('path')
 
 const test = require(path.join(process.cwd(), 'test', '_base'))(module)
-const waigo = global.waigo
-
-
-const validator = null,
-  validationResult = undefined
-
 
 test['isEmailAddress'] = {
   beforeEach: function *() {
-    this.spy = this.mocker.stub(require('validator'), 'isEmail', function () { 
-      return validationResult 
+    this.spy = this.mocker.stub(require('validator'), 'isEmail', () => {
+      return this.validationResult
     })
 
     yield this.initApp()
 
-    validator = this.waigo.load('forms/support/validators/isEmailAddress')
+    this.validator = this.waigo.load('forms/support/validators/isEmailAddress')
   },
 
   'calls through to validator module isEmail()': function *() {
-    const fn = validator()
+    const fn = this.validator()
 
     try {
       yield fn(null, null, 'test')
     } catch (err) {
       /* nothing */
     } finally {
-      this.spy.must.have.been.calledWithExactly('test')
+      expect(this.spy.calledWithExactly('test')).to.be.true()
     }
   },
 
   'fail': function *() {
-    const fn = validator()
-    validationResult = false
+    const fn = this.validator()
+    this.validationResult = false
 
-    yield this.must.Throw(fn(null, null, 'test'), 'Must be an email address')
+    yield this.awaitAsync(fn(null, null, 'test')).must.reject.with.error('Must be an email address')
   },
 
   'pass': function *() {
-    const fn = validator()
-    validationResult = true
+    const fn = this.validator()
+    this.validationResult = true
 
-    yield fn(null, null, 'test')
+    yield this.awaitAsync(fn(null, null, 'test')).must.resolve.to.eql()
   }
 
 }
