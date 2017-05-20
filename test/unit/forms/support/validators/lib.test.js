@@ -23,8 +23,8 @@ test['lib'] = {
       args: [3, 4],
     })
 
-    yield this.awaitAsync(fn(null, null, 'ab')).must.reject.with.error('Validation failed: isLength')
-    yield this.awaitAsync(fn(null, null, 'abcde')).must.reject.with.error('Validation failed: isLength')
+    yield this.mustThrow(fn(null, null, 'ab'), 'Validation failed: isLength')
+    yield this.mustThrow(fn(null, null, 'abcde'), 'Validation failed: isLength')
     yield fn(null, null, 'abcd')
     yield fn(null, null, 'abc')
   },

@@ -36,7 +36,7 @@ test['promise'] = {
     'fail': function *() {
       this.retErr = new Error('test error')
 
-      yield this.awaitAsync(this.fn(2)).must.reject.with.error('test error')
+      yield this.mustThrow(this.fn(2), 'test error')
 
       this.spy.calledWith(2).must.be.true()
     },

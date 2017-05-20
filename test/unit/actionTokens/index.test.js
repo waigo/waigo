@@ -70,9 +70,7 @@ test['action tokens'] = {
 
     yield Q.delay(10)
 
-    yield this.awaitAsync(
-      this.inst.process(token)
-    ).must.reject.with.error('This request has expired')
+    yield this.mustThrow(this.inst.process(token), 'This request has expired')
   },
   'when got token': {
     beforeEach: function *() {
@@ -82,41 +80,34 @@ test['action tokens'] = {
     'parse error': function *() {
       this.token += 'a'
 
-      yield this.awaitAsync(
-        this.inst.process(this.token)
-      ).must.reject.with.error('Error parsing request token')
+      yield this.mustThrow(this.inst.process(this.token), 'Error parsing request token')
     },
 
     'type mismatch': function *() {
-      yield this.awaitAsync(
+      yield this.mustThrow(
         this.inst.process(this.token, {
           type: 'blah'
-        })
-      ).must.reject.with.error('Request type mismatch: confirm')
+        }),
+        'Request type mismatch: confirm'
+      )
     },
 
     'expired': function *() {
       yield Q.delay(2001)
 
-      yield this.awaitAsync(
-        this.inst.process(this.token)
-      ).must.reject.with.error('This request has expired')
+      yield this.mustThrow(this.inst.process(this.token), 'This request has expired')
     },
 
     'user not found': function *() {
       yield this.clearDb('User')
 
-      yield this.awaitAsync(
-        this.inst.process(this.token)
-      ).must.reject.with.error('Unable to find user information related to this request')
+      yield this.mustThrow(this.inst.process(this.token), 'Unable to find user information related to this request')
     },
 
     'already processed': function *() {
       yield this.inst.process(this.token)
 
-      yield this.awaitAsync(
-        this.inst.process(this.token)
-      ).must.reject.with.error('This request has already been processed and is no longer valid')
+      yield this.mustThrow(this.inst.process(this.token), 'This request has already been processed and is no longer valid')
     },
   },
 }

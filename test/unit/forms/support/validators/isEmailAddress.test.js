@@ -29,14 +29,14 @@ test['isEmailAddress'] = {
     const fn = this.validator()
     this.validationResult = false
 
-    yield this.awaitAsync(fn(null, null, 'test')).must.reject.with.error('Must be an email address')
+    yield this.mustThrow(fn(null, null, 'test'), 'Must be an email address')
   },
 
   'pass': function *() {
     const fn = this.validator()
     this.validationResult = true
 
-    yield this.awaitAsync(fn(null, null, 'test')).must.resolve.to.eql()
+    yield fn(null, null, 'test')
   }
 
 }

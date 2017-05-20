@@ -20,7 +20,7 @@ test['isLength'] = {
       min: 5
     })
 
-    yield this.awaitAsync(fn(null, null, 'test')).must.reject.with.error('Must be between 5 and 10000000 characters in length')
+    yield this.mustThrow(fn(null, null, 'test'), 'Must be between 5 and 10000000 characters in length')
     yield fn(null, null, 'teste')
   },
 
@@ -29,7 +29,7 @@ test['isLength'] = {
       max: 3
     })
 
-    yield this.awaitAsync(fn(null, null, 'test')).must.reject.with.error('Must be between 0 and 3 characters in length')
+    yield this.mustThrow(fn(null, null, 'test'), 'Must be between 0 and 3 characters in length')
     yield fn(null, null, 'tes')
   },
 

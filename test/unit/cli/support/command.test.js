@@ -32,7 +32,7 @@ test['cli command base class'] = {
   'run - action handler': function *() {
     const c = new this.Command()
 
-    yield this.awaitAsync(c.run()).must.reject.with.error('Not yet implemented')
+    yield this.mustThrow(c.run(), 'Not yet implemented')
   },
 
   'log message': function *() {

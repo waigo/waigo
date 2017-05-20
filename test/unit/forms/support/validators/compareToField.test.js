@@ -34,7 +34,7 @@ test['compareToFielda'] = {
       field: 'blah'
     })
 
-    yield this.awaitAsync(fn(null, this.field, 1)).must.reject.with.error(`Comparison field not found: blah`)
+    yield this.mustThrow(fn(null, this.field, 1), `Comparison field not found: blah`)
   },
 
   'gte': function *() {
@@ -47,7 +47,7 @@ test['compareToFielda'] = {
       field1: 1,
     })
 
-    yield this.awaitAsync(fn(null, this.field, 0)).must.reject.with.error('Must be greater than or equal to field1')
+    yield this.mustThrow(fn(null, this.field, 0), 'Must be greater than or equal to field1')
     yield fn(null, this.field, 1)
     yield fn(null, this.field, 2)
   },
@@ -62,7 +62,7 @@ test['compareToFielda'] = {
       field1: 1,
     })
 
-    yield this.awaitAsync(fn(null, this.field, 2)).must.reject.with.error('Must be less than or equal to field1')
+    yield this.mustThrow(fn(null, this.field, 2), 'Must be less than or equal to field1')
     yield fn(null, this.field, 1)
     yield fn(null, this.field, 0)
   },
@@ -77,8 +77,8 @@ test['compareToFielda'] = {
       field1: 1,
     })
 
-    yield this.awaitAsync(fn(null, this.field, 0)).must.reject.with.error('Must be greater than field1')
-    yield this.awaitAsync(fn(null, this.field, 1)).must.reject.with.error('Must be greater than field1')
+    yield this.mustThrow(fn(null, this.field, 0), 'Must be greater than field1')
+    yield this.mustThrow(fn(null, this.field, 1), 'Must be greater than field1')
     yield fn(null, this.field, 2)
   },
 
@@ -92,8 +92,8 @@ test['compareToFielda'] = {
       field1: 1,
     })
 
-    yield this.awaitAsync(fn(null, this.field, 2)).must.reject.with.error('Must be less than field1')
-    yield this.awaitAsync(fn(null, this.field, 1)).must.reject.with.error('Must be less than field1')
+    yield this.mustThrow(fn(null, this.field, 2), 'Must be less than field1')
+    yield this.mustThrow(fn(null, this.field, 1), 'Must be less than field1')
     yield fn(null, this.field, 0)
   },
 
@@ -107,9 +107,9 @@ test['compareToFielda'] = {
       field1: 1,
     })
 
-    yield this.awaitAsync(fn(null, this.field, 0)).must.reject.with.error('Must be equal to field1')
+    yield this.mustThrow(fn(null, this.field, 0), 'Must be equal to field1')
     yield fn(null, this.field, 1)
-    yield this.awaitAsync(fn(null, this.field, 2)).must.reject.with.error('Must be equal to field1')
+    yield this.mustThrow(fn(null, this.field, 2), 'Must be equal to field1')
   },
 
   'neq': function *() {
@@ -123,7 +123,7 @@ test['compareToFielda'] = {
     })
 
     yield fn(null, this.field, 0)
-    yield this.awaitAsync(fn(null, this.field, 1)).must.reject.with.error('Must not be equal to field1')
+    yield this.mustThrow(fn(null, this.field, 1), 'Must not be equal to field1')
     yield fn(null, this.field, 2)
   },
 }

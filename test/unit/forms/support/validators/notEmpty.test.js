@@ -12,17 +12,17 @@ test['notEmpty'] = {
   'null': function *() {
     const fn = this.validator()
 
-    yield this.awaitAsync(fn(null, null, null)).must.reject.with.error('Must not be empty')
+    yield this.mustThrow(fn(null, null, null), 'Must not be empty')
   },
   'undefined': function *() {
     const fn = this.validator()
 
-    yield this.awaitAsync(fn(null, null, undefined)).must.reject.with.error('Must not be empty')
+    yield this.mustThrow(fn(null, null, undefined), 'Must not be empty')
   },
   'empty string': function *() {
     const fn = this.validator()
 
-    yield this.awaitAsync(fn(null, null, '')).must.reject.with.error('Must not be empty')
+    yield this.mustThrow(fn(null, null, ''), 'Must not be empty')
   },
   'non-empty string': function *() {
     const fn = this.validator()

@@ -37,7 +37,7 @@ test['emailAddressNotInUse'] = {
       email: 'test@test.com',
     })
 
-    yield this.awaitAsync(fn(this.ctx, null, 'test@test.com')).must.reject.with.error('Email already in use')
+    yield this.mustThrow(fn(this.ctx, null, 'test@test.com'), 'Email already in use')
   },
 
 }

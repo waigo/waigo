@@ -12,7 +12,7 @@ const waigo = global.waigo,
   logger = waigo.load('logger'),
   Q = waigo.load('promise'),
   errors = waigo.load('errors'),
-  NodeMailer = waigo.load('mailer/engines/nodeMailer').NodeMailer,
+  NodeMailer = waigo.load('mailer/support/engines/nodeMailer').NodeMailer,
   viewObjects = waigo.load('viewObjects')
 
 const EmailTemplate = require('email-templates').EmailTemplate

@@ -97,9 +97,7 @@ test['db wrapper'] = {
 
       yield inst.init()
 
-      yield this.awaitAsync(
-        inst.model('unknown')
-      ).must.reject.with.error('File not found: db/type1/models/unknown')
+      yield this.mustThrow(inst.model('unknown'), 'File not found: db/type1/models/unknown')
     },
     'loads model': function *() {
       const inst = new this.Wrapper(

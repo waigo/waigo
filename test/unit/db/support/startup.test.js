@@ -43,7 +43,7 @@ test['db startup'] = {
       test3: {}
     }
 
-    yield this.awaitAsync(this.setup(this.App)).must.reject.with.error('Unable to find configuration for database: test')
+    yield this.mustThrow(this.setup(this.App), 'Unable to find configuration for database: test')
   },
   'all initialized': function *() {
     this.App.config.db = {
