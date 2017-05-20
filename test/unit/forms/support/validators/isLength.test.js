@@ -1,46 +1,35 @@
-
-
-const _ = require('lodash'),
-  co = require('co'),
-  path = require('path'),
-  Q = require('bluebird')
-
+const path = require('path')
 
 const test = require(path.join(process.cwd(), 'test', '_base'))(module)
-const waigo = global.waigo
-
-
-const validator = null
-
 
 test['isLength'] = {
   beforeEach: function *() {
     yield this.initApp()
 
-    validator = this.waigo.load('forms/support/validators/isLength')
+    this.validator = this.waigo.load('forms/support/validators/isLength')
   },
 
   'defaults': function *() {
-    const fn = validator()
+    const fn = this.validator()
 
     yield fn(null, null, 'test')
   },
 
   'too short': function *() {
-    const fn = validator({
+    const fn = this.validator({
       min: 5
     })
 
-    yield this.must.Throw(fn(null, null, 'test'), 'Must be between 5 and 10000000 characters')
+    yield this.awaitAsync(fn(null, null, 'test')).must.reject.with.error('Must be between 5 and 10000000 characters in length')
     yield fn(null, null, 'teste')
   },
 
   'too long': function *() {
-    const fn = validator({
+    const fn = this.validator({
       max: 3
     })
 
-    yield this.must.Throw(fn(null, null, 'test'), 'Must be between 0 and 3 characters')
+    yield this.awaitAsync(fn(null, null, 'test')).must.reject.with.error('Must be between 0 and 3 characters in length')
     yield fn(null, null, 'tes')
   },
 
