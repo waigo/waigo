@@ -1,41 +1,58 @@
+const path = require('path'),
+  Q = require('bluebird')
+
+const test = require(path.join(process.cwd(), 'test', '_base'))(module)
 
 
-const _ = require('lodash'),
-  co = require('co'),
-  path = require('path'),
-  moment = require('moment'),
-  Q = require('bluebird')const test = require(path.join(process.cwd(), 'test', '_base'))(module)const waigo = global.waigotest['console'] = {
+test['console'] = {
   beforeEach: function *() {
-    yield this.initApp()yield this.startApp({
-      startupSteps: ['db', 'models', 'mailer', 'appTemplateVars'],
-      shutdownSteps: ['db'],
+    yield this.initApp()
+
+    yield this.startApp({
+      startupSteps: ['db', 'users', 'mailer'],
       mailer: {
         type: 'console',
         from: 'test@waigojs.com',
       },
-    })yield this.clearDb('User')// lets insert some users
+    })
+
+    yield this.clearDb('User')
+
+    // lets insert some users
     this.users = yield {
-      user1: this.App.models.User.register({
+      user1: this.App.users.register({
         username: 'user1',
         email: 'user1@waigojs.com',
       }),
-      user2: this.App.models.User.register({
+      user2: this.App.users.register({
         username: 'user2',
         email: 'user2@waigojs.com',
       }),
-      user3: this.App.models.User.register({
+      user3: this.App.users.register({
         username: 'user3',
         email: 'user3@waigojs.com',
       }),
-    }this.Base = waigo.load('support/mailer/base')this.Console = waigo.load('support/mailer/console').Console},
+    }
+
+    this.Base = this.waigo.load('mailer/support/base')
+    this.Console = this.waigo.load('mailer/console').Console
+  },
 
   afterEach: function *() {
-    yield this.clearDb()yield this.shutdownApp()},
+    yield this.shutdownApp()
+  },
 
   'app.mailer instance': function *() {
-    this.App.mailer.must.be.instanceof(this.Console)this.App.mailer.must.be.instanceof(this.Base)},
+    this.App.mailer.must.be.instanceof(this.Console)
+    this.App.mailer.must.be.instanceof(this.Base)
+  },
 
   'send calls to base class': function *() {
-    let spy = this.mocker.stub(this.App.mailer, '_send', () => Q.resolve())yield this.App.mailer.send(123)spy.must.have.been.calledWith(123)},
+    const spy = this.mocker.stub(this.App.mailer, '_send', () => Q.resolve())
+
+    yield this.App.mailer.send(123)
+
+    spy.calledWith(123).must.be.true()
+  },
 
 }

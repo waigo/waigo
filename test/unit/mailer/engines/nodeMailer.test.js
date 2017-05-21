@@ -1,37 +1,59 @@
-
-
 const _ = require('lodash'),
-  co = require('co'),
   path = require('path'),
-  moment = require('moment'),
-  Q = require('bluebird')const nodemailerStubTransport = require('nodemailer-stub-transport')const test = require(path.join(process.cwd(), 'test', '_base'))(module)const waigo = global.waigotest['nodemailer'] = {
+  Q = require('bluebird')
+
+const nodemailerStubTransport = require('nodemailer-stub-transport')
+
+const test = require(path.join(process.cwd(), 'test', '_base'))(module)
+
+
+test['nodemailer'] = {
   beforeEach: function *() {
-    yield this.initApp()yield this.startApp({
-      startupSteps: [],
-      shutdownSteps: [],
-    })this.NodeMailer = waigo.load('support/mailer/engines/nodeMailer').NodeMailerthis.mailer = new this.NodeMailer(this.App.logger, null, nodemailerStubTransport())this.mailer._send = this.mocker.spy(() => Q.resolve())},
+    yield this.initApp()
+
+    yield this.startApp({
+      startupSteps: []
+    })
+
+    this.NodeMailer = this.waigo.load('mailer/support/engines/nodeMailer').NodeMailer
+
+    this.mailer = new this.NodeMailer(this.App.logger, null, nodemailerStubTransport())
+
+    this.mailer._send = this.mocker.spy(() => Q.resolve())
+  },
 
   afterEach: function *() {
-    yield this.clearDb()yield this.shutdownApp()},
+    yield this.shutdownApp()
+  },
 
   'sets replyTo': function *() {
     yield this.mailer.send({
       to: 'test@waigojs.com',
       from: 'admin@waigojs.com',
       text: 'hello1',
-    })yield this.mailer.send({
+    })
+
+    yield this.mailer.send({
       to: 'test@waigojs.com',
       replyTo: 'abcd@waigojs.com',
       from: 'admin@waigojs.com',
       text: 'hello1',
-    })_.get(this.mailer._send.args, '0.0.replyTo', '').must.eql('admin@waigojs.com')_.get(this.mailer._send.args, '1.0.replyTo', '').must.eql('abcd@waigojs.com')},
+    })
+
+    _.get(this.mailer._send.args, '0.0.replyTo', '').must.eql('admin@waigojs.com')
+    _.get(this.mailer._send.args, '1.0.replyTo', '').must.eql('abcd@waigojs.com')
+  },
 
   'only html': function *() {
     yield this.mailer.send({
       to: 'test@waigojs.com',
       from: 'admin@waigojs.com',
       html: 'hello1',
-    })_.get(this.mailer._send.args, '0.0.html', '').must.eql('hello1')_.get(this.mailer._send.args, '0.0.text', 'nf').must.eql('nf')},
+    })
+
+    _.get(this.mailer._send.args, '0.0.html', '').must.eql('hello1')
+    _.get(this.mailer._send.args, '0.0.text', 'nf').must.eql('nf')
+  },
 
   'text and html': function *() {
     yield this.mailer.send({
@@ -39,5 +61,9 @@ const _ = require('lodash'),
       from: 'admin@waigojs.com',
       text: 'text2',
       html: 'hello1',
-    })_.get(this.mailer._send.args, '0.0.html', '').must.eql('hello1')_.get(this.mailer._send.args, '0.0.text', '').must.eql('text2')},
+    })
+
+    _.get(this.mailer._send.args, '0.0.html', '').must.eql('hello1')
+    _.get(this.mailer._send.args, '0.0.text', '').must.eql('text2')
+  },
 }
