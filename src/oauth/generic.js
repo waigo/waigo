@@ -1,5 +1,3 @@
-
-
 const qs = require('query-string'),
   OAuth2 = require('oauth').OAuth2
 
@@ -8,11 +6,7 @@ const waigo = global.waigo,
   _ = waigo._,
   logger = waigo.load('logger'),
   Q = waigo.load('promise'),
-  OauthError = waigo.load('oauth/error')
-
-
-
-
+  OauthError = waigo.load('oauth/support/error')
 
 
 /**

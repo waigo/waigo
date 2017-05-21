@@ -13,7 +13,8 @@
     "no-multiple-empty-lines": 0,
     "one-var": 0,
     "no-useless-call": 0,
-    "comma-dangle": 0
+    "comma-dangle": 0,
+    "camelcase": 0
   },
   "globals": {
     "expect": true
