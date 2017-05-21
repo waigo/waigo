@@ -1,33 +1,57 @@
+const path = require('path')
 
+const test = require(path.join(process.cwd(), 'test', '_base'))(module)
 
-const _ = require('lodash'),
-  co = require('co'),
-  path = require('path'),
-  moment = require('moment'),
-  Q = require('bluebird')const test = require(path.join(process.cwd(), 'test', '_base'))(module)const waigo = global.waigovar middleware = null,
-  ctx = nulltest['sessions'] = {
+test['sessions'] = {
   beforeEach: function *() {
     this.createAppModules({
-      'support/session/store/testStore': 'module.exports = { create: function (app, cfg) { return cfg} }'
-    })yield this.initApp()yield this.startApp({
-      startupSteps: [],
-      shutdownSteps: [],
-    })middleware = waigo.load('support/middleware/sessions')ctx = {
+      'sessions/testStore': 'module.exports = { create: function (app, cfg) { return cfg } }'
+    })
+
+    yield this.initApp()
+
+    yield this.startApp({
+      startupSteps: []
+    })
+
+    this.middleware = this.waigo.load('middleware/sessions')
+    this.ctx = {
       request: {},
       query: {},
-    }},
+    }
+  },
 
   afterEach: function *() {
-    yield this.shutdownApp()},
+    yield this.shutdownApp()
+  },
 
   'verifies that cookie signing keys are set': function *() {
-    this.expect(function () {
-      middleware({}, {})}).to.throw('Please specify cookie signing keys in the config file.')},
+    const options = {
+      App: this.App,
+      name: 'sessionName',
+      store: {
+        type: 'testStore',
+        config: {
+          hello: 'world'
+        }
+      },
+      cookie: {
+        validForDays: 3,
+        path: '/blah'
+      }
+    }
+
+    expect(() => {
+      this.middleware(this.App, options)
+    }).to.throw('Please specify cookie signing keys in the config file')
+  },
   'default': function *() {
-    var createStoreSpy = this.mocker.spy(
-      waigo.load('support/session/store/testStore'),
+    const createStoreSpy = this.mocker.spy(
+      this.waigo.load('sessions/testStore'),
       'create'
-    )var options = { 
+    )
+
+    const options = {
       App: this.App,
       keys: ['my', 'key'],
       name: 'sessionName',
@@ -41,5 +65,12 @@ const _ = require('lodash'),
         validForDays: 3,
         path: '/blah'
       }
-    }var fn = middleware(this.App, options)this.App.koa.keys.must.eql(['my', 'key'])createStoreSpy.must.have.been.calledOncecreateStoreSpy.must.have.been.calledWithExactly(this.App, {hello: 'world'})}
+    }
+
+    this.middleware(this.App, options)
+
+    this.App.koa.keys.must.eql(['my', 'key'])
+    createStoreSpy.calledOnce.must.be.true()
+    createStoreSpy.calledWithExactly(this.App, {hello: 'world'}).must.be.true()
+  }
 }

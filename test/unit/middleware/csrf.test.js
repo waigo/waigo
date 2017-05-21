@@ -1,26 +1,42 @@
+const path = require('path')
+
+const test = require(path.join(process.cwd(), 'test', '_base'))(module)
 
 
-const _ = require('lodash'),
-  co = require('co'),
-  path = require('path'),
-  moment = require('moment'),
-  Q = require('bluebird')const test = require(path.join(process.cwd(), 'test', '_base'))(module)const waigo = global.waigovar middleware = nulltest['context helpers'] = {
+test['context helpers'] = {
   beforeEach: function *() {
-    yield this.initApp()yield this.startApp({
+    yield this.initApp()
+
+    yield this.startApp({
       startupSteps: [],
       shutdownSteps: [],
-    })middleware = waigo.load('support/middleware/csrf')},
+    })
+
+    this.middleware = this.waigo.load('middleware/csrf')
+  },
 
   afterEach: function *() {
-    yield this.shutdownApp()},
+    yield this.shutdownApp()
+  },
 
   'csrf': function *() {
-    let ctx = {
+    const ctx = {
       response: {},
       request: {},
-    }let count = 0let next = function *() {
-      count++}
+    }
 
-    yield middleware().call(ctx, next)this.expect(ctx.assertCSRF).to.be.definedthis.expect(ctx.request.assertCSRF).to.be.definedcount.must.eql(1)},
+    let count = 0
+
+    const next = function *() {
+      count++
+    }
+
+    yield this.middleware().call(ctx, next)
+
+    expect(ctx.assertCSRF).to.exist()
+    expect(ctx.request.assertCSRF).to.exist()
+
+    count.must.eql(1)
+  },
 
 }

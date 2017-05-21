@@ -1,16 +1,25 @@
-
-
 const _ = require('lodash'),
-  co = require('co'),
-  path = require('path'),
-  moment = require('moment'),
-  Q = require('bluebird')const test = require(path.join(process.cwd(), 'test', '_base'))(module)const waigo = global.waigotest['static resources middleware'] = {
+  path = require('path')
+
+const test = require(path.join(process.cwd(), 'test', '_base'))(module)
+
+test['static resources middleware'] = {
   beforeEach: function *() {
-    yield this.initApp()},
+    yield this.initApp()
+  },
 
   'app relative folder': function () {
-    var m = waigo.load('support/middleware/staticResources')var pathJoinSpy = this.mocker.spy(path, 'join')var fn = m(this.App, {
+    const m = this.waigo.load('middleware/staticResources')
+
+    const pathJoinSpy = this.mocker.spy(path, 'join')
+
+    const fn = m(this.App, {
       folder: 'static'
-    })_.isGenFn(fn).must.be.truepathJoinSpy.must.have.been.calledWithExactly(waigo.getAppFolder(), 'static')}
+    })
+
+    _.isGenFn(fn).must.be.true()
+
+    pathJoinSpy.calledWithExactly(this.waigo.getAppFolder(), 'static').must.be.true()
+  }
 
 }

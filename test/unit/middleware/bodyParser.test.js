@@ -1,23 +1,38 @@
+const path = require('path')
+
+const test = require(path.join(process.cwd(), 'test', '_base'))(module)
 
 
-const _ = require('lodash'),
-  co = require('co'),
-  path = require('path'),
-  moment = require('moment'),
-  Q = require('bluebird')const test = require(path.join(process.cwd(), 'test', '_base'))(module)const waigo = global.waigovar bodyParser = nulltest['body parser'] = {
+test['body parser'] = {
   beforeEach: function *() {
-    yield this.initApp()bodyParser = waigo.load('support/middleware/bodyParser')},
+    yield this.initApp()
+
+    this.bodyParser = this.waigo.load('middleware/bodyParser')
+  },
 
   'uses co-body': function *() {
-    this.expect(bodyParser._bodyParser).to.eql(require('co-body'))},
+    expect(this.bodyParser._bodyParser).to.eql(require('co-body'))
+  },
 
   'parses the body': function *() {
-    var ctx = {
+    const ctx = {
       request: {}
-    }bodyParser._bodyParser = this.mocker.stub().returns({
+    }
+
+    this.bodyParser._bodyParser = this.mocker.stub().returns({
       dummy: true
-    })var next = function *() {
-      ctx.nextCalled = 1}yield bodyParser().call(ctx, next)this.expect(ctx.request.body).to.eql({
+    })
+
+    const next = function *() {
+      ctx.nextCalled = 1
+    }
+
+    yield this.bodyParser().call(ctx, next)
+
+    expect(ctx.request.body).to.eql({
       dummy: true
-    })this.expect(ctx.nextCalled).to.eql(1)}
+    })
+
+    expect(ctx.nextCalled).to.eql(1)
+  }
 }

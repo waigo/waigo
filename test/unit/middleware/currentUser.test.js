@@ -1,39 +1,69 @@
+const path = require('path')
+
+const test = require(path.join(process.cwd(), 'test', '_base'))(module)
 
 
-const _ = require('lodash'),
-  co = require('co'),
-  path = require('path'),
-  moment = require('moment'),
-  Q = require('bluebird')const test = require(path.join(process.cwd(), 'test', '_base'))(module)const waigo = global.waigovar middleware = nulltest['context helpers'] = {
+test['context helpers'] = {
   beforeEach: function *() {
-    yield this.initApp()yield this.startApp({
-      startupSteps: ['db', 'models'],
+    yield this.initApp()
+
+    yield this.startApp({
+      startupSteps: ['db', 'users'],
       shutdownSteps: ['db'],
-    })yield this.clearDb('User')middleware = waigo.load('support/middleware/currentUser')},
+    })
+
+    yield this.clearDb('User')
+
+    this.middleware = this.waigo.load('middleware/currentUser')
+  },
 
   afterEach: function *() {
-    yield this.shutdownApp()},
+    yield this.shutdownApp()
+  },
 
   'no user': function *() {
-    let ctx = {
+    const ctx = {
       session: {},
-    }let count = 0let next = function *() {
-      count++}
+    }
 
-    yield middleware().call(ctx, next)this.expect(ctx.currentUser).to.not.be.definedcount.must.eql(1)},
+    let count = 0
+
+    const next = function *() {
+      count++
+    }
+
+    yield this.middleware().call(ctx, next)
+
+    expect(ctx.currentUser).to.not.exist()
+
+    count.must.eql(1)
+  },
 
   'has user': function *() {
-    let user = yield this.App.models.User.register({
+    const user = yield this.App.users.register({
       username: 'test',
-    })let ctx = {
+    })
+
+    const ctx = {
       App: this.App,
       session: {
         user: {
           id: user.id,
         }
       },
-    }let count = 0let next = function *() {
-      count++}
+    }
 
-    yield middleware().call(ctx, next)this.expect(ctx.currentUser).to.be.definedctx.currentUser.toJSON().must.eql(user.toJSON())count.must.eql(1)},
+    let count = 0
+
+    const next = function *() {
+      count++
+    }
+
+    yield this.middleware().call(ctx, next)
+
+    expect(ctx.currentUser).to.exist()
+    ctx.currentUser.toJSON().must.eql(user.toJSON())
+
+    count.must.eql(1)
+  },
 }

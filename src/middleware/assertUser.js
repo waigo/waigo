@@ -23,7 +23,7 @@ module.exports = function (App, options) {
 
     try {
       if (!this.currentUser) {
-        throw new RuntimeError('You must be logged in to access this content.', 403)
+        throw new RuntimeError('You must be logged in to access this content', 403)
       } else {
         // need specific access?
         if (options.canAccess) {

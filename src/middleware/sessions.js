@@ -29,7 +29,7 @@ module.exports = function (App, options) {
   const { keys, name, store: { type, config }, cookie: { validForDays, path } } = options
 
   if (!keys) {
-    throw new Error('Please specify cookie signing keys in the config file.')
+    throw new Error('Please specify cookie signing keys in the config file')
   }
 
   App.koa.keys = keys
