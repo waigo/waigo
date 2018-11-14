@@ -1,3 +1,5 @@
+**NOTE: Waigo is no longer being maintained. There are better choices out there right now, I may revisit this in future.**
+
 # Waigo
 
 [![Build Status](https://secure.travis-ci.org/waigo/waigo.png)](http://travis-ci.org/waigo/waigo)
